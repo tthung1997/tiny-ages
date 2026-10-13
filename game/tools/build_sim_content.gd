@@ -427,10 +427,10 @@ func _settled_building_opportunity() -> EventDef:
 
 func _curious_explorer() -> EventDef:
 	var event: EventDef = _event(&"curious_explorer", "A curious scout", &"exploration")
-	event.body = "{subject} keeps climbing the lookout to stare at the eastern valley."
+	event.body = "{subject} keeps climbing the lookout to stare at the ridge beyond the western forest."
 	event.requires = _conds([
 		_cond(SimCondition.Kind.HAS_BUILDING, &"lookout"),
-		_cond(SimCondition.Kind.FLAG_SET, &"eastern_valley_explored", 0, true),
+		_cond(SimCondition.Kind.FLAG_SET, &"western_forest_explored", 0, true),
 		_cond(SimCondition.Kind.DAYS_AT_LEAST, &"", UNLOCK_DAY[&"seed_chain"]),
 	])
 	event.needs_subject = true
@@ -443,9 +443,9 @@ func _curious_explorer() -> EventDef:
 	var go: ChoiceDef = _choice(&"encourage", "Encourage them to scout")
 	go.effects = _effs([
 		_eff(SimEffect.Kind.SET_PROFESSION, &"scout"),
-		_eff(SimEffect.Kind.SEND_AWAY, &"eastern_valley", 36),
+		_eff(SimEffect.Kind.SEND_AWAY, &"western_forest", 36),
 		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"explorer_returns", 36),
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} set off to scout the eastern valley."),
+		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} set off to scout the western forest."),
 	])
 	event.choices = _choices([go, _choice(&"remain", "Ask them to stay")])
 	return event
@@ -453,14 +453,14 @@ func _curious_explorer() -> EventDef:
 
 func _explorer_returns() -> EventDef:
 	var event: EventDef = _event(&"explorer_returns", "A scout returns", &"exploration")
-	event.body = "{subject} is back from the valley, carrying something unfamiliar."
+	event.body = "{subject} is back from the forest, carrying something unfamiliar."
 	event.needs_subject = true
 	event.effects = _effs([
 		_eff(SimEffect.Kind.ADD_ITEM, &"strange_seed", 1),
-		_eff(SimEffect.Kind.SET_FLAG, &"eastern_valley_explored"),
+		_eff(SimEffect.Kind.SET_FLAG, &"western_forest_explored"),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
-			"{subject} returned from the eastern valley carrying the seed of an unfamiliar plant."
+			"{subject} returned from the western forest carrying the seed of an unfamiliar plant."
 		),
 	])
 	var plant: ChoiceDef = _choice(&"plant_it", "Plant it")

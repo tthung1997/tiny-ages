@@ -13,7 +13,7 @@ key = &"scout"
 [sub_resource type="Resource" id="Resource_15eqs"]
 script = ExtResource("2_3dslj")
 kind = 6
-key = &"eastern_valley"
+key = &"western_forest"
 amount = 36
 
 [sub_resource type="Resource" id="Resource_grhtu"]
@@ -24,7 +24,7 @@ amount = 36
 
 [sub_resource type="Resource" id="Resource_d7xf6"]
 script = ExtResource("2_3dslj")
-text = "{subject} set off to scout the eastern valley."
+text = "{subject} set off to scout the western forest."
 
 [sub_resource type="Resource" id="Resource_n6sha"]
 script = ExtResource("1_wn2pb")
@@ -44,7 +44,7 @@ key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_4n7r8"]
 script = ExtResource("3_ukhhx")
-key = &"eastern_valley_explored"
+key = &"western_forest_explored"
 negate = true
 
 [sub_resource type="Resource" id="Resource_su141"]
@@ -65,7 +65,7 @@ kind = 7
 script = ExtResource("4_6pjtm")
 id = &"curious_explorer"
 title = "A curious scout"
-body = "{subject} keeps climbing the lookout to stare at the eastern valley."
+body = "{subject} keeps climbing the lookout to stare at the ridge beyond the western forest."
 category = &"exploration"
 requires = Array[ExtResource("3_ukhhx")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8"), SubResource("Resource_su141")])
 needs_subject = true

@@ -50,14 +50,37 @@ const CAVE_DOOR: Vector2 = Vector2(40.0, 78.0)
 const WEST_EDGE: Vector2 = Vector2(-394.0, 77.0)
 const FIRE_X: float = 72.0
 const PINE_X: float = 204.0
+## The stump at the forest's edge (west page), where wood is cut.
+const CHOP_X: float = -66.0
+## The fire pit is state-driven like a building: it appears once the fire is found. It is drawn
+## with the firelight inside the cave mouth (tools/art/cave_strip.js), in FIRE_FRAMES flame frames
+## named fire_pit_0.. that swap every FIRE_FRAME_SECONDS while it is in view.
+const FIRE_PIT: StringName = &"fire_pit"
+const FIRE_PIT_Z: int = 70
+const FIRE_FRAMES: int = 4
+const FIRE_FRAME_SECONDS: float = 0.2
+## How bright the glow is on each flame frame, so it breathes with the fire.
+const FIRE_GLOW_FLICKER: Array[float] = [1.0, 0.9, 0.96, 0.84]
+## The camp x range the fire lights; the animation sleeps while none of it is on screen.
+const FIRE_LIGHT_X: Vector2 = Vector2(20.0, 120.0)
+## The fire's glow is drawn over everything in the world (villagers included) but under the HUD.
+const FIRE_GLOW: StringName = &"fire_glow"
+const FIRE_GLOW_Z: int = 90
 
+## Where the group gathers while there is no fire: the cave mouth.
+const COLD_X: float = 40.0
+const COLD_SPOTS: Array[Vector2] = [Vector2(32, 78), Vector2(46, 79), Vector2(56, 78)]
 const FIRE_SPOTS: Array[Vector2] = [Vector2(88, 78), Vector2(96, 79), Vector2(60, 79)]
 const SOCIAL_SPOTS: Array[Vector2] = [Vector2(62, 78), Vector2(84, 79), Vector2(98, 78)]
-const WOOD_SPOTS: Array[Vector2] = [Vector2(192, 74), Vector2(214, 75), Vector2(222, 77)]
+const WOOD_SPOTS: Array[Vector2] = [Vector2(-82, 78), Vector2(-74, 79), Vector2(-54, 78)]
 const FORAGE_SPOTS: Array[Vector2] = [Vector2(188, 77), Vector2(206, 78), Vector2(176, 78)]
 ## The forest to the west is walkable; the camp's river stops the east at about x = 298.
 const WANDER_X: Vector2 = Vector2(-150.0, 290.0)
 const WANDER_Y: Vector2 = Vector2(75.0, 79.0)
+
+
+static func fire_frame_name(frame: int) -> StringName:
+	return StringName("%s_%d" % [FIRE_PIT, posmod(frame, FIRE_FRAMES)])
 
 
 static func spot(spots: Array[Vector2], index: int) -> Vector2:

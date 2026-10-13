@@ -93,6 +93,11 @@ func has_flag(key: StringName) -> bool:
 	return flags.get(key, false)
 
 
+## Whether the settlement has fire. Fire is found, not given (docs/gameplay.md P6).
+func has_fire() -> bool:
+	return has_flag(&"fire_found")
+
+
 func has_building(def_id: StringName) -> bool:
 	for building: BuildingState in buildings:
 		if building.complete and building.def_id == def_id:

@@ -60,7 +60,7 @@ func _run_chain(rng_seed: int) -> void:
 		return
 	assert_false(scout.is_away())
 	assert_eq(sim.world.item_count(&"strange_seed"), 1, "%s: with a seed" % label)
-	assert_true(sim.world.has_flag(&"eastern_valley_explored"))
+	assert_true(sim.world.has_flag(&"western_forest_explored"))
 	var found: PendingDecision = SimFixture.pending_for(sim, &"explorer_returns")
 	assert_true(sim.resolve_decision(found.id, &"plant_it"))
 	assert_eq(sim.world.plants.size(), 1, "%s: the seed is planted" % label)
@@ -81,7 +81,7 @@ func _assert_journal_tells_the_story(world: WorldState, scout: String, label: St
 		"Construction of the Lookout began",
 		"The Lookout was completed",
 		"%s set off to scout" % scout,
-		"%s returned from the eastern valley" % scout,
+		"%s returned from the western forest" % scout,
 		"%s pressed the strange seed" % scout,
 		"The strange seed flowered",
 		"A butterfly nobody had seen before",

@@ -12,7 +12,8 @@ extends Node2D
 ##   --no-lowproc --no-hud  as in the window spike, plus: --new (ignore the save)
 ##   --nosave (never write the save) --save=<path> --speed=<x real time> --days=<n> (play n game
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
-##   decisions) --manual --cam=<camp x> (start with the viewport's left edge there: -384..384,
+##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
+##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
 ##   camp is 0) --panel=decision|journal|away (open that panel at start) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
@@ -73,6 +74,11 @@ func _ready() -> void:
 		sim.advance_ticks(1)
 		if not _manual_days:
 			_bot.answer_all(sim)
+	if options.has("hour"):
+		for _tick: int in config.ticks_per_day:
+			if config.hour_of(sim.world.tick) == options["hour"]:
+				break
+			sim.advance_ticks(1)
 	_world_view.setup(sim, _window)
 	if options.has("cam"):
 		_world_view.jump_camera(options["cam"])
@@ -253,7 +259,7 @@ func _toggle_journal() -> void:
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --give=wood:20,food:5 adds stock. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
-	if options.get("fire", false) and not sim.world.has_flag(&"fire_found"):
+	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
 		sim.world.achievements.append(&"fire")
 	for part: String in String(options.get("give", "")).split(",", false):
@@ -392,6 +398,8 @@ func _apply_cmdline() -> Dictionary:
 			_time_scale = maxf(arg.trim_prefix("--speed=").to_float(), 1.0)
 		elif arg.begins_with("--days="):
 			options["days"] = maxi(arg.trim_prefix("--days=").to_int(), 0)
+		elif arg.begins_with("--hour="):
+			options["hour"] = clampi(arg.trim_prefix("--hour=").to_int(), 0, 23)
 		elif arg == "--bot":
 			_bot_auto = true
 		elif arg == "--manual":

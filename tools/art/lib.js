@@ -252,9 +252,8 @@ function cliff(b) {
   b.ell(50, 30, 40, 22, ROCK); b.rect(6, 40, 88, 8, ROCK); b.ell(42, 22, 26, 11, ROCKL);
   b.line(20, 14, 24, 25, '#5f5c68', 1); b.line(64, 10, 60, 22, '#5f5c68', 1); b.line(82, 26, 86, 38, '#5f5c68', 1);
   b.ell(24, 12, 6, 2.5, '#4f9a5a'); b.ell(52, 5, 7, 2.5, '#58b05f'); b.ell(80, 21, 6, 2.2, '#4f9a5a'); b.ell(10, 27, 4, 2, '#4f9a5a');
-  // cave mouth: dark arch to the ground, warm firelight low inside
+  // cave mouth: dark arch to the ground (the firelight inside is drawn by cave_strip.js, lit only)
   b.ell(34, 40, 14, 14, '#2a2433'); b.rect(20, 40, 28, 14, '#2a2433'); b.ell(34, 43, 9, 9, '#3a3040');
-  for (var y = 46; y < 54; y++) for (var x = 26; x < 43; x++) if (((x + y) & 1) == 0 && y > 46 + Math.abs(x - 34) / 3) b.px(x, y, '#a8643a');
   b.ell(34, 27, 4, 1.5, ROCKD); // brow of the arch
   handprint(b, 62, 28); handprint(b, 70, 31); handprint(b, 66, 36);
   b.px(78, 30, OCHRE); b.px(79, 31, OCHRE); b.px(80, 30, OCHRE); b.px(84, 34, OCHRE); b.px(85, 35, OCHRE);
@@ -306,12 +305,19 @@ function knapspot(b) {
   b.px(12, 4, '#3a4452'); b.px(13, 4, '#3a4452');
 }
 
-// Fire pit with a stone ring and crossed logs, 16x14.
-function firepit(b) {
-  var i, a, sx, sy;
+// Fire pit with a stone ring and crossed logs, 16x14. `frame` (0-3) is the flame's flicker.
+var FLAMES = [
+  { cx: 8, top: 0, h: 9, ix: 8, spark: [[5, 3, '#ffe27a'], [11, 2, '#f59e2b']] },
+  { cx: 9, top: 1, h: 8, ix: 9, spark: [[5, 4, '#ffe27a'], [12, 3, '#f59e2b']] },
+  { cx: 7, top: 0, h: 9, ix: 7, spark: [[11, 4, '#ffe27a'], [4, 2, '#f59e2b']] },
+  { cx: 8, top: 2, h: 7, ix: 8, spark: [[8, 0, '#f59e2b'], [11, 3, '#ffe27a']] }
+];
+function firepit(b, frame) {
+  var i, a, sx, sy, fl = FLAMES[frame || 0];
   for (i = 0; i < 8; i++) { a = i * Math.PI / 4; sy = 10 + Math.sin(a) * 2.5; if (Math.sin(a) <= 0) b.ell(8 + Math.cos(a) * 6.5, sy, 1.8, 1.4, ROCKD); }
   b.ell(8, 10, 5, 2, '#3a2a22'); b.line(4, 10, 12, 8, WOOD, 2); b.line(5, 8, 12, 11, '#6f4528', 2);
-  b.tri(8, 0, 9, 3, '#f59e2b', '#e5732b'); b.tri(8, 4, 5, 1, '#ffe27a', '#ffe27a'); b.px(5, 3, '#ffe27a'); b.px(11, 2, '#f59e2b');
+  b.tri(fl.cx, fl.top, fl.h, 3, '#f59e2b', '#e5732b'); b.tri(fl.ix, 4, 5, 1, '#ffe27a', '#ffe27a');
+  for (i = 0; i < fl.spark.length; i++) b.px(fl.spark[i][0], fl.spark[i][1], fl.spark[i][2]);
   for (i = 0; i < 8; i++) { a = i * Math.PI / 4; if (Math.sin(a) > 0) { sx = 8 + Math.cos(a) * 6.5; sy = 10 + Math.sin(a) * 2.5; b.ell(sx, sy, 1.8, 1.4, ROCK); b.px(sx - 1, sy - 1, ROCKL); } }
 }
 

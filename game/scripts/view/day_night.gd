@@ -13,10 +13,30 @@ const COLORS: Array[Color] = [
 	Color(0.5, 0.52, 0.78),
 	Color(0.42, 0.48, 0.74),
 ]
+## Without a fire the nights are much darker; this is how much of the night light is left.
+const UNLIT_NIGHT_LIGHT: float = 0.6
+## The red channel at full night, which is how "how night is it" is read from a tint.
+const NIGHT_RED: float = 0.42
 
 
-## The tint for an hour of the day in [0, 24).
-static func tint(hour: float) -> Color:
+## The tint for an hour of the day in [0, 24). Days are the same either way; before the settlement
+## has fire the night is darker.
+static func tint(hour: float, lit: bool = true) -> Color:
+	var base: Color = _base_tint(hour)
+	if lit:
+		return base
+	var night: float = night_amount(hour)
+	var light: float = lerpf(1.0, UNLIT_NIGHT_LIGHT, night)
+	return Color(base.r * light, base.g * light, base.b * light, base.a)
+
+
+## 0 in daylight to 1 in the dead of night, read from how far the day's tint has gone towards
+## night. Drives the fire's glow.
+static func night_amount(hour: float) -> float:
+	return clampf((1.0 - _base_tint(hour).r) / (1.0 - NIGHT_RED), 0.0, 1.0)
+
+
+static func _base_tint(hour: float) -> Color:
 	var clamped: float = clampf(hour, 0.0, 24.0)
 	for index: int in range(1, HOURS.size()):
 		if clamped <= HOURS[index]:

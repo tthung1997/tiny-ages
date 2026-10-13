@@ -773,7 +773,7 @@ key = &"scout"
 [sub_resource type="Resource" id="Resource_15eqs"]
 script = ExtResource("5_euihr")
 kind = 6
-key = &"eastern_valley"
+key = &"western_forest"
 amount = 36
 
 [sub_resource type="Resource" id="Resource_grhtu"]
@@ -784,7 +784,7 @@ amount = 36
 
 [sub_resource type="Resource" id="Resource_d7xf6"]
 script = ExtResource("5_euihr")
-text = "{subject} set off to scout the eastern valley."
+text = "{subject} set off to scout the western forest."
 
 [sub_resource type="Resource" id="Resource_n6sha"]
 script = ExtResource("4_0wd41")
@@ -804,7 +804,7 @@ key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_4n7r8"]
 script = ExtResource("6_x2sw1")
-key = &"eastern_valley_explored"
+key = &"western_forest_explored"
 negate = true
 
 [sub_resource type="Resource" id="Resource_su141"]
@@ -825,7 +825,7 @@ kind = 7
 script = ExtResource("3_0otko")
 id = &"curious_explorer"
 title = "A curious scout"
-body = "{subject} keeps climbing the lookout to stare at the eastern valley."
+body = "{subject} keeps climbing the lookout to stare at the ridge beyond the western forest."
 category = &"exploration"
 requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8"), SubResource("Resource_su141")])
 needs_subject = true
@@ -875,17 +875,17 @@ amount = 1
 [sub_resource type="Resource" id="Resource_86jub"]
 script = ExtResource("5_euihr")
 kind = 1
-key = &"eastern_valley_explored"
+key = &"western_forest_explored"
 
 [sub_resource type="Resource" id="Resource_kx622"]
 script = ExtResource("5_euihr")
-text = "{subject} returned from the eastern valley carrying the seed of an unfamiliar plant."
+text = "{subject} returned from the western forest carrying the seed of an unfamiliar plant."
 
 [sub_resource type="Resource" id="Resource_l2b1f"]
 script = ExtResource("3_0otko")
 id = &"explorer_returns"
 title = "A scout returns"
-body = "{subject} is back from the valley, carrying something unfamiliar."
+body = "{subject} is back from the forest, carrying something unfamiliar."
 category = &"exploration"
 needs_subject = true
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])

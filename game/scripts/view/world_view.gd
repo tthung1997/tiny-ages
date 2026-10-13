@@ -25,6 +25,11 @@ var _buildings: Dictionary = {}
 var _sites: Dictionary = {}
 var _flower_sprout: Sprite2D
 var _flower_bloom: Sprite2D
+var _fire_pit: Sprite2D
+var _fire_glow: Sprite2D
+var _fire_frames: Array[Texture2D] = []
+var _fire_frame: int = 0
+var _fire_clock: float = 0.0
 var _actors: Dictionary = {}
 var _tint: CanvasModulate = CanvasModulate.new()
 var _signature: String = ""
@@ -61,6 +66,13 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 		_sites[building_id] = _make_sprite(StringName("site_%s" % building_id), z)
 	_flower_sprout = _make_sprite(&"flower_sprout", WorldLayout.FLOWER_Z)
 	_flower_bloom = _make_sprite(&"flower_bloom", WorldLayout.FLOWER_Z)
+	_fire_pit = _make_sprite(WorldLayout.fire_frame_name(0), WorldLayout.FIRE_PIT_Z)
+	for frame: int in WorldLayout.FIRE_FRAMES:
+		_fire_frames.append(_load_art(WorldLayout.fire_frame_name(frame)))
+	_fire_glow = _make_sprite(WorldLayout.FIRE_GLOW, WorldLayout.FIRE_GLOW_Z)
+	var additive: CanvasItemMaterial = CanvasItemMaterial.new()
+	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	_fire_glow.material = additive
 	_ui.layout(float(WorldLayout.VIEW_SIZE.x))
 	_ui.z_index = 1000
 	_ui.pan_requested.connect(func(direction: int) -> void: pan_by(direction * WorldLayout.PAN_STEP))
@@ -114,12 +126,45 @@ func on_world_changed() -> void:
 
 ## Re-tints the scene for the current time of day. Cheap enough to call every frame.
 func update_light() -> void:
-	_tint.color = DayNight.tint(DayNight.hour_of_world(_sim.world, _sim.config))
+	var hour: float = DayNight.hour_of_world(_sim.world, _sim.config)
+	var lit: bool = _sim.world.has_fire()
+	var tint: Color = DayNight.tint(hour, lit)
+	_tint.color = tint
+	# The tint dims every piece, so the glow is boosted back to its own colour and only fades
+	# in with the dark.
+	var strength: float = DayNight.night_amount(hour) if lit else 0.0
+	_fire_glow.visible = strength > 0.0
+	_fire_glow.modulate = Color(
+		1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b,
+		strength * WorldLayout.FIRE_GLOW_FLICKER[_fire_frame]
+	)
+
+
+## The fire flickers by swapping its flame frame on a slow clock. It does nothing at all while
+## there is no fire or none of the light is on screen.
+func _animate_fire(delta: float) -> void:
+	if not _fire_pit.visible:
+		return
+	var left: float = float(_camera.pixel_x())
+	if left > WorldLayout.FIRE_LIGHT_X.y or left + float(WorldLayout.VIEW_SIZE.x) < WorldLayout.FIRE_LIGHT_X.x:
+		return
+	_fire_clock += delta
+	if _fire_clock < WorldLayout.FIRE_FRAME_SECONDS:
+		return
+	_fire_clock = 0.0
+	set_fire_frame(_fire_frame + 1)
+
+
+func set_fire_frame(frame: int) -> void:
+	_fire_frame = posmod(frame, WorldLayout.FIRE_FRAMES)
+	_fire_pit.texture = _fire_frames[_fire_frame]
+	update_light()
 
 
 func _process(delta: float) -> void:
 	if _camera.step(delta):
 		_apply_camera()
+	_animate_fire(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -174,6 +219,7 @@ func _refresh_props() -> void:
 	var bloomed: bool = planted and world.plants[0].flowered
 	_flower_sprout.visible = planted and not bloomed
 	_flower_bloom.visible = bloomed
+	_fire_pit.visible = world.has_fire()
 	var signature: String = _shape_signature()
 	if signature != _signature:
 		_signature = signature
@@ -215,17 +261,21 @@ func _make_backdrop_pages(layer: StringName, z: int) -> Array[Sprite2D]:
 
 ## `at_x` is the sprite's left edge in camp pixels (0 for the camp page's own pieces).
 func _make_sprite(layer: StringName, z: int, at_x: float = 0.0) -> Sprite2D:
-	var path: String = "%s%s.png" % [WorldLayout.ASSET_DIR, layer]
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.centered = false
 	sprite.z_index = z
 	sprite.position.x = at_x
-	if ResourceLoader.exists(path):
-		sprite.texture = load(path) as Texture2D
-	else:
-		push_error("Missing world art: %s" % path)
+	sprite.texture = _load_art(layer)
 	_world.add_child(sprite)
 	return sprite
+
+
+func _load_art(layer: StringName) -> Texture2D:
+	var path: String = "%s%s.png" % [WorldLayout.ASSET_DIR, layer]
+	if not ResourceLoader.exists(path):
+		push_error("Missing world art: %s" % path)
+		return null
+	return load(path) as Texture2D
 
 
 ## Which solid pieces are showing, so the click region is only rebuilt when it changes.
@@ -236,6 +286,7 @@ func _shape_signature() -> String:
 		parts.append("s" if (_sites[building_id] as Sprite2D).visible else "-")
 	parts.append("f" if _flower_sprout.visible else "-")
 	parts.append("F" if _flower_bloom.visible else "-")
+	parts.append("p" if _fire_pit.visible else "-")
 	return "".join(parts)
 
 
@@ -252,7 +303,7 @@ func _rebuild_skyline() -> void:
 		for sprite: Sprite2D in [_buildings[building_id], _sites[building_id]]:
 			if sprite.visible:
 				skyline.add(sprite.texture, _world_column(sprite))
-	for sprite: Sprite2D in [_flower_sprout, _flower_bloom]:
+	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit]:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
 	_window.set_skyline(skyline.tops)

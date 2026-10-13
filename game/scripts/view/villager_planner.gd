@@ -25,13 +25,16 @@ func plan(
 		VillagerState.ACTIVITY_GATHER_WOOD:
 			result.target = WorldLayout.spot(WorldLayout.WOOD_SPOTS, slot)
 			result.pose = &"chop"
-			result.focus_x = WorldLayout.PINE_X
+			result.focus_x = WorldLayout.CHOP_X
 		VillagerState.ACTIVITY_FORAGE:
 			result.target = WorldLayout.spot(WorldLayout.FORAGE_SPOTS, slot)
 			result.focus_x = WorldLayout.PINE_X - 6.0
 		VillagerState.ACTIVITY_SOCIALIZE:
-			result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)
-			result.focus_x = WorldLayout.FIRE_X
+			if world.has_fire():
+				result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)
+				result.focus_x = WorldLayout.FIRE_X
+			else:
+				_plan_cold_camp(result, slot)
 		VillagerState.ACTIVITY_BUILD:
 			_plan_build(result, world, slot)
 		VillagerState.ACTIVITY_WANDER:
@@ -41,16 +44,28 @@ func plan(
 				_rng.randf_range(WorldLayout.WANDER_Y.x, WorldLayout.WANDER_Y.y),
 			)
 		_:
-			result.target = WorldLayout.spot(WorldLayout.FIRE_SPOTS, slot)
-			result.focus_x = WorldLayout.FIRE_X
+			_plan_hearth(result, world, slot)
 	return result
+
+
+## Idle villagers sit round the fire, or in the cave mouth while there is none.
+func _plan_hearth(result: VillagerPlan, world: WorldState, slot: int) -> void:
+	if world.has_fire():
+		result.target = WorldLayout.spot(WorldLayout.FIRE_SPOTS, slot)
+		result.focus_x = WorldLayout.FIRE_X
+	else:
+		_plan_cold_camp(result, slot)
+
+
+func _plan_cold_camp(result: VillagerPlan, slot: int) -> void:
+	result.target = WorldLayout.spot(WorldLayout.COLD_SPOTS, slot)
+	result.focus_x = WorldLayout.COLD_X
 
 
 func _plan_build(result: VillagerPlan, world: WorldState, slot: int) -> void:
 	var site: BuildingState = world.constructing()
 	if site == null:
-		result.target = WorldLayout.spot(WorldLayout.FIRE_SPOTS, slot)
-		result.focus_x = WorldLayout.FIRE_X
+		_plan_hearth(result, world, slot)
 		return
 	result.target = WorldLayout.build_spot(site.def_id, slot)
 	result.pose = &"hammer"

@@ -46,17 +46,17 @@ amount = 1
 [sub_resource type="Resource" id="Resource_86jub"]
 script = ExtResource("2_f6h81")
 kind = 1
-key = &"eastern_valley_explored"
+key = &"western_forest_explored"
 
 [sub_resource type="Resource" id="Resource_kx622"]
 script = ExtResource("2_f6h81")
-text = "{subject} returned from the eastern valley carrying the seed of an unfamiliar plant."
+text = "{subject} returned from the western forest carrying the seed of an unfamiliar plant."
 
 [resource]
 script = ExtResource("4_p0t2i")
 id = &"explorer_returns"
 title = "A scout returns"
-body = "{subject} is back from the valley, carrying something unfamiliar."
+body = "{subject} is back from the forest, carrying something unfamiliar."
 category = &"exploration"
 needs_subject = true
 effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])

@@ -181,7 +181,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   on Windows (it clips drawing).
 - `VillagerPlanner` (pure logic, tested) turns a villager's activity into a spot and pose;
   `VillagerActor` walks and animates; away or sleeping villagers are hidden.
-- `DayNight.tint(hour)` drives a `CanvasModulate`. Sky and far hills only show in the opaque
+- `DayNight.tint(hour)` drives a `CanvasModulate` (darker nights while `WorldState.has_fire()` is false).
+  The fire pit (`fire_pit_0..3`, flame frames, with the firelight in the cave mouth) is state-driven like a
+  building and only shows once the fire is found; it flickers on a 0.2 s clock that sleeps unless the fire is lit
+  and in view. `fire_glow.png` is an additive glow that fades in with the dark while there is
+  fire. Before fire the group gathers in the cave mouth. Wood is cut at the west forest. Sky and far hills only show in the opaque
   window (decision A7); strip and corner mode keep near hills, trees and ground.
 - Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers`,
   then `--import` and commit the `.import` files.

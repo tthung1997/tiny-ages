@@ -259,3 +259,61 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 	assert_eq(view.camera_x(), WorldLayout.WORLD_RIGHT - WorldLayout.VIEW_SIZE.x)
 	view.free()
 	window.free()
+
+
+func test_the_fire_pit_appears_when_the_fire_is_found() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	assert_false(view._fire_pit.visible, "No pit, and no firelight in the cave, without fire")
+	var cold_night: Color = _night_tint(view)
+	assert_false(view._fire_glow.visible, "No glow without fire, even at night")
+	sim.world.flags[&"fire_found"] = true
+	view.on_world_changed()
+	assert_true(view._fire_pit.visible)
+	assert_true(_night_tint(view).r > cold_night.r, "Night is darker without fire")
+	assert_true(view._fire_glow.visible, "The fire lights the night")
+	assert_eq(view._fire_glow.modulate.a, 1.0, "Full glow in the dead of night")
+	sim.world.tick = sim.config.tick_for_hour(12)
+	view.update_light()
+	assert_false(view._fire_glow.visible, "No glow in daylight")
+	view.free()
+	window.free()
+
+
+func test_the_fire_flickers_only_while_it_is_lit_and_in_view() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	sim.world.tick = sim.config.tick_for_hour(0)
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	var step: float = WorldLayout.FIRE_FRAME_SECONDS + 0.01
+	view._process(step)
+	assert_eq(view._fire_frame, 0, "No fire, nothing to animate")
+	sim.world.flags[&"fire_found"] = true
+	view.on_world_changed()
+	view._process(step)
+	assert_eq(view._fire_frame, 1, "A flame frame passes each interval")
+	assert_true(view._fire_pit.texture == view._fire_frames[1])
+	assert_true(view._fire_glow.modulate.a < 1.0, "The glow dips with the flame")
+	view._process(WorldLayout.FIRE_FRAME_SECONDS * 0.4)
+	assert_eq(view._fire_frame, 1, "Not before the interval")
+	for _pass: int in WorldLayout.FIRE_FRAMES:
+		view._process(step)
+	assert_eq(view._fire_frame, 1, "The frames loop")
+	view.jump_camera(300.0)
+	view._process(step)
+	assert_eq(view._fire_frame, 1, "Looking at the river, the fire sleeps")
+	view.jump_camera(-384.0)
+	view._process(step)
+	assert_eq(view._fire_frame, 1, "Looking at the forest, the fire sleeps")
+	view.free()
+	window.free()
+
+
+func _night_tint(view: WorldView) -> Color:
+	var config: SimConfig = view._sim.config
+	view._sim.world.tick = config.tick_for_hour(0)
+	view.update_light()
+	return view._tint.color

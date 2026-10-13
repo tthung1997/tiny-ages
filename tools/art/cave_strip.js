@@ -8,7 +8,10 @@
 // already sits at its final position:
 //   sky, far_hills, near_hills, trees, ground          backdrop layers (ground has no props)
 //   static_back, static_mid                            always-present props (cliff/pine/mammoth;
-//                                                      fire pit/bush/rocks)
+//                                                      bush/rocks)
+//   fire_pit_0..3                                      the fire pit (four flame frames) and firelight in
+//                                                      the cave mouth, shown once the fire is found
+//   fire_glow                                          the warm light it casts at night (additive)
 //   building_<id>, site_<id>                           state-driven: finished building / its
 //                                                      construction site, at the same slot
 //   flower_sprout, flower_bloom                        the strange flower's two stages
@@ -65,8 +68,36 @@ function layerOf(list) { var b = new Buf(W, H); list.sort(function (p, q) { retu
 
 // always-present
 var backProps = [obj(100, 54, 50, 66, cliff, { sh: 34 }), obj(16, 26, 204, 65, pine, { sh: 6 }), obj(42, 28, 236, 64, mammoth, { sh: 17 })];
-var midProps = [obj(16, 14, 72, 78, firepit, { sh: 8 }), obj(12, 8, 198, 71, bush, { sh: 5 }),
+var midProps = [obj(12, 8, 198, 71, bush, { sh: 5 }),
   obj(10, 6, 30, 76, rocks, { sh: 4 }), obj(10, 6, 250, 76, rocks, { sh: 4 }), obj(10, 6, 120, 78, rocks, { sh: 4 })];
+// the fire pit only exists once the fire is found (state-driven, like a building)
+// warm light cast by the fire at night: dithered bands round the pit and a small pool in the cave
+// mouth. Semi-transparent warm orange; the game draws it additively, fading it in as it darkens.
+function glowLayer() {
+  var g = new Buf(W, H), gx, gy, best, k;
+  var pools = [[70, 72, 46, 20, 1.0], [34, 62, 13, 8, 0.7]];
+  var bands = [[0.35, 170], [0.6, 115], [0.85, 66], [1.0, 34]];
+  for (gy = 0; gy < H; gy++) for (gx = 0; gx < W; gx++) {
+    best = 0;
+    for (k = 0; k < pools.length; k++) {
+      var p = pools[k], ddx = (gx - p[0]) / p[2], ddy = (gy - p[1]) / p[3];
+      var dd = Math.sqrt(ddx * ddx + ddy * ddy), v = 0;
+      for (var bi = 0; bi < bands.length; bi++) {
+        if (dd < bands[bi][0]) { v = bands[bi][1]; if (bi + 1 < bands.length && bands[bi][0] - dd < 0.07 && ((gx + gy) & 1) == 0) v = bands[bi + 1][1]; break; }
+      }
+      best = Math.max(best, Math.round(v * p[4]));
+    }
+    if (best > 0) { var gi = (gy * W + gx) * 4; g.d[gi] = 255; g.d[gi + 1] = 154; g.d[gi + 2] = 60; g.d[gi + 3] = best; }
+  }
+  return g;
+}
+var FIREPIT = [16, 14, 72, 78];
+// warm firelight low inside the cave mouth: the cliff is at (0, 12), its mouth dither at (26..42, 46..53)
+function firelit(buf) {
+  for (var fy = 46; fy < 54; fy++) for (var fx = 26; fx < 43; fx++)
+    if (((fx + fy) & 1) == 0 && fy > 46 + Math.abs(fx - 34) / 3) buf.px(fx, fy + 12, '#a8643a');
+  return buf;
+}
 // state-driven building slots: id -> [bufW, bufH, cx, foot, drawFn, shadow]
 var SLOTS = {
   lookout: [26, 34, 300, 66, lookout, 11], drying_rack: [22, 20, 132, 70, dryrack, 9],
@@ -84,6 +115,9 @@ for (var id in SLOTS) {
 }
 layerFiles.flower_sprout = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], sprout, { sh: 3 })]);
 layerFiles.flower_bloom = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 })]);
+for (i = 0; i < FLAMES.length; i++) layerFiles['fire_pit_' + i] = firelit(layerOf([obj(FIREPIT[0], FIREPIT[1], FIREPIT[2], FIREPIT[3], flameFn(i), { sh: 8 })]));
+function flameFn(frame) { return function (b) { firepit(b, frame); }; }
+layerFiles.fire_glow = glowLayer();
 
 // ---- composite preview: everything built, villagers placed -------------------------
 var people = [
@@ -92,10 +126,11 @@ var people = [
   obj(27, 27, 180, 77, vil({ pal: PAL.furTan, fur: true, role: 'gatherer', pose: 'walk', f: 1, hair: 'bun' }), { sh: 5 }),
   obj(27, 27, 214, 79, vil({ pal: PAL.furOchre, fur: true, stone: true, pose: 'spear', hair: 'tuft' }), { sh: 5 }),
   obj(27, 27, 300, 44, vil({ pal: PAL.furBrown, fur: true, hair: 'short', pose: 'idle' }), { z: 68 })];
-var all = backProps.concat(midProps, people);
+var all = backProps.concat(midProps, people, [obj(FIREPIT[0], FIREPIT[1], FIREPIT[2], FIREPIT[3], firepit, { sh: 8 })]);
 for (id in SLOTS) { sl = SLOTS[id]; if (id != 'field') all.push(obj(sl[0], sl[1], sl[2], sl[3], sl[4], { sh: sl[5] })); }
 all.push(obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 }));
 var FG = layerOf(all);
+firelit(FG);
 
 var COMP = new Buf(W, H), IMG = SPR.layer(0).cel(0).image;
 var stack = [SKY, FAR, NEAR, TREES, GROUND, FG];

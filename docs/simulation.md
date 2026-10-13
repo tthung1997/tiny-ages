@@ -28,7 +28,7 @@ Re-themed as the **Cave Age** (see [ages](ages.md)), with the turn into the **Se
 - 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 17 events, 1 plant.
 - Cave Age buildings: Lookout, Drying Rack, Knapping Spot. Settled Age buildings: Field, Hut (they only appear once settled).
 - **The world starts without fire.** A curious villager may find a burning tree, or an industrious one may strike a spark; passing on either lights the fire anyway via embers. Nothing can be built until there is fire.
-- The chain: fire → build the Lookout → a curious villager asks to scout the eastern valley → they return with a seed → you plant it → it flowers → a rare butterfly visits.
+- The chain: fire → build the Lookout → a curious villager asks to scout the western forest → they return with a seed → you plant it → it flowers → a rare butterfly visits.
 - **The Settled Age is gated** (`EraSystem`, `EraDef`): it needs all six milestones (Fire, Stone Tools, Enough to Eat, Shared Stories, A Bigger Group, Unexpected Garden; each has more than one route, see `ages.md`) plus **8640 ticks (5 real days)** in the Cave Age. The player is shown none of this. When the gate opens, the age-turn event asks *how* to settle (by the field, or where the herds winter), and either answer advances the era.
 - Era-gated content uses `ERA_AT_LEAST` conditions on the era's `order`; `ADVANCE_ERA` moves forward only.
 - Names and numbers are placeholders from the MVP doc's examples. It plays end to end for every tested seed, for players who accept everything and for players who pass on things first.
