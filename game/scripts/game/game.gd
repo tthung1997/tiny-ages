@@ -270,14 +270,20 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 
 
 ## The window gives the panel room above the viewport while it is open.
-## --fire lights the fire; --era=settled enters that age; --flag=path_hunting,cave_art sets world
-## flags; --give=wood:20,food:5 adds stock. For looking at things, not playing.
+## --fire lights the fire; --era=settled enters that age; --build=hut,field completes buildings
+## (their milestones too); --flag=path_hunting,cave_art sets world flags; --give=wood:20,food:5
+## adds stock. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
 	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
 		sim.world.achievements.append(&"fire")
 	if options.has("era") and not sim.advance_era(StringName(options["era"])):
 		push_warning("--era=%s is not a later age" % options["era"])
+	for building_id: String in String(options.get("build", "")).split(",", false):
+		var site: BuildingState = BuildingState.new()
+		site.def_id = StringName(building_id)
+		sim.world.buildings.append(site)
+		sim.complete_building(site)
 	for flag: String in String(options.get("flags", "")).split(",", false):
 		sim.world.flags[StringName(flag)] = true
 	for part: String in String(options.get("give", "")).split(",", false):
@@ -431,6 +437,8 @@ func _apply_cmdline() -> Dictionary:
 			options["flags"] = arg.trim_prefix("--flag=")
 		elif arg.begins_with("--era="):
 			options["era"] = arg.trim_prefix("--era=")
+		elif arg.begins_with("--build="):
+			options["build"] = arg.trim_prefix("--build=")
 		elif arg.begins_with("--give="):
 			options["give"] = arg.trim_prefix("--give=")
 		elif arg.begins_with("--panel="):

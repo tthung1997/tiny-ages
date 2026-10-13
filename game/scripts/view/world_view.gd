@@ -28,6 +28,8 @@ var _backdrop: Dictionary = {}
 var _static_layers: Array[Sprite2D] = []
 var _buildings: Dictionary = {}
 var _sites: Dictionary = {}
+var _props: Dictionary = {}
+var _art_era: int = -1
 var _flower_sprout: Sprite2D
 var _flower_bloom: Sprite2D
 var _fire_pit: Sprite2D
@@ -74,8 +76,10 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 			_static_layers.append(side)
 	for building_id: StringName in WorldLayout.BUILDINGS:
 		var z: int = WorldLayout.BUILDINGS[building_id]["z"]
-		_buildings[building_id] = _make_sprite(StringName("building_%s" % building_id), z)
-		_sites[building_id] = _make_sprite(StringName("site_%s" % building_id), z)
+		_buildings[building_id] = _make_piece(StringName("building_%s" % building_id), z)
+		_sites[building_id] = _make_piece(StringName("site_%s" % building_id), z)
+	for prop_id: StringName in SceneProps.ids():
+		_props[prop_id] = _make_piece(prop_id, SceneProps.z_of(prop_id), SceneProps.at_x_of(prop_id))
 	_flower_sprout = _make_sprite(&"flower_sprout", WorldLayout.FLOWER_Z)
 	_flower_bloom = _make_sprite(&"flower_bloom", WorldLayout.FLOWER_Z)
 	_fire_pit = _make_sprite(WorldLayout.fire_frame_name(0), WorldLayout.FIRE_PIT_Z)
@@ -273,10 +277,15 @@ func _apply_camera() -> void:
 
 func _refresh_props() -> void:
 	var world: WorldState = _sim.world
+	if world.era_order != _art_era:
+		_art_era = world.era_order
+		_retexture_pieces()
 	var site: BuildingState = world.constructing()
 	for building_id: StringName in _buildings:
 		(_buildings[building_id] as Sprite2D).visible = world.has_building(building_id)
 		(_sites[building_id] as Sprite2D).visible = site != null and site.def_id == building_id
+	for prop_id: StringName in _props:
+		(_props[prop_id] as Sprite2D).visible = SceneProps.is_shown(prop_id, world)
 	var planted: bool = not world.plants.is_empty()
 	var bloomed: bool = planted and world.plants[0].flowered
 	_flower_sprout.visible = planted and not bloomed
@@ -340,6 +349,39 @@ func _load_art(layer: StringName) -> Texture2D:
 	return load(path) as Texture2D
 
 
+## A piece that an age may redraw (a building, its site, a prop): its art is the newest the
+## current age has, and it is swapped when the age turns.
+func _make_piece(layer: StringName, z: int, at_x: float = 0.0) -> Sprite2D:
+	var sprite: Sprite2D = Sprite2D.new()
+	sprite.centered = false
+	sprite.z_index = z
+	sprite.position.x = at_x
+	sprite.visible = false
+	sprite.set_meta(&"layer", layer)
+	sprite.texture = _load_piece(layer, WorldLayout.ERA_DIRS.size() - 1)
+	_world.add_child(sprite)
+	return sprite
+
+
+func _load_piece(layer: StringName, era_order: int) -> Texture2D:
+	var path: String = WorldLayout.piece_path(layer, era_order)
+	if path.is_empty():
+		push_error("Missing world art: %s" % layer)
+		return null
+	return load(path) as Texture2D
+
+
+## A piece with no art yet in the current age (a Settled prop while still in the Cave Age) keeps
+## the texture it has: it is not shown until its age.
+func _retexture_pieces() -> void:
+	for group: Dictionary in [_buildings, _sites, _props]:
+		for key: StringName in group:
+			var sprite: Sprite2D = group[key]
+			var layer: StringName = sprite.get_meta(&"layer")
+			if not WorldLayout.piece_path(layer, _art_era).is_empty():
+				sprite.texture = _load_piece(layer, _art_era)
+
+
 ## A piece of the sky, in the clip but not in the scrolling world, so it stays put as you pan.
 func _make_sky_sprite(texture: Texture2D) -> Sprite2D:
 	var sprite: Sprite2D = Sprite2D.new()
@@ -367,9 +409,12 @@ func _celestial(cell: int) -> Texture2D:
 ## Which solid pieces are showing, so the click region is only rebuilt when it changes.
 func _shape_signature() -> String:
 	var parts: PackedStringArray = PackedStringArray()
+	parts.append(str(_art_era))
 	for building_id: StringName in _buildings:
 		parts.append("b" if (_buildings[building_id] as Sprite2D).visible else "-")
 		parts.append("s" if (_sites[building_id] as Sprite2D).visible else "-")
+	for prop_id: StringName in _props:
+		parts.append("o" if (_props[prop_id] as Sprite2D).visible else "-")
 	parts.append("f" if _flower_sprout.visible else "-")
 	parts.append("F" if _flower_bloom.visible else "-")
 	parts.append("p" if _fire_pit.visible else "-")
@@ -389,6 +434,9 @@ func _rebuild_skyline() -> void:
 		for sprite: Sprite2D in [_buildings[building_id], _sites[building_id]]:
 			if sprite.visible:
 				skyline.add(sprite.texture, _world_column(sprite))
+	for sprite: Sprite2D in _props.values():
+		if sprite.visible:
+			skyline.add(sprite.texture, _world_column(sprite))
 	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit]:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))

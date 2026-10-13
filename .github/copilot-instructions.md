@@ -175,10 +175,16 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
 The view only reads `WorldState`; it never changes it, and the sim never knows it exists.
 `Game` calls `WorldView.on_world_changed()` after the sim advances.
 
-- Every art piece (`game/assets/world/cave/*.png`) is a full 384×80 transparent sprite
+- Every art piece (`game/assets/world/<age>/*.png`) is a full 384×80 transparent sprite
   already at its final position, so placing it is `position = (0, 0)`. Draw order is z =
   the foot row (see `WorldLayout`). `WorldLayout` mirrors the slots in `tools/art/cave_strip.js`:
   change both together.
+- **Ages accumulate; slots are upgraded in place** (`docs/ages.md` V10). Art lives in one folder
+  per age (`WorldLayout.ERA_DIRS`); a building, site or prop uses the newest art the current age
+  has (`WorldLayout.piece_path`), and `WorldView` retextures when the age turns. A new age draws
+  only what changes, with a `tools/art/<age>_*.js` script, and everything else stays. Pieces
+  that show because of a flag, achievement or building (not a building of that name) are
+  `SceneProps` (pure, tested); add one there and in the art script.
 - **The world is wider than the viewport** (decision A8). Everything lives in "camp pixels":
   the camp page is x 0..384, the world runs from `WorldLayout.WORLD_LEFT` (−384) to
   `WORLD_RIGHT` (768), and the viewport shows one 384 px page. `WorldView` keeps a scrolling
@@ -203,10 +209,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   window (decision A7); strip and corner mode keep near hills, trees and ground. The sun, moon and
   stars (`celestial.png`, `stars.png`) are children of the clip, not of the scrolling world, so they stay
   put as you pan; `DayNight` says where they are, and they too exist only in the opaque window.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars`,
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
-  `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`). Always use
+  `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
+  `--build=hut,field`, `--flag=`). Always use
   `--nosave` (or `--save=`) in automated runs so the player's save is not touched. To check
   GUI input without touching the real mouse, push events with
   `get_viewport().push_input(event, true)` (local coordinates) from a temporary script (and

@@ -245,7 +245,11 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 			assert_true(sprite.texture.resource_path.contains("east_"), "East page art on the east")
 			east += 1
 	var backdrop: int = WorldLayout.BACKDROP.size()
-	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size())
+	var west_props: int = 0
+	for prop_id: StringName in SceneProps.ids():
+		if SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["west_"]):
+			west_props += 1
+	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size() + west_props)
 	assert_eq(east, backdrop + WorldLayout.SIDE_STATIC["east_"].size())
 	assert_eq(view.camera_x(), 0, "Starts on the camp")
 	assert_eq(view.clickable_regions().size(), 2, "An arrow region on each edge")

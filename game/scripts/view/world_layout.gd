@@ -4,6 +4,11 @@ extends RefCounted
 ## the slots in tools/art/cave_strip.js: change both together.
 
 const ASSET_DIR: String = "res://assets/world/cave/"
+const ASSET_ROOT: String = "res://assets/world/"
+## Art folders by era order. A piece is found by looking from the current age back to the first, so
+## a later age can redraw one slot (the hut, the field) and leave everything else as it was
+## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
+const ERA_DIRS: Array[String] = ["cave", "settled"]
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
 
 ## What the viewport shows at once: one "page", the camp. Everything below is in camp pixels
@@ -91,6 +96,15 @@ const WANDER_Y: Vector2 = Vector2(75.0, 79.0)
 
 static func fire_frame_name(frame: int) -> StringName:
 	return StringName("%s_%d" % [FIRE_PIT, posmod(frame, FIRE_FRAMES)])
+
+
+## The newest art for a piece at `era_order`: the latest age's folder that has it, or "" if none.
+static func piece_path(layer: StringName, era_order: int) -> String:
+	for index: int in range(mini(era_order, ERA_DIRS.size() - 1), -1, -1):
+		var path: String = "%s%s/%s.png" % [ASSET_ROOT, ERA_DIRS[index], layer]
+		if ResourceLoader.exists(path):
+			return path
+	return ""
 
 
 static func spot(spots: Array[Vector2], index: int) -> Vector2:
