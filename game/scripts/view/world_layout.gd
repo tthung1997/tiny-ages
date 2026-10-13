@@ -70,6 +70,10 @@ const FIRE_GLOW_Z: int = 90
 ## Where the group gathers while there is no fire: the cave mouth.
 const COLD_X: float = 40.0
 const COLD_SPOTS: Array[Vector2] = [Vector2(32, 78), Vector2(46, 79), Vector2(56, 78)]
+## Hunters go to the far end of the west forest, beyond where anyone wanders, and stand watch
+## facing further west.
+const HUNT_X: float = -400.0
+const HUNT_SPOTS: Array[Vector2] = [Vector2(-318, 77), Vector2(-296, 79), Vector2(-338, 78)]
 const FIRE_SPOTS: Array[Vector2] = [Vector2(88, 78), Vector2(96, 79), Vector2(60, 79)]
 const SOCIAL_SPOTS: Array[Vector2] = [Vector2(62, 78), Vector2(84, 79), Vector2(98, 78)]
 const WOOD_SPOTS: Array[Vector2] = [Vector2(-82, 78), Vector2(-74, 79), Vector2(-54, 78)]

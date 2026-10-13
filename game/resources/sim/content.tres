@@ -2931,7 +2931,73 @@ chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_sm138")])
 
+[sub_resource type="Resource" id="Resource_feu7y"]
+script = ExtResource("5_euihr")
+text = "The hunters came back at dusk with a deer slung between two poles."
+
+[sub_resource type="Resource" id="Resource_8nn0u"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_0m3nv"]
+script = ExtResource("6_x2sw1")
+key = &"path_hunting"
+
 [sub_resource type="Resource" id="Resource_1jopo"]
+script = ExtResource("3_0otko")
+id = &"hunters_home"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_8nn0u"), SubResource("Resource_0m3nv")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_feu7y")])
+
+[sub_resource type="Resource" id="Resource_vd4tp"]
+script = ExtResource("5_euihr")
+text = "The hunters talked all evening about the one that got away."
+
+[sub_resource type="Resource" id="Resource_4c3dk"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_aidr6"]
+script = ExtResource("6_x2sw1")
+key = &"path_hunting"
+
+[sub_resource type="Resource" id="Resource_gf0cy"]
+script = ExtResource("3_0otko")
+id = &"one_that_got_away"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4c3dk"), SubResource("Resource_aidr6")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_vd4tp")])
+
+[sub_resource type="Resource" id="Resource_f8bmp"]
+script = ExtResource("5_euihr")
+text = "The baskets came back heavy with roots and berries from along the river."
+
+[sub_resource type="Resource" id="Resource_f7kat"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_u363p"]
+script = ExtResource("6_x2sw1")
+key = &"path_foraging"
+
+[sub_resource type="Resource" id="Resource_gx0a7"]
+script = ExtResource("3_0otko")
+id = &"baskets_full"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_f7kat"), SubResource("Resource_u363p")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_f8bmp")])
+
+[sub_resource type="Resource" id="Resource_5s62b"]
 script = ExtResource("7_xydym")
 id = &"strange_flower"
 display_name = "Strange flower"
@@ -2943,9 +3009,9 @@ flower_achievement_title = "Unexpected Garden"
 
 [resource]
 script = ExtResource("8_yklc2")
-events = Array[ExtResource("3_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8"), SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk")])
+events = Array[ExtResource("3_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8"), SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7")])
 buildings = Array[ExtResource("1_mqys7")]([SubResource("Resource_cekk5"), SubResource("Resource_5n80e"), SubResource("Resource_jqx0p"), SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8")])
-plants = Array[ExtResource("7_xydym")]([SubResource("Resource_1jopo")])
+plants = Array[ExtResource("7_xydym")]([SubResource("Resource_5s62b")])
 eras = Array[ExtResource("2_wh8jf")]([SubResource("Resource_4ragh"), SubResource("Resource_pgv5y")])
 villager_names = Array[String](["Mira", "Theo", "Wren", "Ash", "Bram", "Cora", "Dov", "Elm", "Fenn", "Gale", "Hale", "Ivo", "Juno", "Kest", "Lark", "Moss", "Nia", "Orin", "Pike", "Rue", "Sage", "Tarn", "Una", "Vale"])
 villager_traits = Array[StringName]([&"curious", &"social", &"industrious", &"nature_loving"])

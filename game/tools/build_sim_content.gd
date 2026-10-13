@@ -1192,6 +1192,18 @@ func _ambient_lines() -> Array[EventDef]:
 			&"tale_told_again", &"living_tale",
 			"The long story was told again tonight. It had a new river in it."
 		),
+		_remembered(
+			&"hunters_home", &"path_hunting",
+			"The hunters came back at dusk with a deer slung between two poles."
+		),
+		_remembered(
+			&"one_that_got_away", &"path_hunting",
+			"The hunters talked all evening about the one that got away."
+		),
+		_remembered(
+			&"baskets_full", &"path_foraging",
+			"The baskets came back heavy with roots and berries from along the river."
+		),
 	]
 	return lines
 

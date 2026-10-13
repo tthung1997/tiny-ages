@@ -83,6 +83,59 @@ func test_builders_with_no_site_wait_at_the_fire() -> void:
 	assert_true(WorldLayout.FIRE_SPOTS.has(plan.target))
 
 
+func test_hunters_stand_at_the_far_end_of_the_forest_with_a_spear() -> void:
+	var plan: VillagerPlan = _plan_for(VillagerState.ACTIVITY_HUNT)
+	assert_eq(plan.pose, &"spear")
+	assert_true(WorldLayout.HUNT_SPOTS.has(plan.target))
+	assert_true(plan.has_focus())
+	assert_true(plan.focus_x < plan.target.x, "They face further west")
+	for spot: Vector2 in WorldLayout.HUNT_SPOTS:
+		assert_true(spot.x < WorldLayout.WANDER_X.x, "Beyond where anyone wanders")
+		assert_true(spot.x > float(WorldLayout.WORLD_LEFT), "Inside the world")
+		assert_true(spot.y >= WorldLayout.WANDER_Y.x and spot.y <= WorldLayout.WANDER_Y.y)
+
+
+func test_a_plan_with_no_target_to_face_says_so() -> void:
+	var plan: VillagerPlan = _plan_for(VillagerState.ACTIVITY_WANDER)
+	assert_false(plan.has_focus(), "Wanderers just face where they walk")
+	assert_true(_plan_for(VillagerState.ACTIVITY_GATHER_WOOD).has_focus())
+
+
+func _actor_at(x: float, focus: float, pose: StringName) -> VillagerActor:
+	var actor: VillagerActor = VillagerActor.new()
+	actor.setup(&"t", load("%smira.png" % WorldLayout.VILLAGER_DIR) as Texture2D)
+	var plan: VillagerPlan = VillagerPlan.new()
+	plan.target = Vector2(x, 78.0)
+	plan.focus_x = focus
+	plan.pose = pose
+	actor.apply_plan(plan)
+	actor._process(0.1)
+	return actor
+
+
+func test_facing_works_west_of_the_camp() -> void:
+	var east_of_stump: VillagerActor = _actor_at(-54.0, WorldLayout.CHOP_X, &"chop")
+	var west_of_stump: VillagerActor = _actor_at(-82.0, WorldLayout.CHOP_X, &"chop")
+	assert_true(east_of_stump._sprite.flip_h, "East of the stump faces west")
+	assert_false(west_of_stump._sprite.flip_h, "West of the stump faces east")
+	var hunter: VillagerActor = _actor_at(-300.0, WorldLayout.HUNT_X, &"spear")
+	assert_true(hunter._sprite.flip_h, "Hunters face west")
+	assert_eq(hunter._sprite.animation, &"spear")
+	for actor: VillagerActor in [east_of_stump, west_of_stump, hunter]:
+		actor.free()
+
+
+func test_every_villager_sheet_has_every_pose() -> void:
+	var cells: int = 0
+	for animation: StringName in VillagerActor.SHEET_FRAMES:
+		for cell: int in VillagerActor.SHEET_FRAMES[animation]:
+			cells = maxi(cells, cell + 1)
+	for look: StringName in SimFixture.load_content().villager_looks:
+		var sheet: Texture2D = load("%s%s.png" % [WorldLayout.VILLAGER_DIR, look]) as Texture2D
+		assert_eq(sheet.get_width(), cells * WorldLayout.CELL_SIZE.x, "%s's sheet" % look)
+		assert_eq(sheet.get_height(), WorldLayout.CELL_SIZE.y)
+
+
 func test_every_building_has_a_layout_slot() -> void:
 	var content: ContentLibrary = SimFixture.load_content()
 	for building: BuildingDef in content.buildings:

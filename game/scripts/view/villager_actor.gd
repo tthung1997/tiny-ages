@@ -9,10 +9,10 @@ const WALK_FPS: float = 6.0
 const CHOP_FPS: float = 5.0
 const HAMMER_FPS: float = 4.0
 const SHEET_FRAMES: Dictionary = {
-	&"idle": [0], &"walk": [1, 2, 3, 4], &"chop": [5, 6, 7], &"hammer": [8, 9],
+	&"idle": [0], &"walk": [1, 2, 3, 4], &"chop": [5, 6, 7], &"hammer": [8, 9], &"spear": [10],
 }
 const SHEET_SPEEDS: Dictionary = {
-	&"idle": 1.0, &"walk": WALK_FPS, &"chop": CHOP_FPS, &"hammer": HAMMER_FPS,
+	&"idle": 1.0, &"walk": WALK_FPS, &"chop": CHOP_FPS, &"hammer": HAMMER_FPS, &"spear": 1.0,
 }
 ## The part of the sprite a click lands on, relative to the feet: a little generous round the body.
 const HIT_OFFSET: Vector2 = Vector2(-8.0, -26.0)
@@ -23,7 +23,7 @@ var villager_id: StringName = &""
 var _sprite: AnimatedSprite2D = AnimatedSprite2D.new()
 var _target: Vector2 = Vector2.ZERO
 var _pose: StringName = &"idle"
-var _focus_x: float = -1.0
+var _focus_x: float = NAN
 var _wandering: bool = false
 var _placed: bool = false
 var _hidden_reason: StringName = &""
@@ -41,7 +41,7 @@ func setup(id: StringName, sheet: Texture2D) -> void:
 	_sprite.play(&"idle")
 
 
-## Builds idle/walk/chop/hammer animations from a villager sheet (10 cells of 28x30).
+## Builds idle/walk/chop/hammer/spear animations from a villager sheet (11 cells of 28x30).
 static func build_frames(sheet: Texture2D) -> SpriteFrames:
 	var frames: SpriteFrames = SpriteFrames.new()
 	frames.remove_animation(&"default")
@@ -96,7 +96,7 @@ func _process(delta: float) -> void:
 		_play(&"walk")
 	else:
 		position = _target
-		if _focus_x >= 0.0 and absf(_focus_x - position.x) > 1.0:
+		if not is_nan(_focus_x) and absf(_focus_x - position.x) > 1.0:
 			_sprite.flip_h = _focus_x < position.x
 		_play(_pose)
 	z_index = int(position.y)

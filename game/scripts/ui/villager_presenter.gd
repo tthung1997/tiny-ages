@@ -36,6 +36,11 @@ const BY_ACTIVITY: Dictionary = {
 		"Following the river with no plan at all.",
 		"Looking at the sky for no reason.",
 	],
+	VillagerState.ACTIVITY_HUNT: [
+		"Watching the trees for the smallest movement.",
+		"Keeping very still, spear ready.",
+		"Listening for hooves beyond the forest.",
+	],
 	VillagerState.ACTIVITY_REST: [
 		"Resting by the fire.",
 		"Watching the flames.",

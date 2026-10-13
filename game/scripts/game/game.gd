@@ -269,11 +269,14 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 
 
 ## The window gives the panel room above the viewport while it is open.
-## --fire lights the fire; --give=wood:20,food:5 adds stock. For looking at things, not playing.
+## --fire lights the fire; --flag=path_hunting,cave_art sets world flags; --give=wood:20,food:5
+## adds stock. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
 	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
 		sim.world.achievements.append(&"fire")
+	for flag: String in String(options.get("flags", "")).split(",", false):
+		sim.world.flags[StringName(flag)] = true
 	for part: String in String(options.get("give", "")).split(",", false):
 		var pair: PackedStringArray = part.split(":")
 		if pair.size() == 2:
@@ -421,6 +424,8 @@ func _apply_cmdline() -> Dictionary:
 			_manual_days = true
 		elif arg == "--fire":
 			options["fire"] = true
+		elif arg.begins_with("--flag="):
+			options["flags"] = arg.trim_prefix("--flag=")
 		elif arg.begins_with("--give="):
 			options["give"] = arg.trim_prefix("--give=")
 		elif arg.begins_with("--panel="):

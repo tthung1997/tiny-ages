@@ -15,7 +15,8 @@ const REMEMBERED: Dictionary = {
 	&"herd_on_the_wall": &"art_herd", &"moon_on_the_wall": &"art_sky",
 	&"two_fires": &"second_hearth", &"snare_rabbit": &"snares", &"mammoth_stays": &"mammoth_fed",
 	&"deer_returns": &"deer_tended", &"hunter_overhead": &"star_names",
-	&"tale_told_again": &"living_tale",
+	&"tale_told_again": &"living_tale", &"hunters_home": &"path_hunting",
+	&"one_that_got_away": &"path_hunting", &"baskets_full": &"path_foraging",
 }
 const DAY_TICKS: int = 24
 const REAL_HOUR_TICKS: int = 72

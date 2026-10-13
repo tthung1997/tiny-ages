@@ -8,7 +8,7 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 |---|---|---|
 | Ending | **None.** Open-ended, with chapter milestones (Camp → Hamlet → Village) as soft endings | Milestones are not built yet. |
 | Pace | **1 game day = 20 real minutes**, one tunable constant (`SimConfig.real_seconds_per_game_day`) | A tick is one game hour (50 real seconds). Decision frequency comes from accumulated resources, not the clock, so a long coding session is never punished. |
-| Villager autonomy | **Coarse**: each villager has an activity (rest, gather, forage, build, socialize, wander, away); the sim does no path-finding, the view animates it | Traits only bias choices. |
+| Villager autonomy | **Coarse**: each villager has an activity (rest, gather, forage, build, socialize, wander, away, and hunt once the group has chosen to hunt); the sim does no path-finding, the view animates it | Traits only bias choices. |
 | Persistence | The whole world is one `Resource` saved to `user://`, with a last-seen timestamp | Loading runs script references in the file; only load saves this game wrote. |
 | Events | Authored data (`EventDef` + conditions + effects), never code | Anything that can happen is an event template; the sim only decides when. |
 | Failure | **Nothing can go wrong.** Decisions wait forever; being away is never punished; there is no hunger, death or timer | Directly from the MVP concept. |

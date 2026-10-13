@@ -8,6 +8,8 @@ const ACTIVITY_FORAGE: StringName = &"forage"
 const ACTIVITY_BUILD: StringName = &"build"
 const ACTIVITY_SOCIALIZE: StringName = &"socialize"
 const ACTIVITY_WANDER: StringName = &"wander"
+## Only when the group chose to hunt (flag `path_hunting`).
+const ACTIVITY_HUNT: StringName = &"hunt"
 const ACTIVITY_AWAY: StringName = &"away"
 
 const LOCATION_CAMP: StringName = &"camp"

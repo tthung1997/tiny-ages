@@ -8,6 +8,9 @@ const WEIGHT_FORAGE: float = 3.0
 const WEIGHT_SOCIALIZE: float = 1.0
 const WEIGHT_WANDER: float = 1.0
 const WEIGHT_BUILD: float = 6.0
+## A group that chose to hunt sometimes goes out hunting; a hunt brings back more than foraging.
+const WEIGHT_HUNT: float = 2.0
+const HUNT_YIELD: float = 2.0
 const TRAIT_BIAS: float = 2.0
 ## Multiplies the wish to gather a resource the group already has plenty of.
 const PLENTY_WEIGHT: float = 0.1
@@ -63,6 +66,11 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 	weights.append(WEIGHT_SOCIALIZE * _bias(villager, VillagerState.TRAIT_SOCIAL))
 	activities.append(VillagerState.ACTIVITY_WANDER)
 	weights.append(WEIGHT_WANDER * _bias(villager, VillagerState.TRAIT_CURIOUS))
+	if sim.world.has_flag(&"path_hunting"):
+		activities.append(VillagerState.ACTIVITY_HUNT)
+		weights.append(
+			WEIGHT_HUNT * _bias(villager, VillagerState.TRAIT_CURIOUS) * _plenty(sim, &"food")
+		)
 	if building_underway:
 		activities.append(VillagerState.ACTIVITY_BUILD)
 		weights.append(WEIGHT_BUILD * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS))
@@ -95,3 +103,5 @@ func _work(sim: Simulation, villager: VillagerState) -> void:
 			sim.world.add_resource_fraction(&"wood", rate)
 		VillagerState.ACTIVITY_FORAGE:
 			sim.world.add_resource_fraction(&"food", rate)
+		VillagerState.ACTIVITY_HUNT:
+			sim.world.add_resource_fraction(&"food", rate * HUNT_YIELD)

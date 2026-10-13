@@ -145,7 +145,7 @@ func test_every_activity_and_trait_has_thoughts() -> void:
 	for activity: StringName in [
 		VillagerState.ACTIVITY_REST, VillagerState.ACTIVITY_GATHER_WOOD,
 		VillagerState.ACTIVITY_FORAGE, VillagerState.ACTIVITY_SOCIALIZE,
-		VillagerState.ACTIVITY_BUILD, VillagerState.ACTIVITY_WANDER,
+		VillagerState.ACTIVITY_BUILD, VillagerState.ACTIVITY_WANDER, VillagerState.ACTIVITY_HUNT,
 	]:
 		assert_true(VillagerPresenter.BY_ACTIVITY.has(activity), "No thoughts for %s" % activity)
 	for trait_name: StringName in SimFixture.load_content().villager_traits:

@@ -10,9 +10,14 @@ var visible: bool = true
 var hidden_reason: StringName = &""
 ## Feet position in art pixels.
 var target: Vector2 = Vector2.ZERO
-## idle, chop or hammer: what to do on arrival.
+## idle, chop, hammer or spear: what to do on arrival.
 var pose: StringName = &"idle"
-## Face towards this x on arrival (-1 to keep the walking direction).
-var focus_x: float = -1.0
+## Face towards this x on arrival (NAN to keep the walking direction). Can be negative: the
+## world runs west of the camp.
+var focus_x: float = NAN
 ## True for aimless wandering: the actor keeps its current goal until it reaches it.
 var wander: bool = false
+
+
+func has_focus() -> bool:
+	return not is_nan(focus_x)

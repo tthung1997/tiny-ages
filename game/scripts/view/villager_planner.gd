@@ -29,6 +29,10 @@ func plan(
 		VillagerState.ACTIVITY_FORAGE:
 			result.target = WorldLayout.spot(WorldLayout.FORAGE_SPOTS, slot)
 			result.focus_x = WorldLayout.PINE_X - 6.0
+		VillagerState.ACTIVITY_HUNT:
+			result.target = WorldLayout.spot(WorldLayout.HUNT_SPOTS, slot)
+			result.pose = &"spear"
+			result.focus_x = WorldLayout.HUNT_X
 		VillagerState.ACTIVITY_SOCIALIZE:
 			if world.has_fire():
 				result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)

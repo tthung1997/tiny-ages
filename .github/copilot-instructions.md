@@ -187,7 +187,9 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
   on Windows (it clips drawing).
 - `VillagerPlanner` (pure logic, tested) turns a villager's activity into a spot and pose;
-  `VillagerActor` walks and animates; away or sleeping villagers are hidden.
+  `VillagerActor` walks and animates; away or sleeping villagers are hidden. A plan's
+  `focus_x` is where to face on arrival and can be negative (the world runs west of the camp):
+  test `has_focus()`, never `>= 0`.
 - `DayNight.tint(hour)` drives a `CanvasModulate` (darker nights while `WorldState.has_fire()` is false).
   The fire pit (`fire_pit_0..3`, flame frames, with the firelight in the cave mouth) is state-driven like a
   building and only shows once the fire is found; it flickers on a 0.2 s clock that sleeps unless the fire is lit
@@ -223,7 +225,8 @@ add a factory to `PanelSkin.skins()`; `Game` swaps the skin on `era_advanced`, a
 one uses the Cave skin. The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
-panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--give=wood:6`,
+panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--flag=path_hunting`,
+`--give=wood:6`,
 `--hour=12`.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
