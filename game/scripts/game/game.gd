@@ -5,11 +5,13 @@ extends Node2D
 ##
 ## Keys (dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap - L low-processor
 ##   N next screen - H hide HUD - [ ] time speed - B auto-answer decisions - Y answer one
+##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
 ##   Esc/Q save and quit
 ## Launch args (after `--`): --mode= --scale= --fps= --screen= --no-ontop --no-passthrough
 ##   --no-lowproc --no-hud  as in the window spike, plus: --new (ignore the save)
 ##   --nosave (never write the save) --save=<path> --speed=<x real time> --days=<n> (play n game
-##   days with the bot before showing) --bot (auto-answer decisions) --shot=<png> (save the
+##   days with the bot before showing) --bot (auto-answer decisions) --cam=<camp x> (start with
+##   the viewport's left edge there: -384..384, camp is 0) --shot=<png> (save the
 ##   rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
@@ -21,6 +23,7 @@ const HUD_REGION: Rect2i = Rect2i(0, 0, 300, 56)
 const HUD_OFFSET: Vector2 = Vector2(3.0, 2.0)
 const SPEEDS: Array[float] = [1.0, 60.0, 600.0, 3600.0]
 const MAX_TICKS_PER_FRAME: int = 240
+const KEY_PAN_STEP: float = 96.0
 const SHOT_DELAY_SECONDS: float = 2.0
 const JOURNAL_PREVIEW_CHARS: int = 64
 
@@ -60,6 +63,8 @@ func _ready() -> void:
 		sim.advance_ticks(1)
 		_bot.answer_all(sim)
 	_world_view.setup(sim, _window)
+	if options.has("cam"):
+		_world_view.jump_camera(options["cam"])
 	_window.layout_changed.connect(_on_layout_changed)
 	_hud.visible = options.get("hud", true)
 	_update_hud_region()
@@ -122,6 +127,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_change_speed(1)
 		KEY_BRACKETLEFT:
 			_change_speed(-1)
+		KEY_A, KEY_LEFT:
+			_world_view.pan_by(-KEY_PAN_STEP)
+		KEY_D, KEY_RIGHT:
+			_world_view.pan_by(KEY_PAN_STEP)
+		KEY_HOME:
+			_world_view.recenter()
 		KEY_B:
 			_bot_auto = not _bot_auto
 		KEY_Y:
@@ -171,7 +182,10 @@ func _on_layout_changed(_content_size: Vector2i) -> void:
 
 
 func _update_hud_region() -> void:
-	_window.set_extra_clickable(HUD_REGION if _hud.visible else Rect2i())
+	var regions: Array[Rect2i] = _world_view.clickable_regions()
+	if _hud.visible:
+		regions.append(HUD_REGION)
+	_window.set_extra_regions(regions)
 
 
 func _new_seed() -> int:
@@ -261,6 +275,8 @@ func _apply_cmdline() -> Dictionary:
 			options["days"] = maxi(arg.trim_prefix("--days=").to_int(), 0)
 		elif arg == "--bot":
 			_bot_auto = true
+		elif arg.begins_with("--cam="):
+			options["cam"] = arg.trim_prefix("--cam=").to_float()
 		elif arg.begins_with("--shot="):
 			_shot_path = arg.trim_prefix("--shot=")
 	return options

@@ -100,7 +100,7 @@ func _arrived() -> bool:
 
 func _spawn_point() -> Vector2:
 	if _hidden_reason == VillagerPlan.HIDDEN_AWAY:
-		return WorldLayout.EAST_EDGE
+		return WorldLayout.WEST_EDGE
 	return WorldLayout.CAVE_DOOR
 
 

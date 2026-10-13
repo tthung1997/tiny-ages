@@ -93,6 +93,11 @@ func test_every_layout_asset_exists() -> void:
 		names.append("building_%s" % building_id)
 		names.append("site_%s" % building_id)
 	names.append_array(["flower_sprout", "flower_bloom"])
+	for prefix: String in WorldLayout.SIDE_PAGES:
+		for layer: StringName in WorldLayout.BACKDROP:
+			names.append(prefix + layer)
+		for layer: StringName in WorldLayout.SIDE_STATIC[prefix]:
+			names.append(prefix + layer)
 	for asset: String in names:
 		assert_true(
 			ResourceLoader.exists(WorldLayout.ASSET_DIR + asset + ".png"), "Missing %s" % asset

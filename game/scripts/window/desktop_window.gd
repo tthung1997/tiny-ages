@@ -14,15 +14,16 @@ const ART_SIZE: Vector2i = Vector2i(384, 80)
 const MIN_SCALE: int = 1
 const MAX_SCALE: int = 4
 const FPS_CAPS: Array[int] = [0, 60, 30, 15, 5]
-const ALPHA_CLICKABLE: float = 0.5
 
 ## Textures whose non-transparent pixels are clickable and visible in strip/corner mode (alpha
-## above ALPHA_CLICKABLE). Empty keeps the whole window clickable.
+## above Skyline.ALPHA_CLICKABLE). Empty keeps the whole window clickable. This is for a scene that
+## does not scroll; a scrolling world supplies its own wider skyline (see `set_skyline`).
 @export var silhouettes: Array[Texture2D] = []
 
-## Extra clickable area in art pixels (for example a HUD). The passthrough polygon also clips
-## drawing on Windows, so anything that must be visible has to sit inside it.
-var extra_clickable: Rect2i = Rect2i()
+## Extra clickable areas in art pixels, relative to the viewport (for example a HUD or the pan
+## arrows). The passthrough polygon also clips drawing on Windows, so anything that must be
+## visible has to sit inside it.
+var extra_regions: Array[Rect2i] = []
 
 var mode: Mode = Mode.STRIP
 var pixel_scale: int = 2
@@ -31,7 +32,9 @@ var click_through: bool = true
 var fps_cap: int = 30
 var low_processor: bool = true
 
+## Top of the drawn world per world column, and which world column the viewport starts at.
 var _skyline: PackedInt32Array = PackedInt32Array()
+var _scroll: int = 0
 var _content_size: Vector2i = ART_SIZE
 var _apply_serial: int = 0
 
@@ -91,15 +94,30 @@ func set_click_through(value: bool) -> void:
 	_update_click_through()
 
 
-func set_extra_clickable(rect: Rect2i) -> void:
-	extra_clickable = rect
+func set_extra_regions(regions: Array[Rect2i]) -> void:
+	extra_regions = regions
 	_update_click_through()
 
 
-## Replaces the textures whose opaque pixels are clickable (and visible in strip mode).
+## Replaces the textures whose opaque pixels are clickable (and visible in strip mode), for a
+## scene that does not scroll.
 func set_silhouettes(textures: Array[Texture2D]) -> void:
 	silhouettes = textures
 	_build_skyline()
+	_update_click_through()
+
+
+## Supplies the skyline of a world wider than the viewport, one entry per world column.
+func set_skyline(columns: PackedInt32Array) -> void:
+	_skyline = columns
+	_update_click_through()
+
+
+## Which world column the left edge of the viewport shows.
+func set_scroll(column: int) -> void:
+	if column == _scroll:
+		return
+	_scroll = column
 	_update_click_through()
 
 
@@ -144,38 +162,31 @@ func _place_window() -> void:
 
 func _build_skyline() -> void:
 	_skyline = PackedInt32Array()
+	_scroll = 0
 	if silhouettes.is_empty():
 		return
-	_skyline.resize(ART_SIZE.x)
-	_skyline.fill(ART_SIZE.y)
+	var skyline: Skyline = Skyline.new(ART_SIZE.x, ART_SIZE.y)
 	for texture: Texture2D in silhouettes:
-		if texture == null:
-			continue
-		var image: Image = texture.get_image()
-		if image == null:
-			push_warning("DesktopWindow: a silhouette has no image data; ignoring it.")
-			continue
-		for x: int in mini(image.get_width(), ART_SIZE.x):
-			for y: int in _skyline[x]:
-				if image.get_pixel(x, y).a > ALPHA_CLICKABLE:
-					_skyline[x] = y
-					break
+		skyline.add(texture, 0)
+	_skyline = skyline.tops
 
 
-## Mouse passthrough accepts one polygon, so the clickable area is the art's skyline:
-## everything at or below the highest opaque pixel of each column.
+## Mouse passthrough accepts one polygon, so the clickable area is the skyline of the part of
+## the world in view: everything at or below the highest opaque pixel of each column, plus any
+## extra regions.
 func _update_click_through() -> void:
 	if not click_through or mode == Mode.WINDOW or _skyline.is_empty():
 		DisplayServer.window_set_mouse_passthrough(PackedVector2Array())
 		return
 	var origin: Vector2i = art_origin() * pixel_scale
+	var tops: PackedInt32Array = _view_tops()
 	var region: PackedVector2Array = PackedVector2Array()
-	var count: int = _skyline.size()
+	var count: int = tops.size()
 	var run_start: int = 0
 	for x: int in range(1, count + 1):
-		if x < count and _top_at(x) == _top_at(run_start):
+		if x < count and tops[x] == tops[run_start]:
 			continue
-		var top_y: float = origin.y + _top_at(run_start) * pixel_scale
+		var top_y: float = origin.y + tops[run_start] * pixel_scale
 		region.append(Vector2(origin.x + run_start * pixel_scale, top_y))
 		region.append(Vector2(origin.x + x * pixel_scale, top_y))
 		run_start = x
@@ -185,9 +196,15 @@ func _update_click_through() -> void:
 	DisplayServer.window_set_mouse_passthrough(region)
 
 
-func _top_at(x: int) -> int:
-	var top: int = _skyline[x]
-	if extra_clickable.has_area() and x >= extra_clickable.position.x \
-			and x < extra_clickable.end.x:
-		top = mini(top, extra_clickable.position.y)
-	return top
+## The skyline of the viewport's columns, lowered to take in the extra regions.
+func _view_tops() -> PackedInt32Array:
+	var tops: PackedInt32Array = PackedInt32Array()
+	tops.resize(ART_SIZE.x)
+	for x: int in ART_SIZE.x:
+		tops[x] = _skyline[clampi(_scroll + x, 0, _skyline.size() - 1)]
+	for region: Rect2i in extra_regions:
+		if not region.has_area():
+			continue
+		for x: int in range(maxi(region.position.x, 0), mini(region.end.x, ART_SIZE.x)):
+			tops[x] = mini(tops[x], region.position.y)
+	return tops

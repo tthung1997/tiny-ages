@@ -166,15 +166,29 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   already at its final position, so placing it is `position = (0, 0)`. Draw order is z =
   the foot row (see `WorldLayout`). `WorldLayout` mirrors the slots in `tools/art/cave_strip.js`:
   change both together.
+- **The world is wider than the viewport** (decision A8). Everything lives in "camp pixels":
+  the camp page is x 0..384, the world runs from `WorldLayout.WORLD_LEFT` (−384) to
+  `WORLD_RIGHT` (768), and the viewport shows one 384 px page. `WorldView` keeps a scrolling
+  container inside a clipping `Control`; `ScrollCamera` (pure, tested) clamps, glides and
+  rounds to whole pixels; `ScrollUi` and `PanArrow` are the edge arrows and page dots. The
+  side pages have their own art (`west_*`, `east_*`, from `tools/art/cave_pages.js`; see
+  `WorldLayout.SIDE_PAGES`). The camp's river blocks the whole ground at its east edge, so
+  the east is water and villagers wander west only; arrivals come from the west.
+- **Clickable region across the scroll**: `WorldView` builds a world-wide `Skyline` and the
+  `DesktopWindow` reads the slice in view (`set_skyline`, `set_scroll`); the arrows and HUD
+  are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
+  on Windows (it clips drawing).
 - `VillagerPlanner` (pure logic, tested) turns a villager's activity into a spot and pose;
   `VillagerActor` walks and animates; away or sleeping villagers are hidden.
 - `DayNight.tint(hour)` drives a `CanvasModulate`. Sky and far hills only show in the opaque
   window (decision A7); strip and corner mode keep near hills, trees and ground.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_villagers`, then
-  `--import` and commit the `.import` files.
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers`,
+  then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
-  `--days=N`, `--bot`, `--speed=`, `--shot=`). Always use `--nosave` (or `--save=`) in
-  automated runs so the player's save is not touched.
+  `--days=N`, `--bot`, `--speed=`, `--cam=`, `--shot=`). Always use `--nosave` (or `--save=`)
+  in automated runs so the player's save is not touched. To check GUI input without touching
+  the real mouse, push events with `get_viewport().push_input(event, true)` (local
+  coordinates) from a temporary script; the headless test runner has no running tree for it.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
 imported as a texture whether or not it is used — do not add art until it is in use.

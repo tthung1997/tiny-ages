@@ -113,7 +113,10 @@ func _on_layout_changed(_content_size: Vector2i) -> void:
 
 
 func _update_hud_region() -> void:
-	_window.set_extra_clickable(HUD_REGION if _hud.visible else Rect2i())
+	var regions: Array[Rect2i] = []
+	if _hud.visible:
+		regions.append(HUD_REGION)
+	_window.set_extra_regions(regions)
 
 
 func _flash() -> void:

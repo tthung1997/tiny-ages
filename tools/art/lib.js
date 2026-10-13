@@ -344,3 +344,13 @@ function field(b) {
 
 // A freshly planted sprout (the strange flower before it blooms), 12x12.
 function sprout(b) { b.rect(6, 8, 1, 3, '#3a7a3a'); b.px(5, 8, '#58b05f'); b.px(7, 7, '#58b05f'); b.px(4, 7, '#7cd070'); b.px(8, 6, '#7cd070'); }
+function stump(b) { // 10x8 chopped pine stump with a pale cut top
+  b.rect(1, 3, 8, 4, WOOD); b.rect(1, 3, 1, 4, WOODL); b.px(6, 5, '#6a4326');
+  b.ell(5, 3, 4.5, 2, '#d9a566'); b.ell(5, 3, 2.5, 1, '#c58f50'); }
+function fallenlog(b) { // 18x7 fallen trunk with a cut end and a broken branch
+  b.rect(0, 2, 18, 4, WOOD); b.rect(0, 2, 18, 1, WOODL); b.ell(1, 4, 1.5, 2, '#d9a566');
+  b.px(7, 3, '#6a4326'); b.px(12, 4, '#6a4326'); b.rect(11, 0, 1, 3, WOOD); b.px(12, 0, WOODL); }
+function reeds(b) { // 8x13 reed clump with cattail heads
+  b.rect(1, 3, 1, 10, '#9bbb55'); b.rect(3, 1, 1, 12, '#86a94c'); b.rect(5, 4, 1, 9, '#9bbb55');
+  b.rect(7, 2, 1, 11, '#86a94c'); b.rect(3, 0, 1, 3, '#8a5a36'); b.rect(7, 1, 1, 3, '#8a5a36');
+  b.px(2, 6, '#c4dc82'); b.px(6, 7, '#c4dc82'); b.px(0, 8, '#c4dc82'); }

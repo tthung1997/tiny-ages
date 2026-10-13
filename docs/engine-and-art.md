@@ -17,6 +17,7 @@ Context: [MVP concept](mvp-concept.md) — a tiny world that lives at the edge o
 | A5 | **Native strip height ≈ 80 px** (384 px wide test) | At 2× that is 160 px on screen. Test 64–80 px native too. | — |
 | A6 | **Day/night and seasons as palette transforms**, not separate art | Night variant produced by a script from the day PNG and reads well. | A shader-based approach in Godot is cheaper (likely: do it there). |
 | A7 | **Background is layered** (sky, far hills, near hills, tree line, ground+props), and each display mode chooses layers: normal window shows all; strip/corner drop the sky and far hills and keep near hills + tree line | Keeps depth and "place" on the desktop without covering apps behind. The strip's visible/clickable region is the union of the kept layers, so hills and trees are clickable. | Hills in the strip feel intrusive (drop to tree line only) or too empty (add a taller range). |
+| A8 | **The world is wider than the strip**: the viewport shows one 384 px "page" (the camp) of a 3-page, 1152 px world (west forest and ridge, camp, east river and bay), and the player pans with edge arrows, click-drag, the wheel or A/D | The camp page cannot hold more villagers and places; the strip window already spans the screen, so more can be shown without taking space. The camp art stays as is; new pages are added at the sides. | The viewport should be wider on big monitors (make its width a setting), or panning gets in the way of glancing. |
 
 ## 2. Engine notes
 
