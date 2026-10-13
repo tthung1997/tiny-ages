@@ -117,12 +117,37 @@ art/reference/        generated reference PNGs (1x) + previews
 tools/art/            LibreSprite art-generation scripts (see its README)
 game/                 the Godot project (open game/project.godot)
   scenes/             .tscn, mirroring scripts/   (ui/ for menus, HUD, overlays)
-  scripts/            .gd
+  scripts/sim/        the settlement simulation: headless, no nodes (see below)
+  scripts/window/     desktop-window handling;  scripts/dev/  dev/spike scenes
   assets/             art/audio/fonts the game loads — only what is in use
-  resources/          .tres data instances
+  resources/sim/      authored sim content (.tres): config, events, buildings, plants
+  tests/              test suites (test_*.gd) and shared fixtures
   tools/              one-off Godot CLI/editor scripts, not shipped code
   addons/godot_ai/    committed Godot AI (MCP) editor plugin — do not edit
 ```
+
+### The simulation (`game/scripts/sim/`)
+
+Plain `RefCounted` rules over plain `Resource` state, so it runs headless and is
+reproducible from a seed. Never put node or scene-tree code in it; the view reads
+`WorldState` and calls `Simulation`'s public methods and signals.
+
+- `state/` — `WorldState` and the things it holds. Everything saved is an `@export` field.
+- `data/` — authored definitions: `SimConfig` (all tunables, incl. the 20 min/day pace),
+  `ContentLibrary`, `EventDef`, `ChoiceDef`, `SimCondition`, `SimEffect`, `BuildingDef`,
+  `PlantDef`. Content is data, never code: add new behaviour as a `Kind` on a condition
+  or effect. **Append enum members at the end** — saved `.tres` files store the integer.
+- `systems/` — `VillagerSystem`, `ConstructionSystem`, `PlantSystem`, `EventSystem`,
+  `EffectRunner`, driven by `Simulation._step()`. All randomness uses `Simulation.rng`.
+- Time is ticks (`ticks_per_day`, default 24). `advance_ticks` is exact; offline catch-up
+  is `advance_real_time(now)` and must equal ticking the same amount.
+- Design rules baked in: decisions wait indefinitely and never penalise waiting; nothing
+  fails or kills; open-ended with chapter milestones, no ending.
+- Content seeds come from `tools/build_sim_content.gd` (a bootstrap — after running it,
+  edit the `.tres` in the inspector; re-running overwrites them). `ContentLibrary.validate()`
+  must stay empty; a test enforces it.
+- `tools/sim_timeline.gd` plays a bot through the sim and prints the journal with real-time
+  offsets: use it to judge pacing instead of guessing.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
 imported as a texture whether or not it is used — do not add art until it is in use.
@@ -181,9 +206,14 @@ that must be visible has to be inside the passthrough polygon.
 ## Before you claim something works
 
 Run `pwsh -File game/tools/check.ps1`. It parses every `.gd` file with
-`--check-only`, then boots the project. **Do not** substitute
+`--check-only`, boots the project, then runs every suite in `game/tests/` headlessly
+(`tools/run_tests.gd`; suites extend `McpTestSuite`; run one with `-- <suite name>`). The
+editor's `test_run` MCP tool cannot run them. **Do not** substitute
 `--headless --path . --quit`: it only parses scripts reachable from the main scene
 and exits 0 even when it prints a parse error.
+
+New simulation behaviour needs a test, and a bug fix needs a test that fails without it.
+Tests must be deterministic: seed the sim, and assert outcomes, not exact random rolls.
 
 A clean check proves only that code parses and loads. It says nothing about behaviour
 or feel — never claim a timing, window or visual change is right; describe what to

@@ -1,0 +1,99 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_x0jor"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_26ks0"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_c7jf6"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_3rqp3"]
+
+[sub_resource type="Resource" id="Resource_thc00"]
+script = ExtResource("2_26ks0")
+kind = 5
+key = &"explorers_hut"
+
+[sub_resource type="Resource" id="Resource_axk6o"]
+script = ExtResource("3_c7jf6")
+kind = 0
+key = &"explorers_hut"
+negate = true
+
+[sub_resource type="Resource" id="Resource_a7ika"]
+script = ExtResource("3_c7jf6")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_tvj44"]
+script = ExtResource("1_x0jor")
+id = &"build_explorers_hut"
+label = "Explorer's Hut"
+requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_axk6o"), SubResource("Resource_a7ika")])
+effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_thc00")])
+
+[sub_resource type="Resource" id="Resource_mlhbg"]
+script = ExtResource("2_26ks0")
+kind = 5
+key = &"farm"
+
+[sub_resource type="Resource" id="Resource_a7fns"]
+script = ExtResource("3_c7jf6")
+kind = 0
+key = &"farm"
+negate = true
+
+[sub_resource type="Resource" id="Resource_ugs3q"]
+script = ExtResource("3_c7jf6")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_10htk"]
+script = ExtResource("1_x0jor")
+id = &"build_farm"
+label = "Farm"
+requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_a7fns"), SubResource("Resource_ugs3q")])
+effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_mlhbg")])
+
+[sub_resource type="Resource" id="Resource_pc78u"]
+script = ExtResource("2_26ks0")
+kind = 5
+key = &"workshop"
+
+[sub_resource type="Resource" id="Resource_5bnt4"]
+script = ExtResource("3_c7jf6")
+kind = 0
+key = &"workshop"
+negate = true
+
+[sub_resource type="Resource" id="Resource_cmt4l"]
+script = ExtResource("3_c7jf6")
+kind = 2
+key = &"wood"
+amount = 8
+
+[sub_resource type="Resource" id="Resource_8td1l"]
+script = ExtResource("1_x0jor")
+id = &"build_workshop"
+label = "Workshop"
+requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_5bnt4"), SubResource("Resource_cmt4l")])
+effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_pc78u")])
+
+[sub_resource type="Resource" id="Resource_cmoex"]
+script = ExtResource("3_c7jf6")
+kind = 4
+
+[sub_resource type="Resource" id="Resource_h1sps"]
+script = ExtResource("3_c7jf6")
+kind = 2
+key = &"wood"
+amount = 6
+
+[resource]
+script = ExtResource("4_3rqp3")
+id = &"building_opportunity"
+title = "Ready to build"
+body = "The settlement has gathered enough to build something new."
+category = &"settlement"
+requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_cmoex"), SubResource("Resource_h1sps")])
+chance_per_tick = 0.5
+cooldown_ticks = 24
+choices = Array[ExtResource("1_x0jor")]([SubResource("Resource_tvj44"), SubResource("Resource_10htk"), SubResource("Resource_8td1l")])

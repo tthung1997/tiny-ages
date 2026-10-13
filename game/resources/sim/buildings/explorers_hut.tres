@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildingDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/building_def.gd" id="1_rwm5u"]
+
+[resource]
+script = ExtResource("1_rwm5u")
+id = &"explorers_hut"
+display_name = "Explorer's Hut"
+description = "A base for those who want to see what lies beyond the camp."
+cost = Dictionary[StringName, int]({
+&"wood": 6
+})
+work_required = 36

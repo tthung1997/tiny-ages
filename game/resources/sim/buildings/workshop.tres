@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/building_def.gd" id="1_dea6s"]
+
+[resource]
+script = ExtResource("1_dea6s")
+id = &"workshop"
+display_name = "Workshop"
+description = "A place to make things that last."
+cost = Dictionary[StringName, int]({
+&"wood": 8
+})
+work_required = 40
+daily_output = Dictionary[StringName, float]({
+&"wood": 4.0
+})

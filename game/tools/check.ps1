@@ -79,6 +79,20 @@ try {
 	else {
 		Write-Host "ok    project boot"
 	}
+
+	# 3. Run the test suites. run_tests.gd exits 1 on any failure and prints one line each.
+	if (Test-Path -LiteralPath (Join-Path $root "tools/run_tests.gd")) {
+		$tests = & $godot --headless --path . --script res://tools/run_tests.gd 2>&1 | Out-String
+		$summary = ($tests -split "`n" | Select-String -Pattern '\d+ passed, \d+ failed' | Select-Object -Last 1)
+		if ($LASTEXITCODE -ne 0 -or $tests -match '(?m)^FAIL|SCRIPT ERROR|Parse Error') {
+			$failed += "tests"
+			Write-Host "FAIL  tests" -ForegroundColor Red
+			Write-Host $tests.Trim()
+		}
+		else {
+			Write-Host "ok    tests ($($summary.ToString().Trim()))"
+		}
+	}
 }
 finally {
 	Pop-Location

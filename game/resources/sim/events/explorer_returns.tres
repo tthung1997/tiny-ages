@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_gkumt"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_f6h81"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_ikw4r"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_p0t2i"]
+
+[sub_resource type="Resource" id="Resource_5ov8r"]
+script = ExtResource("2_f6h81")
+kind = 8
+key = &"strange_seed"
+
+[sub_resource type="Resource" id="Resource_gpkxw"]
+script = ExtResource("2_f6h81")
+text = "{subject} planted the strange seed beside the camp."
+
+[sub_resource type="Resource" id="Resource_xp2u3"]
+script = ExtResource("3_ikw4r")
+kind = 3
+key = &"strange_seed"
+amount = 1
+
+[sub_resource type="Resource" id="Resource_bikoi"]
+script = ExtResource("1_gkumt")
+id = &"plant_it"
+label = "Plant it"
+requires = Array[ExtResource("3_ikw4r")]([SubResource("Resource_xp2u3")])
+effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_5ov8r"), SubResource("Resource_gpkxw")])
+
+[sub_resource type="Resource" id="Resource_q6vl7"]
+script = ExtResource("2_f6h81")
+text = "The strange seed was put in a jar for safekeeping."
+
+[sub_resource type="Resource" id="Resource_ik0y3"]
+script = ExtResource("1_gkumt")
+id = &"keep_it"
+label = "Keep it safe"
+effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_q6vl7")])
+
+[sub_resource type="Resource" id="Resource_ntkxq"]
+script = ExtResource("2_f6h81")
+kind = 3
+key = &"strange_seed"
+amount = 1
+
+[sub_resource type="Resource" id="Resource_86jub"]
+script = ExtResource("2_f6h81")
+kind = 1
+key = &"forest_east_explored"
+
+[sub_resource type="Resource" id="Resource_kx622"]
+script = ExtResource("2_f6h81")
+text = "{subject} returned from the eastern forest carrying an unfamiliar seed."
+
+[resource]
+script = ExtResource("4_p0t2i")
+id = &"explorer_returns"
+title = "An explorer returns"
+body = "{subject} is back from the forest, carrying something unfamiliar."
+category = &"exploration"
+needs_subject = true
+effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
+choices = Array[ExtResource("1_gkumt")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
