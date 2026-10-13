@@ -57,8 +57,8 @@ func test_settled_age_buildings_wait_for_the_settled_age() -> void:
 		sim.world.resources[&"wood"] = 50
 	assert_eq(sim.world.event_counts.get(&"settled_building_opportunity", 0), 0)
 	sim.advance_era(&"settled")
-	sim.world.pending.clear()
-	var used: int = SimFixture.advance_until_pending(sim, &"settled_building_opportunity", DAY * 25)
+	sim.world.resources[&"wood"] = 50
+	var used: int = SimFixture.advance_until_asked(sim, &"settled_building_opportunity", DAY * 25)
 	assert_gt(used, 0, "Once settled, field and hut decisions open")
 
 

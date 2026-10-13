@@ -38,9 +38,21 @@ const SETTLED_DAY: Dictionary = {
 	&"a_village": 216,
 	&"green_stone": 252,
 }
+## Days into the Settled Age when each small story decision becomes possible, filling the stretches
+## between the milestones above (the same idea as STORY_DAY). Paired entries (`furrows`/`pasture`,
+## `scarecrow`/`dog`) are the farmers' and the herders' version of one beat.
+const SETTLED_STORY_DAY: Dictionary = {
+	&"cave": 2, &"ground": 8, &"furrows": 14, &"pasture": 14, &"roof": 38, &"well": 46,
+	&"scarecrow": 58, &"dog": 58, &"store": 70, &"quarrel": 82, &"festival": 92, &"voice": 100,
+	&"kiln": 118, &"wet": 130, &"fowl": 142, &"dye": 172, &"loom": 184, &"flood": 196,
+	&"neighbours": 208, &"salt": 226, &"count": 238, &"beads": 262, &"wall": 286,
+	&"looking_back": 312,
+}
 ## Chance per tick of a small journal line, and how long before the same one can repeat. About one
 ## line every quarter hour of real time across all of them.
 const AMBIENT_CHANCE: float = 0.0045
+## The Settled Age adds its own lines to the Cave Age's, which keep happening, so each is rarer.
+const SETTLED_AMBIENT_CHANCE: float = 0.002
 const AMBIENT_COOLDOWN: int = 360
 ## Units a villager gathers per tick of work; the starting stock is a few units, so early choices
 ## wait a little (docs/simulation.md, pacing).
@@ -173,7 +185,9 @@ func _events() -> Array[EventDef]:
 	]
 	events.append_array(_settled_milestones())
 	events.append_array(_story_decisions())
+	events.append_array(_settled_stories())
 	events.append_array(_ambient_lines())
+	events.append_array(_settled_ambient_lines())
 	return events
 
 
@@ -533,7 +547,10 @@ func _first_calves() -> EventDef:
 			&"tend_the_calves", "Keep them close and tend the herd",
 			"The group kept watch through the long nights of calving. By midsummer there was "
 			+ "milk, and nobody had lost an animal.",
-			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 4), _earn(&"first_harvest", "The First Calves")],
+			[
+				_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 4),
+				_earn(&"first_harvest", "The First Calves"),
+			],
 		),
 		_answer(
 			&"let_them_roam", "Let the herd keep to itself",
@@ -691,7 +708,9 @@ func _green_stone_found() -> EventDef:
 
 ## Word from the Hills, second route: a traveller brings the same stone.
 func _green_stone_traded() -> EventDef:
-	var event: EventDef = _event(&"green_stone_traded", "A traveller with green beads", &"exploration")
+	var event: EventDef = _event(
+		&"green_stone_traded", "A traveller with green beads", &"exploration"
+	)
 	event.body = "A traveller has come over the hills with a string of bright green stones. " \
 			+ "They want grain, and will not say where the stones are from."
 	event.requires = _conds([
@@ -1422,6 +1441,567 @@ func _smoke_in_the_cave() -> EventDef:
 
 ## Small lines for the journal, with nothing asked of the player (gameplay.md P3): some about a
 ## villager with a trait, some about the world, some that remember an earlier answer.
+## Small story decisions that fill the Settled Age between its milestones (docs/ages.md). Like the
+## Cave Age's, each has two harmless answers and a journal line, and an answer may set a flag that
+## later lines and the next age can read. Costs are bigger than the Cave Age's: by now the stores
+## are fuller, and these are what they are for.
+func _settled_stories() -> Array[EventDef]:
+	return [
+		_what_the_cave_is_for(), _marking_the_ground(), _first_furrows(), _pasture_gate(),
+		_mending_the_roof(), _the_well(), _the_scarecrow(), _the_herd_dog(), _a_dry_store(),
+		_the_quarrel(), _harvest_festival(), _the_oldest_voice(), _the_kiln_pit(), _a_wet_summer(),
+		_wild_fowl(), _dyed_cloth(), _the_loom_frame(), _the_flood(), _smoke_in_the_next_valley(),
+		_pots_for_salt(), _winter_count(), _green_beads(), _the_low_wall(), _looking_back(),
+	]
+
+
+## A Settled Age story decision: needs the age and the day into it, is asked once, is not about
+## anyone.
+func _settled_story(
+	event_id: StringName, title: String, category: StringName, era_day: int, body: String,
+	chance: float = 0.02
+) -> EventDef:
+	var event: EventDef = _event(event_id, title, category)
+	event.body = body
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", era_day),
+	])
+	event.chance_per_tick = chance
+	event.once = true
+	return event
+
+
+func _settled_story_about(
+	event_id: StringName, title: String, category: StringName, era_day: int, body: String,
+	favoured: StringName
+) -> EventDef:
+	var event: EventDef = _settled_story(event_id, title, category, era_day, body)
+	event.needs_subject = true
+	event.subject_requires = _conds([_cond(SimCondition.Kind.SUBJECT_AT_HOME)])
+	event.trait_weights[favoured] = 3.0
+	return event
+
+
+func _flag_set(flag: StringName) -> SimCondition:
+	return _cond(SimCondition.Kind.FLAG_SET, flag)
+
+
+func _earned(milestone: StringName) -> SimCondition:
+	return _cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone)
+
+
+func _set_flag(flag: StringName) -> SimEffect:
+	return _eff(SimEffect.Kind.SET_FLAG, flag)
+
+
+func _what_the_cave_is_for() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"what_the_cave_is_for", "What the cave is for", &"settlement", SETTLED_STORY_DAY[&"cave"],
+		"The cave is still there, dry and deep, and the group has begun to wonder what it is now for."
+	)
+	event.choices = _choices([
+		_answer(
+			&"cave_for_stores", "Make it the winter store",
+			"Baskets and jars were carried up to the cave, where the cool dark kept them all winter.",
+			[_set_flag(&"cave_store")],
+		),
+		_answer(
+			&"cave_for_elders", "Keep it for sleeping and for the old stories",
+			"The cave stayed a place to sleep and to tell the old stories, and the huts filled "
+			+ "with the young.",
+			[_set_flag(&"cave_kept")],
+		),
+	])
+	return event
+
+
+func _marking_the_ground() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"marking_the_ground", "Whose ground", &"settlement", SETTLED_STORY_DAY[&"ground"],
+		"Everyone has begun to say \"my plot\" and \"your plot\", and nobody can say where one ends."
+	)
+	event.choices = _choices([
+		_answer(
+			&"set_boundary_stones", "Set a stone at every corner",
+			"A stone went into every corner, and for a week people walked the lines to look at them.",
+			[_spend(&"wood", 4), _set_flag(&"boundary_stones")],
+			[_has(&"wood", 4)],
+		),
+		_answer(
+			&"leave_it_open", "Leave the ground open and sort it out as it comes",
+			"The ground stayed open, and every dispute was settled over a meal.",
+			[_set_flag(&"open_ground")],
+		),
+	])
+	return event
+
+
+func _first_furrows() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"first_furrows", "The digging sticks", &"settlement", SETTLED_STORY_DAY[&"furrows"],
+		"The seed is sown, but the ground fights back, and another digging stick has snapped."
+	)
+	event.requires.append(_flag_set(&"path_agriculture"))
+	event.choices = _choices([
+		_answer(
+			&"drag_a_branch", "Drag a forked branch through the soil together",
+			"Six people dragged a forked branch across the field, and the furrow ran almost straight.",
+			[_set_flag(&"forked_plough")],
+		),
+		_answer(
+			&"dig_by_hand", "Keep digging by hand",
+			"The digging went on by hand, slowly, and everyone's back knew about it.",
+		),
+	])
+	return event
+
+
+func _pasture_gate() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"pasture_gate", "Into the sown ground", &"settlement", SETTLED_STORY_DAY[&"pasture"],
+		"The herd keeps wandering into the small sown plot, and the plot keeps losing."
+	)
+	event.requires.append(_flag_set(&"path_herding"))
+	event.choices = _choices([
+		_answer(
+			&"build_a_gate", "Weave a hurdle gate",
+			"A hurdle of woven withies went up across the gap, and the herd stood and looked at it.",
+			[_spend(&"wood", 6), _set_flag(&"hurdle_gate")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"post_a_watcher", "Post someone to watch the plot",
+			"Someone sat by the plot all day, and had a very good view of the herd.",
+			[_set_flag(&"herd_watch")],
+		),
+	])
+	return event
+
+
+func _mending_the_roof() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"mending_the_roof", "Rain through the thatch", &"settlement", SETTLED_STORY_DAY[&"roof"],
+		"Rain has found the thatch again, and the dark patch on the ceiling grows every night."
+	)
+	event.requires.append(_earned(&"first_roof"))
+	event.choices = _choices([
+		_answer(
+			&"patch_it_now", "Patch it while the weather holds",
+			"Fresh reed went over the worn thatch, and the next storm drummed on it harmlessly.",
+			[_spend(&"wood", 6), _set_flag(&"tight_roofs")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"wait_for_dry", "Wait for dry weather",
+			"They waited for dry weather, and put a pot under the drip in the meantime.",
+		),
+	])
+	return event
+
+
+func _the_well() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_well", "A place to fetch water", &"settlement", SETTLED_STORY_DAY[&"well"],
+		"Carrying water from the river twice a day is starting to feel like a way of life."
+	)
+	event.choices = _choices([
+		_answer(
+			&"dig_a_well", "Dig a well, and line it with stones",
+			"The well went down past the roots of the old tree, and the water that came up tasted of stone.",
+			[_spend(&"wood", 8), _set_flag(&"well_dug")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"keep_carrying", "Keep carrying water from the river",
+			"They kept carrying water from the river, and everybody grew a good pair of shoulders.",
+		),
+	])
+	return event
+
+
+func _the_scarecrow() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_scarecrow", "Birds in the field", &"nature", SETTLED_STORY_DAY[&"scarecrow"],
+		"The birds have found the field, and they are very pleased with it."
+	)
+	event.requires.append(_flag_set(&"path_agriculture"))
+	event.choices = _choices([
+		_answer(
+			&"dress_a_scarecrow", "Dress a scarecrow in an old hide tunic",
+			"A scarecrow went up in an old tunic. The birds were wary for two days, then sat on its head.",
+			[_set_flag(&"scarecrow")],
+		),
+		_answer(
+			&"take_turns", "Take turns chasing them off",
+			"They took turns chasing the birds, and by evening everyone was hoarse.",
+		),
+	])
+	return event
+
+
+func _the_herd_dog() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_herd_dog", "A dog at the fold", &"nature", SETTLED_STORY_DAY[&"dog"],
+		"A half-tame dog has taken to following the herd, keeping the stragglers from straying."
+	)
+	event.requires.append(_flag_set(&"path_herding"))
+	event.choices = _choices([
+		_answer(
+			&"feed_the_dog", "Feed it, and let it stay",
+			"The dog was fed, and it stayed, and by the end of the week it had opinions about the herd.",
+			[_spend(&"food", 2), _set_flag(&"herd_dog")],
+			[_has(&"food", 2)],
+		),
+		_answer(
+			&"shoo_it_off", "Leave it to its own business",
+			"The dog was left to its own business, and went on doing it, at a distance, with the herd.",
+		),
+	])
+	return event
+
+
+func _a_dry_store() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"a_dry_store", "Damp grain", &"settlement", SETTLED_STORY_DAY[&"store"],
+		"The grain in the baskets is going damp at the bottom, and something has been at the rest."
+	)
+	event.requires.append(_earned(&"first_harvest"))
+	event.choices = _choices([
+		_answer(
+			&"dig_a_store_pit", "Line a pit with clay",
+			"A pit lined with clay and capped with a flat stone kept the grain dry and the mice hungry.",
+			[_spend(&"wood", 6), _set_flag(&"store_pit")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"hang_the_baskets", "Hang the baskets from the rafters",
+			"The baskets were hung from the rafters, out of reach of everything but the swallows.",
+		),
+	])
+	return event
+
+
+func _the_quarrel() -> EventDef:
+	var event: EventDef = _settled_story_about(
+		&"the_quarrel", "Over the fence", &"character", SETTLED_STORY_DAY[&"quarrel"],
+		"{subject} and a neighbour are not speaking, over a handspan of ground that both of them "
+		+ "are sure is theirs.",
+		VillagerState.TRAIT_SOCIAL
+	)
+	event.choices = _choices([
+		_answer(
+			&"talk_it_through", "Sit them down by the fire together",
+			"{subject} and the neighbour were sat by the fire, and by the third pot they were laughing.",
+			[_set_flag(&"peacemaking")],
+		),
+		_answer(
+			&"let_it_cool", "Let it cool by itself",
+			"It cooled by itself, slowly, and the handspan of ground was never mentioned again.",
+		),
+	])
+	return event
+
+
+func _harvest_festival() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"harvest_festival", "More than enough", &"settlement", SETTLED_STORY_DAY[&"festival"],
+		"The stores are full for the first time, and nobody can remember a year like it."
+	)
+	event.requires.append(_earned(&"first_harvest"))
+	event.choices = _choices([
+		_answer(
+			&"hold_the_festival", "Hold a harvest festival",
+			"A festival ran from noon to the small hours. There was a lot of dancing and a little singing.",
+			[_spend(&"food", 20), _set_flag(&"festival")],
+			[_has(&"food", 20)],
+		),
+		_answer(
+			&"lay_it_by", "Lay it by for the lean months",
+			"Everything was laid by for the lean months, and the lean months were noticeably less lean.",
+		),
+	])
+	return event
+
+
+func _the_oldest_voice() -> EventDef:
+	var event: EventDef = _settled_story_about(
+		&"the_oldest_voice", "Before the huts", &"character", SETTLED_STORY_DAY[&"voice"],
+		"{subject} has noticed that the youngest cannot remember the cave, or the cold, or the "
+		+ "first fire. They think the camp was always like this.",
+		VillagerState.TRAIT_SOCIAL
+	)
+	event.choices = _choices([
+		_answer(
+			&"tell_the_whole_story", "Tell it all, from the cold to the first fire",
+			"{subject} told it all, from the cold to the first fire, and the youngest listened "
+			+ "with their mouths open.",
+			[_set_flag(&"cave_tale")],
+		),
+		_answer(
+			&"keep_it_short", "Tell them a short version, and let the rest come later",
+			"{subject} told a short version, and said there would be more when they were older.",
+		),
+	])
+	return event
+
+
+func _the_kiln_pit() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_kiln_pit", "A pit for the pots", &"settlement", SETTLED_STORY_DAY[&"kiln"],
+		"Baking pots in hot ashes loses one in three. A proper pit, with a roof and a draught, "
+		+ "might lose far fewer."
+	)
+	event.requires.append(_earned(&"fired_clay"))
+	event.choices = _choices([
+		_answer(
+			&"build_a_kiln", "Build a kiln pit",
+			"The kiln pit was lit for the first time at dusk, and nothing came out of it cracked.",
+			[_spend(&"wood", 15), _set_flag(&"kiln")],
+			[_has(&"wood", 15)],
+		),
+		_answer(
+			&"bake_in_ashes", "Keep baking in the ashes",
+			"They went on baking in the ashes, and made a few more pots to cover the cracked ones.",
+		),
+	])
+	return event
+
+
+func _a_wet_summer() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"a_wet_summer", "Nine days of rain", &"nature", SETTLED_STORY_DAY[&"wet"],
+		"The rain has not stopped for nine days, and the low ground by the river has become a pond."
+	)
+	event.choices = _choices([
+		_answer(
+			&"dig_a_ditch", "Dig a ditch to carry the water away",
+			"A ditch carried the water off to the river, and the pond sulked and shrank.",
+			[_spend(&"wood", 8), _set_flag(&"ditch")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"wait_it_out", "Wait for the rain to stop",
+			"The rain stopped on the eleventh day, and the pond took a week to leave.",
+		),
+	])
+	return event
+
+
+func _wild_fowl() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"wild_fowl", "Small brown birds", &"nature", SETTLED_STORY_DAY[&"fowl"],
+		"A flock of small brown fowl has begun nesting by the huts, as if it had been invited."
+	)
+	event.choices = _choices([
+		_answer(
+			&"tempt_them_with_grain", "Scatter a little grain for them",
+			"A little grain was scattered each dawn, and by the new moon the birds came when called.",
+			[_spend(&"food", 3), _set_flag(&"hens")],
+			[_has(&"food", 3)],
+		),
+		_answer(
+			&"let_them_be", "Let them be",
+			"The birds were let be, and carried on arguing on the roofs.",
+		),
+	])
+	return event
+
+
+func _dyed_cloth() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"dyed_cloth", "A colour for the cloth", &"character", SETTLED_STORY_DAY[&"dye"],
+		"The cloth is soft and strong and exactly the colour of a sheep, and someone has started to mind."
+	)
+	event.requires.append(_earned(&"woven_cloth"))
+	event.choices = _choices([
+		_answer(
+			&"dye_with_berries", "Boil it with berries and bark",
+			"The cloth came out of the pot a deep red, and its owner wore it all week.",
+			[_spend(&"food", 6), _set_flag(&"dyed_cloth")],
+			[_has(&"food", 6)],
+		),
+		_answer(
+			&"keep_it_plain", "Keep it plain",
+			"The cloth was kept plain, and was said to be none the worse for it.",
+		),
+	])
+	return event
+
+
+func _the_loom_frame() -> EventDef:
+	var event: EventDef = _settled_story_about(
+		&"the_loom_frame", "Two posts and some thread", &"character",
+		SETTLED_STORY_DAY[&"loom"],
+		"{subject} has propped a frame between two posts and wound thread from end to end. It "
+		+ "might weave faster than hands alone.",
+		VillagerState.TRAIT_INDUSTRIOUS
+	)
+	event.requires.append(_earned(&"woven_cloth"))
+	event.choices = _choices([
+		_answer(
+			&"build_a_loom", "Build the loom properly",
+			"The loom went up by the door, and the first cloth off it was the widest anyone had seen.",
+			[_spend(&"wood", 8), _set_flag(&"loom")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"keep_the_spindle", "Stay with the spindle",
+			"They stayed with the spindle, and the frame leaned against a wall and was used for drying.",
+		),
+	])
+	return event
+
+
+func _the_flood() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_flood", "The river is rising", &"nature", SETTLED_STORY_DAY[&"flood"],
+		"The river has risen to the edge of the fields, and the low plots are under a finger of water."
+	)
+	event.choices = _choices([
+		_answer(
+			&"build_a_bank", "Raise a bank of earth and stone",
+			"A bank of earth and stone went up along the river, and the water stopped at its foot.",
+			[_spend(&"wood", 20), _set_flag(&"river_bank")],
+			[_has(&"wood", 20)],
+		),
+		_answer(
+			&"move_what_you_can", "Move what you can to higher ground",
+			"They moved what they could to higher ground, and the river went down on its own.",
+		),
+	])
+	return event
+
+
+func _smoke_in_the_next_valley() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"smoke_in_the_next_valley", "Smoke beyond the ridge", &"exploration",
+		SETTLED_STORY_DAY[&"neighbours"],
+		"A thin column of smoke rises beyond the ridge, where there was never smoke before."
+	)
+	event.choices = _choices([
+		_answer(
+			&"send_a_gift", "Send a gift of grain over the ridge",
+			"A sack of grain went over the ridge. A string of shells came back, and a message "
+			+ "nobody could read.",
+			[_spend(&"food", 12), _set_flag(&"good_neighbours")],
+			[_has(&"food", 12)],
+		),
+		_answer(
+			&"watch_and_wait", "Watch, and wait to be visited",
+			"They watched the smoke for three days, and the smoke, presumably, watched them.",
+		),
+	])
+	return event
+
+
+func _pots_for_salt() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"pots_for_salt", "Salt", &"exploration", SETTLED_STORY_DAY[&"salt"],
+		"A trader from the coast has offered a bag of grey salt for a load of fired pots."
+	)
+	event.requires.append(_earned(&"fired_clay"))
+	event.choices = _choices([
+		_answer(
+			&"trade_pots_for_salt", "Trade a load of pots for the salt",
+			"The pots went off on a donkey, and the salt made the winter meat last until spring.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 6), _set_flag(&"salt")],
+		),
+		_answer(
+			&"keep_the_pots", "Keep the pots",
+			"The pots were kept, and the trader went away with a polite face and no pots.",
+		),
+	])
+	return event
+
+
+func _winter_count() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"winter_count", "Before winter", &"settlement", SETTLED_STORY_DAY[&"count"],
+		"The leaves are turning. Somebody has counted the stores twice, and got two different answers."
+	)
+	event.choices = _choices([
+		_answer(
+			&"lay_in_more", "Lay in more firewood and set it dry",
+			"Firewood was stacked along every wall, and the winter looked at it and thought better of it.",
+			[_spend(&"wood", 15), _set_flag(&"winter_ready")],
+			[_has(&"wood", 15)],
+		),
+		_answer(
+			&"trust_the_stores", "Trust the stores",
+			"The stores were trusted, and held, and nobody said anything about the counting.",
+		),
+	])
+	return event
+
+
+func _green_beads() -> EventDef:
+	var event: EventDef = _settled_story_about(
+		&"green_beads", "What the stone does", &"exploration", SETTLED_STORY_DAY[&"beads"],
+		"{subject} has been turning the green stone over for days. It is soft enough to scratch, "
+		+ "and it does something strange in a hot fire.",
+		VillagerState.TRAIT_CURIOUS
+	)
+	event.requires.append(_earned(&"green_stone"))
+	event.choices = _choices([
+		_answer(
+			&"shape_beads", "Shape it into beads for everyone",
+			"{subject} shaped a bead for everyone in the camp, and wearing one became a way of belonging.",
+			[_set_flag(&"green_beads")],
+		),
+		_answer(
+			&"try_the_fire", "Put more in the fire, and see what it does",
+			"{subject} put more of the green stone in the fire, and at the bottom of the ash there was "
+			+ "a bright dribble of metal.",
+			[_set_flag(&"copper_tried")],
+		),
+	])
+	return event
+
+
+func _the_low_wall() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"the_low_wall", "How far the village goes", &"settlement", SETTLED_STORY_DAY[&"wall"],
+		"The village has grown past the edge of anyone's idea of it. Someone has asked where, "
+		+ "exactly, it stops."
+	)
+	event.choices = _choices([
+		_answer(
+			&"build_a_low_wall", "Raise a low wall of fieldstones",
+			"A low wall of fieldstones went up round the village, and everyone sat on it at least once.",
+			[_spend(&"wood", 25), _set_flag(&"low_wall")],
+			[_has(&"wood", 25)],
+		),
+		_answer(
+			&"keep_it_open", "Leave it open",
+			"The village was left open, and the paths went out from it like the spokes of a wheel.",
+			[_set_flag(&"open_village")],
+		),
+	])
+	return event
+
+
+func _looking_back() -> EventDef:
+	var event: EventDef = _settled_story_about(
+		&"looking_back", "Up at the cave", &"character", SETTLED_STORY_DAY[&"looking_back"],
+		"{subject} climbed up to the cave this evening, and sat in the mouth of it for a long while, "
+		+ "looking down at the roofs.",
+		VillagerState.TRAIT_NATURE_LOVING
+	)
+	event.choices = _choices([
+		_answer(
+			&"light_the_cave", "Light a fire in the cave, once every year",
+			"A small fire was lit in the cave, and it was agreed that it would be lit again next year.",
+			[_set_flag(&"cave_remembered")],
+		),
+		_answer(
+			&"let_it_be", "Let the cave be",
+			"The cave was let be, dark and dry, and there were bats in it by spring.",
+		),
+	])
+	return event
+
+
 func _ambient_lines() -> Array[EventDef]:
 	var lines: Array[EventDef] = [
 		_ambient(
@@ -1612,6 +2192,149 @@ func _remembered(event_id: StringName, flag: StringName, line: String) -> EventD
 	var event: EventDef = _ambient(event_id, line)
 	event.requires.append(_cond(SimCondition.Kind.FLAG_SET, flag))
 	return event
+
+
+## The Settled Age's one-line moments. They carry the age's feel (roofs, fields and herds, pots and
+## cloth), several only for the group's path or an earlier answer, and each is a little rarer than
+## the Cave Age's because those keep happening too.
+func _settled_ambient_lines() -> Array[EventDef]:
+	var roofs: Array[SimCondition] = [_earned(&"first_roof")]
+	var farmers: Array[SimCondition] = [_flag_set(&"path_agriculture")]
+	var herders: Array[SimCondition] = [_flag_set(&"path_herding")]
+	return [
+		_settled_ambient(
+			&"smoke_from_roofs",
+			"On still mornings the smoke stood straight up from every roof, each in its own thread.",
+			roofs
+		),
+		_settled_ambient(
+			&"swallows",
+			"The swallows came back to the eaves, as if the roofs had been built for them.", roofs
+		),
+		_settled_ambient(
+			&"dogs_at_dusk", "The dogs barked at dusk, and somebody answered from the next roof."
+		),
+		_settled_ambient(
+			&"harvest_moon",
+			"The moon came up huge and orange over the fields, and work went on by its light."
+		),
+		_settled_ambient(
+			&"worn_path",
+			"A path has worn itself between the huts and the river, deep enough to hold the rain."
+		),
+		_settled_ambient(
+			&"smell_of_bread",
+			"The smell of flat bread on hot stones drifted over the camp, and people found reasons "
+			+ "to pass by.",
+			[_earned(&"first_harvest")]
+		),
+		_settled_ambient(
+			&"pots_ring",
+			"Someone tapped a pot to hear it ring, and then every pot in the camp had to be tapped.",
+			[_earned(&"fired_clay")]
+		),
+		_settled_ambient(
+			&"spindle_turns",
+			"A spindle turned in the shade, and the thread grew longer than anyone had noticed.",
+			[_earned(&"woven_cloth")]
+		),
+		_settled_ambient(
+			&"rain_on_the_field",
+			"Rain came soft and steady all day, and everyone stood in a doorway to watch it fall "
+			+ "on the field.",
+			farmers
+		),
+		_settled_ambient(
+			&"bleating_at_night",
+			"Bleating came across the fold all night. Nobody minded; it meant the herd was there.",
+			herders
+		),
+		_settled_ambient_about(
+			&"counting_roofs", VillagerState.TRAIT_CURIOUS,
+			"{subject} counted the roofs twice and got two different answers, and counted them "
+			+ "a third time."
+		),
+		_settled_ambient_about(
+			&"everyones_business", VillagerState.TRAIT_SOCIAL,
+			"{subject} knew everyone's business by noon, and shared it generously."
+		),
+		_settled_ambient_about(
+			&"same_fence", VillagerState.TRAIT_INDUSTRIOUS,
+			"{subject} mended the same fence three times in a week, and was not satisfied."
+		),
+		_settled_ambient_about(
+			&"flower_corner", VillagerState.TRAIT_NATURE_LOVING,
+			"{subject} sowed one corner of the field with flowers, and nobody had the heart to say "
+			+ "anything."
+		),
+		_settled_ambient_about(
+			&"with_the_herd", VillagerState.TRAIT_NATURE_LOVING,
+			"{subject} sat with the herd until dark, and said that they were good company.",
+			herders
+		),
+		_settled_remembered(
+			&"stores_in_the_cave", &"cave_store",
+			"Someone went up to the cave for the winter store, and came back sneezing from the dust."
+		),
+		_settled_remembered(
+			&"well_water", &"well_dug",
+			"The water from the new well tasted of stone, and everyone agreed it was better."
+		),
+		_settled_remembered(
+			&"scarecrow_hat", &"scarecrow",
+			"The scarecrow was wearing a different hat this morning, and nobody owned up."
+		),
+		_settled_remembered(
+			&"festival_tune", &"festival",
+			"Someone began humming the festival tune, and was joined within a bar."
+		),
+		_settled_remembered(
+			&"kiln_night", &"kiln",
+			"The kiln was lit, and for a night the whole camp smelled of hot clay."
+		),
+		_settled_remembered(
+			&"red_tunic", &"dyed_cloth",
+			"A red tunic crossed the field, and everyone stopped to watch it go."
+		),
+		_settled_remembered(
+			&"wall_at_dusk", &"low_wall",
+			"Someone leaned on the low wall at dusk and looked toward the hills for a long time."
+		),
+		_settled_remembered(
+			&"beads_clicking", &"green_beads",
+			"Green beads clicked softly as people walked, a small sound the whole camp shared."
+		),
+	]
+
+
+## A Settled Age line: only in the age, rarer than a Cave Age line, and only when every one of
+## `needs` holds.
+func _settled_ambient(
+	event_id: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _ambient(event_id, line)
+	event.requires = _conds([_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED)])
+	event.requires.append_array(needs)
+	event.chance_per_tick = SETTLED_AMBIENT_CHANCE
+	return event
+
+
+func _settled_ambient_about(
+	event_id: StringName, trait_name: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _settled_ambient(event_id, line, needs)
+	event.category = &"character"
+	event.needs_subject = true
+	event.subject_requires = _conds([
+		_cond(SimCondition.Kind.SUBJECT_HAS_TRAIT, trait_name),
+		_cond(SimCondition.Kind.SUBJECT_AT_HOME),
+		_cond(SimCondition.Kind.SUBJECT_AWAKE),
+	])
+	return event
+
+
+func _settled_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
+	return _settled_ambient(event_id, line, [_flag_set(flag)])
 
 
 func _build_choice(

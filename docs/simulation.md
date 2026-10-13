@@ -25,7 +25,7 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 
 Re-themed as the **Cave Age** (see [ages](ages.md)), with the turn into the **Settled Age**.
 
-- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 78 events, 1 plant. Of the events, 17 are the Cave Age milestones, the fire story, the exploration chain and weather; 11 are the Settled Age's six milestones (their routes); 22 are the small story decisions that fill the Cave Age (see `ages.md`, "between the milestones"); 28 are one-line journal moments.
+- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 125 events, 1 plant. Of the events, 17 are the Cave Age milestones, the fire story, the exploration chain and weather; 11 are the Settled Age's six milestones (their routes); 22 are the small story decisions that fill the Cave Age (see `ages.md`, "between the milestones") and 24 those of the Settled Age; 28 are Cave Age one-line journal moments and 23 the Settled Age's.
 - Cave Age buildings: Lookout, Drying Rack, Knapping Spot. Settled Age buildings: Field, Hut (they only appear once settled).
 - **The world starts without fire.** A curious villager may find a burning tree, or an industrious one may strike a spark; passing on either lights the fire anyway via embers. Nothing can be built until there is fire.
 - The chain: fire → build the Lookout → a curious villager asks to scout the western forest → they return with a seed → you plant it → it flowers → a rare butterfly visits.

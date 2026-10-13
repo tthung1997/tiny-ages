@@ -160,7 +160,9 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   must stay empty; a test enforces it. Pacing numbers live in its tables: `UNLOCK_DAY`
   (milestones), `STORY_DAY` (the small story decisions between them), `AMBIENT_CHANCE`,
   `GATHER_RATE`; `SimConfig.comfortable_stock` stops villagers and buildings piling up stock.
-  A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
+  The Settled Age has the same tables in days *into the age*: `SETTLED_DAY` (milestones),
+  `SETTLED_STORY_DAY`, `SETTLED_AMBIENT_CHANCE`, with `_settled_story`, `_settled_ambient` and
+  friends. A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
   harmless, a journal line each, a flag for later lines); a quiet moment is `_ambient`,
   `_ambient_about` (a trait) or `_remembered` (a flag). Costs are a `_has` requirement plus
   a `_spend` effect, so the panel shows "needs 8 wood".

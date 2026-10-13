@@ -40,9 +40,39 @@ took. 72 days is a real day.
 - The Cave Age's design rules carry over: every answer is harmless, a declined decision comes back,
   and a test (`test_sim_settled.gd`) plays from the turn on both paths, accepting everything and
   passing on everything twice first, and proves all six are earned, never before their day.
-- **Still to do for the Settled Age**: about twenty small story decisions and twenty ambient lines
-  between these milestones (the Cave Age's "between the milestones" fill), a Settled panel skin and
-  the world art (huts, fields, a pen, cloth).
+- **Still to do for the Settled Age**: a Settled panel skin and the world art (huts, fields, a pen, cloth).
+
+## Settled Age: between the milestones
+
+Same rules as the Cave Age's fill (two harmless answers, a journal line each, a flag for later lines, nothing fails), paced by one table (`SETTLED_STORY_DAY`, days into the age). A bot answering at once is asked something every 3-9 real hours across the age. Costs are bigger than the Cave Age's (4-25) because the stores are fuller; they are what the stores are for.
+
+| From day | Decision | What the answers do |
+|---|---|---|
+| 2 | **What the cave is for** | Make it the winter store, or keep it for sleeping and old stories |
+| 8 | **Whose ground** | Boundary stones (4 wood), or leave the ground open |
+| 14 | **The digging sticks** (farmers) / **Into the sown ground** (herders) | A forked branch pulled together, or digging by hand; a hurdle gate (6 wood), or a watcher |
+| 38 | **Rain through the thatch** (needs a roof) | Patch it (6 wood), or wait |
+| 46 | **A place to fetch water** | Dig a well (8 wood), or keep carrying |
+| 58 | **Birds in the field** (farmers) / **A dog at the fold** (herders) | A scarecrow, or turns chasing; feed the dog (2 food), or leave it |
+| 70 | **Damp grain** (needs a harvest) | A clay-lined pit (6 wood), or hang the baskets |
+| 82 | **Over the fence** (a social villager) | Sit them down together, or let it cool |
+| 92 | **More than enough** (needs a harvest) | A festival (20 food), or lay it by |
+| 100 | **Before the huts** (a social villager) | Tell the whole story of the cave, or a short one |
+| 118 | **A pit for the pots** (needs fired clay) | Build a kiln (15 wood), or keep baking in ashes |
+| 130 | **Nine days of rain** | Dig a ditch (8 wood), or wait |
+| 142 | **Small brown birds** | Scatter grain (3 food) for hens, or let them be |
+| 172 | **A colour for the cloth** (needs cloth) | Dye it (6 food), or keep it plain |
+| 184 | **Two posts and some thread** (an industrious villager, needs cloth) | Build a loom (8 wood), or stay with the spindle |
+| 196 | **The river is rising** | Raise a bank (20 wood), or move what you can |
+| 208 | **Smoke beyond the ridge** | A gift of grain (12 food), or watch and wait |
+| 226 | **Salt** (needs fired clay) | Trade pots for salt (+6 food), or keep the pots |
+| 238 | **Before winter** | Lay in firewood (15 wood), or trust the stores |
+| 262 | **What the stone does** (a curious villager, needs the green stone) | Shape beads for everyone, or put more in the fire (sets `copper_tried`) |
+| 286 | **How far the village goes** | A low wall (25 wood), or leave it open |
+| 312 | **Up at the cave** (a nature-loving villager) | Light the cave once a year, or let it be |
+
+- **Looking outward and forward.** The last few answers set flags a Bronze Age can read: `green_stone`, `copper_tried`, `low_wall`, `open_village`, `good_neighbours`, `salt`, `kiln`.
+- **Ambient lines**: 23 one-line moments, each rarer than a Cave Age line (`SETTLED_AMBIENT_CHANCE`) because the Cave Age lines keep happening too. Some only after a milestone (swallows in the eaves; bread; a pot's ring; a spindle), some only for farmers or herders, five about a trait (never told while the villager sleeps), and eight remember an answer (the well water, the scarecrow's hat, the festival tune, the kiln night, the red tunic, the low wall, the beads).
 
 ## Candidate ages (for reference)
 
