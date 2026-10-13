@@ -102,14 +102,19 @@ var PAL = {
   furBrown: { shirt: '#a8703f', shirtD: '#7a4c28', pants: '#7a4c28', hair: '#2f2a26', hairD: '#1c1917', hairL: '#4a423c' },
   furTan:   { shirt: '#d0a068', shirtD: '#a8784a', pants: '#a8784a', hair: '#6a3a20', hairD: '#4a2814', hairL: '#8a5a38' },
   furGrey:  { shirt: '#b4b1b9', shirtD: '#8a8792', pants: '#8a8792', hair: '#d9d9e0', hairD: '#b0b0bc', hairL: '#ffffff' },
-  furOchre: { shirt: '#cf7a46', shirtD: '#a05830', pants: '#a05830', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' }
+  furOchre: { shirt: '#cf7a46', shirtD: '#a05830', pants: '#a05830', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' },
+  // Settled Age: woven tunics (use with cloth: true); `trim` is the coloured border and collar
+  clothMira: { shirt: '#e6dcc2', shirtD: '#c2b48e', trim: '#b8573a', pants: '#7a5a3a', hair: '#6a3a20', hairD: '#4a2814', hairL: '#8a5a38' },
+  clothTheo: { shirt: '#6f8fae', shirtD: '#56738f', trim: '#e6dcc2', pants: '#5a4a3a', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' },
+  clothWren: { shirt: '#9db08a', shirtD: '#7e9270', trim: '#e6dcc2', pants: '#6a5a4a', hair: '#d9d9e0', hairD: '#b0b0bc', hairL: '#ffffff' }
 };
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
 //       role: farmer|builder|explorer|woodcutter|fisher|gatherer|undefined,
 //       hair: short|tuft|long|bun|pony,
-//       fur: true (hide tunic, bare legs, bone necklace), stone: true (stone tool heads) }
+//       fur: true (hide tunic, bare legs, bone necklace), cloth: true (woven tunic, trousers; the
+//       palette needs `trim`), stone: true (stone tool heads) }
 // Draw into a Buf(27, 27); feet land on row 26, body centre column 13, faces right.
 // Use mirror() for left-facing. Place with outlined(buf, OUT).
 function vil(o) {
@@ -137,6 +142,11 @@ function vil(o) {
     if (o.fur) {
       for (var hm = 0; hm < bw; hm += 2) b.px(bx + hm, bodyTop + bh, cl.shirtD); // ragged hem
       b.px(bx + 1, bodyTop, '#f4ecd8'); b.px(bx + 2, bodyTop, '#f4ecd8'); // bone necklace
+    }
+    if (o.cloth) { // Settled Age: a woven tunic with a coloured border, a collar and a hem to the knee
+      b.rect(bx, bodyTop + bh - 3, bw, 1, cl.trim);
+      b.px(bx + 1, bodyTop, cl.trim); b.px(bx + 2, bodyTop, cl.trim);
+      b.rect(bx, bodyTop + bh, bw, 1, cl.shirtD);
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

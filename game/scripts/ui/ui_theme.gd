@@ -26,10 +26,10 @@ static func make(skin: PanelSkin) -> Theme:
 	return theme
 
 
-## The panel's own background: the skin's hide, drawn at its exact size.
-static func panel_box(skin: PanelSkin) -> StyleBoxTexture:
+## The panel's own background: the skin's art, drawn at its exact size (`height` rows).
+static func panel_box(skin: PanelSkin, height: int = PanelSkin.PANEL_HEIGHT) -> StyleBoxTexture:
 	var box: StyleBoxTexture = StyleBoxTexture.new()
-	box.texture = skin.piece(skin.panel_region)
+	box.texture = skin.panel_texture(height)
 	box.content_margin_left = skin.content_margins.position.x
 	box.content_margin_top = skin.content_margins.position.y
 	box.content_margin_right = skin.content_margins.size.x

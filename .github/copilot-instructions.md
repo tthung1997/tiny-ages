@@ -184,7 +184,8 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   has (`WorldLayout.piece_path`), and `WorldView` retextures when the age turns. A new age draws
   only what changes, with a `tools/art/<age>_*.js` script, and everything else stays. Pieces
   that show because of a flag, achievement or building (not a building of that name) are
-  `SceneProps` (pure, tested); add one there and in the art script.
+  `SceneProps` (pure, tested); add one there and in the art script. Villagers wear the woven-tunic
+  sheets once `woven_cloth` is earned (`WorldLayout.villager_sheet_path`).
 - **The world is wider than the viewport** (decision A8). Everything lives in "camp pixels":
   the camp page is x 0..384, the world runs from `WorldLayout.WORLD_LEFT` (−384) to
   `WORLD_RIGHT` (768), and the viewport shows one 384 px page. `WorldView` keeps a scrolling
@@ -229,7 +230,8 @@ are doing, whether there is fire, and whether food is low; a pure function of th
 holds still between ticks).
 `PanelHost` draws them above the strip and only reports the choice picked; `Game` applies it
 with `Simulation.resolve_decision`. While a panel is open `DesktopWindow.set_panel_height`
-grows the window upward and the click region takes in the panel. `StripIcons` is the bulb and
+grows the window upward by the panel's current height (`PanelHost.current_height()`; a
+villager's panel is shorter, see `PanelHost.HEIGHTS`) and the click region takes in the panel. `StripIcons` is the bulb and
 the journal book. The sim withdraws a decision the world has moved past
 (`Simulation.withdraw_stale_decisions`), so the UI never asks a stale question.
 

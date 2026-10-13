@@ -30,6 +30,7 @@ var _buildings: Dictionary = {}
 var _sites: Dictionary = {}
 var _props: Dictionary = {}
 var _art_era: int = -1
+var _cloth: bool = false
 var _flower_sprout: Sprite2D
 var _flower_bloom: Sprite2D
 var _fire_pit: Sprite2D
@@ -299,6 +300,11 @@ func _refresh_props() -> void:
 
 func _refresh_actors() -> void:
 	var world: WorldState = _sim.world
+	var cloth: bool = WorldLayout.wears_cloth(world)
+	if cloth != _cloth:
+		_cloth = cloth
+		for existing: VillagerActor in _actors.values():
+			existing.set_sheet(_sheet_for(existing.get_meta(&"look")))
 	for slot: int in world.villagers.size():
 		var villager: VillagerState = world.villagers[slot]
 		var actor: VillagerActor = _actors.get(villager.id)
@@ -309,14 +315,16 @@ func _refresh_actors() -> void:
 
 func _make_actor(villager: VillagerState) -> VillagerActor:
 	var look: StringName = villager.look if villager.look != &"" else villager.id
-	var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, look]
-	if not ResourceLoader.exists(path):
-		path = "%smira.png" % WorldLayout.VILLAGER_DIR
 	var actor: VillagerActor = VillagerActor.new()
+	actor.set_meta(&"look", look)
 	_world.add_child(actor)
-	actor.setup(villager.id, load(path) as Texture2D)
+	actor.setup(villager.id, _sheet_for(look))
 	_actors[villager.id] = actor
 	return actor
+
+
+func _sheet_for(look: StringName) -> Texture2D:
+	return load(WorldLayout.villager_sheet_path(look, _cloth)) as Texture2D
 
 
 ## The camp's backdrop layer plus the same layer of the west and east pages (art/cave_pages.js).

@@ -89,6 +89,15 @@ var role_text: String = ""
 var thought: String = ""
 
 
+## Their traits and role on one line, for example "Curious, social - Scout", so a short panel has
+## room for a two-line thought.
+func byline() -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	if not traits_text.is_empty():
+		parts.append(traits_text)
+	if not role_text.is_empty():
+		parts.append(role_text)
+	return " - ".join(parts)
 static func present(
 	villager: VillagerState, world: WorldState, config: SimConfig
 ) -> VillagerPresenter:

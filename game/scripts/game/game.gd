@@ -95,6 +95,7 @@ func _ready() -> void:
 	_panel.choice_picked.connect(_on_choice_picked)
 	_panel.decisions_requested.connect(_open_decisions)
 	_panel.closed.connect(_fit_window)
+	_panel.height_changed.connect(_fit_window)
 	_window.layout_changed.connect(_on_layout_changed)
 	_hud.visible = options.get("hud", true)
 	_refresh_pending()
@@ -297,7 +298,7 @@ func _apply_dev_world(options: Dictionary) -> void:
 
 
 func _fit_window() -> void:
-	_window.set_panel_height(PanelHost.HEIGHT if _panel.is_open() else 0)
+	_window.set_panel_height(_panel.current_height())
 	_update_hud_region()
 
 

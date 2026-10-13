@@ -48,6 +48,7 @@ func test_the_card_has_a_name_traits_and_a_role() -> void:
 	assert_eq(view.display_name, "Mira")
 	assert_eq(view.traits_text, "Curious, nature-loving")
 	assert_eq(view.role_text, "Scout")
+	assert_eq(view.byline(), "Curious, nature-loving - Scout", "Traits and role share one line")
 	assert_false(view.thought.is_empty())
 	assert_true(ResourceLoader.exists("%s%s.png" % [WorldLayout.VILLAGER_DIR, view.look]))
 
@@ -60,6 +61,9 @@ func test_a_villager_with_no_role_or_traits_has_empty_lines() -> void:
 	var view: VillagerPresenter = VillagerPresenter.present(villager, sim.world, sim.config)
 	assert_eq(view.traits_text, "")
 	assert_eq(view.role_text, "")
+	assert_eq(view.byline(), "", "Nothing to show, so no empty line")
+	villager.profession = &"scout"
+	assert_eq(VillagerPresenter.present(villager, sim.world, sim.config).byline(), "Scout")
 
 
 func test_a_thought_holds_still_within_a_moment_and_changes_over_time() -> void:

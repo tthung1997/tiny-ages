@@ -10,6 +10,9 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
 const ERA_DIRS: Array[String] = ["cave", "settled"]
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
+## The same villagers in woven tunics, worn once the group has woven cloth.
+const CLOTH_VILLAGER_DIR: String = "res://assets/world/settled/villagers/"
+const CLOTH_ACHIEVEMENT: StringName = &"woven_cloth"
 
 ## What the viewport shows at once: one "page", the camp. Everything below is in camp pixels
 ## (the camp page's top-left is 0, 0); the world extends one page west and one page east.
@@ -92,6 +95,24 @@ const FORAGE_SPOTS: Array[Vector2] = [Vector2(188, 77), Vector2(206, 78), Vector
 ## The forest to the west is walkable; the camp's river stops the east at about x = 298.
 const WANDER_X: Vector2 = Vector2(-150.0, 290.0)
 const WANDER_Y: Vector2 = Vector2(75.0, 79.0)
+
+
+## Whether the group has woven cloth, so villagers swap their furs for woven tunics.
+static func wears_cloth(world: WorldState) -> bool:
+	return world.has_achievement(CLOTH_ACHIEVEMENT)
+
+
+## The sheet that draws a villager: the woven-tunic one once the group wears cloth, else (or if a
+## look has no cloth sheet) the fur one, and Mira's for a look nobody has drawn.
+static func villager_sheet_path(look: StringName, cloth: bool) -> String:
+	if cloth:
+		var woven: String = "%s%s.png" % [CLOTH_VILLAGER_DIR, look]
+		if ResourceLoader.exists(woven):
+			return woven
+	var fur: String = "%s%s.png" % [VILLAGER_DIR, look]
+	if ResourceLoader.exists(fur):
+		return fur
+	return "%smira.png" % VILLAGER_DIR
 
 
 static func fire_frame_name(frame: int) -> StringName:

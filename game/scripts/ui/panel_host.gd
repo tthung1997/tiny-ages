@@ -9,9 +9,16 @@ extends Control
 signal choice_picked(decision_id: StringName, choice_id: StringName)
 signal decisions_requested
 signal closed
+## The open panel switched to content with a different height (the window must follow).
+signal height_changed
 
 const WIDTH: int = 384
+## The tallest panel, which most content uses. A kind of content with less to show has its own
+## shorter height in HEIGHTS.
 const HEIGHT: int = PanelSkin.PANEL_HEIGHT
+## Panel height by kind of content. A villager's thought is a few short lines, so it gets a short
+## panel; the decision, journal and away panels fill a full one.
+const HEIGHTS: Dictionary = {&"villager": 112}
 const TEXT_WIDTH: float = 352.0
 const DAY_WIDTH: float = 34.0
 ## The unroll is stepped, to match the pixel art.
@@ -34,6 +41,7 @@ var _footer_label: Label = Label.new()
 var _secondary: Button = Button.new()
 var _primary: Button = Button.new()
 var _mode: StringName = &""
+var _height: int = HEIGHT
 var _villager_id: StringName = &""
 var _open: bool = false
 var _reveal: int = 0
@@ -41,15 +49,14 @@ var _tween: Tween
 
 
 func _init() -> void:
-	custom_minimum_size = Vector2(WIDTH, HEIGHT)
-	size = Vector2(WIDTH, HEIGHT)
+	size = Vector2(WIDTH, _height)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_clip.clip_contents = true
 	_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_clip)
-	_card.size = Vector2(WIDTH, HEIGHT)
-	_card.custom_minimum_size = Vector2(WIDTH, HEIGHT)
+	_card.size = Vector2(WIDTH, _height)
+	_card.custom_minimum_size = Vector2(WIDTH, _height)
 	_clip.add_child(_card)
 	var root: VBoxContainer = VBoxContainer.new()
 	root.add_theme_constant_override("separation", 2)
@@ -75,14 +82,24 @@ func _init() -> void:
 	footer.add_child(_primary)
 	root.add_child(footer)
 	set_skin(PanelSkin.cave())
-	_set_reveal(HEIGHT)
+	_set_reveal(_height)
+
+
+## The height the panel has for a kind of content.
+static func height_for(content_mode: StringName) -> int:
+	return int(HEIGHTS.get(content_mode, HEIGHT))
+
+
+## How much room the open panel needs above the strip, 0 when it is closed.
+func current_height() -> int:
+	return _height if _open else 0
 
 
 ## Dresses the panel in an age's material. Safe to call while it is showing.
 func set_skin(skin: PanelSkin) -> void:
 	_skin = skin
 	_card.theme = UiTheme.make(skin)
-	_card.add_theme_stylebox_override("panel", UiTheme.panel_box(skin))
+	_card.add_theme_stylebox_override("panel", UiTheme.panel_box(skin, _height))
 	_title.add_theme_font_override("font", skin.title_font())
 	_title.add_theme_color_override("font_color", skin.title_color)
 	_footer_label.add_theme_color_override("font_color", skin.muted)
@@ -153,14 +170,12 @@ func show_villager(sim: Simulation, villager_id: StringName) -> void:
 	_begin(&"villager", view.display_name)
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
-	row.add_child(_portrait(view.look))
+	row.add_child(_portrait(view.look, WorldLayout.wears_cloth(sim.world)))
 	var column: VBoxContainer = VBoxContainer.new()
 	column.add_theme_constant_override("separation", 3)
 	var width: float = TEXT_WIDTH - PORTRAIT_SIZE.x - 8.0
-	if not view.traits_text.is_empty():
-		column.add_child(_text(view.traits_text, true, width))
-	if not view.role_text.is_empty():
-		column.add_child(_text(view.role_text, true, width))
+	if not view.byline().is_empty():
+		column.add_child(_text(view.byline(), true, width))
 	column.add_child(_text(view.thought, false, width))
 	row.add_child(column)
 	_content.add_child(row)
@@ -205,17 +220,34 @@ func _begin(new_mode: StringName, title_text: String) -> void:
 	_primary.visible = false
 	_scroll.scroll_vertical = 0
 	var was_visible: bool = visible
-	var already_open: bool = _open and _reveal == HEIGHT
+	var was_open: bool = _open
+	var resized: bool = _apply_height(height_for(new_mode))
+	var already_open: bool = _open and _reveal == _height
 	_open = true
 	visible = true
+	if resized and was_open:
+		height_changed.emit()
 	if already_open:
 		return
 	if _use_animation():
 		if not was_visible:
 			_set_reveal(0)
-		_animate_to(HEIGHT, Callable())
+		_animate_to(_height, Callable())
 	else:
-		_set_reveal(HEIGHT)
+		_set_reveal(_height)
+
+
+## Gives the panel and its art a new height. True if it changed.
+func _apply_height(height: int) -> bool:
+	if height == _height:
+		return false
+	_height = height
+	size = Vector2(WIDTH, height)
+	_card.custom_minimum_size = Vector2(WIDTH, height)
+	_card.size = Vector2(WIDTH, height)
+	_card.add_theme_stylebox_override("panel", UiTheme.panel_box(_skin, height))
+	_set_reveal(mini(_reveal, height))
+	return true
 
 
 func _use_animation() -> bool:
@@ -224,26 +256,26 @@ func _use_animation() -> bool:
 
 func _finish_close() -> void:
 	visible = false
-	_set_reveal(HEIGHT)
+	_set_reveal(_height)
 	closed.emit()
 
 
 ## The panel rolls out from its bottom edge: the card stays put while the window onto it grows.
 func _set_reveal(height: int) -> void:
 	_reveal = height
-	_clip.position = Vector2(0.0, float(HEIGHT - height))
+	_clip.position = Vector2(0.0, float(_height - height))
 	_clip.size = Vector2(float(WIDTH), float(height))
-	_card.position = Vector2(0.0, float(height - HEIGHT))
+	_card.position = Vector2(0.0, float(height - _height))
 
 
 func _animate_to(target: int, done: Callable) -> void:
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
 	var from: int = _reveal
-	var step: int = HEIGHT / UNROLL_STEPS
+	var step: int = maxi(_height / UNROLL_STEPS, 1)
 	_tween = create_tween()
 	_tween.tween_method(
-		func(t: float) -> void: _set_reveal(clampi(roundi(lerpf(from, target, t) / step) * step, 0, HEIGHT)),
+		func(t: float) -> void: _set_reveal(clampi(roundi(lerpf(from, target, t) / step) * step, 0, _height)),
 		0.0, 1.0, UNROLL_SECONDS,
 	)
 	if done.is_valid():
@@ -325,10 +357,8 @@ func _text(text: String, muted: bool = false, width: float = TEXT_WIDTH) -> Labe
 
 
 ## The villager's idle frame from their sheet, at the size they are on screen.
-func _portrait(look: StringName) -> TextureRect:
-	var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, look]
-	if not ResourceLoader.exists(path):
-		path = "%smira.png" % WorldLayout.VILLAGER_DIR
+func _portrait(look: StringName, cloth: bool) -> TextureRect:
+	var path: String = WorldLayout.villager_sheet_path(look, cloth)
 	var picture: TextureRect = TextureRect.new()
 	var sheet: Texture2D = load(path) as Texture2D
 	if sheet != null:

@@ -41,6 +41,15 @@ func setup(id: StringName, sheet: Texture2D) -> void:
 	_sprite.play(&"idle")
 
 
+## Swaps the art (the villager put on woven clothes) without losing the animation they are in.
+func set_sheet(sheet: Texture2D) -> void:
+	var animation: StringName = _sprite.animation
+	var frame: int = _sprite.frame
+	_sprite.sprite_frames = build_frames(sheet)
+	_sprite.play(animation)
+	_sprite.frame = frame
+
+
 ## Builds idle/walk/chop/hammer/spear animations from a villager sheet (11 cells of 28x30).
 static func build_frames(sheet: Texture2D) -> SpriteFrames:
 	var frames: SpriteFrames = SpriteFrames.new()

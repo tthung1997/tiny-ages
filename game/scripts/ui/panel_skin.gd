@@ -13,6 +13,9 @@ const LINE_SPACING: int = -4
 ## The panel's art height, and the y of the row of small pieces under it in the atlas.
 const PANEL_HEIGHT: int = 160
 const ITEM_ROW: int = PANEL_HEIGHT + 4
+## A shorter panel keeps the top of the art (title, rule, ornament) and this many rows of the bottom
+## rail, and drops the plain middle, so it looks the same, only shorter.
+const PANEL_FOOT: int = 8
 ## The OpenType tag of the weight axis ("wght") and the weight used for titles.
 const WEIGHT_TAG: int = 0x77676874
 const TITLE_WEIGHT: int = 700
@@ -39,6 +42,7 @@ var icon_regions: Dictionary = {}
 var _atlas: Texture2D
 var _font: Font
 var _title_font: Font
+var _panel_textures: Dictionary = {}
 
 
 ## The registered factories: era id -> Callable returning a PanelSkin.
@@ -101,6 +105,27 @@ func piece(region: Rect2) -> AtlasTexture:
 	var texture: AtlasTexture = AtlasTexture.new()
 	texture.atlas = atlas()
 	texture.region = region
+	return texture
+
+
+## The panel's art at `height` rows: the whole piece at full height, otherwise its top and bottom
+## rail with the middle cut out (a short panel for short content). Built once per height.
+func panel_texture(height: int) -> Texture2D:
+	var full: int = int(panel_region.size.y)
+	if height >= full:
+		return piece(panel_region)
+	height = maxi(height, PANEL_FOOT + 1)
+	if _panel_textures.has(height):
+		return _panel_textures[height]
+	var source: Image = atlas().get_image()
+	var width: int = int(panel_region.size.x)
+	var image: Image = Image.create(width, height, false, source.get_format())
+	image.blit_rect(source, Rect2i(0, 0, width, height - PANEL_FOOT), Vector2i.ZERO)
+	image.blit_rect(
+		source, Rect2i(0, full - PANEL_FOOT, width, PANEL_FOOT), Vector2i(0, height - PANEL_FOOT)
+	)
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
+	_panel_textures[height] = texture
 	return texture
 
 
