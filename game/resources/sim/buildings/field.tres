@@ -14,3 +14,5 @@ work_required = 36
 daily_output = Dictionary[StringName, float]({
 &"food": 3.0
 })
+completion_achievement = &"first_harvest"
+completion_achievement_title = "The First Harvest"

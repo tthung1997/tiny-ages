@@ -141,7 +141,10 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   `BuildingDef`, `PlantDef`. Content is data, never code: add new behaviour as a `Kind` on
   a condition or effect. **Append enum members at the end** — saved `.tres` files store the
   integer. Ages are linear and gated by hidden milestones plus a minimum time (`EraDef`,
-  `ADVANCE_ERA`, forward only); gate content with `ERA_AT_LEAST` (see `docs/ages.md`).
+  `ADVANCE_ERA`, forward only); gate content with `ERA_AT_LEAST`, and pace an age's own
+  milestones with `ERA_DAYS_AT_LEAST` (days since it began; `SETTLED_DAY`). The game is
+  open-ended: the newest age has no gate out, and a later age is added as data (see
+  `docs/ages.md`, G6–G7).
 - `systems/` — `VillagerSystem`, `ConstructionSystem`, `PlantSystem`, `EventSystem`,
   `EraSystem`, `EffectRunner`, driven by `Simulation._step()`. All randomness uses
   `Simulation.rng`. `EraSystem` opens the next age when its hidden gate is met (required

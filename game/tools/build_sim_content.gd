@@ -26,6 +26,18 @@ const STORY_DAY: Dictionary = {
 	&"shelter": 172, &"river": 192, &"grain": 232, &"deer": 252, &"trader": 272, &"stars": 294,
 	&"smoke": 316, &"tools_pile": 342,
 }
+## Days into the Settled Age (not since the start) before each of its milestones can happen. The
+## age is paced like the Cave Age: five hidden milestones spread over about the same five real
+## days (docs/ages.md). `reeds` is the third, late route to woven cloth, open to every group.
+const SETTLED_DAY: Dictionary = {
+	&"first_roof": 18,
+	&"first_harvest": 54,
+	&"fired_clay": 108,
+	&"woven_cloth": 162,
+	&"reeds": 198,
+	&"a_village": 216,
+	&"green_stone": 252,
+}
 ## Chance per tick of a small journal line, and how long before the same one can repeat. About one
 ## line every quarter hour of real time across all of them.
 const AMBIENT_CHANCE: float = 0.0045
@@ -116,9 +128,13 @@ func _buildings() -> Array[BuildingDef]:
 	knapping.completion_achievement_title = "Stone Tools"
 	var hut: BuildingDef = _building(&"hut", "Hut", {&"wood": 14}, 40)
 	hut.description = "A proper shelter, built where the group means to stay."
+	hut.completion_achievement = &"first_roof"
+	hut.completion_achievement_title = "A Roof of Your Own"
 	var field: BuildingDef = _building(&"field", "Field", {&"wood": 12}, 36)
 	field.description = "Ground cleared and sown, feeding the group season after season."
 	field.daily_output = _floats({&"food": 3.0})
+	field.completion_achievement = &"first_harvest"
+	field.completion_achievement_title = "The First Harvest"
 	return [lookout, rack, knapping, hut, field]
 
 
@@ -155,6 +171,7 @@ func _events() -> Array[EventDef]:
 		_heavy_rain(),
 		_cold_night(),
 	]
+	events.append_array(_settled_milestones())
 	events.append_array(_story_decisions())
 	events.append_array(_ambient_lines())
 	return events
@@ -439,8 +456,319 @@ func _settled_building_opportunity() -> EventDef:
 	event.chance_per_tick = 0.5
 	event.cooldown_ticks = 24
 	event.choices = _choices([
-		_build_choice(&"build_field", "Field", &"field", 12),
-		_build_choice(&"build_hut", "Hut", &"hut", 14),
+		_build_choice(&"build_hut", "Hut", &"hut", 14, 0, SETTLED_DAY[&"first_roof"]),
+		_build_choice(&"build_field", "Field", &"field", 12, 0, SETTLED_DAY[&"first_harvest"]),
+	])
+	return event
+
+
+## The Settled Age's six hidden milestones, each with more than one route (docs/ages.md). A group
+## that herds and a group that farms reach some by different roads, and one late route is open to
+## everyone so no group is locked out. The last one looks outward, to what the next age is built
+## on. Nothing here is shown to the player.
+func _settled_milestones() -> Array[EventDef]:
+	return [
+		_thatched_roof(), _first_calves(), _clay_hardens(), _shaped_bowls(), _flax_in_the_field(),
+		_wool_on_the_thorns(), _plaited_reeds(), _families_on_the_road(), _the_long_table(),
+		_green_stone_found(), _green_stone_traded(),
+	]
+
+
+## Every Settled milestone event: Settled Age, far enough into it, and not yet earned.
+func _settled_milestone(
+	event_id: StringName, title: String, category: StringName, favoured: StringName,
+	era_day: int, milestone: StringName
+) -> EventDef:
+	var event: EventDef = _milestone_event(event_id, title, category, favoured)
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", era_day),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone, 0, true),
+	])
+	return event
+
+
+func _earn(milestone: StringName, title: String) -> SimEffect:
+	return _eff(SimEffect.Kind.ACHIEVEMENT, milestone, 0, title)
+
+
+## A Roof of Your Own, second route (the first is building the Hut).
+func _thatched_roof() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"thatched_roof", "Rain through the hides", &"character",
+		VillagerState.TRAIT_INDUSTRIOUS, SETTLED_DAY[&"first_roof"], &"first_roof"
+	)
+	event.body = "{subject} is tired of rain dripping through the hides. Bundles of river " \
+			+ "reed, bound tight over the poles, might shed it."
+	event.choices = _choices([
+		_answer(
+			&"thatch_it", "Bind reeds into a thatch",
+			"{subject} lashed reed bundles over the poles, and that night the rain ran off "
+			+ "the roof as if it had never been a problem.",
+			[_earn(&"first_roof", "A Roof of Your Own")],
+		),
+		_answer(
+			&"make_do", "Make do with the hides",
+			"The hides dripped all night, and everyone moved their bedding to the dry side.",
+		),
+	])
+	return event
+
+
+## The First Harvest, the herders' route (the farmers' is building the Field).
+func _first_calves() -> EventDef:
+	var event: EventDef = _event(&"first_calves", "Calves in the spring", &"nature")
+	event.body = "The herd that winters by the camp has calves this spring: small, unsteady " \
+			+ "things, and their mothers watch the camp with suspicion."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", SETTLED_DAY[&"first_harvest"]),
+		_cond(SimCondition.Kind.FLAG_SET, &"path_herding"),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"first_harvest", 0, true),
+	])
+	event.chance_per_tick = 0.03
+	event.cooldown_ticks = 48
+	event.choices = _choices([
+		_answer(
+			&"tend_the_calves", "Keep them close and tend the herd",
+			"The group kept watch through the long nights of calving. By midsummer there was "
+			+ "milk, and nobody had lost an animal.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 4), _earn(&"first_harvest", "The First Calves")],
+		),
+		_answer(
+			&"let_them_roam", "Let the herd keep to itself",
+			"The herd kept to itself, and the calves were hardly seen again that spring.",
+		),
+	])
+	return event
+
+
+## Fired Clay, first route.
+func _clay_hardens() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"clay_hardens", "Clay by the fire", &"character", VillagerState.TRAIT_CURIOUS,
+		SETTLED_DAY[&"fired_clay"], &"fired_clay"
+	)
+	event.body = "{subject} left a basket smeared with river clay too close to the fire. The " \
+			+ "basket burned away, but the clay did not melt. It stood there hard and red, and " \
+			+ "rang when it was tapped."
+	event.choices = _choices([
+		_answer(
+			&"fire_a_pot", "Shape some clay and fire it on purpose",
+			"{subject} shaped a squat little pot and buried it in hot ashes. Next morning it "
+			+ "held water, and everyone had to hold it.",
+			[_earn(&"fired_clay", "Fired Clay")],
+		),
+		_answer(
+			&"leave_the_shell", "Leave it where it stands",
+			"The red shell of clay stayed by the fire, and was mostly used as a seat.",
+		),
+	])
+	return event
+
+
+## Fired Clay, second route.
+func _shaped_bowls() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"shaped_bowls", "Bowls in the sun", &"character", VillagerState.TRAIT_INDUSTRIOUS,
+		SETTLED_DAY[&"fired_clay"], &"fired_clay"
+	)
+	event.body = "{subject} has been shaping the soft clay of the riverbank into bowls and " \
+			+ "setting them out in the sun. They crack, one after another."
+	event.choices = _choices([
+		_answer(
+			&"bake_them", "Bake the bowls in the hot ashes",
+			"{subject} buried the bowls in glowing ash overnight. In the morning they rang "
+			+ "when they were tapped, and none of them leaked.",
+			[_earn(&"fired_clay", "Fired Clay")],
+		),
+		_answer(
+			&"keep_drying", "Keep drying them in the sun",
+			"The bowls dried in the sun again, and again some of them cracked.",
+		),
+	])
+	return event
+
+
+## Woven Cloth, the farmers' route.
+func _flax_in_the_field() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"flax_in_the_field", "Something in the field", &"nature",
+		VillagerState.TRAIT_NATURE_LOVING, SETTLED_DAY[&"woven_cloth"], &"woven_cloth"
+	)
+	event.requires.append(_cond(SimCondition.Kind.FLAG_SET, &"path_agriculture"))
+	event.body = "Among the sown seeds, {subject} noticed a tall plant with pale blue flowers. " \
+			+ "When the stems rot in the river, they peel into long, strong fibres."
+	event.choices = _choices([
+		_answer(
+			&"twist_the_fibres", "Twist the fibres into thread",
+			"{subject} twisted the fibres into thread, and the thread into a first rough strip "
+			+ "of cloth. It was crooked, and everyone wanted a piece.",
+			[_earn(&"woven_cloth", "Woven Cloth")],
+		),
+		_answer(
+			&"leave_it_standing", "Leave it standing",
+			"The blue flowers were left to go to seed, and the bees were pleased.",
+		),
+	])
+	return event
+
+
+## Woven Cloth, the herders' route.
+func _wool_on_the_thorns() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"wool_on_the_thorns", "Wool on the thorns", &"nature",
+		VillagerState.TRAIT_NATURE_LOVING, SETTLED_DAY[&"woven_cloth"], &"woven_cloth"
+	)
+	event.requires.append(_cond(SimCondition.Kind.FLAG_SET, &"path_herding"))
+	event.body = "Tufts of wool hang from every thorn bush along the herd's path. {subject} " \
+			+ "has been gathering them in the hem of a tunic."
+	event.choices = _choices([
+		_answer(
+			&"spin_the_wool", "Spin it into thread",
+			"{subject} spun the wool on a stick weighted with a stone, and by the new moon "
+			+ "there was cloth that kept the wind out.",
+			[_earn(&"woven_cloth", "Woven Cloth")],
+		),
+		_answer(
+			&"stuff_the_bedding", "Stuff it into the bedding",
+			"The wool went into the bedding, and for a while nobody was cold at night.",
+		),
+	])
+	return event
+
+
+## Woven Cloth, the late route open to every group.
+func _plaited_reeds() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"plaited_reeds", "Mats of reed", &"character", VillagerState.TRAIT_SOCIAL,
+		SETTLED_DAY[&"reeds"], &"woven_cloth"
+	)
+	event.body = "{subject} has been plaiting river reeds into mats, over and under, over and " \
+			+ "under. The mat has begun to look like something softer than a mat."
+	event.choices = _choices([
+		_answer(
+			&"show_the_others", "Show the others how it is done",
+			"{subject} showed the others the over-and-under, and soon the whole camp was "
+			+ "weaving, badly and happily.",
+			[_earn(&"woven_cloth", "Woven Cloth")],
+		),
+		_answer(
+			&"keep_it_a_mat", "Keep it a mat",
+			"The mat was put down by the door, where it was walked on.",
+		),
+	])
+	return event
+
+
+## Word from the Hills, first route. The green stone is copper ore; the flag is what the next age
+## will read.
+func _green_stone_found() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"green_stone_found", "A green stone", &"exploration", VillagerState.TRAIT_CURIOUS,
+		SETTLED_DAY[&"green_stone"], &"green_stone"
+	)
+	event.body = "{subject} brought back a stone from a stream in the hills, streaked bright " \
+			+ "green. It sat in the cook fire all night, and in the morning there was a bead of " \
+			+ "something red and gold in the ashes."
+	event.choices = _choices([
+		_answer(
+			&"follow_the_stream", "Follow the stream to where it came from",
+			"{subject} followed the stream up into the hills and found a cliff streaked green "
+			+ "from top to bottom, and came back with a heavy bag.",
+			[
+				_eff(SimEffect.Kind.SET_FLAG, &"green_stone"),
+				_earn(&"green_stone", "Word from the Hills"),
+			],
+		),
+		_answer(
+			&"keep_the_bead", "Keep the bead, and ask no more",
+			"{subject} strung the bead on a cord, and wears it where the others can see.",
+		),
+	])
+	return event
+
+
+## Word from the Hills, second route: a traveller brings the same stone.
+func _green_stone_traded() -> EventDef:
+	var event: EventDef = _event(&"green_stone_traded", "A traveller with green beads", &"exploration")
+	event.body = "A traveller has come over the hills with a string of bright green stones. " \
+			+ "They want grain, and will not say where the stones are from."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", SETTLED_DAY[&"green_stone"]),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"first_harvest"),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"green_stone", 0, true),
+	])
+	event.chance_per_tick = 0.02
+	event.cooldown_ticks = 72
+	event.choices = _choices([
+		_answer(
+			&"trade_for_stones", "Trade food for a pouch of the stones",
+			"The traveller left with a sack of grain, and the group had a pouch of green stones "
+			+ "and a rumour of the hills they came from.",
+			[
+				_spend(&"food", 8), _eff(SimEffect.Kind.SET_FLAG, &"green_stone"),
+				_earn(&"green_stone", "Word from the Hills"),
+			],
+			[_has(&"food", 8)],
+		),
+		_answer(
+			&"send_them_on", "Wish them well and send them on",
+			"The traveller was wished well and went on, and the green beads went with them.",
+		),
+	])
+	return event
+
+
+## A Village, first route: a roof to offer, and travellers who need one.
+func _families_on_the_road() -> EventDef:
+	var event: EventDef = _event(&"families_on_the_road", "Families on the road", &"exploration")
+	event.body = "Two families have stopped at the edge of the fields. They have walked a " \
+			+ "long way, and they look at the roofs the way hungry people look at bread."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", SETTLED_DAY[&"a_village"]),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"first_roof"),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"a_village", 0, true),
+	])
+	event.chance_per_tick = 0.02
+	event.cooldown_ticks = 72
+	event.choices = _choices([
+		_answer(
+			&"make_room", "Make room for them",
+			"The two families came in out of the road, and the camp became a village.",
+			[_eff(SimEffect.Kind.ADD_VILLAGER, &"", 2), _earn(&"a_village", "A Village")],
+		),
+		_answer(
+			&"point_the_way", "Point them to the next valley",
+			"The group pointed the way to the next valley, and gave them bread for it.",
+		),
+	])
+	return event
+
+
+## A Village, second route: the harvest, shared.
+func _the_long_table() -> EventDef:
+	var event: EventDef = _settled_milestone(
+		&"the_long_table", "The long table", &"character", VillagerState.TRAIT_SOCIAL,
+		SETTLED_DAY[&"a_village"], &"a_village"
+	)
+	event.requires.append(_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"first_harvest"))
+	event.body = "{subject} wants to put every board and bench in the camp end to end, and " \
+			+ "invite everyone to eat at the same table. It will take a good deal of food."
+	event.choices = _choices([
+		_answer(
+			&"lay_the_table", "Lay the long table for everyone",
+			"The boards were laid end to end in the dusk. Nobody could say how many people "
+			+ "sat down, but it was more than lived there.",
+			[_spend(&"food", 10), _earn(&"a_village", "A Village")],
+			[_has(&"food", 10)],
+		),
+		_answer(
+			&"eat_as_usual", "Eat together, as usual",
+			"The group ate together as usual, with a little more talk than most nights.",
+		),
 	])
 	return event
 
@@ -1287,7 +1615,8 @@ func _remembered(event_id: StringName, flag: StringName, line: String) -> EventD
 
 
 func _build_choice(
-	choice_id: StringName, label: String, building: StringName, wood: int, from_day: int = 0
+	choice_id: StringName, label: String, building: StringName, wood: int, from_day: int = 0,
+	from_era_day: int = 0
 ) -> ChoiceDef:
 	var choice: ChoiceDef = _choice(choice_id, label)
 	choice.requires = _conds([
@@ -1295,6 +1624,8 @@ func _build_choice(
 		_cond(SimCondition.Kind.RESOURCE_AT_LEAST, &"wood", wood),
 		_cond(SimCondition.Kind.DAYS_AT_LEAST, &"", from_day),
 	])
+	if from_era_day > 0:
+		choice.requires.append(_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", from_era_day))
 	choice.effects = _effs([_eff(SimEffect.Kind.START_BUILD, building)])
 	return choice
 

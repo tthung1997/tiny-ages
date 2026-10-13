@@ -16,6 +16,7 @@ enum Kind {
 	ERA_AT_LEAST, ## The settlement's era `order` is at least `amount`.
 	ACHIEVEMENT_EARNED, ## Achievement `key` has been earned.
 	SUBJECT_AWAKE, ## The event's subject villager is not asleep (it is not sleeping hours).
+	ERA_DAYS_AT_LEAST, ## The settlement has been in its current era for at least `amount` days.
 }
 
 @export var kind: Kind = Kind.FLAG_SET
@@ -54,6 +55,8 @@ func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null)
 			result = world.has_achievement(key)
 		Kind.SUBJECT_AWAKE:
 			result = not config.is_sleeping_hour(config.hour_of(world.tick))
+		Kind.ERA_DAYS_AT_LEAST:
+			result = config.day_of(world.tick - world.era_started_tick) >= amount
 	return result != negate
 
 

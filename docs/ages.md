@@ -11,6 +11,38 @@ Status: **direction agreed; the sim supports eras and the slice is re-themed.** 
 | G3 | **Sequencing: decide the structure now, draw art one age at a time.** Age 1 art first; later ages are content packs | Art cost multiplies per age; the sim and content only need the era *structure* up front. |
 | G4 | **Change is gradual and cumulative**: new buildings and props appear and older ones stay (the cave remains as storage), so the world accumulates history instead of being replaced | Matches "the player's desktop physically becomes more populated"; also cheaper than swapping whole scenes. |
 | G5 | An **age** is a content/art pack and tech level; a **chapter** is settlement size within it (the MVP's Camp → Hamlet → Village milestones) | Keeps two different ideas apart. |
+| G6 | **Every age is about as long as the Cave Age**: five or six hidden milestones spread over about five real days, with small decisions and quiet lines between them | The pace should feel the same from age to age; a short age feels like a skipped chapter. |
+| G7 | **The game is open-ended.** The newest age has no end, no final milestone and no credits: its milestones are the *gate* of an age that does not exist yet. A later age is added as data (an `EraDef` whose `required_achievements` are the previous age's milestones, plus content and art), with no change to the engine | Room for future updates; nothing is ever "finished". |
+
+## Settled Age: the milestones
+
+Agreed. Like the Cave Age's, these are hidden achievements (G6, G7) staged over the age, each with
+more than one route; the choice made at the turn (`path_agriculture` by the field, `path_herding`
+where the herds winter) decides which routes a group is offered, and one late route is open to
+every group. Days are **days into the Settled Age** (`SimCondition.ERA_DAYS_AT_LEAST`, one table:
+`SETTLED_DAY` in `tools/build_sim_content.gd`), so the pace is the same however long the Cave Age
+took. 72 days is a real day.
+
+| # | Milestone | Real-world turning point | Ways it can happen | From day | On screen (art, later) |
+|---|---|---|---|---|---|
+| 1 | **A Roof of Your Own** | Permanent houses | Build the Hut, or an industrious villager thatches the hides with reed | 18 | Huts, thatch |
+| 2 | **The First Harvest** | Farming and herding yield | Build the Field (either path); or, when herding, the first calves are tended | 54 | Fields, a pen and herd |
+| 3 | **Fired Clay** | Pottery | A basket's clay hardens by the fire, or someone bakes bowls in hot ash | 108 | Pots by the door |
+| 4 | **Woven Cloth** | Weaving | Farmers find flax; herders gather wool from the thorns; any group may plait reeds (from day 198) | 162 | Looms, cloth |
+| 5 | **A Village** | Community | Two families on the road are offered a roof (needs milestone 1); or a long harvest table (needs milestone 2 and 10 food) | 216 | More villagers |
+| 6 | **Word from the Hills** | Metal ore, trade | A curious villager brings back a green-streaked stone and follows the stream to its source; or a traveller trades a pouch of it for 8 food (needs milestone 2). Sets the flag `green_stone` | 252 | A path into the hills (later) |
+
+- **Why these six.** They are what the next age stands on, and the candidate next age is the **Bronze Age** (metal, trade, walls, first towns; not designed yet). A surplus (2), kilns (3), craft goods to trade (4) and a settlement big enough to need walls (1, 5) are its preconditions. Milestone 6 is the Settled Age's outward look, as the scout and the seed were the Cave Age's: copper ore, and the first contact with people who trade. The Bronze Age's turn event would read `green_stone` and ask *how* to start working it, as the Settled turn asks how to settle. Until Bronze is designed this is only a stated direction.
+
+- There is no gate out of the Settled Age yet (G7): once the six are earned the age simply keeps
+  going. The Hut and the Field are offered by the "Building a settlement" decision, each from its
+  milestone's day.
+- The Cave Age's design rules carry over: every answer is harmless, a declined decision comes back,
+  and a test (`test_sim_settled.gd`) plays from the turn on both paths, accepting everything and
+  passing on everything twice first, and proves all six are earned, never before their day.
+- **Still to do for the Settled Age**: about twenty small story decisions and twenty ambient lines
+  between these milestones (the Cave Age's "between the milestones" fill), a Settled panel skin and
+  the world art (huts, fields, a pen, cloth).
 
 ## Candidate ages (for reference)
 
@@ -83,7 +115,7 @@ The milestones are far apart (hours to days), so each stretch has its own small 
 - Built: all six milestones, each with at least two routes or a way to pass and be asked again. Fire (burning tree for a curious villager, sparks for an industrious one, embers if both are passed). Stone Tools (Knapping Spot, or a lucky split stone). Enough to Eat (the hunt, or foraging plus the Drying Rack). Shared Stories (a story by the fire, or red earth for the cave wall). A Bigger Group (strangers seen from the Lookout; two newcomers join). Unexpected Garden (the seed chain).
 - Milestone events let *anyone* at home be the subject; a matching trait only makes someone likelier (`EventDef.trait_weights`), so no random group can be locked out.
 - Newcomers get a random unused name and traits (`Simulation.add_villager`), and reuse the three villager looks until more art exists.
-- Cave and Settled ages exist, with era-gated buildings (Field, Hut) and cave-only flavour events.
+- Cave and Settled ages exist, with era-gated buildings (Field, Hut), cave-only flavour events and the Settled Age's six milestones (see "Settled Age: the milestones").
 
 ## Open questions
 

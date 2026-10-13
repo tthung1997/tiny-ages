@@ -11,3 +11,5 @@ cost = Dictionary[StringName, int]({
 &"wood": 14
 })
 work_required = 40
+completion_achievement = &"first_roof"
+completion_achievement_title = "A Roof of Your Own"
