@@ -27,6 +27,25 @@ Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a 
 
 The slice's chain (a curious villager scouts, brings back a wild seed, the player plants it, it flowers) is the **origin of farming**, and it is the moment the Cave Age can turn into the Settled Age. It is built that way: once the plant has flowered, the group is asked whether to settle by the field or keep following the herds. The choice is the player's; declining just asks again later.
 
+## Cave → Settled: the gate
+
+Agreed. The player is never shown this list or the minimum time (see `gameplay.md` P8). All six
+milestones must be earned, and the minimum time must have passed. Milestones are achievements.
+
+| # | Milestone | Real-world turning point | Ways it can happen | On screen | Unlocks |
+|---|---|---|---|---|---|
+| 1 | **Fire** | Controlled fire | A curious villager finds a tree burning after a storm, or sparks fly while knapping | Fire pit lit, warm night glow, villagers gather at it | Everything below |
+| 2 | **Stone tools** | Knapping | An industrious villager works at a flint spot, or a tool is found while cracking nuts | Knapping spot, tools in hands | Hunting, building |
+| 3 | **Reliable food** | Organised hunting or foraging | *Hunt*: spears and a shared hunt. *Gather*: baskets and drying | Spears or baskets, drying rack, hides | Furs, growth |
+| 4 | **Shared stories** | Language, art, ritual | Social villagers talk by the fire, or someone paints the cave wall | Ochre handprints on the cave wall | Trait events |
+| 5 | **A bigger group** | Bands joining | Wanderers arrive once the camp is secure (at least 2 newcomers) | More villagers | Settling |
+| 6 | **Seeds of a new life** | Origin of farming | A scout brings back a seed, someone plants it, it flowers (the existing chain) | The strange flower by the cave | The Settled Age |
+
+- **Order**: Fire first; the rest in most orders. Stone tools come before hunting, and the seed chain needs a scout who has travelled.
+- **Minimum time**: about 5 real days (to tune). Time while the game is closed counts.
+- **Choices that shape it**: milestone 3 can be met by hunting or gathering (different look); whether the flower is planted is the player's call; the age-turn beat can be a *how* choice (how to settle), not a *whether*.
+- **Safeguards**: if a milestone is still missing after the minimum time, a fallback chain makes it eligible; declined decisions come back; a test proves every milestone is reachable, including for a player who keeps declining.
+
 ## What is built in the sim
 
 - `EraDef` (id, name, `order`, intro text) in `ContentLibrary.eras`; the world stores the current `era` and `era_order`.
@@ -36,9 +55,8 @@ The slice's chain (a curious villager scouts, brings back a wild seed, the playe
 ## Open questions
 
 - How many ages does the MVP actually cover?
-- What exactly triggers an age change (a knowledge milestone, a discovery chain, a settlement size)?
 - Which choices shape an age (Agriculture vs Craft vs Exploration?) and how visibly?
-- Real-time length of an age at 20 minutes per game day.
+- Real-time length of an age at 20 minutes per game day (Cave: about 5 real days minimum, to tune).
 - What does the cave look like in the strip (a rock face along the back layer?), and do later ages hide or keep it?
 
 ## Cave Age art sketch

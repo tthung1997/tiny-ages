@@ -8,6 +8,7 @@ A personal project exploring a small world that lives on your screen.
 - [Engine and art direction](docs/engine-and-art.md) — Godot + LibreSprite decisions, style rules, pipeline.
 - [Simulation core](docs/simulation.md) — the headless settlement sim: decisions, pacing, what is built.
 - [Ages](docs/ages.md) — the long-term arc from the Cave Age onward, and the decisions so far.
+- [Gameplay basics](docs/gameplay.md) — the player's role, resources, pacing, achievements and how ages are gated.
 - [Art tools](tools/art/README.md) — scripts that generate the reference art (`art/reference/`).
 
 ## Godot project
