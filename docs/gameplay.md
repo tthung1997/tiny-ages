@@ -55,5 +55,5 @@ placeholder and does not yet follow these decisions; see "What this changes".
 
 - **Done in the sim**: random seeded traits; no fire at the start, with the two fire routes and the embers fallback; achievements as the hidden gate with a minimum time; the age-turn event asks *how* to settle (field or herds), not whether; all six Cave → Settled milestones, each with more than one route; about 20 small story decisions and 25 ambient lines between the milestones; resource needs shown on choices; a leaner economy that hovers instead of piling up.
 - **Still to do in the sim**: the same fill for the Settled Age; more trait-driven variants of one event; the answers do little beyond the journal and a flag, so later content should read those flags and change what is seen.
-- **View**: built: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then. Still to do: speech bubbles and a villager detail popup.
+- **View**: built: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then; clicking a villager shows their name, traits and thought (`ages.md` V9). Still to do: speech bubbles.
 - **Open**: how many resources exist per age; whether the player can ever see a hint that something is still undiscovered. The Cave → Settled milestones are listed in `ages.md`.

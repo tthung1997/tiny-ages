@@ -13,6 +13,18 @@ func teardown() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
 
 
+func test_awkward_fractions_survive_a_save_exactly() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	for step: int in 80:
+		sim.world.add_resource_fraction(&"wood", 0.06)
+		sim.world.add_resource_fraction(&"food", 1.0 / 24.0 * 7.0)
+		assert_eq(SaveStore.save_world(sim.world, SAVE_PATH), OK)
+		var loaded: WorldState = SaveStore.load_world(SAVE_PATH)
+		assert_eq(loaded.resource_fraction, sim.world.resource_fraction, "Step %d" % step)
+		if loaded.resource_fraction != sim.world.resource_fraction:
+			return
+
+
 func test_a_saved_world_loads_back_the_same() -> void:
 	var sim: Simulation = _lived_in_sim()
 	assert_eq(SaveStore.save_world(sim.world, SAVE_PATH), OK)

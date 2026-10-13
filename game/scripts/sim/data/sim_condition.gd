@@ -15,6 +15,7 @@ enum Kind {
 	SUBJECT_AT_HOME, ## The event's subject villager is not away.
 	ERA_AT_LEAST, ## The settlement's era `order` is at least `amount`.
 	ACHIEVEMENT_EARNED, ## Achievement `key` has been earned.
+	SUBJECT_AWAKE, ## The event's subject villager is not asleep (it is not sleeping hours).
 }
 
 @export var kind: Kind = Kind.FLAG_SET
@@ -25,7 +26,8 @@ enum Kind {
 
 
 func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null) -> bool:
-	var subject_kind: bool = kind == Kind.SUBJECT_HAS_TRAIT or kind == Kind.SUBJECT_AT_HOME
+	var subject_kind: bool = kind == Kind.SUBJECT_HAS_TRAIT or kind == Kind.SUBJECT_AT_HOME \
+			or kind == Kind.SUBJECT_AWAKE
 	if subject_kind and subject == null:
 		return false
 	var result: bool = false
@@ -50,6 +52,8 @@ func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null)
 			result = world.era_order >= amount
 		Kind.ACHIEVEMENT_EARNED:
 			result = world.has_achievement(key)
+		Kind.SUBJECT_AWAKE:
+			result = not config.is_sleeping_hour(config.hour_of(world.tick))
 	return result != negate
 
 

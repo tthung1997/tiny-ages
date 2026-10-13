@@ -14,7 +14,7 @@ extends Node2D
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
 ##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
-##   camp is 0) --panel=decision|journal|away (open that panel at start) --shot=<png> (save
+##   camp is 0) --panel=decision|journal|away|villager (open that panel at start) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
@@ -90,6 +90,7 @@ func _ready() -> void:
 	sim.era_advanced.connect(func(era: EraDef) -> void: _panel.set_skin(PanelSkin.for_era(era.id)))
 	_icons.bulb_pressed.connect(_open_decisions)
 	_icons.journal_pressed.connect(_toggle_journal)
+	_world_view.villager_clicked.connect(_on_villager_clicked)
 	_panel.choice_picked.connect(_on_choice_picked)
 	_panel.decisions_requested.connect(_open_decisions)
 	_panel.closed.connect(_fit_window)
@@ -198,6 +199,8 @@ func _advance_clock(delta: float) -> void:
 		_bot.answer_all(sim)
 	if sim.world.tick != ticks_before:
 		_world_view.on_world_changed()
+		if _panel.mode() == &"villager":
+			_panel.show_villager(sim, _panel.villager_id())
 
 
 func _change_speed(step: int) -> void:
@@ -256,6 +259,15 @@ func _toggle_journal() -> void:
 	_fit_window()
 
 
+## Clicking a villager shows who they are; clicking the same one again puts the panel away.
+func _on_villager_clicked(villager_id: StringName) -> void:
+	if _panel.villager_id() == villager_id:
+		_panel.close_panel()
+		return
+	_panel.show_villager(sim, villager_id)
+	_fit_window()
+
+
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --give=wood:20,food:5 adds stock. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
@@ -274,7 +286,7 @@ func _fit_window() -> void:
 
 
 ## The "while you were away" summary on launch, or a panel chosen by the dev flag --panel=
-## (decision, journal or away) so each can be looked at without waiting for it to happen.
+## (decision, journal, away or villager) so each can be looked at without waiting for it to happen.
 func _open_startup_panel(requested: String) -> void:
 	match requested:
 		"decision":
@@ -283,6 +295,9 @@ func _open_startup_panel(requested: String) -> void:
 			_toggle_journal()
 		"away":
 			_panel.show_away(_dev_away_summary())
+			_fit_window()
+		"villager":
+			_panel.show_villager(sim, sim.world.villagers[0].id)
 			_fit_window()
 		_:
 			var summary: AwaySummary = AwaySummary.present(

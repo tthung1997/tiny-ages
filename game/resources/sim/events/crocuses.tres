@@ -22,13 +22,17 @@ key = &"nature_loving"
 script = ExtResource("3_k1ujf")
 kind = 7
 
+[sub_resource type="Resource" id="Resource_ph0on"]
+script = ExtResource("3_k1ujf")
+kind = 10
+
 [resource]
 script = ExtResource("4_vd8dh")
 id = &"crocuses"
 title = "A quiet moment"
 requires = Array[ExtResource("3_k1ujf")]([SubResource("Resource_yy6od")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_k1ujf")]([SubResource("Resource_rueje"), SubResource("Resource_f542f")])
+subject_requires = Array[ExtResource("3_k1ujf")]([SubResource("Resource_rueje"), SubResource("Resource_f542f"), SubResource("Resource_ph0on")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_887ay")]([SubResource("Resource_m5cq3")])

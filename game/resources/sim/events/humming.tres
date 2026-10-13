@@ -22,13 +22,17 @@ key = &"social"
 script = ExtResource("3_agb8y")
 kind = 7
 
+[sub_resource type="Resource" id="Resource_grtkq"]
+script = ExtResource("3_agb8y")
+kind = 10
+
 [resource]
 script = ExtResource("4_skqpg")
 id = &"humming"
 title = "A quiet moment"
 requires = Array[ExtResource("3_agb8y")]([SubResource("Resource_7caa7")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_agb8y")]([SubResource("Resource_gmvxs"), SubResource("Resource_bkaeu")])
+subject_requires = Array[ExtResource("3_agb8y")]([SubResource("Resource_gmvxs"), SubResource("Resource_bkaeu"), SubResource("Resource_grtkq")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_o1rhm")]([SubResource("Resource_ydgqk")])

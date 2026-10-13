@@ -22,13 +22,17 @@ key = &"industrious"
 script = ExtResource("3_6k8qw")
 kind = 7
 
+[sub_resource type="Resource" id="Resource_1c7ih"]
+script = ExtResource("3_6k8qw")
+kind = 10
+
 [resource]
 script = ExtResource("4_bwnkk")
 id = &"sharpened_everything"
 title = "A quiet moment"
 requires = Array[ExtResource("3_6k8qw")]([SubResource("Resource_trj6f")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_6k8qw")]([SubResource("Resource_151qp"), SubResource("Resource_3lv4i")])
+subject_requires = Array[ExtResource("3_6k8qw")]([SubResource("Resource_151qp"), SubResource("Resource_3lv4i"), SubResource("Resource_1c7ih")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_cpip4")]([SubResource("Resource_jx2lp")])

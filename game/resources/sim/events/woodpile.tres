@@ -22,13 +22,17 @@ key = &"industrious"
 script = ExtResource("3_hnae8")
 kind = 7
 
+[sub_resource type="Resource" id="Resource_i6nvo"]
+script = ExtResource("3_hnae8")
+kind = 10
+
 [resource]
 script = ExtResource("4_mkc0w")
 id = &"woodpile"
 title = "A quiet moment"
 requires = Array[ExtResource("3_hnae8")]([SubResource("Resource_qh87m")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_hnae8")]([SubResource("Resource_gx4ps"), SubResource("Resource_pcy8m")])
+subject_requires = Array[ExtResource("3_hnae8")]([SubResource("Resource_gx4ps"), SubResource("Resource_pcy8m"), SubResource("Resource_i6nvo")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_n356w")]([SubResource("Resource_w13mi")])

@@ -1262,6 +1262,7 @@ func _ambient_about(event_id: StringName, trait_name: StringName, line: String) 
 	event.subject_requires = _conds([
 		_cond(SimCondition.Kind.SUBJECT_HAS_TRAIT, trait_name),
 		_cond(SimCondition.Kind.SUBJECT_AT_HOME),
+		_cond(SimCondition.Kind.SUBJECT_AWAKE),
 	])
 	return event
 

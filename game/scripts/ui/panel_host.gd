@@ -18,6 +18,7 @@ const DAY_WIDTH: float = 34.0
 const UNROLL_STEPS: int = 6
 const UNROLL_SECONDS: float = 0.2
 const NEED_ICON_SIZE: Vector2 = Vector2(10, 10)
+const PORTRAIT_SIZE: Vector2 = Vector2(28, 30)
 
 ## True in the running game: the panel unrolls and rolls up. Off by default so it is instant.
 var animated: bool = false
@@ -33,6 +34,7 @@ var _footer_label: Label = Label.new()
 var _secondary: Button = Button.new()
 var _primary: Button = Button.new()
 var _mode: StringName = &""
+var _villager_id: StringName = &""
 var _open: bool = false
 var _reveal: int = 0
 var _tween: Tween
@@ -98,7 +100,8 @@ func is_open() -> bool:
 	return _open
 
 
-## Which kind of content is showing: &"decision", &"journal", &"away" or &"" when closed.
+## Which kind of content is showing: &"decision", &"journal", &"away", &"villager" or &"" when
+## closed.
 func mode() -> StringName:
 	return _mode if _open else &""
 
@@ -136,6 +139,44 @@ func show_journal(sim: Simulation) -> void:
 	for entry: Dictionary in JournalPresenter.entries(sim.world):
 		_content.add_child(_journal_row(entry["day"], entry["text"]))
 	_footer_label.text = ""
+
+
+## Shows one villager: their picture, traits and what they are thinking. "Next" walks through
+## the group.
+func show_villager(sim: Simulation, villager_id: StringName) -> void:
+	var villager: VillagerState = sim.world.find_villager(villager_id)
+	if villager == null:
+		close_panel()
+		return
+	var view: VillagerPresenter = VillagerPresenter.present(villager, sim.world, sim.config)
+	_villager_id = villager_id
+	_begin(&"villager", view.display_name)
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	row.add_child(_portrait(view.look))
+	var column: VBoxContainer = VBoxContainer.new()
+	column.add_theme_constant_override("separation", 3)
+	var width: float = TEXT_WIDTH - PORTRAIT_SIZE.x - 8.0
+	if not view.traits_text.is_empty():
+		column.add_child(_text(view.traits_text, true, width))
+	if not view.role_text.is_empty():
+		column.add_child(_text(view.role_text, true, width))
+	column.add_child(_text(view.thought, false, width))
+	row.add_child(column)
+	_content.add_child(row)
+	var group: Array[VillagerState] = sim.world.villagers
+	var index: int = group.find(villager)
+	if group.size() > 1:
+		_footer_label.text = "%d of %d" % [index + 1, group.size()]
+		var next: VillagerState = group[(index + 1) % group.size()]
+		_show_button(_primary, "Next >", func() -> void: show_villager(sim, next.id))
+	else:
+		_footer_label.text = ""
+
+
+## Whose panel is showing, or &"" if it is not the villager panel.
+func villager_id() -> StringName:
+	return _villager_id if mode() == &"villager" else &""
 
 
 func show_away(summary: AwaySummary) -> void:
@@ -273,11 +314,29 @@ func _show_button(button: Button, text: String, action: Callable) -> void:
 	button.pressed.connect(action)
 
 
-func _text(text: String, muted: bool = false) -> Label:
+func _text(text: String, muted: bool = false, width: float = TEXT_WIDTH) -> Label:
 	var label: Label = Label.new()
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.custom_minimum_size = Vector2(TEXT_WIDTH, 0)
+	label.custom_minimum_size = Vector2(width, 0)
 	if muted:
 		label.add_theme_color_override("font_color", _skin.muted)
 	return label
+
+
+## The villager's idle frame from their sheet, at the size they are on screen.
+func _portrait(look: StringName) -> TextureRect:
+	var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, look]
+	if not ResourceLoader.exists(path):
+		path = "%smira.png" % WorldLayout.VILLAGER_DIR
+	var picture: TextureRect = TextureRect.new()
+	var sheet: Texture2D = load(path) as Texture2D
+	if sheet != null:
+		var cell: AtlasTexture = AtlasTexture.new()
+		cell.atlas = sheet
+		cell.region = Rect2(Vector2.ZERO, Vector2(WorldLayout.CELL_SIZE))
+		picture.texture = cell
+	picture.custom_minimum_size = PORTRAIT_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	picture.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	return picture

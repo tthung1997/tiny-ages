@@ -22,13 +22,17 @@ key = &"curious"
 script = ExtResource("3_o8amh")
 kind = 7
 
+[sub_resource type="Resource" id="Resource_ys86o"]
+script = ExtResource("3_o8amh")
+kind = 10
+
 [resource]
 script = ExtResource("4_ud7j7")
 id = &"shiny_pebble"
 title = "A quiet moment"
 requires = Array[ExtResource("3_o8amh")]([SubResource("Resource_ho2vu")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_o8amh")]([SubResource("Resource_olrlo"), SubResource("Resource_xx8wx")])
+subject_requires = Array[ExtResource("3_o8amh")]([SubResource("Resource_olrlo"), SubResource("Resource_xx8wx"), SubResource("Resource_ys86o")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_dq76l")]([SubResource("Resource_3ulip")])

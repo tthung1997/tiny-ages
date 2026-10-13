@@ -207,7 +207,10 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
 
 What the player is shown is built by pure presenters, so it is tested without nodes:
 `DecisionPresenter` (title, text and choices; a choice is *listed* if only stock stops it,
-*enabled* if nothing does; staged unlocks are never listed), `JournalPresenter`, `AwaySummary`.
+*enabled* if nothing does; staged unlocks are never listed), `JournalPresenter`, `AwaySummary`,
+`VillagerPresenter` (a clicked villager's name, traits, role and a thought that follows what they
+are doing, whether there is fire, and whether food is low; a pure function of the world, so it
+holds still between ticks).
 `PanelHost` draws them above the strip and only reports the choice picked; `Game` applies it
 with `Simulation.resolve_decision`. While a panel is open `DesktopWindow.set_panel_height`
 grows the window upward and the click region takes in the panel. `StripIcons` is the bulb and
@@ -220,7 +223,8 @@ add a factory to `PanelSkin.skins()`; `Game` swaps the skin on `era_advanced`, a
 one uses the Cave skin. The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
-panels: `--panel=decision|journal|away`, `--manual`, `--fire`, `--give=wood:6`.
+panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--give=wood:6`,
+`--hour=12`.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
 imported as a texture whether or not it is used — do not add art until it is in use.

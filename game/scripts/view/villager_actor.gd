@@ -14,6 +14,9 @@ const SHEET_FRAMES: Dictionary = {
 const SHEET_SPEEDS: Dictionary = {
 	&"idle": 1.0, &"walk": WALK_FPS, &"chop": CHOP_FPS, &"hammer": HAMMER_FPS,
 }
+## The part of the sprite a click lands on, relative to the feet: a little generous round the body.
+const HIT_OFFSET: Vector2 = Vector2(-8.0, -26.0)
+const HIT_SIZE: Vector2 = Vector2(16.0, 28.0)
 
 var villager_id: StringName = &""
 
@@ -54,6 +57,11 @@ static func build_frames(sheet: Texture2D) -> SpriteFrames:
 			)
 			frames.add_frame(animation, atlas)
 	return frames
+
+
+## Where a click on this villager lands, in the world's (camp) pixels.
+func hit_rect() -> Rect2:
+	return Rect2(position + HIT_OFFSET, HIT_SIZE)
 
 
 func apply_plan(plan: VillagerPlan) -> void:

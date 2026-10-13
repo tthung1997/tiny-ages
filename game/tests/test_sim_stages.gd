@@ -191,6 +191,44 @@ func test_a_bot_is_asked_something_every_few_real_hours_through_the_cave_age() -
 		)
 
 
+func test_the_subject_awake_condition_follows_the_sleeping_hours() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var villager: VillagerState = sim.world.villagers[0]
+	var awake: SimCondition = SimCondition.new()
+	awake.kind = SimCondition.Kind.SUBJECT_AWAKE
+	for hour: int in 24:
+		sim.world.tick = sim.config.tick_for_hour(hour)
+		var sleeping: bool = sim.config.is_sleeping_hour(hour)
+		assert_eq(awake.is_met(sim.world, sim.config, villager), not sleeping, "Hour %d" % hour)
+	assert_false(awake.is_met(sim.world, sim.config, null), "Needs a subject, like the others")
+
+
+func test_no_line_about_a_villager_is_told_while_they_sleep() -> void:
+	var content: ContentLibrary = SimFixture.load_content()
+	var about: Dictionary = {}
+	for event: EventDef in content.events:
+		if event.needs_subject and event.chance_per_tick > 0.0 and not event.is_decision():
+			about[event.id] = true
+	assert_true(about.size() >= 8, "There are trait-based lines to check")
+	var told: int = 0
+	for rng_seed: int in [1, 2, 3]:
+		var sim: Simulation = SimFixture.new_sim(rng_seed)
+		var bot: DecisionBot = DecisionBot.new()
+		for _tick: int in 120 * DAY_TICKS:
+			sim.advance_ticks(1)
+			bot.answer_all(sim)
+		for entry: JournalEntry in sim.world.journal:
+			if not about.has(entry.event_id):
+				continue
+			told += 1
+			assert_false(
+				sim.config.is_sleeping_hour(sim.config.hour_of(entry.tick)),
+				"Told at %02d:00 about %s: %s"
+				% [sim.config.hour_of(entry.tick), entry.subject_id, entry.text]
+			)
+	assert_gt(told, 10, "Enough lines were told for the check to mean something")
+
+
 func test_stores_hover_instead_of_piling_up() -> void:
 	var sim: Simulation = SimFixture.new_sim(3, false)
 	var bot: DecisionBot = DecisionBot.new()

@@ -4,6 +4,8 @@ extends Resource
 ## live in Simulation and its systems. Saved as a single resource (see SaveStore).
 
 const SAVE_VERSION: int = 1
+## Resource fractions are kept to 1/FRACTION_SCALE.
+const FRACTION_SCALE: float = 1000000.0
 
 @export var save_version: int = SAVE_VERSION
 
@@ -72,11 +74,12 @@ func add_resource(key: StringName, amount: int) -> void:
 	resources[key] = maxi(resource_amount(key) + amount, 0)
 
 
-## Adds a fractional amount, banking the remainder until it makes a whole unit.
+## Adds a fractional amount, banking the remainder until it makes a whole unit. The remainder is
+## kept to a millionth, so it is a number that survives being saved to text exactly.
 func add_resource_fraction(key: StringName, amount: float) -> void:
 	var total: float = resource_fraction.get(key, 0.0) + amount
 	var whole: int = floori(total)
-	resource_fraction[key] = total - float(whole)
+	resource_fraction[key] = roundf((total - float(whole)) * FRACTION_SCALE) / FRACTION_SCALE
 	if whole != 0:
 		add_resource(key, whole)
 

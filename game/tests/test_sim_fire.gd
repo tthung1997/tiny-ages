@@ -88,7 +88,7 @@ func test_embers_are_dropped_if_fire_was_already_lit() -> void:
 	assert_true(sim.resolve_decision(decision.id, &"stay_away"))
 	SimFixture.light_fire(sim.world)
 	sim.advance_ticks(100)
-	assert_eq(SimFixture.journal_index(sim.world, "embers"), -1)
+	assert_eq(SimFixture.journal_index(sim.world, "glowing embers"), -1)
 
 
 func test_fire_is_the_first_achievement() -> void:

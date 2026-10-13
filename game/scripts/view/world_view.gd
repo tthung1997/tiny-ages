@@ -3,11 +3,16 @@ extends Node2D
 ## Draws the settlement from the simulation: the backdrop, always-present props, buildings and
 ## their construction sites as the world says, the strange flower, villagers walking and
 ## working, and the light through the day. It only reads WorldState; it never changes it.
-## Call `on_world_changed()` after the simulation advances.
+## Call `on_world_changed()` after the simulation advances. Clicking a villager (a press and
+## release without dragging) reports `villager_clicked`.
 ##
-## The world is wider than the viewport (see WorldLayout): a scrolling container sits inside a
-## The world is three pages wide (see the header): pages west and east of the camp have their own
+## The world is three pages wide (WorldLayout): pages west and east of the camp have their own
 ## art, drawn by tools/art/cave_pages.js.
+
+signal villager_clicked(villager_id: StringName)
+
+## How far the pointer may move between press and release and still be a click, in art pixels.
+const CLICK_SLOP: float = 3.0
 
 var _sim: Simulation
 var _window: DesktopWindow
@@ -35,6 +40,7 @@ var _tint: CanvasModulate = CanvasModulate.new()
 var _signature: String = ""
 var _dragging: bool = false
 var _drag_mouse_x: float = 0.0
+var _press_position: Vector2 = Vector2.ZERO
 var _drag_camera_x: float = 0.0
 var _applied_pixel: int = -999999
 
@@ -182,9 +188,13 @@ func _handle_button(button: InputEventMouseButton) -> void:
 	match button.button_index:
 		MOUSE_BUTTON_LEFT:
 			if not button.pressed:
+				var was_dragging: bool = _dragging
 				_dragging = false
+				if was_dragging and button.position.distance_to(_press_position) <= CLICK_SLOP:
+					_report_click(button.position)
 			elif _clip.get_global_rect().has_point(button.position):
 				_dragging = true
+				_press_position = button.position
 				_drag_mouse_x = button.position.x
 				_drag_camera_x = _camera.shown
 		MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_RIGHT:
@@ -193,6 +203,27 @@ func _handle_button(button: InputEventMouseButton) -> void:
 		MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_LEFT:
 			if button.pressed:
 				pan_by(-WorldLayout.WHEEL_STEP)
+
+
+func _report_click(at: Vector2) -> void:
+	var id: StringName = villager_at(at)
+	if id != &"":
+		villager_clicked.emit(id)
+
+
+## The villager standing at a point of the window (art pixels), or &"" if none. When two overlap
+## the one in front, whose feet are lower on screen, wins. Hidden (asleep or away) villagers
+## cannot be clicked.
+func villager_at(at: Vector2) -> StringName:
+	var point: Vector2 = _world.to_local(at)
+	var found: StringName = &""
+	var front: float = -INF
+	for id: StringName in _actors:
+		var actor: VillagerActor = _actors[id]
+		if actor.visible and actor.hit_rect().has_point(point) and actor.position.y > front:
+			front = actor.position.y
+			found = id
+	return found
 
 
 func _apply_camera() -> void:
