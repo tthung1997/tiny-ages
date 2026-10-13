@@ -66,6 +66,12 @@ const FIRE_LIGHT_X: Vector2 = Vector2(20.0, 120.0)
 ## The fire's glow is drawn over everything in the world (villagers included) but under the HUD.
 const FIRE_GLOW: StringName = &"fire_glow"
 const FIRE_GLOW_Z: int = 90
+## The sky bodies: stars, then a sheet of the sun (cell 0) and the moon (cell 1). They sit in front
+## of the sky and behind the far hills (z -100 and -99), and do not scroll with the world.
+const STARS: StringName = &"stars"
+const CELESTIAL: StringName = &"celestial"
+const CELESTIAL_CELL: Vector2i = Vector2i(16, 16)
+const SKY_Z: int = -100
 
 ## Where the group gathers while there is no fire: the cave mouth.
 const COLD_X: float = 40.0

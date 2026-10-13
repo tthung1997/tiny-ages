@@ -312,6 +312,84 @@ func test_the_fire_flickers_only_while_it_is_lit_and_in_view() -> void:
 	window.free()
 
 
+func _sky_view(hour: int, lit: bool = true) -> Array:
+	var sim: Simulation = SimFixture.new_sim(1, lit)
+	sim.world.tick = sim.config.tick_for_hour(hour)
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	view.update_light()
+	return [sim, window, view]
+
+
+func test_the_sun_shines_by_day_and_the_moon_and_stars_by_night() -> void:
+	var day: Array = _sky_view(12)
+	var day_view: WorldView = day[2]
+	assert_true(day_view._sun.visible, "Sun at noon")
+	assert_false(day_view._moon.visible)
+	assert_false(day_view._stars.visible)
+	var night: Array = _sky_view(0)
+	var night_view: WorldView = night[2]
+	assert_false(night_view._sun.visible)
+	assert_true(night_view._moon.visible, "Moon at midnight")
+	assert_true(night_view._stars.visible)
+	assert_eq(night_view._stars.modulate.a, 1.0)
+	var tint: Color = night_view._tint.color
+	var moon_boost: float = night_view._moon.modulate.r * tint.r
+	assert_true(absf(moon_boost - 1.0) < 0.001, "Boosted back to its own colour")
+	assert_true(absf(night_view._stars.modulate.b * tint.b - 1.0) < 0.001)
+	for parts: Array in [day, night]:
+		parts[2].free()
+		parts[1].free()
+
+
+func test_the_sky_exists_only_in_the_opaque_window() -> void:
+	var parts: Array = _sky_view(0)
+	var view: WorldView = parts[2]
+	view.set_full_scene(false)
+	assert_false(view._moon.visible, "No moon over the desktop")
+	assert_false(view._stars.visible)
+	assert_false(view._sun.visible)
+	view.set_full_scene(true)
+	assert_true(view._moon.visible and view._stars.visible, "And back in the window")
+	view.free()
+	parts[1].free()
+
+
+func test_the_sky_bodies_stay_put_while_the_world_scrolls() -> void:
+	var parts: Array = _sky_view(12)
+	var view: WorldView = parts[2]
+	var before: Vector2 = view._sun.position
+	view.jump_camera(300.0)
+	view.update_light()
+	assert_eq(view._sun.position, before, "The sun does not scroll with the camp")
+	assert_eq(view._sun.position, view._sun.position.round(), "On whole pixels")
+	assert_true(view._sun.get_parent() != view._world, "It is not part of the world")
+	view.free()
+	parts[1].free()
+
+
+func test_the_sun_sits_behind_the_far_hills_and_in_front_of_the_sky() -> void:
+	var parts: Array = _sky_view(12)
+	var view: WorldView = parts[2]
+	var sky_z: int = (view._backdrop[&"sky"][0] as Sprite2D).z_index
+	var hills_z: int = (view._backdrop[&"far_hills"][0] as Sprite2D).z_index
+	assert_eq(view._sun.z_index, sky_z)
+	assert_true(view._sun.z_index < hills_z, "Rises and sets behind the hills")
+	var world_index: int = view._clip.get_children().find(view._world)
+	assert_true(view._sun.get_index() > world_index, "Drawn after the sky")
+	view.free()
+	parts[1].free()
+
+
+func test_an_unlit_night_still_has_its_moon_and_stars() -> void:
+	var parts: Array = _sky_view(0, false)
+	var view: WorldView = parts[2]
+	assert_true(view._moon.visible and view._stars.visible, "The camp is dark but the sky is not")
+	view.free()
+	parts[1].free()
+
+
 func _night_tint(view: WorldView) -> Color:
 	var config: SimConfig = view._sim.config
 	view._sim.world.tick = config.tick_for_hour(0)

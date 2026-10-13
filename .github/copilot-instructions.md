@@ -195,8 +195,10 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   building and only shows once the fire is found; it flickers on a 0.2 s clock that sleeps unless the fire is lit
   and in view. `fire_glow.png` is an additive glow that fades in with the dark while there is
   fire. Before fire the group gathers in the cave mouth. Wood is cut at the west forest. Sky and far hills only show in the opaque
-  window (decision A7); strip and corner mode keep near hills, trees and ground.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers`,
+  window (decision A7); strip and corner mode keep near hills, trees and ground. The sun, moon and
+  stars (`celestial.png`, `stars.png`) are children of the clip, not of the scrolling world, so they stay
+  put as you pan; `DayNight` says where they are, and they too exist only in the opaque window.
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`). Always use

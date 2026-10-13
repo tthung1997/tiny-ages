@@ -22,13 +22,12 @@ var GAME = DIR + 'game/assets/world/cave/';
 var SKY = new Buf(W, H), FAR = new Buf(W, H), NEAR = new Buf(W, H), TREES = new Buf(W, H);
 var GROUND = new Buf(W, H), x, y, i;
 
-// colder sky, pale sun, clouds
+// colder sky, clouds (the sun and moon are drawn by cave_celestial.js and cross it with the hour)
 var sky = ['#86b4d6', '#9cc4de', '#b4d4e6', '#cde2ee', '#e4eef3'];
 for (y = 0; y < G; y++) {
   var bi = Math.min(4, Math.floor(y / 11)), t = y % 11;
   for (x = 0; x < W; x++) { var c = sky[bi]; if (t >= 9 && bi < 4 && ((x + y) & 1) == 0) c = sky[bi + 1]; SKY.px(x, y, c); }
 }
-SKY.ell(352, 13, 5, 5, '#fff3c4'); SKY.ell(352, 13, 3.5, 3.5, '#fffbe6');
 cloud(SKY, 70, 12, 1); cloud(SKY, 200, 8, 1.2); cloud(SKY, 300, 20, 0.7);
 
 // far mountains with snow caps, near rolling hills, a conifer tree line

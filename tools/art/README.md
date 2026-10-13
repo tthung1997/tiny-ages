@@ -31,7 +31,8 @@ Without `--run`, `bundle.py` only writes `tools/art/dist/<name>.bundle.js` (git-
 | `cave_villagers.js` | Per-villager sheets (idle, walk×4, chop×3, hammer×2, spear; 11 cells, facing right) → `game/assets/world/cave/villagers/*.png`; needs `--import` afterwards. If the sheet width changes, delete `art/reference/cave_villagers.png` first so the bundler recreates the canvas |
 | `ui_icons.js` | The strip's icons in one 52×20 sheet (idea bulb ×2 frames, journal book) → `game/assets/ui/icons.png` and `art/reference/ui_icons.png`; frame positions are mirrored in `scripts/ui/strip_icons.gd` |
 | `ui_skin_hide.js` | The Cave Age panel skin as one 384×192 atlas → `game/assets/ui/skin_hide.png`: the 384×160 hide panel (torn sides, lashed bone rails, ochre handprint), four stitched-leather button states, the bone close button and the wood and food icons. Regions are mirrored in `scripts/ui/panel_skin.gd`; keep the panel height equal to `PanelSkin.PANEL_HEIGHT` |
-| `night.js` | Palette-shifted night variant → `strip_v2_night.png` |
+| `cave_celestial.js`, `cave_stars.js` | The sun and moon (one 32×16 sheet, two 16×16 cells) and the night sky's stars (384×56) → `game/assets/world/cave/celestial.png`, `stars.png`; the game moves them by the hour |
+| `night.js` | Palette-shifted night variant → `strip_v2_night.png` (the old prototype; the game tints the scene instead) |
 | `villager_sheet.js` | Walk/work frames, role overlays, hair variants |
 | `villager_walk.js` | Transparent 4-frame walk cycle used by the Godot spike |
 | `workshop_stages.js` | Site → frame → half-built → complete |

@@ -35,6 +35,9 @@ var _fire_glow: Sprite2D
 var _fire_frames: Array[Texture2D] = []
 var _fire_frame: int = 0
 var _fire_clock: float = 0.0
+var _stars: Sprite2D
+var _sun: Sprite2D
+var _moon: Sprite2D
 var _actors: Dictionary = {}
 var _tint: CanvasModulate = CanvasModulate.new()
 var _signature: String = ""
@@ -53,6 +56,9 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_clip)
 	_clip.add_child(_world)
+	_stars = _make_sky_sprite(_load_art(WorldLayout.STARS))
+	_sun = _make_sky_sprite(_celestial(0))
+	_moon = _make_sky_sprite(_celestial(1))
 	add_child(_tint)
 	for index: int in WorldLayout.BACKDROP.size():
 		var layer: StringName = WorldLayout.BACKDROP[index]
@@ -95,6 +101,8 @@ func set_full_scene(full: bool) -> void:
 		var shown: bool = full or WorldLayout.DESKTOP_BACKDROP.has(layer)
 		for sprite: Sprite2D in _backdrop[layer]:
 			sprite.visible = shown
+	if _sim != null:
+		update_light()
 
 
 ## Glides the camera by `amount` art pixels (negative is west).
@@ -144,6 +152,29 @@ func update_light() -> void:
 		1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b,
 		strength * WorldLayout.FIRE_GLOW_FLICKER[_fire_frame]
 	)
+	_update_sky(hour, tint)
+
+
+## The sun and the moon cross the sky and the stars come out, but only where the sky is drawn
+## (the opaque window); on the desktop none of it exists. The moon and the stars are boosted back
+## to their own colour like the glow; the sun takes the tint, so it reddens at dawn and dusk.
+func _update_sky(hour: float, tint: Color) -> void:
+	var sun_at: Vector2 = DayNight.sun_position(hour) if _full_scene else Vector2.INF
+	var moon_at: Vector2 = DayNight.moon_position(hour) if _full_scene else Vector2.INF
+	_place_body(_sun, sun_at)
+	_place_body(_moon, moon_at)
+	var stars: float = DayNight.star_alpha(hour) if _full_scene else 0.0
+	_stars.visible = stars > 0.0
+	var boost: Color = Color(1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b)
+	_stars.modulate = Color(boost.r, boost.g, boost.b, stars)
+	_moon.modulate = boost
+
+
+## Puts a sky body's centre at `at` on whole pixels, or hides it if it is below the horizon.
+func _place_body(body: Sprite2D, at: Vector2) -> void:
+	body.visible = at.is_finite()
+	if body.visible:
+		body.position = (at - Vector2(WorldLayout.CELESTIAL_CELL) / 2.0).round()
 
 
 ## The fire flickers by swapping its flame frame on a slow clock. It does nothing at all while
@@ -307,6 +338,30 @@ func _load_art(layer: StringName) -> Texture2D:
 		push_error("Missing world art: %s" % path)
 		return null
 	return load(path) as Texture2D
+
+
+## A piece of the sky, in the clip but not in the scrolling world, so it stays put as you pan.
+func _make_sky_sprite(texture: Texture2D) -> Sprite2D:
+	var sprite: Sprite2D = Sprite2D.new()
+	sprite.centered = false
+	sprite.z_index = WorldLayout.SKY_Z
+	sprite.texture = texture
+	sprite.visible = false
+	_clip.add_child(sprite)
+	return sprite
+
+
+## One cell of the sun and moon sheet: 0 is the sun, 1 the moon.
+func _celestial(cell: int) -> Texture2D:
+	var sheet: Texture2D = _load_art(WorldLayout.CELESTIAL)
+	if sheet == null:
+		return null
+	var atlas: AtlasTexture = AtlasTexture.new()
+	atlas.atlas = sheet
+	atlas.region = Rect2(
+		Vector2(WorldLayout.CELESTIAL_CELL.x * cell, 0), Vector2(WorldLayout.CELESTIAL_CELL)
+	)
+	return atlas
 
 
 ## Which solid pieces are showing, so the click region is only rebuilt when it changes.

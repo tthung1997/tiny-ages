@@ -1,6 +1,7 @@
 class_name DayNight
 extends RefCounted
-## The light over the settlement through the day: a smooth tint keyed by the hour.
+## The light over the settlement through the day: a smooth tint keyed by the hour, and where the
+## sun, the moon and the stars are in the sky.
 
 const HOURS: Array[float] = [0.0, 5.0, 6.5, 8.0, 17.0, 19.0, 21.0, 24.0]
 const COLORS: Array[Color] = [
@@ -44,6 +45,47 @@ static func _base_tint(hour: float) -> Color:
 			var amount: float = (clamped - HOURS[index - 1]) / span if span > 0.0 else 1.0
 			return COLORS[index - 1].lerp(COLORS[index], amount)
 	return COLORS[COLORS.size() - 1]
+
+
+## The sky bodies (viewport art pixels, a sprite's centre). The sun crosses the sky from 6:00 to
+## 19:30 and the moon from 19:30 to 6:00; both start and end below the horizon, behind the far
+## hills, so they rise and set rather than appear.
+const SUN_RISE: float = 6.0
+const SUN_SET: float = 19.5
+const MOON_RISE: float = 19.5
+const MOON_SET: float = 30.0
+const SKY_X: Vector2 = Vector2(20.0, 364.0)
+const HORIZON_Y: float = 46.0
+const SKY_PEAK: float = 36.0
+## Stars start to show once this much of the way to full night, and are all out by STARS_FULL.
+const STARS_FROM: float = 0.3
+const STARS_FULL: float = 0.9
+
+
+## Where the sun is at an hour, or Vector2.INF while it is down.
+static func sun_position(hour: float) -> Vector2:
+	if hour < SUN_RISE or hour > SUN_SET:
+		return Vector2.INF
+	return _arc((hour - SUN_RISE) / (SUN_SET - SUN_RISE))
+
+
+## Where the moon is at an hour, or Vector2.INF while it is down.
+static func moon_position(hour: float) -> Vector2:
+	var night_hour: float = hour if hour >= MOON_RISE else hour + 24.0
+	if night_hour > MOON_SET:
+		return Vector2.INF
+	return _arc((night_hour - MOON_RISE) / (MOON_SET - MOON_RISE))
+
+
+## How visible the stars are: 0 by day, 1 at night, fading with the dusk and the dawn.
+static func star_alpha(hour: float) -> float:
+	return clampf((night_amount(hour) - STARS_FROM) / (STARS_FULL - STARS_FROM), 0.0, 1.0)
+
+
+static func _arc(progress: float) -> Vector2:
+	return Vector2(
+		lerpf(SKY_X.x, SKY_X.y, progress), HORIZON_Y - SKY_PEAK * sin(PI * progress)
+	)
 
 
 ## Hour of day as a float, including the fraction of the current tick.

@@ -161,6 +161,8 @@ func test_every_layout_asset_exists() -> void:
 		names.append("site_%s" % building_id)
 	names.append_array(["flower_sprout", "flower_bloom"])
 	names.append(String(WorldLayout.FIRE_GLOW))
+	names.append(String(WorldLayout.STARS))
+	names.append(String(WorldLayout.CELESTIAL))
 	for frame: int in WorldLayout.FIRE_FRAMES:
 		names.append(String(WorldLayout.fire_frame_name(frame)))
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -199,6 +201,65 @@ func test_night_amount_runs_from_day_to_night() -> void:
 	assert_eq(DayNight.night_amount(12.0), 0.0)
 	assert_eq(DayNight.night_amount(0.0), 1.0)
 	assert_true(DayNight.night_amount(20.0) > 0.0 and DayNight.night_amount(20.0) < 1.0)
+
+
+func test_the_sun_crosses_the_sky_by_day_and_is_down_at_night() -> void:
+	for hour: float in [12.0, 8.0, 17.0]:
+		assert_true(DayNight.sun_position(hour).is_finite(), "Sun up at %.0f" % hour)
+	for hour: float in [0.0, 3.0, 5.9, 19.6, 22.0]:
+		assert_false(DayNight.sun_position(hour).is_finite(), "Sun down at %.1f" % hour)
+	var noon: Vector2 = DayNight.sun_position((DayNight.SUN_RISE + DayNight.SUN_SET) / 2.0)
+	assert_eq(noon.y, DayNight.HORIZON_Y - DayNight.SKY_PEAK, "Highest at midday")
+	assert_eq(noon.x, (DayNight.SKY_X.x + DayNight.SKY_X.y) / 2.0, "Over the middle")
+	var morning: Vector2 = DayNight.sun_position(9.0)
+	var evening: Vector2 = DayNight.sun_position(17.0)
+	assert_true(morning.x < noon.x and evening.x > noon.x, "Rises on the left, sets on the right")
+	var rising: Vector2 = DayNight.sun_position(DayNight.SUN_RISE)
+	assert_eq(rising.y, DayNight.HORIZON_Y, "It rises from the horizon")
+
+
+func test_the_moon_crosses_the_night_sky() -> void:
+	for hour: float in [19.6, 21.0, 23.0, 0.0, 3.0, 5.5]:
+		assert_true(DayNight.moon_position(hour).is_finite(), "Moon up at %.1f" % hour)
+	for hour: float in [8.0, 12.0, 17.0, 19.0]:
+		assert_false(DayNight.moon_position(hour).is_finite(), "Moon down at %.1f" % hour)
+	var high: Vector2 = DayNight.moon_position(0.75)
+	assert_eq(high.y, DayNight.HORIZON_Y - DayNight.SKY_PEAK, "Highest in the middle of the night")
+	assert_true(
+		DayNight.moon_position(21.0).x < DayNight.moon_position(4.0).x, "Rises left, sets right"
+	)
+
+
+func test_the_sun_and_moon_never_share_the_sky_at_midday_or_midnight() -> void:
+	assert_false(DayNight.moon_position(12.0).is_finite())
+	assert_false(DayNight.sun_position(0.0).is_finite())
+	assert_true(DayNight.sun_position(12.0).is_finite() and DayNight.moon_position(0.0).is_finite())
+
+
+func test_the_sky_bodies_move_smoothly() -> void:
+	for body: Callable in [DayNight.sun_position, DayNight.moon_position]:
+		var previous: Vector2 = Vector2.INF
+		for step: int in range(0, 241):
+			var current: Vector2 = body.call(float(step) * 0.1)
+			if current.is_finite() and previous.is_finite():
+				assert_true(current.distance_to(previous) < 6.0, "Jumped at %.1f" % (step * 0.1))
+			previous = current
+
+
+func test_stars_come_out_with_the_dark() -> void:
+	assert_eq(DayNight.star_alpha(12.0), 0.0)
+	assert_eq(DayNight.star_alpha(19.0), 0.0)
+	assert_eq(DayNight.star_alpha(0.0), 1.0)
+	assert_eq(DayNight.star_alpha(23.0), 1.0)
+	assert_eq(DayNight.star_alpha(5.0), 1.0)
+	assert_eq(DayNight.star_alpha(6.5), 0.0)
+	var dusk: float = DayNight.star_alpha(20.0)
+	assert_true(dusk > 0.0 and dusk < 1.0, "They fade in through the dusk: %f" % dusk)
+	var previous: float = 0.0
+	for step: int in range(190, 241):
+		var alpha: float = DayNight.star_alpha(float(step) * 0.1)
+		assert_true(alpha >= previous - 0.0001, "Never fewer stars as the night comes on")
+		previous = alpha
 
 
 func test_light_changes_smoothly_through_dusk() -> void:
