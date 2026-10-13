@@ -12,7 +12,7 @@ key = &"strange_seed"
 
 [sub_resource type="Resource" id="Resource_gpkxw"]
 script = ExtResource("2_f6h81")
-text = "{subject} planted the strange seed beside the camp."
+text = "{subject} pressed the strange seed into the soil by the cave mouth."
 
 [sub_resource type="Resource" id="Resource_xp2u3"]
 script = ExtResource("3_ikw4r")
@@ -29,7 +29,7 @@ effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_5ov8r"), SubResou
 
 [sub_resource type="Resource" id="Resource_q6vl7"]
 script = ExtResource("2_f6h81")
-text = "The strange seed was put in a jar for safekeeping."
+text = "The strange seed was wrapped in a hide pouch for safekeeping."
 
 [sub_resource type="Resource" id="Resource_ik0y3"]
 script = ExtResource("1_gkumt")
@@ -46,17 +46,17 @@ amount = 1
 [sub_resource type="Resource" id="Resource_86jub"]
 script = ExtResource("2_f6h81")
 kind = 1
-key = &"forest_east_explored"
+key = &"eastern_valley_explored"
 
 [sub_resource type="Resource" id="Resource_kx622"]
 script = ExtResource("2_f6h81")
-text = "{subject} returned from the eastern forest carrying an unfamiliar seed."
+text = "{subject} returned from the eastern valley carrying the seed of an unfamiliar plant."
 
 [resource]
 script = ExtResource("4_p0t2i")
 id = &"explorer_returns"
-title = "An explorer returns"
-body = "{subject} is back from the forest, carrying something unfamiliar."
+title = "A scout returns"
+body = "{subject} is back from the valley, carrying something unfamiliar."
 category = &"exploration"
 needs_subject = true
 effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])

@@ -10,6 +10,10 @@ static func create_new(
 	world.rng_seed = rng_seed
 	world.last_seen_unix = now_unix
 	world.tick = config.tick_for_hour(config.wake_hour)
+	var first_era: EraDef = content.first_era()
+	if first_era != null:
+		world.era = first_era.id
+		world.era_order = first_era.order
 	for template: VillagerState in content.starting_villagers:
 		world.villagers.append(template.duplicate(true))
 	for key: StringName in content.starting_resources:

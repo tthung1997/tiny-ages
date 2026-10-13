@@ -12,6 +12,7 @@ signal decision_opened(decision: PendingDecision)
 signal decision_resolved(decision: PendingDecision, choice: ChoiceDef)
 signal building_started(building: BuildingState)
 signal building_completed(building: BuildingState)
+signal era_advanced(era: EraDef)
 signal achievement_earned(key: StringName, title: String)
 
 var world: WorldState
@@ -149,6 +150,22 @@ func plant_seed(seed_item: StringName) -> bool:
 	plant.def_id = def.id
 	plant.planted_tick = world.tick
 	world.plants.append(plant)
+	return true
+
+
+## Moves the settlement into a later era. False if the era is unknown or not later than the
+## current one: ages only move forward.
+func advance_era(era_id: StringName) -> bool:
+	var next: EraDef = content.get_era(era_id)
+	if next == null or next.order <= world.era_order:
+		return false
+	world.era = next.id
+	world.era_order = next.order
+	var line: String = next.intro_text
+	if line.is_empty():
+		line = "A new age began: %s." % next.display_name
+	add_journal(line, &"settlement", &"", &"")
+	era_advanced.emit(next)
 	return true
 
 

@@ -5,6 +5,8 @@ extends Resource
 @export var events: Array[EventDef] = []
 @export var buildings: Array[BuildingDef] = []
 @export var plants: Array[PlantDef] = []
+## The ages of the arc. The lowest `order` is where a new world starts.
+@export var eras: Array[EraDef] = []
 @export_group("Starting world")
 ## Templates; copied into each new world.
 @export var starting_villagers: Array[VillagerState] = []
@@ -13,6 +15,22 @@ extends Resource
 var _event_index: Dictionary = {}
 var _building_index: Dictionary = {}
 var _plant_index: Dictionary = {}
+var _era_index: Dictionary = {}
+
+
+func get_era(era_id: StringName) -> EraDef:
+	if _era_index.size() != eras.size():
+		_era_index = _index_by_id(eras)
+	return _era_index.get(era_id)
+
+
+## The era a new world starts in: the one with the lowest `order`, or null if there are none.
+func first_era() -> EraDef:
+	var first: EraDef = null
+	for era: EraDef in eras:
+		if first == null or era.order < first.order:
+			first = era
+	return first
 
 
 func get_event(event_id: StringName) -> EventDef:
@@ -46,6 +64,12 @@ func validate() -> PackedStringArray:
 	_check_unique_ids(events, "event", problems)
 	_check_unique_ids(buildings, "building", problems)
 	_check_unique_ids(plants, "plant", problems)
+	_check_unique_ids(eras, "era", problems)
+	var orders: Dictionary = {}
+	for era: EraDef in eras:
+		if orders.has(era.order):
+			problems.append("era '%s' reuses order %d" % [era.id, era.order])
+		orders[era.order] = true
 	for event: EventDef in events:
 		var where: String = "event '%s'" % event.id
 		if event.chance_per_tick <= 0.0 and not _is_scheduled_target(event.id):
@@ -97,6 +121,16 @@ func _check_conditions(
 	for condition: SimCondition in conditions:
 		if condition.kind == SimCondition.Kind.HAS_BUILDING and get_building(condition.key) == null:
 			problems.append("%s requires unknown building '%s'" % [where, condition.key])
+		var era_kind: bool = condition.kind == SimCondition.Kind.ERA_AT_LEAST
+		if era_kind and not _has_era_order(condition.amount):
+			problems.append("%s requires era order %d, which no era has" % [where, condition.amount])
+
+
+func _has_era_order(order: int) -> bool:
+	for era: EraDef in eras:
+		if era.order == order:
+			return true
+	return false
 
 
 func _check_effects(
@@ -107,6 +141,9 @@ func _check_effects(
 			SimEffect.Kind.START_BUILD:
 				if get_building(effect.key) == null:
 					problems.append("%s starts unknown building '%s'" % [where, effect.key])
+			SimEffect.Kind.ADVANCE_ERA:
+				if get_era(effect.key) == null:
+					problems.append("%s advances to unknown era '%s'" % [where, effect.key])
 			SimEffect.Kind.SCHEDULE_EVENT:
 				if get_event(effect.key) == null:
 					problems.append("%s schedules unknown event '%s'" % [where, effect.key])

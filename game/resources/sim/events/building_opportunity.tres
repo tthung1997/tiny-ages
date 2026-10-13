@@ -8,12 +8,12 @@
 [sub_resource type="Resource" id="Resource_thc00"]
 script = ExtResource("2_26ks0")
 kind = 5
-key = &"explorers_hut"
+key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_axk6o"]
 script = ExtResource("3_c7jf6")
 kind = 0
-key = &"explorers_hut"
+key = &"lookout"
 negate = true
 
 [sub_resource type="Resource" id="Resource_a7ika"]
@@ -24,20 +24,20 @@ amount = 6
 
 [sub_resource type="Resource" id="Resource_tvj44"]
 script = ExtResource("1_x0jor")
-id = &"build_explorers_hut"
-label = "Explorer's Hut"
+id = &"build_lookout"
+label = "Lookout"
 requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_axk6o"), SubResource("Resource_a7ika")])
 effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_thc00")])
 
 [sub_resource type="Resource" id="Resource_mlhbg"]
 script = ExtResource("2_26ks0")
 kind = 5
-key = &"farm"
+key = &"drying_rack"
 
 [sub_resource type="Resource" id="Resource_a7fns"]
 script = ExtResource("3_c7jf6")
 kind = 0
-key = &"farm"
+key = &"drying_rack"
 negate = true
 
 [sub_resource type="Resource" id="Resource_ugs3q"]
@@ -48,20 +48,20 @@ amount = 6
 
 [sub_resource type="Resource" id="Resource_10htk"]
 script = ExtResource("1_x0jor")
-id = &"build_farm"
-label = "Farm"
+id = &"build_drying_rack"
+label = "Drying Rack"
 requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_a7fns"), SubResource("Resource_ugs3q")])
 effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_mlhbg")])
 
 [sub_resource type="Resource" id="Resource_pc78u"]
 script = ExtResource("2_26ks0")
 kind = 5
-key = &"workshop"
+key = &"knapping_spot"
 
 [sub_resource type="Resource" id="Resource_5bnt4"]
 script = ExtResource("3_c7jf6")
 kind = 0
-key = &"workshop"
+key = &"knapping_spot"
 negate = true
 
 [sub_resource type="Resource" id="Resource_cmt4l"]
@@ -72,8 +72,8 @@ amount = 8
 
 [sub_resource type="Resource" id="Resource_8td1l"]
 script = ExtResource("1_x0jor")
-id = &"build_workshop"
-label = "Workshop"
+id = &"build_knapping_spot"
+label = "Knapping Spot"
 requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_5bnt4"), SubResource("Resource_cmt4l")])
 effects = Array[ExtResource("2_26ks0")]([SubResource("Resource_pc78u")])
 
@@ -91,7 +91,7 @@ amount = 6
 script = ExtResource("4_3rqp3")
 id = &"building_opportunity"
 title = "Ready to build"
-body = "The settlement has gathered enough to build something new."
+body = "The group has gathered enough to improve the camp."
 category = &"settlement"
 requires = Array[ExtResource("3_c7jf6")]([SubResource("Resource_cmoex"), SubResource("Resource_h1sps")])
 chance_per_tick = 0.5

@@ -47,6 +47,9 @@ func apply(
 		SimEffect.Kind.SET_PROFESSION:
 			if subject != null:
 				subject.profession = effect.key
+		SimEffect.Kind.ADVANCE_ERA:
+			if not sim.advance_era(effect.key):
+				push_warning("Could not advance to era '%s'" % effect.key)
 
 
 func _format(text: String, subject: VillagerState) -> String:

@@ -43,8 +43,8 @@ func _lived_in_sim() -> Simulation:
 	sim.world.resources[&"wood"] = 10
 	sim.fire_event(sim.content.get_event(&"building_opportunity"), null)
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"building_opportunity")
-	sim.resolve_decision(decision.id, &"build_explorers_hut")
-	SimFixture.advance_until_built(sim, &"explorers_hut", SimFixture.TICKS_PER_DAY * 6)
+	sim.resolve_decision(decision.id, &"build_lookout")
+	SimFixture.advance_until_built(sim, &"lookout", SimFixture.TICKS_PER_DAY * 6)
 	SimFixture.advance_until_pending(sim, &"curious_explorer", SimFixture.TICKS_PER_DAY * 10)
 	var ask: PendingDecision = SimFixture.pending_for(sim, &"curious_explorer")
 	sim.resolve_decision(ask.id, &"encourage")

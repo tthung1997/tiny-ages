@@ -1,19 +1,30 @@
 [gd_resource type="Resource" script_class="ContentLibrary" format=3]
 
-[ext_resource type="Script" path="res://scripts/sim/data/building_def.gd" id="1_mqys7"]
-[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="2_wh8jf"]
-[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="3_0otko"]
-[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="4_0wd41"]
-[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="5_euihr"]
-[ext_resource type="Script" path="res://scripts/sim/data/plant_def.gd" id="6_x2sw1"]
-[ext_resource type="Script" path="res://scripts/sim/data/content_library.gd" id="7_xydym"]
-[ext_resource type="Script" path="res://scripts/sim/state/villager_state.gd" id="8_yklc2"]
+[ext_resource type="Script" path="res://scripts/sim/data/building_def.gd" id="1_wh8jf"]
+[ext_resource type="Script" path="res://scripts/sim/data/era_def.gd" id="2_0otko"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="3_0wd41"]
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="4_euihr"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="5_x2sw1"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="6_xydym"]
+[ext_resource type="Script" path="res://scripts/sim/data/plant_def.gd" id="7_yklc2"]
+[ext_resource type="Script" path="res://scripts/sim/data/content_library.gd" id="8_cekk5"]
+[ext_resource type="Script" path="res://scripts/sim/state/villager_state.gd" id="9_5n80e"]
 
-[sub_resource type="Resource" id="Resource_cekk5"]
-script = ExtResource("1_mqys7")
-id = &"farm"
-display_name = "Farm"
-description = "Fields that feed the settlement."
+[sub_resource type="Resource" id="Resource_jqx0p"]
+script = ExtResource("1_wh8jf")
+id = &"lookout"
+display_name = "Lookout"
+description = "A high place to watch the valleys for game, weather and what lies ahead."
+cost = Dictionary[StringName, int]({
+&"wood": 6
+})
+work_required = 36
+
+[sub_resource type="Resource" id="Resource_w1vrj"]
+script = ExtResource("1_wh8jf")
+id = &"drying_rack"
+display_name = "Drying Rack"
+description = "Racks for drying meat and berries so they keep through the cold."
 cost = Dictionary[StringName, int]({
 &"wood": 6
 })
@@ -21,21 +32,11 @@ daily_output = Dictionary[StringName, float]({
 &"food": 6.0
 })
 
-[sub_resource type="Resource" id="Resource_5n80e"]
-script = ExtResource("1_mqys7")
-id = &"explorers_hut"
-display_name = "Explorer's Hut"
-description = "A base for those who want to see what lies beyond the camp."
-cost = Dictionary[StringName, int]({
-&"wood": 6
-})
-work_required = 36
-
-[sub_resource type="Resource" id="Resource_jqx0p"]
-script = ExtResource("1_mqys7")
-id = &"workshop"
-display_name = "Workshop"
-description = "A place to make things that last."
+[sub_resource type="Resource" id="Resource_x3mb8"]
+script = ExtResource("1_wh8jf")
+id = &"knapping_spot"
+display_name = "Knapping Spot"
+description = "A flat stone and a pile of flint: a place to make better tools."
 cost = Dictionary[StringName, int]({
 &"wood": 8
 })
@@ -44,338 +45,523 @@ daily_output = Dictionary[StringName, float]({
 &"wood": 4.0
 })
 
+[sub_resource type="Resource" id="Resource_4ragh"]
+script = ExtResource("1_wh8jf")
+id = &"hut"
+display_name = "Hut"
+description = "A proper shelter, built where the group means to stay."
+cost = Dictionary[StringName, int]({
+&"wood": 10
+})
+work_required = 40
+
+[sub_resource type="Resource" id="Resource_pgv5y"]
+script = ExtResource("1_wh8jf")
+id = &"field"
+display_name = "Field"
+description = "Ground cleared and sown, feeding the group season after season."
+cost = Dictionary[StringName, int]({
+&"wood": 8
+})
+work_required = 36
+daily_output = Dictionary[StringName, float]({
+&"food": 10.0
+})
+
+[sub_resource type="Resource" id="Resource_7a64m"]
+script = ExtResource("2_0otko")
+id = &"cave"
+display_name = "Cave Age"
+description = "Hunter-gatherers sheltering in a cave, living by fire and flint."
+
+[sub_resource type="Resource" id="Resource_suuu8"]
+script = ExtResource("2_0otko")
+id = &"settled"
+display_name = "Settled Age"
+order = 1
+description = "Farming and herding: people stay in one place and shape the land."
+intro_text = "The group stayed by the field, and a new way of living began."
+
 [sub_resource type="Resource" id="Resource_thc00"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 5
-key = &"explorers_hut"
+key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_axk6o"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 0
-key = &"explorers_hut"
+key = &"lookout"
 negate = true
 
 [sub_resource type="Resource" id="Resource_a7ika"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 2
 key = &"wood"
 amount = 6
 
 [sub_resource type="Resource" id="Resource_tvj44"]
-script = ExtResource("3_0otko")
-id = &"build_explorers_hut"
-label = "Explorer's Hut"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_axk6o"), SubResource("Resource_a7ika")])
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_thc00")])
+script = ExtResource("4_euihr")
+id = &"build_lookout"
+label = "Lookout"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_axk6o"), SubResource("Resource_a7ika")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_thc00")])
 
 [sub_resource type="Resource" id="Resource_mlhbg"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 5
-key = &"farm"
+key = &"drying_rack"
 
 [sub_resource type="Resource" id="Resource_a7fns"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 0
-key = &"farm"
+key = &"drying_rack"
 negate = true
 
 [sub_resource type="Resource" id="Resource_ugs3q"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 2
 key = &"wood"
 amount = 6
 
 [sub_resource type="Resource" id="Resource_10htk"]
-script = ExtResource("3_0otko")
-id = &"build_farm"
-label = "Farm"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_a7fns"), SubResource("Resource_ugs3q")])
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_mlhbg")])
+script = ExtResource("4_euihr")
+id = &"build_drying_rack"
+label = "Drying Rack"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_a7fns"), SubResource("Resource_ugs3q")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_mlhbg")])
 
 [sub_resource type="Resource" id="Resource_pc78u"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 5
-key = &"workshop"
+key = &"knapping_spot"
 
 [sub_resource type="Resource" id="Resource_5bnt4"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 0
-key = &"workshop"
+key = &"knapping_spot"
 negate = true
 
 [sub_resource type="Resource" id="Resource_cmt4l"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 2
 key = &"wood"
 amount = 8
 
 [sub_resource type="Resource" id="Resource_8td1l"]
-script = ExtResource("3_0otko")
-id = &"build_workshop"
-label = "Workshop"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_5bnt4"), SubResource("Resource_cmt4l")])
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_pc78u")])
+script = ExtResource("4_euihr")
+id = &"build_knapping_spot"
+label = "Knapping Spot"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_5bnt4"), SubResource("Resource_cmt4l")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_pc78u")])
 
 [sub_resource type="Resource" id="Resource_cmoex"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 4
 
 [sub_resource type="Resource" id="Resource_h1sps"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 2
 key = &"wood"
 amount = 6
 
-[sub_resource type="Resource" id="Resource_w1vrj"]
-script = ExtResource("2_wh8jf")
+[sub_resource type="Resource" id="Resource_4g58m"]
+script = ExtResource("3_0wd41")
 id = &"building_opportunity"
 title = "Ready to build"
-body = "The settlement has gathered enough to build something new."
+body = "The group has gathered enough to improve the camp."
 category = &"settlement"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_cmoex"), SubResource("Resource_h1sps")])
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_cmoex"), SubResource("Resource_h1sps")])
 chance_per_tick = 0.5
 cooldown_ticks = 24
-choices = Array[ExtResource("3_0otko")]([SubResource("Resource_tvj44"), SubResource("Resource_10htk"), SubResource("Resource_8td1l")])
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_tvj44"), SubResource("Resource_10htk"), SubResource("Resource_8td1l")])
+
+[sub_resource type="Resource" id="Resource_p8a78"]
+script = ExtResource("5_x2sw1")
+kind = 5
+key = &"field"
+
+[sub_resource type="Resource" id="Resource_3ediy"]
+script = ExtResource("6_xydym")
+kind = 0
+key = &"field"
+negate = true
+
+[sub_resource type="Resource" id="Resource_8d1s1"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 8
+
+[sub_resource type="Resource" id="Resource_xc2vh"]
+script = ExtResource("4_euihr")
+id = &"build_field"
+label = "Field"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_3ediy"), SubResource("Resource_8d1s1")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_p8a78")])
+
+[sub_resource type="Resource" id="Resource_uen8p"]
+script = ExtResource("5_x2sw1")
+kind = 5
+key = &"hut"
+
+[sub_resource type="Resource" id="Resource_1vml3"]
+script = ExtResource("6_xydym")
+kind = 0
+key = &"hut"
+negate = true
+
+[sub_resource type="Resource" id="Resource_va5kd"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 10
+
+[sub_resource type="Resource" id="Resource_4rad1"]
+script = ExtResource("4_euihr")
+id = &"build_hut"
+label = "Hut"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_1vml3"), SubResource("Resource_va5kd")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_uen8p")])
+
+[sub_resource type="Resource" id="Resource_1o3s4"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_tn2hh"]
+script = ExtResource("6_xydym")
+kind = 4
+
+[sub_resource type="Resource" id="Resource_ookuu"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 8
+
+[sub_resource type="Resource" id="Resource_qdfsn"]
+script = ExtResource("3_0wd41")
+id = &"settled_building_opportunity"
+title = "Building a settlement"
+body = "Staying in one place means building for it."
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_1o3s4"), SubResource("Resource_tn2hh"), SubResource("Resource_ookuu")])
+chance_per_tick = 0.5
+cooldown_ticks = 24
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_xc2vh"), SubResource("Resource_4rad1")])
 
 [sub_resource type="Resource" id="Resource_cmxay"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 11
-key = &"explorer"
+key = &"scout"
 
 [sub_resource type="Resource" id="Resource_15eqs"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 6
-key = &"forest_east"
+key = &"eastern_valley"
 amount = 36
 
 [sub_resource type="Resource" id="Resource_grhtu"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 7
 key = &"explorer_returns"
 amount = 36
 
 [sub_resource type="Resource" id="Resource_d7xf6"]
-script = ExtResource("4_0wd41")
-text = "{subject} set off to explore the eastern forest."
+script = ExtResource("5_x2sw1")
+text = "{subject} set off to scout the eastern valley."
 
 [sub_resource type="Resource" id="Resource_n6sha"]
-script = ExtResource("3_0otko")
+script = ExtResource("4_euihr")
 id = &"encourage"
-label = "Encourage exploration"
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_cmxay"), SubResource("Resource_15eqs"), SubResource("Resource_grhtu"), SubResource("Resource_d7xf6")])
+label = "Encourage them to scout"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_cmxay"), SubResource("Resource_15eqs"), SubResource("Resource_grhtu"), SubResource("Resource_d7xf6")])
 
 [sub_resource type="Resource" id="Resource_mv7dv"]
-script = ExtResource("3_0otko")
+script = ExtResource("4_euihr")
 id = &"remain"
-label = "Ask them to remain"
+label = "Ask them to stay"
 
 [sub_resource type="Resource" id="Resource_y02xf"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 0
-key = &"explorers_hut"
+key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_4n7r8"]
-script = ExtResource("5_euihr")
-key = &"forest_east_explored"
+script = ExtResource("6_xydym")
+key = &"eastern_valley_explored"
 negate = true
 
 [sub_resource type="Resource" id="Resource_su141"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 6
 key = &"curious"
 
 [sub_resource type="Resource" id="Resource_1my53"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_x3mb8"]
-script = ExtResource("2_wh8jf")
+[sub_resource type="Resource" id="Resource_5po8p"]
+script = ExtResource("3_0wd41")
 id = &"curious_explorer"
-title = "A curious explorer"
-body = "{subject} is curious about the forest to the east and asks to explore it."
+title = "A curious scout"
+body = "{subject} keeps climbing the lookout to stare at the eastern valley."
 category = &"exploration"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8")])
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8")])
 needs_subject = true
-subject_requires = Array[ExtResource("5_euihr")]([SubResource("Resource_su141"), SubResource("Resource_1my53")])
+subject_requires = Array[ExtResource("6_xydym")]([SubResource("Resource_su141"), SubResource("Resource_1my53")])
 chance_per_tick = 0.06
 cooldown_ticks = 72
-choices = Array[ExtResource("3_0otko")]([SubResource("Resource_n6sha"), SubResource("Resource_mv7dv")])
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_n6sha"), SubResource("Resource_mv7dv")])
 
 [sub_resource type="Resource" id="Resource_5ov8r"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 8
 key = &"strange_seed"
 
 [sub_resource type="Resource" id="Resource_gpkxw"]
-script = ExtResource("4_0wd41")
-text = "{subject} planted the strange seed beside the camp."
+script = ExtResource("5_x2sw1")
+text = "{subject} pressed the strange seed into the soil by the cave mouth."
 
 [sub_resource type="Resource" id="Resource_xp2u3"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
 [sub_resource type="Resource" id="Resource_bikoi"]
-script = ExtResource("3_0otko")
+script = ExtResource("4_euihr")
 id = &"plant_it"
 label = "Plant it"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_xp2u3")])
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_5ov8r"), SubResource("Resource_gpkxw")])
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_xp2u3")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_5ov8r"), SubResource("Resource_gpkxw")])
 
 [sub_resource type="Resource" id="Resource_q6vl7"]
-script = ExtResource("4_0wd41")
-text = "The strange seed was put in a jar for safekeeping."
+script = ExtResource("5_x2sw1")
+text = "The strange seed was wrapped in a hide pouch for safekeeping."
 
 [sub_resource type="Resource" id="Resource_ik0y3"]
-script = ExtResource("3_0otko")
+script = ExtResource("4_euihr")
 id = &"keep_it"
 label = "Keep it safe"
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_q6vl7")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_q6vl7")])
 
 [sub_resource type="Resource" id="Resource_ntkxq"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
 [sub_resource type="Resource" id="Resource_86jub"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 1
-key = &"forest_east_explored"
+key = &"eastern_valley_explored"
 
 [sub_resource type="Resource" id="Resource_kx622"]
-script = ExtResource("4_0wd41")
-text = "{subject} returned from the eastern forest carrying an unfamiliar seed."
+script = ExtResource("5_x2sw1")
+text = "{subject} returned from the eastern valley carrying the seed of an unfamiliar plant."
 
-[sub_resource type="Resource" id="Resource_4ragh"]
-script = ExtResource("2_wh8jf")
+[sub_resource type="Resource" id="Resource_1iwjt"]
+script = ExtResource("3_0wd41")
 id = &"explorer_returns"
-title = "An explorer returns"
-body = "{subject} is back from the forest, carrying something unfamiliar."
+title = "A scout returns"
+body = "{subject} is back from the valley, carrying something unfamiliar."
 category = &"exploration"
 needs_subject = true
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
-choices = Array[ExtResource("3_0otko")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
 
-[sub_resource type="Resource" id="Resource_xnlsg"]
-script = ExtResource("4_0wd41")
+[sub_resource type="Resource" id="Resource_ie0i1"]
+script = ExtResource("5_x2sw1")
 kind = 8
 key = &"strange_seed"
 
-[sub_resource type="Resource" id="Resource_pcnml"]
-script = ExtResource("4_0wd41")
+[sub_resource type="Resource" id="Resource_aajyu"]
+script = ExtResource("5_x2sw1")
 text = "The strange seed was planted at last."
 
-[sub_resource type="Resource" id="Resource_vveng"]
-script = ExtResource("3_0otko")
+[sub_resource type="Resource" id="Resource_4vxwp"]
+script = ExtResource("4_euihr")
 id = &"plant_it"
 label = "Plant it"
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_xnlsg"), SubResource("Resource_pcnml")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ie0i1"), SubResource("Resource_aajyu")])
 
-[sub_resource type="Resource" id="Resource_0pw83"]
-script = ExtResource("3_0otko")
+[sub_resource type="Resource" id="Resource_y3e8r"]
+script = ExtResource("4_euihr")
 id = &"wait"
 label = "Wait a while longer"
 
-[sub_resource type="Resource" id="Resource_488df"]
-script = ExtResource("5_euihr")
+[sub_resource type="Resource" id="Resource_5vn1p"]
+script = ExtResource("6_xydym")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
-[sub_resource type="Resource" id="Resource_pgv5y"]
-script = ExtResource("2_wh8jf")
-id = &"seed_in_jar"
-title = "The seed in the jar"
-body = "The strange seed in its jar looks ready to be planted."
+[sub_resource type="Resource" id="Resource_u7x25"]
+script = ExtResource("3_0wd41")
+id = &"seed_in_pouch"
+title = "The seed in the pouch"
+body = "The strange seed in its hide pouch looks ready to be planted."
 category = &"exploration"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_488df")])
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_5vn1p")])
 chance_per_tick = 0.01
 cooldown_ticks = 96
-choices = Array[ExtResource("3_0otko")]([SubResource("Resource_vveng"), SubResource("Resource_0pw83")])
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_4vxwp"), SubResource("Resource_y3e8r")])
+
+[sub_resource type="Resource" id="Resource_mf78r"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"path_agriculture"
+
+[sub_resource type="Resource" id="Resource_a58yr"]
+script = ExtResource("5_x2sw1")
+kind = 12
+key = &"settled"
+
+[sub_resource type="Resource" id="Resource_4fa3f"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"the_first_field"
+text = "The First Field"
+
+[sub_resource type="Resource" id="Resource_0tvtd"]
+script = ExtResource("4_euihr")
+id = &"settle"
+label = "Gather the seeds and settle by the field"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_mf78r"), SubResource("Resource_a58yr"), SubResource("Resource_4fa3f")])
+
+[sub_resource type="Resource" id="Resource_av210"]
+script = ExtResource("5_x2sw1")
+text = "The group kept to the old ways, but a handful of seeds went into the pouch."
+
+[sub_resource type="Resource" id="Resource_h81lb"]
+script = ExtResource("4_euihr")
+id = &"keep_roaming"
+label = "Keep following the herds"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_av210")])
+
+[sub_resource type="Resource" id="Resource_71g3m"]
+script = ExtResource("6_xydym")
+key = &"strange_flower_bloomed"
+
+[sub_resource type="Resource" id="Resource_5mkjn"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+negate = true
+
+[sub_resource type="Resource" id="Resource_qkyvo"]
+script = ExtResource("3_0wd41")
+id = &"seeds_of_a_new_life"
+title = "Seeds of a new life"
+body = "The plant by the cave has gone to seed: enough to sow a whole field. But a field means staying put, and the herds will move on."
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_71g3m"), SubResource("Resource_5mkjn")])
+chance_per_tick = 0.03
+cooldown_ticks = 96
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_0tvtd"), SubResource("Resource_h81lb")])
 
 [sub_resource type="Resource" id="Resource_ebukt"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 1
 key = &"butterfly_seen"
 
 [sub_resource type="Resource" id="Resource_c1kuh"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 text = "A butterfly nobody had seen before landed on the strange flower."
 
 [sub_resource type="Resource" id="Resource_w0bb1"]
-script = ExtResource("4_0wd41")
+script = ExtResource("5_x2sw1")
 kind = 10
 key = &"rare_visitor"
 text = "A Rare Visitor"
 
 [sub_resource type="Resource" id="Resource_dndfu"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 key = &"strange_flower_bloomed"
 
 [sub_resource type="Resource" id="Resource_0cmtk"]
-script = ExtResource("5_euihr")
+script = ExtResource("6_xydym")
 key = &"butterfly_seen"
 negate = true
 
-[sub_resource type="Resource" id="Resource_7a64m"]
-script = ExtResource("2_wh8jf")
+[sub_resource type="Resource" id="Resource_ggqur"]
+script = ExtResource("3_0wd41")
 id = &"rare_butterfly"
 title = "A rare visitor"
 category = &"nature"
-requires = Array[ExtResource("5_euihr")]([SubResource("Resource_dndfu"), SubResource("Resource_0cmtk")])
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_dndfu"), SubResource("Resource_0cmtk")])
 chance_per_tick = 0.02
 once = true
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_ebukt"), SubResource("Resource_c1kuh"), SubResource("Resource_w0bb1")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ebukt"), SubResource("Resource_c1kuh"), SubResource("Resource_w0bb1")])
 
 [sub_resource type="Resource" id="Resource_42qki"]
-script = ExtResource("4_0wd41")
-text = "It rained heavily for most of the afternoon."
+script = ExtResource("5_x2sw1")
+text = "It rained heavily and everyone crowded in the cave."
 
-[sub_resource type="Resource" id="Resource_suuu8"]
-script = ExtResource("2_wh8jf")
+[sub_resource type="Resource" id="Resource_b3l6f"]
+script = ExtResource("3_0wd41")
 id = &"heavy_rain"
 title = "Heavy rain"
 category = &"nature"
 chance_per_tick = 0.004
 cooldown_ticks = 120
-effects = Array[ExtResource("4_0wd41")]([SubResource("Resource_42qki")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_42qki")])
 
-[sub_resource type="Resource" id="Resource_4g58m"]
-script = ExtResource("6_x2sw1")
+[sub_resource type="Resource" id="Resource_cggni"]
+script = ExtResource("5_x2sw1")
+text = "A cold night. Everyone drew close around the fire."
+
+[sub_resource type="Resource" id="Resource_04wf5"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+negate = true
+
+[sub_resource type="Resource" id="Resource_epblf"]
+script = ExtResource("3_0wd41")
+id = &"cold_night"
+title = "A cold night"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_04wf5")])
+chance_per_tick = 0.005
+cooldown_ticks = 120
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_cggni")])
+
+[sub_resource type="Resource" id="Resource_l2b1f"]
+script = ExtResource("7_yklc2")
 id = &"strange_flower"
 display_name = "Strange flower"
 seed_item = &"strange_seed"
-flower_text = "The strange seed flowered beside the camp."
+flower_text = "The strange seed flowered by the cave mouth."
 flower_flag = &"strange_flower_bloomed"
 flower_achievement = &"unexpected_garden"
 flower_achievement_title = "Unexpected Garden"
 
-[sub_resource type="Resource" id="Resource_qdfsn"]
-script = ExtResource("8_yklc2")
+[sub_resource type="Resource" id="Resource_0e7a7"]
+script = ExtResource("9_5n80e")
 id = &"mira"
 display_name = "Mira"
 traits = Array[StringName]([&"industrious", &"social"])
 
-[sub_resource type="Resource" id="Resource_5po8p"]
-script = ExtResource("8_yklc2")
+[sub_resource type="Resource" id="Resource_5rvqx"]
+script = ExtResource("9_5n80e")
 id = &"theo"
 display_name = "Theo"
 traits = Array[StringName]([&"curious", &"nature_loving"])
 
-[sub_resource type="Resource" id="Resource_1iwjt"]
-script = ExtResource("8_yklc2")
+[sub_resource type="Resource" id="Resource_pgpg8"]
+script = ExtResource("9_5n80e")
 id = &"wren"
 display_name = "Wren"
 traits = Array[StringName]([&"social", &"nature_loving"])
 
 [resource]
-script = ExtResource("7_xydym")
-events = Array[ExtResource("2_wh8jf")]([SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8"), SubResource("Resource_4ragh"), SubResource("Resource_pgv5y"), SubResource("Resource_7a64m"), SubResource("Resource_suuu8")])
-buildings = Array[ExtResource("1_mqys7")]([SubResource("Resource_cekk5"), SubResource("Resource_5n80e"), SubResource("Resource_jqx0p")])
-plants = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4g58m")])
-starting_villagers = Array[ExtResource("8_yklc2")]([SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt")])
+script = ExtResource("8_cekk5")
+events = Array[ExtResource("3_0wd41")]([SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf")])
+buildings = Array[ExtResource("1_wh8jf")]([SubResource("Resource_jqx0p"), SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8"), SubResource("Resource_4ragh"), SubResource("Resource_pgv5y")])
+plants = Array[ExtResource("7_yklc2")]([SubResource("Resource_l2b1f")])
+eras = Array[ExtResource("2_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8")])
+starting_villagers = Array[ExtResource("9_5n80e")]([SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8")])
 starting_resources = Dictionary[StringName, int]({
 &"food": 4,
 &"wood": 2

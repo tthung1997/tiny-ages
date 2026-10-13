@@ -97,13 +97,19 @@ var PAL = {
   purple: { shirt: '#9b59b6', shirtD: '#7d3f99', pants: '#4a3a5a', hair: '#c24a6a', hairD: '#9a3552', hairL: '#e06a8a' },
   teal:   { shirt: '#3fa7a0', shirtD: '#2d827c', pants: '#5a4a3a', hair: '#2f5fa0', hairD: '#234a80', hairL: '#4f7fc0' },
   orange: { shirt: '#e8873a', shirtD: '#c46a22', pants: '#4a5a6a', hair: '#b84a2a', hairD: '#8f3820', hairL: '#d8683f' },
-  pink:   { shirt: '#e888a8', shirtD: '#c46a88', pants: '#5a4a6a', hair: '#f0d060', hairD: '#c8a638', hairL: '#fff090' }
+  pink:   { shirt: '#e888a8', shirtD: '#c46a88', pants: '#5a4a6a', hair: '#f0d060', hairD: '#c8a638', hairL: '#fff090' },
+  // Cave Age: furs and hides (use with fur: true)
+  furBrown: { shirt: '#a8703f', shirtD: '#7a4c28', pants: '#7a4c28', hair: '#2f2a26', hairD: '#1c1917', hairL: '#4a423c' },
+  furTan:   { shirt: '#d0a068', shirtD: '#a8784a', pants: '#a8784a', hair: '#6a3a20', hairD: '#4a2814', hairL: '#8a5a38' },
+  furGrey:  { shirt: '#b4b1b9', shirtD: '#8a8792', pants: '#8a8792', hair: '#d9d9e0', hairD: '#b0b0bc', hairL: '#ffffff' },
+  furOchre: { shirt: '#cf7a46', shirtD: '#a05830', pants: '#a05830', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' }
 };
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
-// o = { pal, pose: idle|walk|chop|hammer|fish, f: frame,
-//       role: farmer|builder|explorer|woodcutter|fisher|undefined,
-//       hair: short|tuft|long|bun|pony }
+// o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
+//       role: farmer|builder|explorer|woodcutter|fisher|gatherer|undefined,
+//       hair: short|tuft|long|bun|pony,
+//       fur: true (hide tunic, bare legs, bone necklace), stone: true (stone tool heads) }
 // Draw into a Buf(27, 27); feet land on row 26, body centre column 13, faces right.
 // Use mirror() for left-facing. Place with outlined(buf, OUT).
 function vil(o) {
@@ -114,26 +120,32 @@ function vil(o) {
     var wk = pose == 'walk' ? f : -1, dy = (wk == 1 || wk == 3) ? 1 : 0;
     var bodyTop = legTop - bh - dy, hx = cx + 1, hcy = bodyTop - ry + 2, bx = cx - 3;
     var l1 = cx - 3, l2 = cx + 1, h1 = lh, h2 = lh;
+    var legc = o.fur ? SKD : cl.pants, headc = o.stone ? '#8d8a93' : '#aab0bc', headl = o.stone ? '#bdbbc2' : '#e4e8ee';
     if (wk == 0) { l1 -= 2; l2 += 2; }
     if (wk == 1) h1 = lh - 1;
     if (wk == 2) { l1 += 2; l2 -= 2; }
     if (wk == 3) h2 = lh - 1;
-    function leg(x, h) { b.rect(x, legTop - dy, lw, h - 1 + dy, cl.pants); b.rect(x, legTop + h - 1, lw + 1, 1, '#4a3224'); }
+    function leg(x, h) { b.rect(x, legTop - dy, lw, h - 1 + dy, legc); b.rect(x, legTop + h - 1, lw + 1, 1, o.fur ? '#5a4636' : '#4a3224'); }
     leg(l1, h1); leg(l2, h2);
     if (o.role == 'explorer') { b.rect(bx - 3, bodyTop, 3, 5, WOOD); b.rect(bx - 3, bodyTop, 3, 1, WOODL); b.px(bx - 2, bodyTop + 2, '#e8c46a'); }
+    if (o.role == 'gatherer') { b.rect(bx - 3, bodyTop + 1, 3, 4, '#c9a06a'); b.px(bx - 2, bodyTop + 2, '#a8763e'); b.px(bx - 3, bodyTop + 3, '#a8763e'); b.px(bx - 2, bodyTop, '#c8433a'); b.px(bx - 1, bodyTop, '#6a3f8f'); }
     var ba = bh - 2, fa = bh - 2;
     if (wk == 0) fa = 2;
     if (wk == 2) ba = 2;
     b.rect(bx - 1, bodyTop + 1, 2, ba, cl.shirtD); b.rect(bx - 1, bodyTop + 1 + ba, 2, 1, SKD);
-    b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh - 2, bw, 2, cl.shirtD); b.rect(bx, bodyTop + bh - 1, bw, 1, '#6b4a2f');
+    b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh - 2, bw, 2, cl.shirtD); b.rect(bx, bodyTop + bh - 1, bw, 1, o.fur ? '#4a3224' : '#6b4a2f');
+    if (o.fur) {
+      for (var hm = 0; hm < bw; hm += 2) b.px(bx + hm, bodyTop + bh, cl.shirtD); // ragged hem
+      b.px(bx + 1, bodyTop, '#f4ecd8'); b.px(bx + 2, bodyTop, '#f4ecd8'); // bone necklace
+    }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }
     if (o.role == 'explorer') { b.rect(bx, bodyTop, bw, 1, '#3fa7a0'); b.rect(bx + bw - 2, bodyTop, 2, 3, '#3fa7a0'); }
     var sx = bx + bw, sy = bodyTop + 1;
     function tool(hxp, hyp, tx, ty, kind) {
       b.line(sx - 1, sy, hxp, hyp, cl.shirt, 2); b.rect(hxp, hyp, 2, 2, SK); b.line(hxp, hyp, tx, ty, WOOD, 1);
-      if (kind == 'axe') { b.rect(tx - 1, ty - 1, 3, 3, '#aab0bc'); b.px(tx - 1, ty - 1, '#e4e8ee'); }
-      else if (kind == 'hammer') b.rect(tx - 1, ty - 1, 3, 2, '#aab0bc');
+      if (kind == 'axe') { b.rect(tx - 1, ty - 1, 3, 3, headc); b.px(tx - 1, ty - 1, headl); }
+      else if (kind == 'hammer') b.rect(tx - 1, ty - 1, 3, 2, headc);
     }
     if (pose == 'chop') {
       if (f == 0) tool(sx + 2, sy - 2, sx + 2, sy - 8, 'axe');
@@ -145,6 +157,9 @@ function vil(o) {
       var up = f == 0 ? 0 : 1;
       b.line(sx - 1, sy, sx + 2, sy + 1 - up, cl.shirt, 2); b.rect(sx + 2, sy + 1 - up, 2, 2, SK);
       b.line(sx + 3, sy + 1 - up, sx + 10, sy - 7 - up, WOOD, 1); // rod tip = (sx+10, sy-7-up)
+    } else if (pose == 'spear') { // held upright, stone tip above the head
+      b.line(sx - 1, sy, sx + 2, sy + 1, cl.shirt, 2); b.rect(sx + 2, sy + 1, 2, 2, SK);
+      b.line(sx + 3, yb, sx + 3, 3, WOOD, 1); b.rect(sx + 3, 0, 1, 3, '#cfd8e0'); b.px(sx + 3, 3, '#c9a06a');
     } else {
       b.rect(bx + bw - 1, bodyTop + 1, 2, fa, cl.shirt); b.rect(bx + bw - 1, bodyTop + 1 + fa, 2, 1, SK);
     }
@@ -222,3 +237,92 @@ function shop3(b) { // complete
   b.rect(40, 16, 1, 10, WOOD); b.rect(34, 17, 7, 1, WOOD); b.rect(34, 17, 1, 4, WOOD); b.rect(33, 21, 4, 3, '#d9a566'); b.px(34, 22, '#9aa0aa'); b.px(35, 22, '#9aa0aa');
   shopBase(b);
 }
+
+// ---- Cave Age props -----------------------------------------------------------
+var ROCK = '#8d8a93', ROCKD = '#6f6c78', ROCKL = '#a8a5ae', OCHRE = '#b8573a';
+
+function handprint(b, x, y) { // red-ochre hand on the cave wall
+  b.rect(x + 1, y + 3, 3, 3, OCHRE); b.rect(x, y + 1, 1, 3, OCHRE); b.rect(x + 1, y, 1, 3, OCHRE);
+  b.rect(x + 2, y, 1, 3, OCHRE); b.rect(x + 3, y + 1, 1, 3, OCHRE); b.rect(x + 4, y + 4, 1, 2, OCHRE);
+}
+
+// Cliff with the cave mouth, 100x54. The home of the settlement; foot on the bottom row.
+function cliff(b) {
+  b.ell(30, 34, 30, 20, ROCKD); b.ell(72, 38, 28, 16, ROCKD); b.rect(4, 40, 92, 14, ROCKD);
+  b.ell(50, 30, 40, 22, ROCK); b.rect(6, 40, 88, 8, ROCK); b.ell(42, 22, 26, 11, ROCKL);
+  b.line(20, 14, 24, 25, '#5f5c68', 1); b.line(64, 10, 60, 22, '#5f5c68', 1); b.line(82, 26, 86, 38, '#5f5c68', 1);
+  b.ell(24, 12, 6, 2.5, '#4f9a5a'); b.ell(52, 5, 7, 2.5, '#58b05f'); b.ell(80, 21, 6, 2.2, '#4f9a5a'); b.ell(10, 27, 4, 2, '#4f9a5a');
+  // cave mouth: dark arch to the ground, warm firelight low inside
+  b.ell(34, 40, 14, 14, '#2a2433'); b.rect(20, 40, 28, 14, '#2a2433'); b.ell(34, 43, 9, 9, '#3a3040');
+  for (var y = 46; y < 54; y++) for (var x = 26; x < 43; x++) if (((x + y) & 1) == 0 && y > 46 + Math.abs(x - 34) / 3) b.px(x, y, '#a8643a');
+  b.ell(34, 27, 4, 1.5, ROCKD); // brow of the arch
+  handprint(b, 62, 28); handprint(b, 70, 31); handprint(b, 66, 36);
+  b.px(78, 30, OCHRE); b.px(79, 31, OCHRE); b.px(80, 30, OCHRE); b.px(84, 34, OCHRE); b.px(85, 35, OCHRE);
+}
+
+// Woolly mammoth, 42x28, facing right.
+function mammoth(b) {
+  b.rect(9, 21, 5, 7, '#5a3e30'); b.rect(16, 22, 5, 6, '#5a3e30'); b.rect(25, 22, 5, 6, '#5a3e30'); b.rect(31, 21, 4, 7, '#5a3e30');
+  b.rect(9, 27, 5, 1, '#3a2a22'); b.rect(16, 27, 5, 1, '#3a2a22'); b.rect(25, 27, 5, 1, '#3a2a22'); b.rect(31, 27, 4, 1, '#3a2a22');
+  b.ell(20, 13, 15, 10, '#6a4a3a'); b.ell(31, 11, 8, 8, '#6a4a3a'); b.ell(18, 8, 10, 4.5, '#8a6044');
+  for (var x = 8; x < 31; x += 2) b.rect(x, 21 + ((x / 2) & 1), 2, 3, '#5a3e30'); // shaggy underside
+  b.ell(27, 13, 3, 4, '#5a3e30'); b.px(34, 9, '#1c1917');
+  b.rect(36, 14, 3, 8, '#6a4a3a'); b.rect(37, 22, 3, 2, '#6a4a3a'); b.px(39, 24, '#6a4a3a'); // trunk
+  b.line(35, 17, 40, 20, '#f4ecd8', 1); b.line(40, 20, 39, 23, '#f4ecd8', 1); // tusk
+  b.px(5, 12, '#5a3e30'); b.px(4, 14, '#5a3e30');
+}
+
+// Hide shelter, 28x22: a stitched hide cone over crossed pole tips, with a dark doorway.
+function leanto(b) {
+  b.line(11, 0, 15, 5, WOOD, 1); b.line(17, 0, 13, 5, WOOD, 1);
+  b.tri(14, 4, 18, 12, '#d6b47a', '#b08a58');
+  b.line(14, 6, 14, 20, '#8a6a44', 1); b.line(14, 6, 8, 20, '#8a6a44', 1); b.line(14, 6, 20, 20, '#8a6a44', 1);
+  b.rect(19, 13, 3, 3, '#a8845a'); b.px(10, 12, '#a8845a'); b.px(14, 7, '#f4ecd8');
+  b.tri(14, 13, 9, 3, '#2a2433', '#2a2433');
+}
+
+// Meat/hide drying rack, 22x20.
+function dryrack(b) {
+  b.rect(2, 6, 2, 14, WOOD); b.rect(18, 6, 2, 14, WOOD); b.rect(0, 5, 22, 2, '#6f4528');
+  var xs = [5, 8, 11, 14]; for (var i = 0; i < xs.length; i++) { b.rect(xs[i], 7, 2, 6 + (i % 3), '#c0504a'); b.rect(xs[i], 12 + (i % 3), 2, 1, '#8f3a2d'); }
+  b.rect(16, 7, 2, 8, '#c9a66b'); b.rect(16, 14, 2, 1, '#a8845a');
+}
+
+// Lookout: rock outcrop with a wooden platform and ladder, 26x34. Platform surface is row 12.
+function lookout(b) {
+  b.ell(13, 29, 13, 6, ROCK); b.ell(10, 27, 8, 3, ROCKL); b.rect(1, 29, 24, 5, ROCKD);
+  b.rect(4, 14, 2, 18, '#a8763e'); b.rect(12, 14, 2, 18, '#a8763e'); b.rect(20, 14, 2, 18, '#a8763e');
+  b.rect(1, 12, 24, 3, '#c79a5f'); b.rect(1, 14, 24, 1, '#8c5f31');
+  for (var x = 4; x < 24; x += 4) b.px(x, 12, '#a8763e');
+  b.rect(1, 6, 1, 6, '#8c5f31'); b.rect(24, 6, 1, 6, '#8c5f31'); b.rect(1, 6, 24, 1, '#8c5f31');
+  b.line(22, 15, 25, 31, '#6f4528', 1);
+  for (var y = 18; y < 31; y += 3) b.rect(22 + Math.round((y - 15) / 5), y, 3, 1, '#c79a5f');
+}
+
+// Flat knapping stone with flint chips, 18x10.
+function knapspot(b) {
+  b.ell(9, 6, 9, 3.2, ROCK); b.ell(8, 5, 6, 1.8, ROCKL);
+  b.px(2, 8, '#cfd8e0'); b.px(5, 9, '#6b7280'); b.px(13, 9, '#cfd8e0'); b.px(15, 8, '#6b7280'); b.px(9, 2, '#cfd8e0');
+  b.px(12, 4, '#3a4452'); b.px(13, 4, '#3a4452');
+}
+
+// Fire pit with a stone ring and crossed logs, 16x14.
+function firepit(b) {
+  var i, a, sx, sy;
+  for (i = 0; i < 8; i++) { a = i * Math.PI / 4; sy = 10 + Math.sin(a) * 2.5; if (Math.sin(a) <= 0) b.ell(8 + Math.cos(a) * 6.5, sy, 1.8, 1.4, ROCKD); }
+  b.ell(8, 10, 5, 2, '#3a2a22'); b.line(4, 10, 12, 8, WOOD, 2); b.line(5, 8, 12, 11, '#6f4528', 2);
+  b.tri(8, 0, 9, 3, '#f59e2b', '#e5732b'); b.tri(8, 4, 5, 1, '#ffe27a', '#ffe27a'); b.px(5, 3, '#ffe27a'); b.px(11, 2, '#f59e2b');
+  for (i = 0; i < 8; i++) { a = i * Math.PI / 4; if (Math.sin(a) > 0) { sx = 8 + Math.cos(a) * 6.5; sy = 10 + Math.sin(a) * 2.5; b.ell(sx, sy, 1.8, 1.4, ROCK); b.px(sx - 1, sy - 1, ROCKL); } }
+}
+
+// The strange flower: three tall stalks with violet blossoms, 12x12.
+function strangeflower(b) {
+  var s = [[2, 6], [6, 9], [10, 5]];
+  for (var i = 0; i < s.length; i++) {
+    var x = s[i][0], h = s[i][1];
+    b.rect(x, 11 - h, 1, h, '#3a7a3a'); b.px(x - 1, 11 - Math.floor(h / 2), '#58b05f'); b.px(x + 1, 11 - Math.floor(h / 3), '#58b05f');
+    b.ell(x, 11 - h, 2.4, 2, '#b07ce8'); b.px(x, 11 - h, '#ffe27a'); b.px(x - 1, 11 - h - 1, '#d8b8ff');
+  }
+}
+
+function rocks(b) { b.ell(3, 3, 3, 2.2, ROCK); b.px(2, 2, ROCKL); b.ell(7, 4, 2, 1.5, ROCKD); }

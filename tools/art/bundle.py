@@ -28,7 +28,7 @@ import zlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 DIST = os.path.join(HERE, "dist")
-SCENES = ["strip", "night", "villager_sheet", "villager_walk", "workshop_stages"]  # night reads strip's output
+SCENES = ["strip", "cave_strip", "night", "villager_sheet", "villager_walk", "workshop_stages"]  # night reads strip's output
 
 
 def write_blank_png(path, w, h):

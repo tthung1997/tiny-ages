@@ -8,12 +8,12 @@
 [sub_resource type="Resource" id="Resource_cmxay"]
 script = ExtResource("2_3dslj")
 kind = 11
-key = &"explorer"
+key = &"scout"
 
 [sub_resource type="Resource" id="Resource_15eqs"]
 script = ExtResource("2_3dslj")
 kind = 6
-key = &"forest_east"
+key = &"eastern_valley"
 amount = 36
 
 [sub_resource type="Resource" id="Resource_grhtu"]
@@ -24,27 +24,27 @@ amount = 36
 
 [sub_resource type="Resource" id="Resource_d7xf6"]
 script = ExtResource("2_3dslj")
-text = "{subject} set off to explore the eastern forest."
+text = "{subject} set off to scout the eastern valley."
 
 [sub_resource type="Resource" id="Resource_n6sha"]
 script = ExtResource("1_wn2pb")
 id = &"encourage"
-label = "Encourage exploration"
+label = "Encourage them to scout"
 effects = Array[ExtResource("2_3dslj")]([SubResource("Resource_cmxay"), SubResource("Resource_15eqs"), SubResource("Resource_grhtu"), SubResource("Resource_d7xf6")])
 
 [sub_resource type="Resource" id="Resource_mv7dv"]
 script = ExtResource("1_wn2pb")
 id = &"remain"
-label = "Ask them to remain"
+label = "Ask them to stay"
 
 [sub_resource type="Resource" id="Resource_y02xf"]
 script = ExtResource("3_ukhhx")
 kind = 0
-key = &"explorers_hut"
+key = &"lookout"
 
 [sub_resource type="Resource" id="Resource_4n7r8"]
 script = ExtResource("3_ukhhx")
-key = &"forest_east_explored"
+key = &"eastern_valley_explored"
 negate = true
 
 [sub_resource type="Resource" id="Resource_su141"]
@@ -59,8 +59,8 @@ kind = 7
 [resource]
 script = ExtResource("4_6pjtm")
 id = &"curious_explorer"
-title = "A curious explorer"
-body = "{subject} is curious about the forest to the east and asks to explore it."
+title = "A curious scout"
+body = "{subject} keeps climbing the lookout to stare at the eastern valley."
 category = &"exploration"
 requires = Array[ExtResource("3_ukhhx")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8")])
 needs_subject = true

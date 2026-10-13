@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BuildingDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/building_def.gd" id="1_tix8j"]
+
+[resource]
+script = ExtResource("1_tix8j")
+id = &"drying_rack"
+display_name = "Drying Rack"
+description = "Racks for drying meat and berries so they keep through the cold."
+cost = Dictionary[StringName, int]({
+&"wood": 6
+})
+daily_output = Dictionary[StringName, float]({
+&"food": 6.0
+})

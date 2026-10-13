@@ -39,7 +39,7 @@ func test_away_villager_comes_home_on_time() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var theo: VillagerState = sim.world.find_villager(&"theo")
 	theo.activity = VillagerState.ACTIVITY_AWAY
-	theo.location = &"forest_east"
+	theo.location = &"eastern_valley"
 	theo.away_until_tick = sim.world.tick + 5
 	sim.advance_ticks(4)
 	assert_true(theo.is_away(), "Still away one tick early")

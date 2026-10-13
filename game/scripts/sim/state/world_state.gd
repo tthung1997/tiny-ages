@@ -18,6 +18,11 @@ const SAVE_VERSION: int = 1
 @export var rng_seed: int = 0
 @export var rng_state: int = 0
 
+@export_group("Era")
+## Id of the current era and its `order`, kept together so conditions need no content lookup.
+@export var era: StringName = &""
+@export var era_order: int = 0
+
 @export_group("Stocks")
 @export var resources: Dictionary[StringName, int] = {}
 ## Sub-unit production not yet converted into whole resources.

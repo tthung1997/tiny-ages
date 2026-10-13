@@ -19,11 +19,13 @@ func test_choices_the_settlement_cannot_afford_are_refused() -> void:
 	var event: EventDef = sim.content.get_event(&"building_opportunity")
 	sim.fire_event(event, null)
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"building_opportunity")
-	assert_false(sim.resolve_decision(decision.id, &"build_workshop"), "Workshop costs 8 wood")
+	assert_false(
+		sim.resolve_decision(decision.id, &"build_knapping_spot"), "Knapping Spot costs 8 wood"
+	)
 	assert_true(
 		sim.world.find_pending(decision.id) != null, "A refused choice leaves the decision open"
 	)
-	assert_true(sim.resolve_decision(decision.id, &"build_farm"))
+	assert_true(sim.resolve_decision(decision.id, &"build_drying_rack"))
 	assert_eq(sim.world.resource_amount(&"wood"), 0)
 	assert_true(sim.world.constructing() != null)
 	assert_true(sim.world.find_pending(decision.id) == null)

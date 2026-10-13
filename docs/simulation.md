@@ -23,7 +23,13 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 
 ## The first slice (content)
 
-3 villagers (Mira: industrious/social; Theo: curious/nature-loving; Wren: social/nature-loving), 3 buildings (Farm, Explorer's Hut, Workshop), 6 events (building opportunity, a curious explorer, the explorer returns, the seed in the jar, a rare butterfly, heavy rain) and 1 plant. Names and numbers are placeholders from the MVP doc's examples. It plays the doc's chain end to end for every tested seed.
+Re-themed as the **Cave Age** (see [ages](ages.md)), with the turn into the **Settled Age**.
+
+- 2 eras (Cave, Settled), 3 villagers (Mira: industrious/social; Theo: curious/nature-loving; Wren: social/nature-loving), 5 buildings and 9 events, 1 plant.
+- Cave Age buildings: Lookout, Drying Rack, Knapping Spot. Settled Age buildings: Field, Hut (they only appear once settled).
+- The chain: build the Lookout → Theo asks to scout the eastern valley → he returns with a seed → you plant it → it flowers → the seeds raise the question *"settle by the field, or keep following the herds?"* → choosing to settle turns the Cave Age into the Settled Age (the origin of farming). A rare butterfly visits the flower along the way.
+- **Ages are the player's choice**: nothing advances the era automatically; declining just asks again later. Era-gated content uses `ERA_AT_LEAST` conditions on the era's `order`; `ADVANCE_ERA` moves forward only.
+- Names and numbers are placeholders from the MVP doc's examples. It plays end to end for every tested seed.
 
 ## Pacing findings (bot answering every decision immediately)
 

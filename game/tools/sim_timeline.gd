@@ -2,10 +2,11 @@ extends SceneTree
 ## Plays the simulation with a simple bot and prints the world journal, to eyeball pacing:
 ##   & $env:GODOT --headless --path game --script res://tools/sim_timeline.gd -- [seed] [days]
 ## The bot answers every decision immediately with the first choice it can take, preferring
-## the Explorer's Hut. Real-time columns use the configured pace (SimConfig).
-
+## the Lookout. Real-time columns use the configured pace (SimConfig).
+## Ends by taking the "settle" choice when the seeds come, so it shows the Cave -> Settled turn.
 const BOT_PREFERENCE: Array[StringName] = [
-	&"build_explorers_hut", &"encourage", &"plant_it", &"build_farm", &"build_workshop",
+	&"build_lookout", &"encourage", &"plant_it", &"settle", &"build_field",
+	&"build_drying_rack", &"build_hut", &"build_knapping_spot",
 ]
 
 

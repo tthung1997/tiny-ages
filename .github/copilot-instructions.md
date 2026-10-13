@@ -134,9 +134,11 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
 
 - `state/` — `WorldState` and the things it holds. Everything saved is an `@export` field.
 - `data/` — authored definitions: `SimConfig` (all tunables, incl. the 20 min/day pace),
-  `ContentLibrary`, `EventDef`, `ChoiceDef`, `SimCondition`, `SimEffect`, `BuildingDef`,
-  `PlantDef`. Content is data, never code: add new behaviour as a `Kind` on a condition
-  or effect. **Append enum members at the end** — saved `.tres` files store the integer.
+  `ContentLibrary`, `EraDef`, `EventDef`, `ChoiceDef`, `SimCondition`, `SimEffect`,
+  `BuildingDef`, `PlantDef`. Content is data, never code: add new behaviour as a `Kind` on
+  a condition or effect. **Append enum members at the end** — saved `.tres` files store the
+  integer. Ages are linear and chosen by the player (`ADVANCE_ERA`, forward only); gate
+  content with `ERA_AT_LEAST` (see `docs/ages.md`).
 - `systems/` — `VillagerSystem`, `ConstructionSystem`, `PlantSystem`, `EventSystem`,
   `EffectRunner`, driven by `Simulation._step()`. All randomness uses `Simulation.rng`.
 - Time is ticks (`ticks_per_day`, default 24). `advance_ticks` is exact; offline catch-up
