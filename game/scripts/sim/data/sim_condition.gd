@@ -14,6 +14,7 @@ enum Kind {
 	SUBJECT_HAS_TRAIT, ## The event's subject villager has trait `key`.
 	SUBJECT_AT_HOME, ## The event's subject villager is not away.
 	ERA_AT_LEAST, ## The settlement's era `order` is at least `amount`.
+	ACHIEVEMENT_EARNED, ## Achievement `key` has been earned.
 }
 
 @export var kind: Kind = Kind.FLAG_SET
@@ -47,6 +48,8 @@ func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null)
 			result = not subject.is_away()
 		Kind.ERA_AT_LEAST:
 			result = world.era_order >= amount
+		Kind.ACHIEVEMENT_EARNED:
+			result = world.has_achievement(key)
 	return result != negate
 
 

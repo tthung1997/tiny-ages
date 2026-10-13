@@ -5,8 +5,9 @@ extends RefCounted
 ## out without clicking. Never part of normal play.
 
 const PREFERENCE: Array[StringName] = [
-	&"build_lookout", &"encourage", &"plant_it", &"settle", &"build_field",
-	&"build_drying_rack", &"build_hut", &"build_knapping_spot",
+	&"carry_fire", &"blow_on_it", &"keep_the_stone", &"hunt", &"tell_it", &"paint_the_wall",
+	&"welcome_them", &"build_lookout", &"encourage", &"plant_it", &"settle_field",
+	&"build_field", &"build_drying_rack", &"build_hut", &"build_knapping_spot",
 ]
 
 

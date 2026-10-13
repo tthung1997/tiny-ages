@@ -18,6 +18,7 @@ enum Kind {
 	ACHIEVEMENT, ## Earn achievement `key`, shown as `text`.
 	SET_PROFESSION, ## The subject's profession becomes `key`.
 	ADVANCE_ERA, ## The settlement enters era `key` (must be later than the current one).
+	ADD_VILLAGER, ## `amount` newcomers join the group (random name and traits).
 }
 
 @export var kind: Kind = Kind.JOURNAL

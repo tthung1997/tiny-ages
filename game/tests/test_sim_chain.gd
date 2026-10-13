@@ -1,7 +1,7 @@
 extends McpTestSuite
-## The first vertical slice, end to end, from the MVP concept: build the Lookout, Theo wants
-## to scout, he returns with a seed, it is planted, it flowers, a rare butterfly comes, and the
-## seeds raise the question of settling, which turns the Cave Age into the Settled Age.
+## The first vertical slice, from the MVP concept: build the Lookout, a curious villager wants
+## to scout, returns with a seed, it is planted, it flowers and a rare butterfly comes. Turning
+## that into the Settled Age is gated and is tested in test_sim_gate.gd.
 ## Each step is a consequence of the previous player choice. Run across several seeds so the
 ## chain does not depend on one lucky roll.
 
@@ -29,11 +29,11 @@ func test_the_chain_is_reproducible_from_a_seed() -> void:
 func test_ignoring_the_explorer_just_delays_the_chain() -> void:
 	var sim: Simulation = SimFixture.new_sim(2)
 	_build_hut(sim)
-	assert_gt(SimFixture.advance_until_pending(sim, &"curious_explorer", DAY * 10), 0)
+	assert_gt(SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 20), 0)
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"curious_explorer")
 	assert_true(sim.resolve_decision(decision.id, &"remain"))
-	assert_false(sim.world.find_villager(&"theo").is_away())
-	var again: int = SimFixture.advance_until_pending(sim, &"curious_explorer", DAY * 15)
+	assert_false(sim.world.find_villager(decision.subject_id).is_away())
+	var again: int = SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 30)
 	assert_gt(again, 0, "Asking them to stay should not end the story; they ask again later")
 
 
@@ -43,22 +43,22 @@ func _run_chain(rng_seed: int) -> void:
 	_build_hut(sim)
 	assert_true(sim.world.has_building(&"lookout"), "%s: lookout built" % label)
 
-	var asked: int = SimFixture.advance_until_pending(sim, &"curious_explorer", DAY * 10)
-	assert_gt(asked, 0, "%s: Theo asks to explore" % label)
+	var asked: int = SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 20)
+	assert_gt(asked, 0, "%s: a scout asks to explore" % label)
 	if asked < 0:
 		return
 	var ask: PendingDecision = SimFixture.pending_for(sim, &"curious_explorer")
-	assert_eq(ask.subject_id, &"theo", "%s: the curious villager is the one who asks" % label)
+	var scout: VillagerState = sim.world.find_villager(ask.subject_id)
+	assert_true(scout.has_trait(VillagerState.TRAIT_CURIOUS), "%s: the curious one asks" % label)
 	assert_true(sim.resolve_decision(ask.id, &"encourage"))
-	var theo: VillagerState = sim.world.find_villager(&"theo")
-	assert_true(theo.is_away(), "%s: Theo leaves" % label)
-	assert_eq(theo.profession, &"scout")
+	assert_true(scout.is_away(), "%s: the scout leaves" % label)
+	assert_eq(scout.profession, &"scout")
 
 	var returned: int = SimFixture.advance_until_pending(sim, &"explorer_returns", DAY * 3)
-	assert_gt(returned, 0, "%s: Theo returns" % label)
+	assert_gt(returned, 0, "%s: the scout returns" % label)
 	if returned < 0:
 		return
-	assert_false(theo.is_away())
+	assert_false(scout.is_away())
 	assert_eq(sim.world.item_count(&"strange_seed"), 1, "%s: with a seed" % label)
 	assert_true(sim.world.has_flag(&"eastern_valley_explored"))
 	var found: PendingDecision = SimFixture.pending_for(sim, &"explorer_returns")
@@ -73,30 +73,16 @@ func _run_chain(rng_seed: int) -> void:
 	var visited: int = SimFixture.advance_until_flag(sim, &"butterfly_seen", DAY * 30)
 	assert_gt(visited, 0, "%s: a rare butterfly visits" % label)
 	assert_true(sim.world.has_achievement(&"rare_visitor"))
-	_assert_journal_tells_the_story(sim.world, label)
-
-	var asked_to_settle: int = SimFixture.advance_until_pending(
-		sim, &"seeds_of_a_new_life", DAY * 20
-	)
-	assert_gt(asked_to_settle, 0, "%s: the seeds raise the question of settling" % label)
-	if asked_to_settle < 0:
-		return
-	assert_eq(sim.world.era, &"cave", "%s: still the Cave Age until the player decides" % label)
-	var turn: PendingDecision = SimFixture.pending_for(sim, &"seeds_of_a_new_life")
-	assert_true(sim.resolve_decision(turn.id, &"settle"))
-	assert_eq(sim.world.era, &"settled", "%s: the Settled Age begins" % label)
-	assert_eq(sim.world.era_order, 1)
-	assert_true(sim.world.has_achievement(&"the_first_field"))
-	assert_gt(SimFixture.journal_index(sim.world, "a new way of living began"), -1)
+	_assert_journal_tells_the_story(sim.world, scout.display_name, label)
 
 
-func _assert_journal_tells_the_story(world: WorldState, label: String) -> void:
+func _assert_journal_tells_the_story(world: WorldState, scout: String, label: String) -> void:
 	var beats: Array[String] = [
 		"Construction of the Lookout began",
 		"The Lookout was completed",
-		"Theo set off to scout",
-		"Theo returned from the eastern valley",
-		"Theo pressed the strange seed",
+		"%s set off to scout" % scout,
+		"%s returned from the eastern valley" % scout,
+		"%s pressed the strange seed" % scout,
 		"The strange seed flowered",
 		"A butterfly nobody had seen before",
 		"Achievement: A Rare Visitor",
@@ -118,11 +104,13 @@ func _build_hut(sim: Simulation) -> void:
 	assert_true(sim.resolve_decision(decision.id, &"build_lookout"))
 	var built: int = SimFixture.advance_until_built(sim, &"lookout", DAY * 6)
 	assert_gt(built, 0, "The lookout gets built")
+	# The scout's story is staged for later in the age.
+	SimFixture.jump_to_day(sim, 216)
 
 
 func _play_through_hut_and_exploration(sim: Simulation) -> void:
 	_build_hut(sim)
-	SimFixture.advance_until_pending(sim, &"curious_explorer", DAY * 10)
+	SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 20)
 	var ask: PendingDecision = SimFixture.pending_for(sim, &"curious_explorer")
 	if ask == null:
 		return

@@ -26,6 +26,8 @@ const TRAIT_NATURE_LOVING: StringName = &"nature_loving"
 @export var location: StringName = LOCATION_CAMP
 ## Tick at which an away villager comes home.
 @export var away_until_tick: int = 0
+## Which art sheet draws them (see ContentLibrary.villager_looks). Empty on old saves.
+@export var look: StringName = &""
 
 
 func has_trait(trait_name: StringName) -> bool:

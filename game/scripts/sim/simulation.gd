@@ -13,6 +13,7 @@ signal decision_resolved(decision: PendingDecision, choice: ChoiceDef)
 signal building_started(building: BuildingState)
 signal building_completed(building: BuildingState)
 signal era_advanced(era: EraDef)
+signal villager_joined(villager: VillagerState)
 signal achievement_earned(key: StringName, title: String)
 
 var world: WorldState
@@ -24,6 +25,7 @@ var _villager_system: VillagerSystem = VillagerSystem.new()
 var _construction_system: ConstructionSystem = ConstructionSystem.new()
 var _plant_system: PlantSystem = PlantSystem.new()
 var _event_system: EventSystem = EventSystem.new()
+var _era_system: EraSystem = EraSystem.new()
 var _effects: EffectRunner = EffectRunner.new()
 
 
@@ -136,6 +138,10 @@ func complete_building(site: BuildingState) -> void:
 	site.completed_tick = world.tick
 	var def: BuildingDef = content.get_building(site.def_id)
 	add_journal("The %s was completed." % def.display_name, &"settlement", &"", &"")
+	if def.completion_flag != &"":
+		world.flags[def.completion_flag] = true
+	if def.completion_achievement != &"":
+		grant_achievement(def.completion_achievement, def.completion_achievement_title)
 	building_completed.emit(site)
 
 
@@ -161,12 +167,54 @@ func advance_era(era_id: StringName) -> bool:
 		return false
 	world.era = next.id
 	world.era_order = next.order
+	world.era_started_tick = world.tick
 	var line: String = next.intro_text
 	if line.is_empty():
 		line = "A new age began: %s." % next.display_name
 	add_journal(line, &"settlement", &"", &"")
 	era_advanced.emit(next)
 	return true
+
+
+## Whether the hidden entry gate of `era` is open: it is the next age, its required achievements
+## are all earned and the settlement has spent long enough in the current one.
+func era_gate_open(era: EraDef) -> bool:
+	if era == null or era.order <= world.era_order:
+		return false
+	if world.tick - world.era_started_tick < era.min_ticks_in_previous_era:
+		return false
+	for key: StringName in era.required_achievements:
+		if not world.has_achievement(key):
+			return false
+	return true
+
+
+## A newcomer joins the group: an unused name from the content pool, random traits, and a look
+## reused in turn. Uses the simulation's rng, so it stays reproducible.
+func add_villager() -> VillagerState:
+	var used: Dictionary = {}
+	for existing: VillagerState in world.villagers:
+		used[existing.id] = true
+	var free: Array[String] = []
+	for candidate: String in content.villager_names:
+		if not used.has(StringName(candidate.to_lower())):
+			free.append(candidate)
+	var villager: VillagerState = VillagerState.new()
+	if free.is_empty():
+		villager.display_name = "Newcomer %d" % (world.villagers.size() + 1)
+	else:
+		villager.display_name = free[rng.randi_range(0, free.size() - 1)]
+	villager.id = StringName(villager.display_name.to_lower().replace(" ", "_"))
+	if not content.villager_looks.is_empty():
+		var looks: Array[StringName] = content.villager_looks
+		villager.look = looks[world.villagers.size() % looks.size()]
+	var pool: Array[int] = SimRandom.shuffled_indices(rng, content.villager_traits.size())
+	for pick: int in mini(content.traits_per_villager, pool.size()):
+		villager.traits.append(content.villager_traits[pool[pick]])
+	world.villagers.append(villager)
+	add_journal("%s joined the group." % villager.display_name, &"settlement", &"", villager.id)
+	villager_joined.emit(villager)
+	return villager
 
 
 func grant_achievement(key: StringName, title: String) -> void:
@@ -197,3 +245,4 @@ func _step() -> void:
 	_construction_system.step(self)
 	_plant_system.step(self)
 	_event_system.step(self)
+	_era_system.step(self)

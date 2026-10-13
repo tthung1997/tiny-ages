@@ -25,7 +25,7 @@ Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a 
 
 ## How the first slice fits
 
-The slice's chain (a curious villager scouts, brings back a wild seed, the player plants it, it flowers) is the **origin of farming**, and it is the moment the Cave Age can turn into the Settled Age. It is built that way: once the plant has flowered, the group is asked whether to settle by the field or keep following the herds. The choice is the player's; declining just asks again later.
+The slice's chain (a curious villager scouts, brings back a wild seed, the player plants it, it flowers) is the **origin of farming**, and it is the last milestone before the Cave Age can turn into the Settled Age (see the gate below). When the whole gate is met, the group is asked *how* to settle (by the field, or where the herds winter); both answers advance the age.
 
 ## Cave → Settled: the gate
 
@@ -41,15 +41,18 @@ milestones must be earned, and the minimum time must have passed. Milestones are
 | 5 | **A bigger group** | Bands joining | Wanderers arrive once the camp is secure (at least 2 newcomers) | More villagers | Settling |
 | 6 | **Seeds of a new life** | Origin of farming | A scout brings back a seed, someone plants it, it flowers (the existing chain) | The strange flower by the cave | The Settled Age |
 
-- **Order**: Fire first; the rest in most orders. Stone tools come before hunting, and the seed chain needs a scout who has travelled.
+- **Order**: Fire first; the rest are **staged over the age** so it is not finished in an afternoon: Stone Tools from game day 18 (about 6 real hours), Enough to Eat from 54 (18 h), Shared Stories from 108 (1.5 days), A Bigger Group from 162 (2.25 days) and the seed chain from 216 (3 days). Stone tools come before hunting. The numbers are one table in `tools/build_sim_content.gd`.
 - **Minimum time**: about 5 real days (to tune). Time while the game is closed counts.
 - **Choices that shape it**: milestone 3 can be met by hunting or gathering (different look); whether the flower is planted is the player's call; the age-turn beat can be a *how* choice (how to settle), not a *whether*.
 - **Safeguards**: if a milestone is still missing after the minimum time, a fallback chain makes it eligible; declined decisions come back; a test proves every milestone is reachable, including for a player who keeps declining.
 
 ## What is built in the sim
 
-- `EraDef` (id, name, `order`, intro text) in `ContentLibrary.eras`; the world stores the current `era` and `era_order`.
-- `SimCondition.ERA_AT_LEAST` gates events and choices; `SimEffect.ADVANCE_ERA` moves forward only and writes the era's intro to the journal.
+- `EraDef` (id, name, `order`, intro text, and the hidden gate: `required_achievements`, `min_ticks_in_previous_era`, `turn_event`) in `ContentLibrary.eras`; the world stores the current `era`, `era_order` and `era_started_tick`.
+- `EraSystem` opens the next age when its gate is met: it fires the turn event (or advances at once). `SimCondition.ERA_AT_LEAST` gates events and choices; `SimEffect.ADVANCE_ERA` moves forward only and writes the era's intro to the journal. Buildings can grant a milestone on completion (`BuildingDef.completion_achievement`).
+- Built: all six milestones, each with at least two routes or a way to pass and be asked again. Fire (burning tree for a curious villager, sparks for an industrious one, embers if both are passed). Stone Tools (Knapping Spot, or a lucky split stone). Enough to Eat (the hunt, or foraging plus the Drying Rack). Shared Stories (a story by the fire, or red earth for the cave wall). A Bigger Group (strangers seen from the Lookout; two newcomers join). Unexpected Garden (the seed chain).
+- Milestone events let *anyone* at home be the subject; a matching trait only makes someone likelier (`EventDef.trait_weights`), so no random group can be locked out.
+- Newcomers get a random unused name and traits (`Simulation.add_villager`), and reuse the three villager looks until more art exists.
 - Cave and Settled ages exist, with era-gated buildings (Field, Hut) and cave-only flavour events.
 
 ## Open questions

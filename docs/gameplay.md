@@ -47,17 +47,13 @@ placeholder and does not yet follow these decisions; see "What this changes".
 
 ## Safeguards for the gate
 
-- Every age's requirements must be reachable. A test runs a bot that accepts everything **and** one
-  that keeps declining, and both must eventually reach the next age (declined decisions come back).
-- A milestone must never depend on a single lucky event; if a requirement is not met after the
-  minimum time, a fallback chain makes it eligible.
+- **Fire cannot stall.** Both fire routes have a "not now" choice, and passing on either schedules the embers, which light the fire anyway (a little later). Tested for every seed.
+- **Every age's requirements must be reachable.** `test_sim_gate.gd` plays from a cold start as a player who accepts everything and as one who passes on each question twice before accepting, and both must reach the next age. A player who refuses a milestone's decisions forever cannot progress; the decisions keep coming back.
+- The gate is data (`EraDef.required_achievements`, `min_ticks_in_previous_era`, `turn_event`), and `ContentLibrary.validate()` rejects a gate that requires an achievement nothing grants.
 
 ## What this changes (still to do)
 
-- **Sim**: random seeded traits at world creation; start without fire (a Fire milestone chain and a
-  cave-mouth fallback where villagers gather until the fire exists); achievements as the gate, with a
-  hidden `min_age_ticks` on `EraDef` and milestone lists instead of the single `seeds_of_a_new_life`
-  trigger; resource needs shown on choices.
-- **View**: no fire glow or fire-pit piece until the fire is found; speech bubbles and a villager
-  detail popup.
+- **Done in the sim**: random seeded traits; no fire at the start, with the two fire routes and the embers fallback; achievements as the hidden gate with a minimum time; the age-turn event asks *how* to settle (field or herds), not whether; all six Cave → Settled milestones, each with more than one route.
+- **Still to do in the sim**: many small events and decisions inside each stage, because the staged milestones leave about a real day of nothing between them (`simulation.md`); resource needs shown on choices.
+- **View**: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then; speech bubbles and a villager detail popup.
 - **Open**: how many resources exist per age; whether the player can ever see a hint that something is still undiscovered. The Cave → Settled milestones are listed in `ages.md`.

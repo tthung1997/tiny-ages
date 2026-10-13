@@ -139,10 +139,14 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   `ContentLibrary`, `EraDef`, `EventDef`, `ChoiceDef`, `SimCondition`, `SimEffect`,
   `BuildingDef`, `PlantDef`. Content is data, never code: add new behaviour as a `Kind` on
   a condition or effect. **Append enum members at the end** — saved `.tres` files store the
-  integer. Ages are linear and chosen by the player (`ADVANCE_ERA`, forward only); gate
-  content with `ERA_AT_LEAST` (see `docs/ages.md`).
+  integer. Ages are linear and gated by hidden milestones plus a minimum time (`EraDef`,
+  `ADVANCE_ERA`, forward only); gate content with `ERA_AT_LEAST` (see `docs/ages.md`).
 - `systems/` — `VillagerSystem`, `ConstructionSystem`, `PlantSystem`, `EventSystem`,
-  `EffectRunner`, driven by `Simulation._step()`. All randomness uses `Simulation.rng`.
+  `EraSystem`, `EffectRunner`, driven by `Simulation._step()`. All randomness uses
+  `Simulation.rng`. `EraSystem` opens the next age when its hidden gate is met (required
+  achievements and a minimum time, on `EraDef`); the gate is never shown to the player.
+  New worlds start without fire (`fire_found`); tests that are about something later use
+  `SimFixture.new_sim()`, which starts lit (pass `lit = false` for the fire story).
 - Time is ticks (`ticks_per_day`, default 24). `advance_ticks` is exact; offline catch-up
   is `advance_real_time(now)` and must equal ticking the same amount.
 - Design rules baked in: decisions wait indefinitely and never penalise waiting; nothing

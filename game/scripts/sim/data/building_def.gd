@@ -11,3 +11,7 @@ extends Resource
 @export var work_required: int = 30
 ## Resources produced per game day once complete.
 @export var daily_output: Dictionary[StringName, float] = {}
+@export_group("When completed")
+@export var completion_flag: StringName = &""
+@export var completion_achievement: StringName = &""
+@export var completion_achievement_title: String = ""

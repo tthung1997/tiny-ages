@@ -23,29 +23,36 @@ func test_villagers_gather_resources_by_day() -> void:
 
 func test_industrious_villagers_gather_wood_more_often() -> void:
 	var sim: Simulation = SimFixture.new_sim(7)
-	var mira_ticks: int = 0
-	var wren_ticks: int = 0
+	SimFixture.set_traits(sim, [
+		[VillagerState.TRAIT_INDUSTRIOUS, VillagerState.TRAIT_SOCIAL],
+		[VillagerState.TRAIT_SOCIAL, VillagerState.TRAIT_NATURE_LOVING],
+		[VillagerState.TRAIT_SOCIAL, VillagerState.TRAIT_NATURE_LOVING],
+	])
+	var worker: VillagerState = sim.world.villagers[0]
+	var other: VillagerState = sim.world.villagers[1]
+	var worker_ticks: int = 0
+	var other_ticks: int = 0
 	for _tick: int in SimFixture.TICKS_PER_DAY * 20:
 		sim.advance_ticks(1)
 		sim.world.pending.clear()
-		if sim.world.find_villager(&"mira").activity == VillagerState.ACTIVITY_GATHER_WOOD:
-			mira_ticks += 1
-		if sim.world.find_villager(&"wren").activity == VillagerState.ACTIVITY_GATHER_WOOD:
-			wren_ticks += 1
-	assert_gt(mira_ticks, wren_ticks, "Industrious Mira should gather wood more than Wren")
+		if worker.activity == VillagerState.ACTIVITY_GATHER_WOOD:
+			worker_ticks += 1
+		if other.activity == VillagerState.ACTIVITY_GATHER_WOOD:
+			other_ticks += 1
+	assert_gt(worker_ticks, other_ticks, "An industrious villager should gather wood more often")
 
 
 func test_away_villager_comes_home_on_time() -> void:
 	var sim: Simulation = SimFixture.new_sim()
-	var theo: VillagerState = sim.world.find_villager(&"theo")
-	theo.activity = VillagerState.ACTIVITY_AWAY
-	theo.location = &"eastern_valley"
-	theo.away_until_tick = sim.world.tick + 5
+	var scout: VillagerState = sim.world.villagers[0]
+	scout.activity = VillagerState.ACTIVITY_AWAY
+	scout.location = &"eastern_valley"
+	scout.away_until_tick = sim.world.tick + 5
 	sim.advance_ticks(4)
-	assert_true(theo.is_away(), "Still away one tick early")
+	assert_true(scout.is_away(), "Still away one tick early")
 	sim.advance_ticks(1)
-	assert_false(theo.is_away())
-	assert_eq(theo.location, VillagerState.LOCATION_CAMP)
+	assert_false(scout.is_away())
+	assert_eq(scout.location, VillagerState.LOCATION_CAMP)
 
 
 func test_same_seed_gives_the_same_world() -> void:

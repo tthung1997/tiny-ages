@@ -10,3 +10,12 @@ extends Resource
 @export_multiline var description: String = ""
 ## Journal line written when the settlement enters this age.
 @export_multiline var intro_text: String = ""
+@export_group("Entry gate (never shown to the player)")
+## Achievements the settlement must have earned before it can enter this age.
+@export var required_achievements: Array[StringName] = []
+## How long the settlement must have spent in the previous age, in ticks. Stops luck from
+## rushing an age; time while the game is closed counts.
+@export var min_ticks_in_previous_era: int = 0
+## Optional event fired when the gate opens. Every one of its choices must ADVANCE_ERA to this
+## age: it decides how the settlement turns, not whether. Empty means advance immediately.
+@export var turn_event: StringName = &""

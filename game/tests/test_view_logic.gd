@@ -77,6 +77,12 @@ func test_every_building_has_a_layout_slot() -> void:
 		)
 
 
+func test_every_villager_look_has_a_sheet() -> void:
+	for look: StringName in SimFixture.load_content().villager_looks:
+		var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, look]
+		assert_true(ResourceLoader.exists(path), "No sheet for look %s" % look)
+
+
 func test_every_layout_asset_exists() -> void:
 	var names: Array[String] = []
 	for layer: StringName in WorldLayout.BACKDROP:

@@ -23,37 +23,36 @@ text = "The First Field"
 
 [sub_resource type="Resource" id="Resource_0tvtd"]
 script = ExtResource("1_48jrg")
-id = &"settle"
-label = "Gather the seeds and settle by the field"
+id = &"settle_field"
+label = "Sow the seeds and settle by the field"
 effects = Array[ExtResource("2_f2obp")]([SubResource("Resource_mf78r"), SubResource("Resource_a58yr"), SubResource("Resource_4fa3f")])
 
 [sub_resource type="Resource" id="Resource_av210"]
 script = ExtResource("2_f2obp")
-text = "The group kept to the old ways, but a handful of seeds went into the pouch."
+kind = 1
+key = &"path_herding"
 
 [sub_resource type="Resource" id="Resource_h81lb"]
-script = ExtResource("1_48jrg")
-id = &"keep_roaming"
-label = "Keep following the herds"
-effects = Array[ExtResource("2_f2obp")]([SubResource("Resource_av210")])
+script = ExtResource("2_f2obp")
+kind = 12
+key = &"settled"
 
 [sub_resource type="Resource" id="Resource_71g3m"]
-script = ExtResource("3_hlmcw")
-key = &"strange_flower_bloomed"
+script = ExtResource("2_f2obp")
+kind = 10
+key = &"a_place_to_stay"
+text = "A Place to Stay"
 
 [sub_resource type="Resource" id="Resource_5mkjn"]
-script = ExtResource("3_hlmcw")
-kind = 8
-amount = 1
-negate = true
+script = ExtResource("1_48jrg")
+id = &"settle_herds"
+label = "Settle where the herds winter, and sow a small plot"
+effects = Array[ExtResource("2_f2obp")]([SubResource("Resource_av210"), SubResource("Resource_h81lb"), SubResource("Resource_71g3m")])
 
 [resource]
 script = ExtResource("4_g7lis")
 id = &"seeds_of_a_new_life"
 title = "Seeds of a new life"
-body = "The plant by the cave has gone to seed: enough to sow a whole field. But a field means staying put, and the herds will move on."
+body = "The plant by the cave has gone to seed: enough to sow a whole field. The herds still move through the valley, and the group has learned enough to stay."
 category = &"settlement"
-requires = Array[ExtResource("3_hlmcw")]([SubResource("Resource_71g3m"), SubResource("Resource_5mkjn")])
-chance_per_tick = 0.03
-cooldown_ticks = 96
-choices = Array[ExtResource("1_48jrg")]([SubResource("Resource_0tvtd"), SubResource("Resource_h81lb")])
+choices = Array[ExtResource("1_48jrg")]([SubResource("Resource_0tvtd"), SubResource("Resource_5mkjn")])

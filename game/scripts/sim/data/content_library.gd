@@ -8,8 +8,16 @@ extends Resource
 ## The ages of the arc. The lowest `order` is where a new world starts.
 @export var eras: Array[EraDef] = []
 @export_group("Starting world")
-## Templates; copied into each new world.
-@export var starting_villagers: Array[VillagerState] = []
+## Each new world draws its starting group from these pools, using the world's seed, so every
+## run begins with different people.
+@export var villager_names: Array[String] = []
+@export var villager_traits: Array[StringName] = []
+## Art sheets under assets/world/<age>/villagers/ (no extension); one per starting villager.
+@export var villager_looks: Array[StringName] = []
+@export var starting_villager_count: int = 3
+@export var traits_per_villager: int = 2
+## At least one starting villager has each of these, so the first story chain can always begin.
+@export var guaranteed_traits: Array[StringName] = []
 @export var starting_resources: Dictionary[StringName, int] = {}
 
 var _event_index: Dictionary = {}
@@ -31,6 +39,15 @@ func first_era() -> EraDef:
 		if first == null or era.order < first.order:
 			first = era
 	return first
+
+
+## The age right after `order`: the lowest `order` above it, or null at the end of the arc.
+func next_era(order: int) -> EraDef:
+	var next: EraDef = null
+	for era: EraDef in eras:
+		if era.order > order and (next == null or era.order < next.order):
+			next = era
+	return next
 
 
 func get_event(event_id: StringName) -> EventDef:
@@ -92,13 +109,87 @@ func validate() -> PackedStringArray:
 	for plant: PlantDef in plants:
 		if plant.seed_item == &"":
 			problems.append("plant '%s' has no seed_item" % plant.id)
-	for villager: VillagerState in starting_villagers:
-		if villager.id == &"" or villager.display_name.is_empty():
-			problems.append("a starting villager is missing an id or name")
+	_check_starting_group(problems)
+	_check_era_gates(problems)
 	return problems
 
 
+func _check_era_gates(problems: PackedStringArray) -> void:
+	var grantable: Dictionary = _grantable_achievements()
+	for era: EraDef in eras:
+		var where: String = "era '%s'" % era.id
+		for key: StringName in era.required_achievements:
+			if not grantable.has(key):
+				problems.append("%s requires achievement '%s', which nothing grants" % [where, key])
+		if era.turn_event == &"":
+			continue
+		var turn: EventDef = get_event(era.turn_event)
+		if turn == null:
+			problems.append("%s has unknown turn event '%s'" % [where, era.turn_event])
+			continue
+		if not turn.is_decision():
+			problems.append("%s turn event '%s' needs choices" % [where, turn.id])
+		for choice: ChoiceDef in turn.choices:
+			if not _advances_to(choice.effects, era.id):
+				problems.append("%s turn choice '%s' does not advance the era" % [where, choice.id])
+
+
+func _advances_to(effects: Array[SimEffect], era_id: StringName) -> bool:
+	for effect: SimEffect in effects:
+		if effect.kind == SimEffect.Kind.ADVANCE_ERA and effect.key == era_id:
+			return true
+	return false
+
+
+## Every achievement some effect, plant or building can grant.
+func _grantable_achievements() -> Dictionary:
+	var grantable: Dictionary = {}
+	for event: EventDef in events:
+		_collect_achievements(event.effects, grantable)
+		for choice: ChoiceDef in event.choices:
+			_collect_achievements(choice.effects, grantable)
+	for plant: PlantDef in plants:
+		if plant.flower_achievement != &"":
+			grantable[plant.flower_achievement] = true
+	for building: BuildingDef in buildings:
+		if building.completion_achievement != &"":
+			grantable[building.completion_achievement] = true
+	return grantable
+
+
+func _collect_achievements(effects: Array[SimEffect], into: Dictionary) -> void:
+	for effect: SimEffect in effects:
+		if effect.kind == SimEffect.Kind.ACHIEVEMENT:
+			into[effect.key] = true
+
+
+func _check_starting_group(problems: PackedStringArray) -> void:
+	var count: int = starting_villager_count
+	if count < 1:
+		problems.append("starting_villager_count must be at least 1")
+	var unique_names: Dictionary = {}
+	for villager_name: String in villager_names:
+		var villager_id: String = villager_name.to_lower()
+		if villager_name.is_empty() or unique_names.has(villager_id):
+			problems.append("villager name '%s' is empty or repeated" % villager_name)
+		unique_names[villager_id] = true
+	if villager_names.size() < count:
+		problems.append("need at least %d villager names" % count)
+	if villager_looks.size() < count:
+		problems.append("need at least %d villager looks" % count)
+	if villager_traits.size() < traits_per_villager or traits_per_villager < 1:
+		problems.append("need at least traits_per_villager distinct traits to draw from")
+	if guaranteed_traits.size() > count:
+		problems.append("more guaranteed traits than starting villagers")
+	for guaranteed: StringName in guaranteed_traits:
+		if not villager_traits.has(guaranteed):
+			problems.append("guaranteed trait '%s' is not in the trait pool" % guaranteed)
+
+
 func _is_scheduled_target(event_id: StringName) -> bool:
+	for era: EraDef in eras:
+		if era.turn_event == event_id:
+			return true
 	for event: EventDef in events:
 		if _effects_schedule(event.effects, event_id):
 			return true

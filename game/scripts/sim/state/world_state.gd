@@ -22,6 +22,8 @@ const SAVE_VERSION: int = 1
 ## Id of the current era and its `order`, kept together so conditions need no content lookup.
 @export var era: StringName = &""
 @export var era_order: int = 0
+## Tick the current era began; the entry gate of the next era measures from here.
+@export var era_started_tick: int = 0
 
 @export_group("Stocks")
 @export var resources: Dictionary[StringName, int] = {}

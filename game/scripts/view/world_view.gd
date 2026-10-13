@@ -84,7 +84,8 @@ func _refresh_actors() -> void:
 
 
 func _make_actor(villager: VillagerState) -> VillagerActor:
-	var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, villager.id]
+	var look: StringName = villager.look if villager.look != &"" else villager.id
+	var path: String = "%s%s.png" % [WorldLayout.VILLAGER_DIR, look]
 	if not ResourceLoader.exists(path):
 		path = "%smira.png" % WorldLayout.VILLAGER_DIR
 	var actor: VillagerActor = VillagerActor.new()

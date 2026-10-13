@@ -16,11 +16,20 @@ static func load_config() -> SimConfig:
 	return load(CONFIG_PATH) as SimConfig
 
 
-static func new_sim(rng_seed: int = 1) -> Simulation:
+static func new_sim(rng_seed: int = 1, lit: bool = true) -> Simulation:
 	var config: SimConfig = load_config()
 	var content: ContentLibrary = load_content()
 	var world: WorldState = WorldFactory.create_new(content, config, rng_seed, START_UNIX)
+	if lit:
+		light_fire(world)
 	return Simulation.new(world, config, content)
+
+
+## Worlds start without fire. Most tests are about something later, so they start lit; pass
+## `lit = false` to new_sim for the fire story itself.
+static func light_fire(world: WorldState) -> void:
+	world.flags[&"fire_found"] = true
+	world.achievements.append(&"fire")
 
 
 ## Steps one tick at a time until `predicate` is true. Returns ticks used, or -1 on timeout.
@@ -30,6 +39,21 @@ static func advance_until(sim: Simulation, predicate: Callable, max_ticks: int) 
 		if predicate.call():
 			return used + 1
 	return -1
+
+
+## Gives the first three villagers fixed traits, so a test about one trait does not depend on
+## which group the seed happened to draw. Each entry is the trait list for one villager.
+static func set_traits(sim: Simulation, traits_by_villager: Array) -> void:
+	for index: int in traits_by_villager.size():
+		var villager: VillagerState = sim.world.villagers[index]
+		villager.traits.assign(traits_by_villager[index])
+
+
+## Moves the clock forward to a game day (keeping the hour). Cave Age milestones are staged over
+## the first days (see build_sim_content.gd), so tests about a later one start from there.
+static func jump_to_day(sim: Simulation, day: int) -> void:
+	var hour_ticks: int = posmod(sim.world.tick, TICKS_PER_DAY)
+	sim.world.tick = maxi(sim.world.tick, day * TICKS_PER_DAY + hour_ticks)
 
 
 static func pending_for(sim: Simulation, event_id: StringName) -> PendingDecision:
@@ -45,8 +69,31 @@ static func advance_until_pending(sim: Simulation, event_id: StringName, max_tic
 	)
 
 
+## Like advance_until_pending, but discards every other decision as it goes so the pending cap
+## never hides the one being waited for. For tests about one event among many.
+static func advance_until_asked(sim: Simulation, event_id: StringName, max_ticks: int) -> int:
+	for used: int in max_ticks:
+		sim.advance_ticks(1)
+		if pending_for(sim, event_id) != null:
+			return used + 1
+		sim.world.pending.clear()
+	return -1
+
+
 static func advance_until_flag(sim: Simulation, flag: StringName, max_ticks: int) -> int:
 	return advance_until(sim, func() -> bool: return sim.world.has_flag(flag), max_ticks)
+
+
+## Like advance_until_flag, but a DecisionBot answers every decision after each tick.
+static func advance_until_flag_with(
+	sim: Simulation, bot: DecisionBot, flag: StringName, max_ticks: int
+) -> int:
+	for used: int in max_ticks:
+		sim.advance_ticks(1)
+		bot.answer_all(sim)
+		if sim.world.has_flag(flag):
+			return used + 1
+	return -1
 
 
 static func advance_until_built(sim: Simulation, building_id: StringName, max_ticks: int) -> int:

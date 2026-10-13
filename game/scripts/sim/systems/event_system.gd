@@ -26,6 +26,9 @@ func _fire_scheduled(sim: Simulation) -> void:
 		if event == null:
 			push_error("Scheduled unknown event '%s'" % item.event_id)
 			continue
+		# A consequence that no longer applies (the fire was lit another way) is dropped.
+		if not SimCondition.all_met(event.requires, world, sim.config):
+			continue
 		sim.fire_event(event, world.find_villager(item.subject_id))
 
 

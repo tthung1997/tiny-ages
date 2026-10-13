@@ -20,11 +20,14 @@ func test_validation_catches_broken_references() -> void:
 	assert_gt(content.validate().size(), 0)
 
 
-func test_starting_villagers_have_two_traits_each() -> void:
+func test_starting_group_is_drawn_from_the_content_pools() -> void:
 	var content: ContentLibrary = SimFixture.load_content()
-	assert_eq(content.starting_villagers.size(), 3)
-	for villager: VillagerState in content.starting_villagers:
-		assert_eq(villager.traits.size(), 2, "%s should have two traits" % villager.display_name)
+	var sim: Simulation = SimFixture.new_sim()
+	assert_eq(sim.world.villagers.size(), content.starting_villager_count)
+	for villager: VillagerState in sim.world.villagers:
+		assert_true(content.villager_names.has(villager.display_name))
+		assert_true(content.villager_looks.has(villager.look))
+		assert_eq(villager.traits.size(), content.traits_per_villager)
 
 
 func test_new_world_starts_at_dawn_with_a_founding_entry() -> void:
@@ -34,10 +37,3 @@ func test_new_world_starts_at_dawn_with_a_founding_entry() -> void:
 	assert_eq(sim.world.journal.size(), 1)
 	assert_eq(sim.world.resource_amount(&"wood"), 2)
 	assert_eq(sim.world.villagers.size(), 3)
-
-
-func test_worlds_do_not_share_villagers_with_the_content() -> void:
-	var content: ContentLibrary = SimFixture.load_content()
-	var sim: Simulation = SimFixture.new_sim()
-	sim.world.villagers[0].profession = &"changed"
-	assert_eq(content.starting_villagers[0].profession, &"")

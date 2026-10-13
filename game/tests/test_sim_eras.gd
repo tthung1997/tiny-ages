@@ -1,6 +1,6 @@
 extends McpTestSuite
 ## Ages: the settlement starts in the Cave Age, moves forward only, and era-gated content
-## appears and disappears accordingly. Ages are the player's choice, never automatic.
+## appears and disappears accordingly. How an age is entered is tested in test_sim_gate.gd.
 
 const DAY: int = SimFixture.TICKS_PER_DAY
 const SAVE_PATH: String = "user://test_era_save.tres"
@@ -72,17 +72,6 @@ func test_cave_only_events_stop_in_the_settled_age() -> void:
 	assert_eq(settled.world.event_counts.get(&"cold_night", 0), 0)
 
 
-func test_declining_to_settle_keeps_the_cave_age_and_asks_again() -> void:
-	var sim: Simulation = SimFixture.new_sim(5)
-	sim.world.flags[&"strange_flower_bloomed"] = true
-	sim.fire_event(sim.content.get_event(&"seeds_of_a_new_life"), null)
-	var decision: PendingDecision = SimFixture.pending_for(sim, &"seeds_of_a_new_life")
-	assert_true(sim.resolve_decision(decision.id, &"keep_roaming"))
-	assert_eq(sim.world.era, &"cave", "Nothing forces the change")
-	var again: int = SimFixture.advance_until_pending(sim, &"seeds_of_a_new_life", DAY * 20)
-	assert_gt(again, 0, "The question comes back later")
-
-
 func test_the_era_is_saved() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	sim.advance_era(&"settled")
@@ -90,6 +79,7 @@ func test_the_era_is_saved() -> void:
 	var loaded: WorldState = SaveStore.load_world(SAVE_PATH)
 	assert_eq(loaded.era, &"settled")
 	assert_eq(loaded.era_order, 1)
+	assert_eq(loaded.era_started_tick, sim.world.era_started_tick)
 
 
 func test_validation_catches_broken_era_references() -> void:

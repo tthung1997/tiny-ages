@@ -15,6 +15,7 @@ func test_building_decision_opens_once_there_is_enough_wood() -> void:
 
 func test_choices_the_settlement_cannot_afford_are_refused() -> void:
 	var sim: Simulation = SimFixture.new_sim()
+	SimFixture.jump_to_day(sim, 60)
 	sim.world.resources[&"wood"] = 6
 	var event: EventDef = sim.content.get_event(&"building_opportunity")
 	sim.fire_event(event, null)

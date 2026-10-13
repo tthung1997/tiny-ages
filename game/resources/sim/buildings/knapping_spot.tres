@@ -14,3 +14,5 @@ work_required = 40
 daily_output = Dictionary[StringName, float]({
 &"wood": 4.0
 })
+completion_achievement = &"stone_tools"
+completion_achievement_title = "Stone Tools"

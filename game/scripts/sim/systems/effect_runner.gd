@@ -50,6 +50,9 @@ func apply(
 		SimEffect.Kind.ADVANCE_ERA:
 			if not sim.advance_era(effect.key):
 				push_warning("Could not advance to era '%s'" % effect.key)
+		SimEffect.Kind.ADD_VILLAGER:
+			for _newcomer: int in effect.amount:
+				sim.add_villager()
 
 
 func _format(text: String, subject: VillagerState) -> String:
