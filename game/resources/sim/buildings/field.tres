@@ -8,9 +8,9 @@ id = &"field"
 display_name = "Field"
 description = "Ground cleared and sown, feeding the group season after season."
 cost = Dictionary[StringName, int]({
-&"wood": 8
+&"wood": 12
 })
 work_required = 36
 daily_output = Dictionary[StringName, float]({
-&"food": 10.0
+&"food": 3.0
 })

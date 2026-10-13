@@ -96,13 +96,13 @@ func _assert_journal_tells_the_story(world: WorldState, scout: String, label: St
 
 ## Waits for the building decision, picks the Lookout, and waits for it to be built.
 func _build_hut(sim: Simulation) -> void:
-	var opened: int = SimFixture.advance_until_pending(sim, &"building_opportunity", DAY * 5)
+	var opened: int = SimFixture.advance_until_pending(sim, &"building_opportunity", DAY * 12)
 	assert_gt(opened, 0, "A building decision opens in the first days")
 	if opened < 0:
 		return
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"building_opportunity")
 	assert_true(sim.resolve_decision(decision.id, &"build_lookout"))
-	var built: int = SimFixture.advance_until_built(sim, &"lookout", DAY * 6)
+	var built: int = SimFixture.advance_until_built(sim, &"lookout", DAY * 8)
 	assert_gt(built, 0, "The lookout gets built")
 	# The scout's story is staged for later in the age.
 	SimFixture.jump_to_day(sim, 216)

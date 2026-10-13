@@ -16,12 +16,12 @@ func test_building_decision_opens_once_there_is_enough_wood() -> void:
 func test_choices_the_settlement_cannot_afford_are_refused() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	SimFixture.jump_to_day(sim, 60)
-	sim.world.resources[&"wood"] = 6
+	sim.world.resources[&"wood"] = 10
 	var event: EventDef = sim.content.get_event(&"building_opportunity")
 	sim.fire_event(event, null)
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"building_opportunity")
 	assert_false(
-		sim.resolve_decision(decision.id, &"build_knapping_spot"), "Knapping Spot costs 8 wood"
+		sim.resolve_decision(decision.id, &"build_knapping_spot"), "Knapping Spot costs 12 wood"
 	)
 	assert_true(
 		sim.world.find_pending(decision.id) != null, "A refused choice leaves the decision open"

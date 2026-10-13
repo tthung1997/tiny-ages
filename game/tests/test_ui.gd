@@ -51,15 +51,15 @@ func test_the_subject_s_name_is_filled_in() -> void:
 func test_a_choice_that_costs_something_says_what_it_needs() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	SimFixture.jump_to_day(sim, 60)
-	sim.world.resources[&"wood"] = 6
+	sim.world.resources[&"wood"] = 10
 	var view: DecisionPresenter = DecisionPresenter.present(_decision(sim, &"building_opportunity"), sim)
 	var by_id: Dictionary = {}
 	for choice: DecisionPresenter.ChoiceView in view.choices:
 		by_id[choice.id] = choice
 	assert_true(by_id[&"build_drying_rack"].enabled)
-	assert_eq(by_id[&"build_drying_rack"].note, "needs 6 wood")
-	assert_false(by_id[&"build_knapping_spot"].enabled, "Eight wood is more than six")
-	assert_eq(by_id[&"build_knapping_spot"].note, "needs 8 wood (have 6)")
+	assert_eq(by_id[&"build_drying_rack"].note, "needs 10 wood")
+	assert_false(by_id[&"build_knapping_spot"].enabled, "Twelve wood is more than ten")
+	assert_eq(by_id[&"build_knapping_spot"].note, "needs 12 wood (have 10)")
 
 
 func test_choices_not_yet_unlocked_are_not_listed_at_all() -> void:
@@ -204,7 +204,7 @@ func test_the_panel_shows_a_decision_and_reports_the_choice_picked() -> void:
 func test_a_choice_that_cannot_be_afforded_is_disabled_in_the_panel() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	SimFixture.jump_to_day(sim, 60)
-	sim.world.resources[&"wood"] = 6
+	sim.world.resources[&"wood"] = 10
 	_decision(sim, &"building_opportunity")
 	var panel: PanelHost = PanelHost.new()
 	panel.show_decision(sim)
@@ -392,7 +392,7 @@ func test_the_skin_loads_its_pixel_font() -> void:
 func test_costs_are_drawn_as_icons_and_the_shortfall_is_shown() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	SimFixture.jump_to_day(sim, 60)
-	sim.world.resources[&"wood"] = 6
+	sim.world.resources[&"wood"] = 10
 	_decision(sim, &"building_opportunity")
 	var panel: PanelHost = PanelHost.new()
 	panel.show_decision(sim)
@@ -404,8 +404,8 @@ func test_costs_are_drawn_as_icons_and_the_shortfall_is_shown() -> void:
 	var texts: PackedStringArray = PackedStringArray()
 	for node: Node in panel.find_children("*", "Label", true, false):
 		texts.append((node as Label).text)
-	assert_true(texts.has("8 (have 6)"), "The Knapping Spot is two wood short")
-	assert_true(texts.has("6"), "The affordable ones just show the cost")
+	assert_true(texts.has("12 (have 10)"), "The Knapping Spot is two wood short")
+	assert_true(texts.has("8"), "The affordable ones just show the cost")
 	panel.free()
 
 

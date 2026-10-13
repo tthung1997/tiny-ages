@@ -46,6 +46,36 @@ milestones must be earned, and the minimum time must have passed. Milestones are
 - **Choices that shape it**: milestone 3 can be met by hunting or gathering (different look); whether the flower is planted is the player's call; the age-turn beat can be a *how* choice (how to settle), not a *whether*.
 - **Safeguards**: if a milestone is still missing after the minimum time, a fallback chain makes it eligible; declined decisions come back; a test proves every milestone is reachable, including for a player who keeps declining.
 
+## Cave Age: between the milestones
+
+The milestones are far apart (hours to days), so each stretch has its own small decisions and a stream of one-line journal moments. None of it is required, nothing fails, every answer is harmless, and an answer only shows up in the journal and sometimes in a later line. Which game day each opens is one table (`STORY_DAY` in `tools/build_sim_content.gd`); 72 game days is a real day.
+
+| From day | Decision (two answers each) | What the answers do |
+|---|---|---|
+| 4 | **A wolf at the edge** | Leave scraps (2 food) or drive it off; the wolf is remembered in later lines |
+| 6 | **Hungry mornings** (only when food is low) | Forage together or set snares; food and a flag |
+| 24 | **What the edge is for** (needs Stone Tools) | Hand axes (wood) or hide scrapers |
+| 32 | **The first hard frost** | Keep the fire high all night (8 wood) or huddle close |
+| 42 | **Strange prints** (a curious villager) | Follow them (away 18 ticks, comes back with pine nuts) or stay |
+| 60 | **More than enough** (needs Enough to Eat and a full store) | Hold a feast (12 food) or dry the rest |
+| 72 | **The warm spot** | A second small fire (6 wood) or take turns |
+| 88 | **The neighbour** (the mammoth at the camp's edge) | Offer greens (3 food) or keep a distance |
+| 115 | **A rhythm to work to** (needs Shared Stories) | Let everyone join in or ask for quiet |
+| 126 | **The crowded wall** (cave art route) or **The long story** (storytelling route) | Paint the herd or the sky; or fix the story or let it change |
+| 140 | **Smoke on the ridge** (needs the Lookout; before the strangers) | Send a scout (finds a cold fire ring) or keep watching |
+| 172 | **Room for the newcomers** (needs A Bigger Group) | A shelter (8 wood) or share the cave |
+| 192 | **The river is rising** | Carry the stores up (6 wood) or trust the bank |
+| 232 | **Heavy grass** | Gather every seed head (10 food) or half, leaving the rest to scatter |
+| 252 | **A limping deer** | Tend it (3 food) or let nature take its course |
+| 272 | **A traveller with dark stone** | Trade food (8) for the stone or share a meal |
+| 294 | **Counting stars** (a curious villager) | Name the shapes together or let them keep the sky |
+| 316 | **Smoke in the cave** | Open a gap in the roof (8 wood) or live with it |
+| 342 | **The pile by the cave** (an industrious villager) | Sort the good stone or bury it |
+
+- **Ambient lines**: about 25 one-line moments (mist, a heron, geese, thunder; a curious villager watching ants; a social one humming; an industrious one stacking wood; a nature-loving one bringing back crocuses; plus lines that remember an earlier answer). Each repeats at most every 5 real hours (360 ticks).
+- **Pace** (bot answering at once, `tools/sim_timeline.gd`): about 29 questions across the 5 days including the buildings and milestones, never more than about 9 real hours apart, and a journal line roughly every 20 real minutes. That is about 4-6 questions per workday for a player who is at the desk for a third of the time.
+- **Resources stay context** (P2): a choice shows what it needs and only waits for it. Villagers stop gathering a resource once the store reaches `comfortable_stock` (40), and buildings stop adding to a full store, so stock hovers around that instead of piling up; building costs are 8-14 wood.
+
 ## What is built in the sim
 
 - `EraDef` (id, name, `order`, intro text, and the hidden gate: `required_achievements`, `min_ticks_in_previous_era`, `turn_event`) in `ContentLibrary.eras`; the world stores the current `era`, `era_order` and `era_started_tick`.

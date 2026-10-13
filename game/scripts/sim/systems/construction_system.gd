@@ -22,6 +22,9 @@ func step(sim: Simulation) -> void:
 		if built == null:
 			continue
 		for key: StringName in built.daily_output:
+			# Full stores: nobody bothers to dry or cut more until they have been used.
+			if world.resource_amount(key) >= config.comfortable_stock:
+				continue
 			world.add_resource_fraction(key, built.daily_output[key] / float(config.ticks_per_day))
 
 

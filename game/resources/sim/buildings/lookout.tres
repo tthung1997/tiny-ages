@@ -8,6 +8,6 @@ id = &"lookout"
 display_name = "Lookout"
 description = "A high place to watch the valleys for game, weather and what lies ahead."
 cost = Dictionary[StringName, int]({
-&"wood": 6
+&"wood": 8
 })
 work_required = 36

@@ -25,7 +25,7 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 
 Re-themed as the **Cave Age** (see [ages](ages.md)), with the turn into the **Settled Age**.
 
-- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 17 events, 1 plant.
+- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 64 events, 1 plant. Of the events, 17 are the milestones, the fire story, the exploration chain and weather; 22 are the small story decisions that fill the Cave Age (see `ages.md`, "between the milestones"); 25 are one-line journal moments.
 - Cave Age buildings: Lookout, Drying Rack, Knapping Spot. Settled Age buildings: Field, Hut (they only appear once settled).
 - **The world starts without fire.** A curious villager may find a burning tree, or an industrious one may strike a spark; passing on either lights the fire anyway via embers. Nothing can be built until there is fire.
 - The chain: fire → build the Lookout → a curious villager asks to scout the western forest → they return with a seed → you plant it → it flowers → a rare butterfly visits.
@@ -39,10 +39,11 @@ Measured with `tools/sim_timeline.gd` at 20 real minutes per day:
 
 - Fire is found at about **18 real minutes**, and after that the first decisions follow.
 - With the milestones **staged** (one table, `UNLOCK_DAY` in `tools/build_sim_content.gd`: Stone Tools from game day 18, Enough to Eat 54, Shared Stories 108, A Bigger Group 162, the seed chain 216; 72 game days per real day), a bot that answers instantly earns them at roughly **6.5 h**, **18 h**, **36 h**, **56 h** and **73 h** of real time, then the Settled Age opens at 5 days. The buildings that would grant a milestone early are staged too.
-- The spread is right but the gaps are empty: between unlocks, about a real day at a time, there is nothing to answer except weather lines. The next content job is many small events and decisions inside each stage (`gameplay.md` P3, P10), not more milestones.
-- The earlier slice-only findings still hold: by day 30 the stockpile is hundreds of wood and food with **nothing to spend on** (thousands by day 400). There are no resource sinks and only three buildings.
+- The spread is right and the gaps are now filled: the small story decisions and journal moments (`ages.md`, "between the milestones") leave a bot that answers at once with about **29 questions** across the five days, never more than about **9 real hours** apart, and a journal line roughly every 20 real minutes. `tools/sim_timeline.gd` prints the questions, the longest wait and the stock every 30 days.
+- **The economy** was far too generous (thousands of wood by day 400). It is now leaner: `gather_rate` 0.06, building costs 8-14 wood, building output about a tenth of before, and a **comfortable stock** (`SimConfig.comfortable_stock`, 40): once a store reaches it villagers rarely gather that resource and buildings stop adding to it. Stock now hovers and ends the age at roughly 100-200 of each, with several choices that spend it (frost, shelter, river, feast, the traveller). A test keeps it under 300.
+- The earlier slice-only findings (kept for the record): by day 30 the old stockpile was hundreds of wood and food with nothing to spend on, because there were no resource sinks and only three buildings.
 
-So the slice proves the loop works, but the economy is far too generous and content runs out in an afternoon. Both are expected for a slice and are tuning/content work, not design changes: lower `gather_rate`, raise building costs, add buildings and events. The target from the pacing discussion is roughly one decision per 1–2 hours of working, about 4–6 on a normal workday.
+The target from the pacing discussion is roughly one decision per 1-2 hours of working, about 4-6 on a normal workday.
 
 ## Not built yet
 

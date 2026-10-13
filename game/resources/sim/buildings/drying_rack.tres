@@ -8,10 +8,10 @@ id = &"drying_rack"
 display_name = "Drying Rack"
 description = "Racks for drying meat and berries so they keep through the cold."
 cost = Dictionary[StringName, int]({
-&"wood": 6
+&"wood": 10
 })
 daily_output = Dictionary[StringName, float]({
-&"food": 6.0
+&"food": 1.0
 })
 completion_achievement = &"reliable_food"
 completion_achievement_title = "Enough to Eat"

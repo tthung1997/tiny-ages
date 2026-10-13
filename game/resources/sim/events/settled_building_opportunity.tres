@@ -20,7 +20,7 @@ negate = true
 script = ExtResource("3_r7v3b")
 kind = 2
 key = &"wood"
-amount = 8
+amount = 12
 
 [sub_resource type="Resource" id="Resource_xc2vh"]
 script = ExtResource("3_r7v3b")
@@ -48,7 +48,7 @@ negate = true
 script = ExtResource("3_r7v3b")
 kind = 2
 key = &"wood"
-amount = 10
+amount = 14
 
 [sub_resource type="Resource" id="Resource_1o3s4"]
 script = ExtResource("3_r7v3b")
@@ -74,7 +74,7 @@ kind = 4
 script = ExtResource("3_r7v3b")
 kind = 2
 key = &"wood"
-amount = 8
+amount = 12
 
 [resource]
 script = ExtResource("4_rd5q4")

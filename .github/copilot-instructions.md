@@ -154,9 +154,16 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   fails or kills; open-ended with chapter milestones, no ending.
 - Content seeds come from `tools/build_sim_content.gd` (a bootstrap — after running it,
   edit the `.tres` in the inspector; re-running overwrites them). `ContentLibrary.validate()`
-  must stay empty; a test enforces it.
+  must stay empty; a test enforces it. Pacing numbers live in its tables: `UNLOCK_DAY`
+  (milestones), `STORY_DAY` (the small story decisions between them), `AMBIENT_CHANCE`,
+  `GATHER_RATE`; `SimConfig.comfortable_stock` stops villagers and buildings piling up stock.
+  A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
+  harmless, a journal line each, a flag for later lines); a quiet moment is `_ambient`,
+  `_ambient_about` (a trait) or `_remembered` (a flag). Costs are a `_has` requirement plus
+  a `_spend` effect, so the panel shows "needs 8 wood".
 - `tools/sim_timeline.gd` plays a bot through the sim and prints the journal with real-time
-  offsets: use it to judge pacing instead of guessing.
+  offsets, every question asked, the longest wait between them and the stock: use it to
+  judge pacing instead of guessing (`-- <seed> <days>`).
 
 ### The world view (`game/scripts/view/`)
 

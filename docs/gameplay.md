@@ -40,7 +40,7 @@ placeholder and does not yet follow these decisions; see "What this changes".
   decisions often still progress faster, up to that floor. Rejected: counting only open time (stingy
   to casual players, mostly rewards leaving the game running) and a per-day cap on catch-up (a rule
   that makes progress harder to predict).
-- **P10 Content budget.** About 20 decisions per age, plus ambient lines and trait-driven variants
+- **P10 Content budget.** About 25-30 questions for the five-day Cave Age (the buildings and milestones plus about 20 small story decisions; roughly 4-6 per workday), plus ambient lines and trait-driven variants
   (one authored event plays differently per villager). Visible consequences matter most: choices
   change buildings, props and clothing, so there is a reason to look.
 - **P11 Light interaction.** Clicking a villager shows their name, traits and current thought.
@@ -53,7 +53,7 @@ placeholder and does not yet follow these decisions; see "What this changes".
 
 ## What this changes (still to do)
 
-- **Done in the sim**: random seeded traits; no fire at the start, with the two fire routes and the embers fallback; achievements as the hidden gate with a minimum time; the age-turn event asks *how* to settle (field or herds), not whether; all six Cave → Settled milestones, each with more than one route.
-- **Still to do in the sim**: many small events and decisions inside each stage, because the staged milestones leave about a real day of nothing between them (`simulation.md`); resource needs shown on choices.
-- **View**: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then; speech bubbles and a villager detail popup.
+- **Done in the sim**: random seeded traits; no fire at the start, with the two fire routes and the embers fallback; achievements as the hidden gate with a minimum time; the age-turn event asks *how* to settle (field or herds), not whether; all six Cave → Settled milestones, each with more than one route; about 20 small story decisions and 25 ambient lines between the milestones; resource needs shown on choices; a leaner economy that hovers instead of piling up.
+- **Still to do in the sim**: the same fill for the Settled Age; more trait-driven variants of one event; the answers do little beyond the journal and a flag, so later content should read those flags and change what is seen.
+- **View**: built: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then. Still to do: speech bubbles and a villager detail popup.
 - **Open**: how many resources exist per age; whether the player can ever see a hint that something is still undiscovered. The Cave → Settled milestones are listed in `ages.md`.

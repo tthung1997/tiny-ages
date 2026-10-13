@@ -8,6 +8,6 @@ id = &"hut"
 display_name = "Hut"
 description = "A proper shelter, built where the group means to stay."
 cost = Dictionary[StringName, int]({
-&"wood": 10
+&"wood": 14
 })
 work_required = 40

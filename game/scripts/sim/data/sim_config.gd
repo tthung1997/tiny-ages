@@ -28,6 +28,10 @@ extends Resource
 @export_range(1.0, 3.0, 0.05) var industrious_multiplier: float = 1.5
 @export_range(1, 24) var min_activity_ticks: int = 2
 @export_range(1, 24) var max_activity_ticks: int = 4
+## A group does not keep chopping what the cave already holds plenty of: once a resource is at
+## least this much, villagers rarely choose to gather it (see VillagerSystem) and buildings stop
+## adding to it (ConstructionSystem), so stock hovers instead of piling up for ever.
+@export_range(1, 1000) var comfortable_stock: int = 40
 ## Construction progress added per builder per tick.
 @export_range(0.1, 5.0, 0.1) var build_rate_per_builder: float = 1.0
 

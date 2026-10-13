@@ -8,11 +8,11 @@ id = &"knapping_spot"
 display_name = "Knapping Spot"
 description = "A flat stone and a pile of flint: a place to make better tools."
 cost = Dictionary[StringName, int]({
-&"wood": 8
+&"wood": 12
 })
 work_required = 40
 daily_output = Dictionary[StringName, float]({
-&"wood": 4.0
+&"wood": 0.5
 })
 completion_achievement = &"stone_tools"
 completion_achievement_title = "Stone Tools"

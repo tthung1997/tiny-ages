@@ -9,6 +9,8 @@ const WEIGHT_SOCIALIZE: float = 1.0
 const WEIGHT_WANDER: float = 1.0
 const WEIGHT_BUILD: float = 6.0
 const TRAIT_BIAS: float = 2.0
+## Multiplies the wish to gather a resource the group already has plenty of.
+const PLENTY_WEIGHT: float = 0.1
 ## Chance per tick that an idle villager joins a building site that appears.
 const BUILD_DRIFT_CHANCE: float = 0.5
 
@@ -50,9 +52,13 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 	var activities: Array[StringName] = []
 	var weights: Array[float] = []
 	activities.append(VillagerState.ACTIVITY_GATHER_WOOD)
-	weights.append(WEIGHT_GATHER * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS))
+	weights.append(
+		WEIGHT_GATHER * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS) * _plenty(sim, &"wood")
+	)
 	activities.append(VillagerState.ACTIVITY_FORAGE)
-	weights.append(WEIGHT_FORAGE * _bias(villager, VillagerState.TRAIT_NATURE_LOVING))
+	weights.append(
+		WEIGHT_FORAGE * _bias(villager, VillagerState.TRAIT_NATURE_LOVING) * _plenty(sim, &"food")
+	)
 	activities.append(VillagerState.ACTIVITY_SOCIALIZE)
 	weights.append(WEIGHT_SOCIALIZE * _bias(villager, VillagerState.TRAIT_SOCIAL))
 	activities.append(VillagerState.ACTIVITY_WANDER)
@@ -69,6 +75,14 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 
 func _bias(villager: VillagerState, trait_name: StringName) -> float:
 	return TRAIT_BIAS if villager.has_trait(trait_name) else 1.0
+
+
+## How keen the group is to gather a resource: full while it is short, much less once the stores
+## are comfortable, so stock hovers instead of piling up for ever.
+func _plenty(sim: Simulation, resource: StringName) -> float:
+	if sim.world.resource_amount(resource) >= sim.config.comfortable_stock:
+		return PLENTY_WEIGHT
+	return 1.0
 
 
 func _work(sim: Simulation, villager: VillagerState) -> void:
