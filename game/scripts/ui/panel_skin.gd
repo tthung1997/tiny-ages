@@ -43,7 +43,7 @@ var _title_font: Font
 
 ## The registered factories: era id -> Callable returning a PanelSkin.
 static func skins() -> Dictionary:
-	return {&"cave": cave}
+	return {&"cave": cave, &"settled": clay}
 
 
 static func for_era(era: StringName) -> PanelSkin:
@@ -57,17 +57,37 @@ static func cave() -> PanelSkin:
 	var skin: PanelSkin = PanelSkin.new()
 	skin.era_id = &"cave"
 	skin.atlas_path = ASSET_DIR + "skin_hide.png"
-	skin.button_regions = {
+	skin._place_pieces()
+	return skin
+
+
+## The Settled Age: a timber frame round a plastered clay wall, fired-clay tile buttons, and a
+## wheat ear. Same atlas layout as the Cave skin.
+static func clay() -> PanelSkin:
+	var skin: PanelSkin = PanelSkin.new()
+	skin.era_id = &"settled"
+	skin.atlas_path = ASSET_DIR + "skin_clay.png"
+	skin.title_color = Color("8a3a22")
+	skin.muted = Color("5a3a28")
+	skin.button_text_disabled = Color("6a5a48")
+	skin.scroll_track = Color("c9a07a")
+	skin.scroll_grabber = Color("6e4a2c")
+	skin._place_pieces()
+	return skin
+
+
+## Where each small piece sits in an age's atlas: the skins share one layout.
+func _place_pieces() -> void:
+	button_regions = {
 		&"normal": Rect2(0, ITEM_ROW, 16, 16), &"hover": Rect2(16, ITEM_ROW, 16, 16),
 		&"pressed": Rect2(32, ITEM_ROW, 16, 16), &"disabled": Rect2(48, ITEM_ROW, 16, 16),
 	}
-	skin.close_regions = {
+	close_regions = {
 		&"normal": Rect2(64, ITEM_ROW, 14, 14), &"hover": Rect2(78, ITEM_ROW, 14, 14),
 	}
-	skin.icon_regions = {
+	icon_regions = {
 		&"wood": Rect2(96, ITEM_ROW, 10, 10), &"food": Rect2(106, ITEM_ROW, 10, 10),
 	}
-	return skin
 
 
 func atlas() -> Texture2D:

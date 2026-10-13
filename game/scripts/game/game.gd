@@ -10,7 +10,8 @@ extends Node2D
 ##   Click the bulb (decision waiting) or the book (journal) at the top right of the strip.
 ## Launch args (after `--`): --mode= --scale= --fps= --screen= --no-ontop --no-passthrough
 ##   --no-lowproc --no-hud  as in the window spike, plus: --new (ignore the save)
-##   --nosave (never write the save) --save=<path> --speed=<x real time> --days=<n> (play n game
+##   --nosave (never write the save) --save=<path> --speed=<x real time> --era=<age id> (start in
+##   that age, for looking at it) --days=<n> (play n game
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
 ##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
@@ -269,12 +270,14 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 
 
 ## The window gives the panel room above the viewport while it is open.
-## --fire lights the fire; --flag=path_hunting,cave_art sets world flags; --give=wood:20,food:5
-## adds stock. For looking at things, not playing.
+## --fire lights the fire; --era=settled enters that age; --flag=path_hunting,cave_art sets world
+## flags; --give=wood:20,food:5 adds stock. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
 	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
 		sim.world.achievements.append(&"fire")
+	if options.has("era") and not sim.advance_era(StringName(options["era"])):
+		push_warning("--era=%s is not a later age" % options["era"])
 	for flag: String in String(options.get("flags", "")).split(",", false):
 		sim.world.flags[StringName(flag)] = true
 	for part: String in String(options.get("give", "")).split(",", false):
@@ -426,6 +429,8 @@ func _apply_cmdline() -> Dictionary:
 			options["fire"] = true
 		elif arg.begins_with("--flag="):
 			options["flags"] = arg.trim_prefix("--flag=")
+		elif arg.begins_with("--era="):
+			options["era"] = arg.trim_prefix("--era=")
 		elif arg.begins_with("--give="):
 			options["give"] = arg.trim_prefix("--give=")
 		elif arg.begins_with("--panel="):

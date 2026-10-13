@@ -227,14 +227,14 @@ the journal book. The sim withdraws a decision the world has moved past
 (`Simulation.withdraw_stale_decisions`), so the UI never asks a stale question.
 
 **Skins, one per age** (`PanelSkin`, `UiTheme`): a skin is the age's material, colours, font and
-where each piece sits in its atlas (`tools/art/ui_skin_<age>.js`). To add an age: draw the atlas,
-add a factory to `PanelSkin.skins()`; `Game` swaps the skin on `era_advanced`, and an age without
-one uses the Cave skin. The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
+where each piece sits in its atlas (`tools/art/ui_skin_<hide|clay>.js`). To add an age: draw the
+atlas (same layout as the existing ones), add a factory to `PanelSkin.skins()`; `Game` swaps the
+skin on `era_advanced`, and an age without one uses the Cave skin (Cave: hide; Settled: timber
+and clay). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
-panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--flag=path_hunting`,
-`--give=wood:6`,
-`--hour=12`.
+panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--era=settled`,
+`--flag=path_hunting`, `--give=wood:6`, `--hour=12`.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
 imported as a texture whether or not it is used — do not add art until it is in use.

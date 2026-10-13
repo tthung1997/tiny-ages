@@ -356,24 +356,42 @@ func test_the_window_makes_room_for_the_whole_panel() -> void:
 
 # ---- skins ----------------------------------------------------------------------------------
 
-func test_every_piece_of_the_cave_skin_is_inside_its_atlas() -> void:
-	var skin: PanelSkin = PanelSkin.cave()
-	var bounds: Rect2 = Rect2(Vector2.ZERO, skin.atlas().get_size())
-	var pieces: Array[Rect2] = [skin.panel_region]
-	for region: Rect2 in skin.button_regions.values():
-		pieces.append(region)
-	for region: Rect2 in skin.close_regions.values():
-		pieces.append(region)
-	for region: Rect2 in skin.icon_regions.values():
-		pieces.append(region)
-	for region: Rect2 in pieces:
-		assert_true(bounds.encloses(region), "%s is outside the atlas" % region)
-	assert_eq(skin.panel_region.size, Vector2(PanelHost.WIDTH, PanelHost.HEIGHT))
+func test_every_piece_of_every_skin_is_inside_its_atlas() -> void:
+	for era: StringName in PanelSkin.skins():
+		var skin: PanelSkin = PanelSkin.for_era(era)
+		assert_eq(skin.era_id, era)
+		var bounds: Rect2 = Rect2(Vector2.ZERO, skin.atlas().get_size())
+		var pieces: Array[Rect2] = [skin.panel_region]
+		for region: Rect2 in skin.button_regions.values():
+			pieces.append(region)
+		for region: Rect2 in skin.close_regions.values():
+			pieces.append(region)
+		for region: Rect2 in skin.icon_regions.values():
+			pieces.append(region)
+		for region: Rect2 in pieces:
+			assert_true(bounds.encloses(region), "%s: %s is outside the atlas" % [era, region])
+		assert_eq(skin.panel_region.size, Vector2(PanelHost.WIDTH, PanelHost.HEIGHT))
 
 
 func test_an_age_without_a_skin_gets_the_cave_one() -> void:
 	assert_eq(PanelSkin.for_era(&"cave").era_id, &"cave")
 	assert_eq(PanelSkin.for_era(&"no_such_age").era_id, &"cave")
+
+
+func test_the_settled_age_has_its_own_skin() -> void:
+	var settled: PanelSkin = PanelSkin.for_era(&"settled")
+	assert_eq(settled.era_id, &"settled")
+	assert_true(settled.atlas_path != PanelSkin.cave().atlas_path, "Its own atlas, not the hide")
+	assert_true(settled.title_color != PanelSkin.cave().title_color)
+	assert_true(settled.icon_for(&"wood") != null and settled.icon_for(&"food") != null)
+
+
+func test_the_panel_changes_skin_when_the_age_turns() -> void:
+	var panel: PanelHost = PanelHost.new()
+	assert_eq(panel.skin().era_id, &"cave")
+	panel.set_skin(PanelSkin.for_era(&"settled"))
+	assert_eq(panel.skin().era_id, &"settled")
+	panel.free()
 
 
 func test_the_skin_has_icons_for_the_resources_that_exist() -> void:
