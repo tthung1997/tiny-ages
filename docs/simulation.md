@@ -17,7 +17,7 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 
 - `Simulation.advance_ticks(n)` steps the world exactly; `advance_real_time(now)` turns wall-clock time into ticks, which is also offline catch-up. Catching up for N ticks is guaranteed identical to ticking N times (tested). Catch-up is capped (`max_catch_up_ticks`, default one game year) so a months-long absence cannot stall start-up.
 - Each tick: villagers work or sleep → construction progresses → plants grow → scheduled events fire (dropped if their `requires` no longer hold) → at most one new event is rolled from the eligible templates → the era gate is checked.
-- An event with choices opens a **pending decision**; it waits until the player resolves it. Choices can require resources, buildings or flags, and a decision never opens if none of its choices are available. The same decision never stacks up, and there is a cap (`max_pending_decisions`) and a cooldown between openings.
+- An event with choices opens a **pending decision**; it waits until the player resolves it. Choices can require resources, buildings or flags, and a decision never opens if none of its choices are available. The same decision never stacks up, and there is a cap (`max_pending_decisions`) and a cooldown between openings. If the world moves past a pending decision (the fire was lit another way), the sim **withdraws** it; waiting for resources or a later day never does.
 - **Consequences** are scheduled events (`SCHEDULE_EVENT`) or flags that later events require, so choices ripple forward ("Theo found a seed → you planted it → it flowered → a rare butterfly came").
 - All randomness uses one seeded RNG saved with the world, so a seed plus actions reproduces a world exactly.
 
@@ -49,7 +49,7 @@ So the slice proves the loop works, but the economy is far too generous and cont
 - Settlement stages and the "A Beginning" milestone; seasons, weather and day/night as sim state.
 - Relationships and friendship events; more traits and skills; the 15–25 event templates from the MVP.
 - Wildlife, visitors, expeditions to other places; the settlement/wilderness balance.
-- Any view: the sim has no UI. The next step is to render villagers, the decision bulb and the "while you were away" summary from `WorldState`.
+- The view and the play-loop UI (the bulb, decision, journal and "while you were away" panels) are built on top of the sim without it knowing; see `ages.md` (V1-V7).
 
 ## Open questions
 

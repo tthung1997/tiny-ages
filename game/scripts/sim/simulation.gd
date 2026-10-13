@@ -109,8 +109,38 @@ func resolve_decision(decision_id: StringName, choice_id: StringName) -> bool:
 	world.pending.erase(decision)
 	for effect: SimEffect in choice.effects:
 		_effects.apply(effect, self, subject, event)
+	withdraw_stale_decisions()
 	decision_resolved.emit(decision, choice)
 	return true
+
+
+## Whether the world has moved past a pending decision: its event's requirements no longer hold,
+## ignoring stock and construction (an unaffordable choice just waits, greyed out) and "not yet"
+## conditions such as a day or an age (they only ever turn true). The fire was lit another way,
+## the tools were found another way... so the question no longer makes sense.
+func is_decision_stale(decision: PendingDecision) -> bool:
+	var event: EventDef = content.get_event(decision.event_id)
+	if event == null:
+		return false
+	for condition: SimCondition in event.requires:
+		var not_yet: bool = not condition.negate and (
+			condition.kind == SimCondition.Kind.DAYS_AT_LEAST
+			or condition.kind == SimCondition.Kind.ERA_AT_LEAST
+		)
+		var transient: bool = not_yet \
+				or condition.kind == SimCondition.Kind.RESOURCE_AT_LEAST \
+				or condition.kind == SimCondition.Kind.ITEM_AT_LEAST \
+				or condition.kind == SimCondition.Kind.CONSTRUCTION_IDLE
+		if not transient and not condition.is_met(world, config):
+			return true
+	return false
+
+
+## Drops every pending decision the world has moved past.
+func withdraw_stale_decisions() -> void:
+	for decision: PendingDecision in world.pending.duplicate():
+		if is_decision_stale(decision):
+			world.pending.erase(decision)
 
 
 ## Spends the building's cost and starts construction. False if it cannot start right now.
@@ -246,3 +276,4 @@ func _step() -> void:
 	_plant_system.step(self)
 	_event_system.step(self)
 	_era_system.step(self)
+	withdraw_stale_decisions()

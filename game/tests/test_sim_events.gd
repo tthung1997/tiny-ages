@@ -54,6 +54,42 @@ func test_a_decision_waits_indefinitely_without_consequence() -> void:
 	assert_true(sim.world.resource_amount(&"wood") >= 10, "Nothing was lost while ignoring it")
 
 
+func test_answering_one_fire_decision_withdraws_the_other() -> void:
+	var sim: Simulation = SimFixture.new_sim(5, false)
+	sim.fire_event(sim.content.get_event(&"fire_from_storm"), sim.world.villagers[0])
+	sim.fire_event(sim.content.get_event(&"fire_from_sparks"), sim.world.villagers[1])
+	assert_eq(sim.world.pending.size(), 2)
+	var storm: PendingDecision = SimFixture.pending_for(sim, &"fire_from_storm")
+	assert_true(sim.resolve_decision(storm.id, &"carry_fire"))
+	assert_eq(sim.world.pending.size(), 0, "The fire is lit, so asking about sparks makes no sense")
+
+
+func test_a_decision_the_world_moved_past_is_withdrawn_on_the_next_tick() -> void:
+	var sim: Simulation = SimFixture.new_sim(5, false)
+	sim.fire_event(sim.content.get_event(&"fire_from_sparks"), sim.world.villagers[0])
+	SimFixture.light_fire(sim.world)
+	sim.advance_ticks(1)
+	assert_eq(sim.world.pending.size(), 0)
+
+
+func test_waiting_for_resources_does_not_withdraw_a_decision() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.resources[&"wood"] = 10
+	sim.fire_event(sim.content.get_event(&"building_opportunity"), null)
+	sim.world.resources[&"wood"] = 0
+	sim.advance_ticks(5)
+	assert_eq(sim.world.pending.size(), 1, "An unaffordable choice waits, it is not dropped")
+
+
+func test_a_decision_can_still_be_answered_after_others_are_withdrawn() -> void:
+	var sim: Simulation = SimFixture.new_sim(5, false)
+	sim.fire_event(sim.content.get_event(&"fire_from_storm"), sim.world.villagers[0])
+	var decision: PendingDecision = SimFixture.pending_for(sim, &"fire_from_storm")
+	sim.advance_ticks(10)
+	assert_true(sim.world.find_pending(decision.id) != null, "Nothing changed, so it stays")
+	assert_true(sim.resolve_decision(decision.id, &"carry_fire"))
+
+
 func test_the_same_decision_never_stacks_up() -> void:
 	var sim: Simulation = SimFixture.new_sim(3)
 	sim.world.resources[&"wood"] = 50

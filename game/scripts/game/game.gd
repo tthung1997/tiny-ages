@@ -6,13 +6,15 @@ extends Node2D
 ## Keys (dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap - L low-processor
 ##   N next screen - H hide HUD - [ ] time speed - B auto-answer decisions - Y answer one
 ##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
-##   Esc/Q save and quit
+##   Esc closes the open panel, or saves and quits; Q saves and quits
+##   Click the bulb (decision waiting) or the book (journal) at the top right of the strip.
 ## Launch args (after `--`): --mode= --scale= --fps= --screen= --no-ontop --no-passthrough
 ##   --no-lowproc --no-hud  as in the window spike, plus: --new (ignore the save)
 ##   --nosave (never write the save) --save=<path> --speed=<x real time> --days=<n> (play n game
-##   days with the bot before showing) --bot (auto-answer decisions) --cam=<camp x> (start with
-##   the viewport's left edge there: -384..384, camp is 0) --shot=<png> (save the
-##   rendered viewport after a moment, then quit)
+##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
+##   decisions) --manual --cam=<camp x> (start with the viewport's left edge there: -384..384,
+##   camp is 0) --panel=decision|journal|away (open that panel at start) --shot=<png> (save
+##   the rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
 const CONFIG_PATH: String = "res://resources/sim/sim_config.tres"
@@ -25,6 +27,8 @@ const SPEEDS: Array[float] = [1.0, 60.0, 600.0, 3600.0]
 const MAX_TICKS_PER_FRAME: int = 240
 const KEY_PAN_STEP: float = 96.0
 const SHOT_DELAY_SECONDS: float = 2.0
+## Away for at least this long (and something happened) and the summary opens on launch.
+const AWAY_SUMMARY_MIN_SECONDS: float = 300.0
 const JOURNAL_PREVIEW_CHARS: int = 64
 
 var sim: Simulation
@@ -33,6 +37,10 @@ var last_catch_up: CatchUpReport = CatchUpReport.new()
 
 var _bot: DecisionBot = DecisionBot.new()
 var _bot_auto: bool = false
+var _manual_days: bool = false
+var _last_pending: int = -1
+var _panel: PanelHost = PanelHost.new()
+var _icons: StripIcons = StripIcons.new()
 var _time_scale: float = 1.0
 var _tick_budget: float = 0.0
 var _clock_timer: float = 0.0
@@ -45,6 +53,7 @@ var _shot_path: String = ""
 @onready var _window: DesktopWindow = $DesktopWindow
 @onready var _world_view: WorldView = $World
 @onready var _hud: Label = $Hud/Label
+@onready var _hud_layer: CanvasLayer = $Hud
 
 
 func _ready() -> void:
@@ -58,16 +67,31 @@ func _ready() -> void:
 	if world == null:
 		world = WorldFactory.create_new(content, config, _new_seed(), now)
 	sim = Simulation.new(world, config, content)
+	_apply_dev_world(options)
 	last_catch_up = sim.advance_real_time(now)
 	for _tick: int in int(options.get("days", 0)) * config.ticks_per_day:
 		sim.advance_ticks(1)
-		_bot.answer_all(sim)
+		if not _manual_days:
+			_bot.answer_all(sim)
 	_world_view.setup(sim, _window)
 	if options.has("cam"):
 		_world_view.jump_camera(options["cam"])
+	_icons.update_pending(0)
+	_hud_layer.add_child(_icons)
+	_hud_layer.add_child(_panel)
+	_panel.animated = true
+	_panel.set_skin(PanelSkin.for_era(sim.world.era))
+	sim.era_advanced.connect(func(era: EraDef) -> void: _panel.set_skin(PanelSkin.for_era(era.id)))
+	_icons.bulb_pressed.connect(_open_decisions)
+	_icons.journal_pressed.connect(_toggle_journal)
+	_panel.choice_picked.connect(_on_choice_picked)
+	_panel.decisions_requested.connect(_open_decisions)
+	_panel.closed.connect(_fit_window)
 	_window.layout_changed.connect(_on_layout_changed)
 	_hud.visible = options.get("hud", true)
+	_refresh_pending()
 	_update_hud_region()
+	_open_startup_panel(options.get("panel", ""))
 	_window.apply()
 	if not _shot_path.is_empty():
 		await get_tree().create_timer(SHOT_DELAY_SECONDS).timeout
@@ -78,6 +102,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_advance_clock(delta)
+	_refresh_pending()
 	_world_view.update_light()
 	_save_timer += delta
 	if _autosave and _save_timer >= SAVE_INTERVAL_SECONDS:
@@ -138,7 +163,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_Y:
 			if _bot.answer_first(sim):
 				_world_view.on_world_changed()
-		KEY_ESCAPE, KEY_Q:
+		KEY_ESCAPE:
+			if _panel.is_open():
+				_panel.close_panel()
+			else:
+				_save()
+				get_tree().quit()
+		KEY_Q:
 			_save()
 			get_tree().quit()
 
@@ -176,16 +207,104 @@ func _save() -> void:
 
 
 func _on_layout_changed(_content_size: Vector2i) -> void:
-	_world_view.position = Vector2(_window.art_origin())
-	_hud.position = Vector2(_window.art_origin()) + HUD_OFFSET
+	var origin: Vector2 = Vector2(_window.art_origin())
+	_world_view.position = origin
+	_hud.position = origin + HUD_OFFSET
+	_icons.position = origin
+	_panel.position = Vector2(origin.x, 0.0)
 	_world_view.set_full_scene(_window.mode == DesktopWindow.Mode.WINDOW)
 
 
 func _update_hud_region() -> void:
 	var regions: Array[Rect2i] = _world_view.clickable_regions()
+	regions.append_array(_icons.clickable_regions())
 	if _hud.visible:
 		regions.append(HUD_REGION)
 	_window.set_extra_regions(regions)
+
+
+## Keeps the bulb, and the panel if it shows a decision, in step with what is pending.
+func _refresh_pending() -> void:
+	var waiting: int = sim.world.pending.size()
+	if waiting == _last_pending:
+		return
+	_last_pending = waiting
+	_icons.update_pending(waiting)
+	_update_hud_region()
+	if _panel.mode() == &"decision":
+		_panel.show_decision(sim, 0)
+
+
+func _open_decisions() -> void:
+	if sim.world.pending.is_empty():
+		return
+	_panel.show_decision(sim, 0)
+	_fit_window()
+
+
+func _toggle_journal() -> void:
+	if _panel.mode() == &"journal":
+		_panel.close_panel()
+		return
+	_panel.show_journal(sim)
+	_fit_window()
+
+
+## The window gives the panel room above the viewport while it is open.
+## --fire lights the fire; --give=wood:20,food:5 adds stock. For looking at things, not playing.
+func _apply_dev_world(options: Dictionary) -> void:
+	if options.get("fire", false) and not sim.world.has_flag(&"fire_found"):
+		sim.world.flags[&"fire_found"] = true
+		sim.world.achievements.append(&"fire")
+	for part: String in String(options.get("give", "")).split(",", false):
+		var pair: PackedStringArray = part.split(":")
+		if pair.size() == 2:
+			sim.world.add_resource(StringName(pair[0]), pair[1].to_int())
+
+
+func _fit_window() -> void:
+	_window.set_panel_height(PanelHost.HEIGHT if _panel.is_open() else 0)
+	_update_hud_region()
+
+
+## The "while you were away" summary on launch, or a panel chosen by the dev flag --panel=
+## (decision, journal or away) so each can be looked at without waiting for it to happen.
+func _open_startup_panel(requested: String) -> void:
+	match requested:
+		"decision":
+			_open_decisions()
+		"journal":
+			_toggle_journal()
+		"away":
+			_panel.show_away(_dev_away_summary())
+			_fit_window()
+		_:
+			var summary: AwaySummary = AwaySummary.present(
+				last_catch_up, sim.world, AWAY_SUMMARY_MIN_SECONDS
+			)
+			if summary != null:
+				_panel.show_away(summary)
+				_fit_window()
+
+
+## A made-up report from the latest journal entries, for looking at the panel.
+func _dev_away_summary() -> AwaySummary:
+	var report: CatchUpReport = CatchUpReport.new()
+	report.elapsed_seconds = 8100.0
+	for entry: JournalEntry in sim.world.journal.slice(-5):
+		report.journal_entries.append(entry)
+	return AwaySummary.present(report, sim.world, 0.0)
+
+
+func _on_choice_picked(decision_id: StringName, choice_id: StringName) -> void:
+	if not sim.resolve_decision(decision_id, choice_id):
+		return
+	_world_view.on_world_changed()
+	_refresh_pending()
+	if sim.world.pending.is_empty():
+		_panel.close_panel()
+	else:
+		_panel.show_decision(sim, 0)
 
 
 func _new_seed() -> int:
@@ -275,6 +394,14 @@ func _apply_cmdline() -> Dictionary:
 			options["days"] = maxi(arg.trim_prefix("--days=").to_int(), 0)
 		elif arg == "--bot":
 			_bot_auto = true
+		elif arg == "--manual":
+			_manual_days = true
+		elif arg == "--fire":
+			options["fire"] = true
+		elif arg.begins_with("--give="):
+			options["give"] = arg.trim_prefix("--give=")
+		elif arg.begins_with("--panel="):
+			options["panel"] = arg.trim_prefix("--panel=")
 		elif arg.begins_with("--cam="):
 			options["cam"] = arg.trim_prefix("--cam=").to_float()
 		elif arg.begins_with("--shot="):

@@ -31,6 +31,9 @@ var always_on_top: bool = true
 var click_through: bool = true
 var fps_cap: int = 30
 var low_processor: bool = true
+## Height of the panel open above the viewport, in art pixels (0 when none). The window grows
+## upward by this much and the click region takes in the panel, which is as wide as the viewport.
+var panel_height: int = 0
 
 ## Top of the drawn world per world column, and which world column the viewport starts at.
 var _skyline: PackedInt32Array = PackedInt32Array()
@@ -43,9 +46,10 @@ func _ready() -> void:
 	_build_skyline()
 
 
-## Logical (art) pixels between the left edge of the window and the art.
+## Logical (art) pixels between the left and top edges of the window and the viewport. The
+## viewport sits at the bottom; an open panel (see `set_panel_height`) is above it.
 func art_origin() -> Vector2i:
-	return Vector2i((_content_size.x - ART_SIZE.x) / 2, 0)
+	return Vector2i((_content_size.x - ART_SIZE.x) / 2, panel_height)
 
 
 func content_size() -> Vector2i:
@@ -82,6 +86,18 @@ func set_mode(value: Mode) -> void:
 func set_pixel_scale(value: int) -> void:
 	pixel_scale = clampi(value, MIN_SCALE, MAX_SCALE)
 	apply()
+
+
+## Opens (or, with 0, closes) room above the viewport for a panel. The window grows upward, so
+## the viewport does not move on screen.
+func set_panel_height(value: int) -> void:
+	value = maxi(value, 0)
+	if value == panel_height:
+		return
+	panel_height = value
+	if is_inside_tree():
+		_place_window()
+	_update_click_through()
 
 
 func set_always_on_top(value: bool) -> void:
@@ -141,13 +157,14 @@ func move_to_next_screen() -> void:
 func _place_window() -> void:
 	var window: Window = get_window()
 	var usable: Rect2i = DisplayServer.screen_get_usable_rect(window.current_screen)
-	var window_size: Vector2i = ART_SIZE * pixel_scale
-	var content: Vector2i = ART_SIZE
+	var art_height: int = ART_SIZE.y + panel_height
+	var window_size: Vector2i = Vector2i(ART_SIZE.x, art_height) * pixel_scale
+	var content: Vector2i = Vector2i(ART_SIZE.x, art_height)
 	var window_pos: Vector2i = usable.position
 	match mode:
 		Mode.STRIP:
-			window_size = Vector2i(usable.size.x, ART_SIZE.y * pixel_scale)
-			content = Vector2i(window_size.x / pixel_scale, ART_SIZE.y)
+			window_size = Vector2i(usable.size.x, art_height * pixel_scale)
+			content = Vector2i(window_size.x / pixel_scale, art_height)
 			window_pos = Vector2i(usable.position.x, usable.end.y - window_size.y)
 		Mode.CORNER:
 			window_pos = usable.end - window_size
@@ -196,7 +213,8 @@ func _update_click_through() -> void:
 	DisplayServer.window_set_mouse_passthrough(region)
 
 
-## The skyline of the viewport's columns, lowered to take in the extra regions.
+## The skyline of the viewport's columns, lowered to take in the extra regions, and reaching up
+## to the top of an open panel (tops are relative to the viewport, so the panel is negative).
 func _view_tops() -> PackedInt32Array:
 	var tops: PackedInt32Array = PackedInt32Array()
 	tops.resize(ART_SIZE.x)
@@ -207,4 +225,6 @@ func _view_tops() -> PackedInt32Array:
 			continue
 		for x: int in range(maxi(region.position.x, 0), mini(region.end.x, ART_SIZE.x)):
 			tops[x] = mini(tops[x], region.position.y)
+	if panel_height > 0:
+		tops.fill(-panel_height)
 	return tops
