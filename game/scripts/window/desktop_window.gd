@@ -96,6 +96,13 @@ func set_extra_clickable(rect: Rect2i) -> void:
 	_update_click_through()
 
 
+## Replaces the textures whose opaque pixels are clickable (and visible in strip mode).
+func set_silhouettes(textures: Array[Texture2D]) -> void:
+	silhouettes = textures
+	_build_skyline()
+	_update_click_through()
+
+
 func set_low_processor(value: bool) -> void:
 	low_processor = value
 	OS.low_processor_usage_mode = value
@@ -142,6 +149,8 @@ func _build_skyline() -> void:
 	_skyline.resize(ART_SIZE.x)
 	_skyline.fill(ART_SIZE.y)
 	for texture: Texture2D in silhouettes:
+		if texture == null:
+			continue
 		var image: Image = texture.get_image()
 		if image == null:
 			push_warning("DesktopWindow: a silhouette has no image data; ignoring it.")

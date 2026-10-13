@@ -118,6 +118,8 @@ tools/art/            LibreSprite art-generation scripts (see its README)
 game/                 the Godot project (open game/project.godot)
   scenes/             .tscn, mirroring scripts/   (ui/ for menus, HUD, overlays)
   scripts/sim/        the settlement simulation: headless, no nodes (see below)
+  scripts/game/       `Game`: owns the sim, real-time clock, save/autosave, dev flags
+  scripts/view/       the on-screen world: `WorldView`, villager actors, planner (see below)
   scripts/window/     desktop-window handling;  scripts/dev/  dev/spike scenes
   assets/             art/audio/fonts the game loads — only what is in use
   resources/sim/      authored sim content (.tres): config, events, buildings, plants
@@ -150,6 +152,25 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   must stay empty; a test enforces it.
 - `tools/sim_timeline.gd` plays a bot through the sim and prints the journal with real-time
   offsets: use it to judge pacing instead of guessing.
+
+### The world view (`game/scripts/view/`)
+
+The view only reads `WorldState`; it never changes it, and the sim never knows it exists.
+`Game` calls `WorldView.on_world_changed()` after the sim advances.
+
+- Every art piece (`game/assets/world/cave/*.png`) is a full 384×80 transparent sprite
+  already at its final position, so placing it is `position = (0, 0)`. Draw order is z =
+  the foot row (see `WorldLayout`). `WorldLayout` mirrors the slots in `tools/art/cave_strip.js`:
+  change both together.
+- `VillagerPlanner` (pure logic, tested) turns a villager's activity into a spot and pose;
+  `VillagerActor` walks and animates; away or sleeping villagers are hidden.
+- `DayNight.tint(hour)` drives a `CanvasModulate`. Sky and far hills only show in the opaque
+  window (decision A7); strip and corner mode keep near hills, trees and ground.
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_villagers`, then
+  `--import` and commit the `.import` files.
+- Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
+  `--days=N`, `--bot`, `--speed=`, `--shot=`). Always use `--nosave` (or `--save=`) in
+  automated runs so the player's save is not touched.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
 imported as a texture whether or not it is used — do not add art until it is in use.
@@ -190,8 +211,8 @@ Use a `_console` build — the plain Windows `.exe` prints nothing.
 
 ```powershell
 pwsh -File game/tools/check.ps1                                  # validate
-pwsh -File game/tools/run_spike.ps1 [--mode=...]                 # run the window spike standalone
-& $env:GODOT --path game                                         # run the game
+pwsh -File game/tools/run_game.ps1 [--nosave --days=12 --bot]    # run the game standalone
+pwsh -File game/tools/run_spike.ps1 [--mode=...]                 # run the old window spike
 & $env:GODOT --headless --path game --import                     # import new assets
 & $env:GODOT --headless --path game --script res://tools/x.gd    # run a tool script
 python tools/art/bundle.py --run                                 # regenerate reference art
@@ -199,9 +220,9 @@ python tools/art/bundle.py --run                                 # regenerate re
 
 Window behaviour (borderless, transparent, always-on-top, click-through) does **not** work
 when the editor embeds the running game in its Game tab, so test it with
-`run_spike.ps1` (or untick "Embed Game on Next Play"). The dev scene
-`game/scenes/dev/window_spike.tscn` is currently the main scene; it has a `--shot=<png>`
-launch arg that saves the rendered viewport, alpha included, for automated visual checks.
+`run_game.ps1` or `run_spike.ps1` (or untick "Embed Game on Next Play"). `scenes/main.tscn` is the main scene;
+the old spike is `scenes/dev/window_spike.tscn`. Both take a `--shot=<png>` launch arg that
+saves the rendered viewport, alpha included, for automated visual checks.
 On Windows, `DisplayServer.window_set_mouse_passthrough()` also clips drawing — anything
 that must be visible has to be inside the passthrough polygon.
 

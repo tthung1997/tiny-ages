@@ -181,4 +181,5 @@ Regeneration was verified pixel-identical to the originals produced during the d
 2. ~~Godot window spike~~ — done (§2.1); a human pass on a real desktop workflow is still needed.
 3. Freeze style, polish villager faces/hair, fix the art TODOs above.
 4. Define the LibreSprite → Godot export + importer.
-5. Build the camp → exploration → discovery → consequence chain in the sim with placeholder art from this set.
+5. ~~Build the camp → exploration → discovery → consequence chain in the sim~~ — done (`docs/simulation.md`).
+6. ~~On-screen world view~~ — done (`docs/ages.md`, "On-screen view decisions"). Next: the 💡 bulb, decision popup, journal and "while you were away" panels.

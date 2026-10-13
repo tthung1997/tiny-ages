@@ -32,7 +32,7 @@ function Resolve-Godot {
 
 $godot = Resolve-Godot
 $project = Join-Path (Split-Path $PSScriptRoot -Parent) "."
-$arguments = @("--path", $project)
+$arguments = @("--path", $project, "res://scenes/dev/window_spike.tscn")
 if ($GameArgs) {
 	$arguments += "--"
 	$arguments += $GameArgs

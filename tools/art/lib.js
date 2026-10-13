@@ -326,3 +326,21 @@ function strangeflower(b) {
 }
 
 function rocks(b) { b.ell(3, 3, 3, 2.2, ROCK); b.px(2, 2, ROCKL); b.ell(7, 4, 2, 1.5, ROCKD); }
+
+// Construction site marker: two stakes with a rope and a pile of poles, 22x10.
+function buildsite(b) {
+  b.rect(2, 2, 1, 8, WOOD); b.px(2, 2, '#e0614a'); b.rect(18, 2, 1, 8, WOOD); b.px(18, 2, '#e0614a');
+  b.line(2, 4, 18, 4, '#f0e4c0', 1);
+  b.rect(6, 7, 10, 2, '#d9a566'); b.rect(7, 5, 8, 2, '#c58f50'); b.rect(8, 9, 8, 1, '#8c5f31');
+}
+
+// Tilled field with green sprouts, 44x10.
+function field(b) {
+  b.rect(0, 2, 44, 8, '#8a5a36');
+  for (var y = 3; y < 10; y += 3) b.rect(0, y, 44, 1, '#6f4528');
+  for (var x = 3; x < 42; x += 5) for (var r = 0; r < 3; r++) { b.px(x, 2 + r * 3, '#6fbf4a'); b.px(x, 1 + r * 3, '#9bdf6a'); }
+  b.px(0, 2, ROCK); b.px(43, 2, ROCK); b.px(0, 9, ROCK); b.px(43, 9, ROCK);
+}
+
+// A freshly planted sprout (the strange flower before it blooms), 12x12.
+function sprout(b) { b.rect(6, 8, 1, 3, '#3a7a3a'); b.px(5, 8, '#58b05f'); b.px(7, 7, '#58b05f'); b.px(4, 7, '#7cd070'); b.px(8, 6, '#7cd070'); }

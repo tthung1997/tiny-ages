@@ -26,6 +26,8 @@ Without `--run`, `bundle.py` only writes `tools/art/dist/<name>.bundle.js` (git-
 | `lib.js` | Pixel buffer, outline, palettes, `vil()` villager, props, workshop stages |
 | `strip.js` | Day strip scene, drawn as layers → `art/reference/strip_v2.png` (composite) and `art/reference/layers/strip_*.png` |
 | `cave_strip.js` | Cave Age strip sketch (cliff and cave, furs, stone tools, mammoth, slice buildings) → `art/reference/cave_strip.png` and `layers/cave_*.png` |
+| `cave_strip.js` also | exports the game's 384×80 layers (backdrop, static props, per-building and site pieces, flower stages) to `game/assets/world/cave/` |
+| `cave_villagers.js` | Per-villager sheets (idle, walk×4, chop×3, hammer×2, facing right) → `game/assets/world/cave/villagers/*.png`; needs `--import` afterwards |
 | `night.js` | Palette-shifted night variant → `strip_v2_night.png` |
 | `villager_sheet.js` | Walk/work frames, role overlays, hair variants |
 | `villager_walk.js` | Transparent 4-frame walk cycle used by the Godot spike |

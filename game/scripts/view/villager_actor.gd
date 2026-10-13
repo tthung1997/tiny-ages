@@ -1,0 +1,109 @@
+class_name VillagerActor
+extends Node2D
+## A villager on screen: walks to wherever its plan says, then does its work animation. Draws
+## in front of or behind props by its foot row.
+
+const SPEED: float = 16.0
+const ARRIVE_DISTANCE: float = 0.6
+const WALK_FPS: float = 6.0
+const CHOP_FPS: float = 5.0
+const HAMMER_FPS: float = 4.0
+const SHEET_FRAMES: Dictionary = {
+	&"idle": [0], &"walk": [1, 2, 3, 4], &"chop": [5, 6, 7], &"hammer": [8, 9],
+}
+const SHEET_SPEEDS: Dictionary = {
+	&"idle": 1.0, &"walk": WALK_FPS, &"chop": CHOP_FPS, &"hammer": HAMMER_FPS,
+}
+
+var villager_id: StringName = &""
+
+var _sprite: AnimatedSprite2D = AnimatedSprite2D.new()
+var _target: Vector2 = Vector2.ZERO
+var _pose: StringName = &"idle"
+var _focus_x: float = -1.0
+var _wandering: bool = false
+var _placed: bool = false
+var _hidden_reason: StringName = &""
+
+
+func _init() -> void:
+	_sprite.centered = false
+	_sprite.offset = WorldLayout.FOOT_OFFSET
+	add_child(_sprite)
+
+
+func setup(id: StringName, sheet: Texture2D) -> void:
+	villager_id = id
+	_sprite.sprite_frames = build_frames(sheet)
+	_sprite.play(&"idle")
+
+
+## Builds idle/walk/chop/hammer animations from a villager sheet (10 cells of 28x30).
+static func build_frames(sheet: Texture2D) -> SpriteFrames:
+	var frames: SpriteFrames = SpriteFrames.new()
+	frames.remove_animation(&"default")
+	for animation: StringName in SHEET_FRAMES:
+		frames.add_animation(animation)
+		frames.set_animation_speed(animation, SHEET_SPEEDS[animation])
+		frames.set_animation_loop(animation, true)
+		for cell: int in SHEET_FRAMES[animation]:
+			var atlas: AtlasTexture = AtlasTexture.new()
+			atlas.atlas = sheet
+			atlas.region = Rect2(
+				Vector2(WorldLayout.CELL_SIZE.x * cell, 0), Vector2(WorldLayout.CELL_SIZE)
+			)
+			frames.add_frame(animation, atlas)
+	return frames
+
+
+func apply_plan(plan: VillagerPlan) -> void:
+	if not plan.visible:
+		if visible:
+			_hidden_reason = plan.hidden_reason
+		visible = false
+		return
+	var was_hidden: bool = not visible
+	visible = true
+	_pose = plan.pose
+	_focus_x = plan.focus_x
+	if plan.wander and _wandering and not _arrived():
+		return
+	_wandering = plan.wander
+	_target = plan.target
+	if not _placed:
+		position = _target
+		_placed = true
+	elif was_hidden:
+		position = _spawn_point()
+		_hidden_reason = &""
+
+
+func _process(delta: float) -> void:
+	if not visible:
+		return
+	var to_target: Vector2 = _target - position
+	if to_target.length() > ARRIVE_DISTANCE:
+		position += to_target.normalized() * minf(SPEED * delta, to_target.length())
+		_sprite.flip_h = to_target.x < 0.0
+		_play(&"walk")
+	else:
+		position = _target
+		if _focus_x >= 0.0 and absf(_focus_x - position.x) > 1.0:
+			_sprite.flip_h = _focus_x < position.x
+		_play(_pose)
+	z_index = int(position.y)
+
+
+func _arrived() -> bool:
+	return position.distance_to(_target) <= ARRIVE_DISTANCE
+
+
+func _spawn_point() -> Vector2:
+	if _hidden_reason == VillagerPlan.HIDDEN_AWAY:
+		return WorldLayout.EAST_EDGE
+	return WorldLayout.CAVE_DOOR
+
+
+func _play(animation: StringName) -> void:
+	if _sprite.animation != animation or not _sprite.is_playing():
+		_sprite.play(animation)

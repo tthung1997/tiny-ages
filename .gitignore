@@ -35,3 +35,6 @@ desktop.ini
 # Logs / local scratch -------------------------------------------------------
 *.log
 /local/
+
+# Blank canvas the villager art script opens (the real output goes to game/assets)
+art/reference/cave_villagers.png

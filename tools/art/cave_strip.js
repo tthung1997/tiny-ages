@@ -1,13 +1,23 @@
 // @open art/reference/cave_strip.png
 // @canvas 384x80
-// Cave Age strip sketch: 384x80, ground line y=56. Same layer structure as strip.js, with a cliff
-// and cave mouth as the home of the settlement, furs and stone tools, a woolly mammoth, and the
-// first slice's buildings (Lookout, Drying Rack, Knapping Spot) plus the strange flower.
-// Composite -> cave_strip.png; layers -> art/reference/layers/cave_*.png.
+// Cave Age world: 384x80, ground line y=56. Draws the scene as separate pieces so the game can
+// show what the simulation says, and also a composite preview of everything built.
+//
+// Preview: art/reference/cave_strip.png (+ layers/cave_*.png, as before).
+// Game assets (game/assets/world/cave/), each a full 384x80 transparent PNG so every piece
+// already sits at its final position:
+//   sky, far_hills, near_hills, trees, ground          backdrop layers (ground has no props)
+//   static_back, static_mid                            always-present props (cliff/pine/mammoth;
+//                                                      fire pit/bush/rocks)
+//   building_<id>, site_<id>                           state-driven: finished building / its
+//                                                      construction site, at the same slot
+//   flower_sprout, flower_bloom                        the strange flower's two stages
+// Layout slots below are mirrored in game/scripts/view/world_layout.gd; change both together.
 seed = 12;
 var W = 384, H = 80, G = 56;
+var GAME = DIR + 'game/assets/world/cave/';
 var SKY = new Buf(W, H), FAR = new Buf(W, H), NEAR = new Buf(W, H), TREES = new Buf(W, H);
-var S = new Buf(W, H), x, y, i;
+var GROUND = new Buf(W, H), x, y, i;
 
 // colder sky, pale sun, clouds
 var sky = ['#86b4d6', '#9cc4de', '#b4d4e6', '#cde2ee', '#e4eef3'];
@@ -34,53 +44,68 @@ for (x = -2; x < W + 4; x += 4) {
 }
 for (y = G; y < H; y++) for (x = 0; x < W; x++) TREES.d[(y * W + x) * 4 + 3] = 0;
 
-// ground: drier grass in 3 bands, tufts, a trampled earth patch around the fire, a few wildflowers
-for (y = G; y < H; y++) { var gc = y < G + 2 ? '#a4c35c' : (y < G + 13 ? '#86a94c' : '#789a43'); for (x = 0; x < W; x++) S.px(x, y, gc); }
-for (i = 0; i < 220; i++) { x = Math.floor(rnd() * W); y = G + 2 + Math.floor(rnd() * (H - G - 2)); var lt = rnd() < 0.5; S.px(x, y, lt ? '#9bbb55' : '#5f8236'); if (rnd() < 0.5) S.px(x, y - 1, lt ? '#9bbb55' : '#5f8236'); }
-S.ell(78, 77, 34, 3.2, '#b89a6a'); S.ell(78, 77, 30, 2.2, '#c9ad7d');
-for (i = 0; i < 40; i++) { x = 50 + Math.floor(rnd() * 56); y = 75 + Math.floor(rnd() * 5); S.px(x, y, rnd() < 0.5 ? '#9a7e50' : '#d8c08e'); }
-for (i = 0; i < 24; i++) { x = Math.floor(rnd() * W); y = G + 4 + Math.floor(rnd() * (H - G - 6)); S.px(x, y, ['#ffffff', '#ffe27a', '#c9a0ff'][Math.floor(rnd() * 3)]); S.px(x, y + 1, '#3a7a3a'); }
-
-// river on the right (same shape as the day strip)
+// ground: drier grass in 3 bands, tufts, a trampled earth patch around the fire, wildflowers
+for (y = G; y < H; y++) { var gc = y < G + 2 ? '#a4c35c' : (y < G + 13 ? '#86a94c' : '#789a43'); for (x = 0; x < W; x++) GROUND.px(x, y, gc); }
+for (i = 0; i < 220; i++) { x = Math.floor(rnd() * W); y = G + 2 + Math.floor(rnd() * (H - G - 2)); var lt = rnd() < 0.5; GROUND.px(x, y, lt ? '#9bbb55' : '#5f8236'); if (rnd() < 0.5) GROUND.px(x, y - 1, lt ? '#9bbb55' : '#5f8236'); }
+GROUND.ell(78, 77, 34, 3.2, '#b89a6a'); GROUND.ell(78, 77, 30, 2.2, '#c9ad7d');
+for (i = 0; i < 40; i++) { x = 50 + Math.floor(rnd() * 56); y = 75 + Math.floor(rnd() * 5); GROUND.px(x, y, rnd() < 0.5 ? '#9a7e50' : '#d8c08e'); }
+for (i = 0; i < 24; i++) { x = Math.floor(rnd() * W); y = G + 4 + Math.floor(rnd() * (H - G - 6)); GROUND.px(x, y, ['#ffffff', '#ffe27a', '#c9a0ff'][Math.floor(rnd() * 3)]); GROUND.px(x, y + 1, '#3a7a3a'); }
 function edge(yv) { return Math.round(326 - (yv - G) * 1.2); }
-for (y = G; y < H; y++) for (x = edge(y); x < W; x++) S.px(x, y, x < edge(y) + 2 ? '#d8c9a0' : '#4f93c4');
-for (i = 0; i < 50; i++) { y = G + 1 + Math.floor(rnd() * (H - G - 1)); x = edge(y) + 3 + Math.floor(rnd() * (W - edge(y) - 6)); S.rect(x, y, 3, 1, rnd() < 0.6 ? '#8cc8e8' : '#3b79ad'); }
+for (y = G; y < H; y++) for (x = edge(y); x < W; x++) GROUND.px(x, y, x < edge(y) + 2 ? '#d8c9a0' : '#4f93c4');
+for (i = 0; i < 50; i++) { y = G + 1 + Math.floor(rnd() * (H - G - 1)); x = edge(y) + 3 + Math.floor(rnd() * (W - edge(y) - 6)); GROUND.rect(x, y, 3, 1, rnd() < 0.6 ? '#8cc8e8' : '#3b79ad'); }
 
-// objects: add(bufW, bufH, centreX, footY, drawFn, {sh: shadow radius, flip, z: sort override})
-var objs = [];
-function add(w, h, cx, foot, fn, o) { o = o || {}; objs.push({ w: w, h: h, x: cx - Math.floor(w / 2), y: foot - h, fn: fn, flip: o.flip, sh: o.sh, fy: o.z || foot, foot: foot, cx: cx }); }
-add(100, 54, 50, 66, cliff, { sh: 34 });
-add(16, 14, 72, 78, firepit, { sh: 8 });
-add(27, 27, 88, 78, vil({ pal: PAL.furBrown, fur: true, hair: 'long', pose: 'idle' }), { sh: 5, flip: 1 });
-add(12, 12, 106, 73, strangeflower, { sh: 5 });
-add(22, 20, 132, 70, dryrack, { sh: 9 });
-add(27, 27, 144, 79, vil({ pal: PAL.furGrey, fur: true, stone: true, pose: 'hammer', f: 1, hair: 'short' }), { sh: 5 });
-add(18, 10, 160, 79, knapspot, { sh: 7 });
-add(27, 27, 180, 77, vil({ pal: PAL.furTan, fur: true, role: 'gatherer', pose: 'walk', f: 1, hair: 'bun' }), { sh: 5 });
-add(12, 8, 198, 71, bush, { sh: 5 });
-add(16, 26, 204, 65, pine, { sh: 6 });
-add(27, 27, 214, 79, vil({ pal: PAL.furOchre, fur: true, stone: true, pose: 'spear', hair: 'tuft' }), { sh: 5 });
-add(42, 28, 236, 64, mammoth, { sh: 17 });
-add(28, 22, 268, 71, leanto, { sh: 12 });
-add(26, 34, 300, 66, lookout, { sh: 11 });
-add(27, 27, 300, 44, vil({ pal: PAL.furBrown, fur: true, hair: 'short', pose: 'idle' }), { z: 68 });
-add(10, 6, 30, 76, rocks, { sh: 4 }); add(10, 6, 250, 76, rocks, { sh: 4 }); add(10, 6, 120, 78, rocks, { sh: 4 });
-
-objs.sort(function (a, b) { return a.fy - b.fy; });
-for (i = 0; i < objs.length; i++) { var ob = objs[i]; if (ob.sh) S.ell(ob.cx, ob.foot, ob.sh, 1.5, '#5f8236'); }
-for (i = 0; i < objs.length; i++) {
-  ob = objs[i]; var tb = new Buf(ob.w, ob.h); ob.fn(tb); if (ob.flip) tb = mirror(tb);
-  blit(S, outlined(tb, OUT), ob.x - 1, ob.y - 1);
+// ---- objects --------------------------------------------------------------------
+function obj(w, h, cx, foot, fn, o) { o = o || {}; return { w: w, h: h, x: cx - Math.floor(w / 2), y: foot - h, fn: fn, flip: o.flip, sh: o.sh, fy: o.z || foot, foot: foot, cx: cx }; }
+function drawObj(buf, ob) { // shadow, then the outlined sprite
+  if (ob.sh) buf.ell(ob.cx, ob.foot, ob.sh, 1.5, '#5f8236');
+  var tb = new Buf(ob.w, ob.h); ob.fn(tb); if (ob.flip) tb = mirror(tb);
+  blit(buf, outlined(tb, OUT), ob.x - 1, ob.y - 1);
 }
+function layerOf(list) { var b = new Buf(W, H); list.sort(function (p, q) { return p.fy - q.fy; }); for (var k = 0; k < list.length; k++) drawObj(b, list[k]); return b; }
+
+// always-present
+var backProps = [obj(100, 54, 50, 66, cliff, { sh: 34 }), obj(16, 26, 204, 65, pine, { sh: 6 }), obj(42, 28, 236, 64, mammoth, { sh: 17 })];
+var midProps = [obj(16, 14, 72, 78, firepit, { sh: 8 }), obj(12, 8, 198, 71, bush, { sh: 5 }),
+  obj(10, 6, 30, 76, rocks, { sh: 4 }), obj(10, 6, 250, 76, rocks, { sh: 4 }), obj(10, 6, 120, 78, rocks, { sh: 4 })];
+// state-driven building slots: id -> [bufW, bufH, cx, foot, drawFn, shadow]
+var SLOTS = {
+  lookout: [26, 34, 300, 66, lookout, 11], drying_rack: [22, 20, 132, 70, dryrack, 9],
+  knapping_spot: [18, 10, 160, 79, knapspot, 7], hut: [28, 22, 268, 71, leanto, 12], field: [44, 10, 228, 78, field, 0]
+};
+var FLOWER = [12, 12, 106, 73];
+var SITE = [22, 10];
+
+var layerFiles = { sky: SKY, far_hills: FAR, near_hills: NEAR, trees: TREES, ground: GROUND,
+  static_back: layerOf(backProps.slice()), static_mid: layerOf(midProps.slice()) };
+for (var id in SLOTS) {
+  var sl = SLOTS[id];
+  layerFiles['building_' + id] = layerOf([obj(sl[0], sl[1], sl[2], sl[3], sl[4], { sh: sl[5] })]);
+  layerFiles['site_' + id] = layerOf([obj(SITE[0], SITE[1], sl[2], sl[3], buildsite, { sh: 8 })]);
+}
+layerFiles.flower_sprout = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], sprout, { sh: 3 })]);
+layerFiles.flower_bloom = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 })]);
+
+// ---- composite preview: everything built, villagers placed -------------------------
+var people = [
+  obj(27, 27, 88, 78, vil({ pal: PAL.furBrown, fur: true, hair: 'long', pose: 'idle' }), { sh: 5, flip: 1 }),
+  obj(27, 27, 144, 79, vil({ pal: PAL.furGrey, fur: true, stone: true, pose: 'hammer', f: 1, hair: 'short' }), { sh: 5 }),
+  obj(27, 27, 180, 77, vil({ pal: PAL.furTan, fur: true, role: 'gatherer', pose: 'walk', f: 1, hair: 'bun' }), { sh: 5 }),
+  obj(27, 27, 214, 79, vil({ pal: PAL.furOchre, fur: true, stone: true, pose: 'spear', hair: 'tuft' }), { sh: 5 }),
+  obj(27, 27, 300, 44, vil({ pal: PAL.furBrown, fur: true, hair: 'short', pose: 'idle' }), { z: 68 })];
+var all = backProps.concat(midProps, people);
+for (id in SLOTS) { sl = SLOTS[id]; if (id != 'field') all.push(obj(sl[0], sl[1], sl[2], sl[3], sl[4], { sh: sl[5] })); }
+all.push(obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 }));
+var FG = layerOf(all);
 
 var COMP = new Buf(W, H), IMG = SPR.layer(0).cel(0).image;
-var stack = [SKY, FAR, NEAR, TREES, S];
+var stack = [SKY, FAR, NEAR, TREES, GROUND, FG];
 for (i = 0; i < stack.length; i++) blit(COMP, stack[i], 0, 0);
 IMG.putImageData(COMP.d);
 SPR.save();
-var names = ['sky', 'far_hills', 'near_hills', 'trees', 'ground'];
-for (i = 0; i < stack.length; i++) {
-  IMG.putImageData(stack[i].d);
-  SPR.saveAs(DIR + 'art/reference/layers/cave_' + names[i] + '.png');
-}
-console.log('cave strip done');
+
+// previews, then game assets
+var prev = ['sky', 'far_hills', 'near_hills', 'trees', 'ground'];
+for (i = 0; i < prev.length; i++) { IMG.putImageData(layerFiles[prev[i]].d); SPR.saveAs(DIR + 'art/reference/layers/cave_' + prev[i] + '.png'); }
+var count = 0;
+for (var name in layerFiles) { IMG.putImageData(layerFiles[name].d); SPR.saveAs(GAME + name + '.png'); count++; }
+console.log('cave world done, ' + count + ' game layers');

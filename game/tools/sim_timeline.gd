@@ -1,13 +1,8 @@
 extends SceneTree
-## Plays the simulation with a simple bot and prints the world journal, to eyeball pacing:
+## Plays the simulation with a stand-in player and prints the world journal, to eyeball pacing:
 ##   & $env:GODOT --headless --path game --script res://tools/sim_timeline.gd -- [seed] [days]
-## The bot answers every decision immediately with the first choice it can take, preferring
-## the Lookout. Real-time columns use the configured pace (SimConfig).
-## Ends by taking the "settle" choice when the seeds come, so it shows the Cave -> Settled turn.
-const BOT_PREFERENCE: Array[StringName] = [
-	&"build_lookout", &"encourage", &"plant_it", &"settle", &"build_field",
-	&"build_drying_rack", &"build_hut", &"build_knapping_spot",
-]
+## The bot (DecisionBot) answers every decision immediately, so the timeline also shows the
+## Cave -> Settled turn. Real-time columns use the configured pace (SimConfig).
 
 
 func _init() -> void:
@@ -22,10 +17,11 @@ func _init() -> void:
 	var content: ContentLibrary = load("res://resources/sim/content.tres") as ContentLibrary
 	var world: WorldState = WorldFactory.create_new(content, config, rng_seed, 0.0)
 	var sim: Simulation = Simulation.new(world, config, content)
+	var bot: DecisionBot = DecisionBot.new()
 	var start_tick: int = world.tick
 	for _tick: int in days * config.ticks_per_day:
 		sim.advance_ticks(1)
-		_answer_decisions(sim)
+		bot.answer_all(sim)
 	print("Seed %d, %d days at %.0f real minutes per day" % [
 		rng_seed, days, config.real_seconds_per_game_day / 60.0,
 	])
@@ -38,22 +34,3 @@ func _init() -> void:
 		world.resource_amount(&"wood"), world.resource_amount(&"food"), world.achievements,
 	])
 	quit()
-
-
-func _answer_decisions(sim: Simulation) -> void:
-	for decision: PendingDecision in sim.world.pending.duplicate():
-		var event: EventDef = sim.content.get_event(decision.event_id)
-		var subject: VillagerState = sim.world.find_villager(decision.subject_id)
-		var picked: StringName = &""
-		for wanted: StringName in BOT_PREFERENCE:
-			var choice: ChoiceDef = event.get_choice(wanted)
-			if choice != null and sim.choice_available(choice, subject):
-				picked = wanted
-				break
-		if picked == &"":
-			for choice: ChoiceDef in event.choices:
-				if sim.choice_available(choice, subject):
-					picked = choice.id
-					break
-		if picked != &"":
-			sim.resolve_decision(decision.id, picked)

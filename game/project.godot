@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Screenhaven"
 config/version="0.1.0"
-run/main_scene="res://scenes/dev/window_spike.tscn"
+run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 

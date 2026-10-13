@@ -57,4 +57,11 @@ Still rough: the cliff reads a little like a boulder, the far mountains look lik
 ## What this changes (still to do)
 
 - **Art**: finish Age 1 (animation, more props, night variant, more tool poses); building and prop art keyed by era so later ages can add to the scene.
-- **On-screen view**: its plumbing does not depend on era art, so it can start on placeholders.
+- **On-screen view**: built (milestone 1) with the Cave Age art split into pieces: backdrop layers, static props, and per-building art with a construction-site stage each. Later ages add their own pieces; `WorldLayout` is where an age's slots live.
+
+## On-screen view decisions
+
+- **V1** Bigger panels (decisions, journal, "while you were away") expand the strip **upward temporarily** while open, then shrink back. The strip itself stays 80 px tall. The click region must grow with the panel. Not built yet (milestone 2).
+- **V2** Villagers act out their simulated activity (chop near the pine, hammer at the building site, gather at the fire) and are hidden while asleep or away.
+- **V3** The scene is tinted by the hour of the day; buildings appear as built, with a site stage while under construction.
+- **V4** The game autosaves every 60 seconds and on quit; launching after time away runs the offline catch-up.
