@@ -1,0 +1,224 @@
+// Screenhaven art library for LibreSprite scripts.
+// Not run directly: tools/art/bundle.py prepends an app.open(...) header and
+// concatenates this file with a scene script. Pure ES5-style JS, no imports.
+
+var OUT = '#2b2d42';
+var SK = '#f7d4b4', SKD = '#e0a98a', WOOD = '#8a5a36', WOODL = '#a6703f';
+
+// ---- colour + pixel buffer -------------------------------------------------
+var _c = {};
+function col(h) {
+  if (typeof h !== 'string') return h;
+  var r = _c[h];
+  if (!r) { var n = parseInt(h.slice(1), 16); r = _c[h] = [(n >> 16) & 255, (n >> 8) & 255, n & 255, 255]; }
+  return r;
+}
+
+function Buf(w, h) { this.w = w; this.h = h; this.d = new Uint8Array(w * h * 4); }
+Buf.prototype.px = function (x, y, c) {
+  x = Math.floor(x); y = Math.floor(y);
+  if (x < 0 || y < 0 || x >= this.w || y >= this.h) return;
+  var i = (y * this.w + x) * 4, k = col(c);
+  this.d[i] = k[0]; this.d[i + 1] = k[1]; this.d[i + 2] = k[2]; this.d[i + 3] = 255;
+};
+Buf.prototype.a = function (x, y) {
+  if (x < 0 || y < 0 || x >= this.w || y >= this.h) return 0;
+  return this.d[(y * this.w + x) * 4 + 3];
+};
+Buf.prototype.rect = function (x, y, w, h, c) {
+  for (var j = 0; j < h; j++) for (var i = 0; i < w; i++) this.px(x + i, y + j, c);
+};
+Buf.prototype.ell = function (cx, cy, rx, ry, c) {
+  for (var y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++)
+    for (var x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
+      var dx = (x - cx) / rx, dy = (y - cy) / ry;
+      if (dx * dx + dy * dy <= 1) this.px(x, y, c);
+    }
+};
+// Triangle: apex column cx, first row `top`, h rows, half-width hw at the base. Left half cl, right half cd.
+Buf.prototype.tri = function (cx, top, h, hw, cl, cd) {
+  for (var r = 0; r < h; r++) {
+    var w = Math.round(hw * (r + 1) / h);
+    for (var x = cx - w; x <= cx + w; x++) this.px(x, top + r, x < cx ? cl : cd);
+  }
+};
+Buf.prototype.line = function (x0, y0, x1, y1, c, t) {
+  t = t || 1;
+  var dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, e = dx - dy;
+  while (true) {
+    this.rect(x0, y0, t, t, c);
+    if (x0 == x1 && y0 == y1) break;
+    var e2 = 2 * e;
+    if (e2 > -dy) { e -= dy; x0 += sx; }
+    if (e2 < dx) { e += dx; y0 += sy; }
+  }
+};
+
+// 1px outline (OUT) around every opaque pixel; result is 2px larger in each axis.
+function outlined(b, c) {
+  var o = new Buf(b.w + 2, b.h + 2), x, y;
+  for (y = 0; y < b.h; y++) for (x = 0; x < b.w; x++)
+    if (b.a(x, y)) { var i = (y * b.w + x) * 4; o.px(x + 1, y + 1, [b.d[i], b.d[i + 1], b.d[i + 2]]); }
+  for (y = 0; y < o.h; y++) for (x = 0; x < o.w; x++) {
+    if (o.a(x, y)) continue;
+    if (b.a(x - 2, y - 1) || b.a(x, y - 1) || b.a(x - 1, y - 2) || b.a(x - 1, y)) o.px(x, y, c);
+  }
+  return o;
+}
+function mirror(b) {
+  var o = new Buf(b.w, b.h);
+  for (var y = 0; y < b.h; y++) for (var x = 0; x < b.w; x++) {
+    var s = (y * b.w + x) * 4, d = (y * b.w + (b.w - 1 - x)) * 4;
+    for (var k = 0; k < 4; k++) o.d[d + k] = b.d[s + k];
+  }
+  return o;
+}
+function blit(dst, src, ox, oy) {
+  for (var y = 0; y < src.h; y++) for (var x = 0; x < src.w; x++) {
+    var s = (y * src.w + x) * 4;
+    if (!src.d[s + 3]) continue;
+    var X = ox + x, Y = oy + y;
+    if (X < 0 || Y < 0 || X >= dst.w || Y >= dst.h) continue;
+    var d = (Y * dst.w + X) * 4;
+    dst.d[d] = src.d[s]; dst.d[d + 1] = src.d[s + 1]; dst.d[d + 2] = src.d[s + 2]; dst.d[d + 3] = 255;
+  }
+}
+
+// Seeded RNG so every run reproduces the same pixels. Scene scripts set `seed`.
+var seed = 1;
+function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+// ---- villager palettes -----------------------------------------------------
+var PAL = {
+  red:    { shirt: '#d8574a', shirtD: '#b23f35', pants: '#5b4a8a', hair: '#8a4b2a', hairD: '#6a3a20', hairL: '#a8643a' },
+  blue:   { shirt: '#4a86c8', shirtD: '#3768a3', pants: '#4a5a3a', hair: '#e0b04a', hairD: '#b8862d', hairL: '#f3cf72' },
+  green:  { shirt: '#6aa84f', shirtD: '#4e8a38', pants: '#6a4a3a', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' },
+  yellow: { shirt: '#e8b53a', shirtD: '#c4921f', pants: '#4a4a6a', hair: '#d9d9e0', hairD: '#b0b0bc', hairL: '#ffffff' },
+  purple: { shirt: '#9b59b6', shirtD: '#7d3f99', pants: '#4a3a5a', hair: '#c24a6a', hairD: '#9a3552', hairL: '#e06a8a' },
+  teal:   { shirt: '#3fa7a0', shirtD: '#2d827c', pants: '#5a4a3a', hair: '#2f5fa0', hairD: '#234a80', hairL: '#4f7fc0' },
+  orange: { shirt: '#e8873a', shirtD: '#c46a22', pants: '#4a5a6a', hair: '#b84a2a', hairD: '#8f3820', hairL: '#d8683f' },
+  pink:   { shirt: '#e888a8', shirtD: '#c46a88', pants: '#5a4a6a', hair: '#f0d060', hairD: '#c8a638', hairL: '#fff090' }
+};
+
+// ---- villager (style A: mini chibi, 16px tall) ------------------------------
+// o = { pal, pose: idle|walk|chop|hammer|fish, f: frame,
+//       role: farmer|builder|explorer|woodcutter|fisher|undefined,
+//       hair: short|tuft|long|bun|pony }
+// Draw into a Buf(27, 27); feet land on row 26, body centre column 13, faces right.
+// Use mirror() for left-facing. Place with outlined(buf, OUT).
+function vil(o) {
+  var cl = o.pal;
+  return function (b) {
+    var cx = 13, yb = 26, lh = 3, lw = 2, legTop = yb - lh + 1, bh = 5, bw = 6, rx = 5, ry = 5;
+    var pose = o.pose || 'idle', f = o.f || 0;
+    var wk = pose == 'walk' ? f : -1, dy = (wk == 1 || wk == 3) ? 1 : 0;
+    var bodyTop = legTop - bh - dy, hx = cx + 1, hcy = bodyTop - ry + 2, bx = cx - 3;
+    var l1 = cx - 3, l2 = cx + 1, h1 = lh, h2 = lh;
+    if (wk == 0) { l1 -= 2; l2 += 2; }
+    if (wk == 1) h1 = lh - 1;
+    if (wk == 2) { l1 += 2; l2 -= 2; }
+    if (wk == 3) h2 = lh - 1;
+    function leg(x, h) { b.rect(x, legTop - dy, lw, h - 1 + dy, cl.pants); b.rect(x, legTop + h - 1, lw + 1, 1, '#4a3224'); }
+    leg(l1, h1); leg(l2, h2);
+    if (o.role == 'explorer') { b.rect(bx - 3, bodyTop, 3, 5, WOOD); b.rect(bx - 3, bodyTop, 3, 1, WOODL); b.px(bx - 2, bodyTop + 2, '#e8c46a'); }
+    var ba = bh - 2, fa = bh - 2;
+    if (wk == 0) fa = 2;
+    if (wk == 2) ba = 2;
+    b.rect(bx - 1, bodyTop + 1, 2, ba, cl.shirtD); b.rect(bx - 1, bodyTop + 1 + ba, 2, 1, SKD);
+    b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh - 2, bw, 2, cl.shirtD); b.rect(bx, bodyTop + bh - 1, bw, 1, '#6b4a2f');
+    if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
+    if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }
+    if (o.role == 'explorer') { b.rect(bx, bodyTop, bw, 1, '#3fa7a0'); b.rect(bx + bw - 2, bodyTop, 2, 3, '#3fa7a0'); }
+    var sx = bx + bw, sy = bodyTop + 1;
+    function tool(hxp, hyp, tx, ty, kind) {
+      b.line(sx - 1, sy, hxp, hyp, cl.shirt, 2); b.rect(hxp, hyp, 2, 2, SK); b.line(hxp, hyp, tx, ty, WOOD, 1);
+      if (kind == 'axe') { b.rect(tx - 1, ty - 1, 3, 3, '#aab0bc'); b.px(tx - 1, ty - 1, '#e4e8ee'); }
+      else if (kind == 'hammer') b.rect(tx - 1, ty - 1, 3, 2, '#aab0bc');
+    }
+    if (pose == 'chop') {
+      if (f == 0) tool(sx + 2, sy - 2, sx + 2, sy - 8, 'axe');
+      else if (f == 1) tool(sx + 2, sy - 1, sx + 6, sy - 5, 'axe');
+      else tool(sx + 2, sy + 1, sx + 7, sy + 2, 'axe');
+    } else if (pose == 'hammer') {
+      if (f == 0) tool(sx + 2, sy - 1, sx + 3, sy - 6, 'hammer'); else tool(sx + 2, sy + 1, sx + 7, sy + 3, 'hammer');
+    } else if (pose == 'fish') {
+      var up = f == 0 ? 0 : 1;
+      b.line(sx - 1, sy, sx + 2, sy + 1 - up, cl.shirt, 2); b.rect(sx + 2, sy + 1 - up, 2, 2, SK);
+      b.line(sx + 3, sy + 1 - up, sx + 10, sy - 7 - up, WOOD, 1); // rod tip = (sx+10, sy-7-up)
+    } else {
+      b.rect(bx + bw - 1, bodyTop + 1, 2, fa, cl.shirt); b.rect(bx + bw - 1, bodyTop + 1 + fa, 2, 1, SK);
+    }
+    b.ell(hx - 2, hcy + 1, rx, ry, cl.hairD); // back hair
+    if (o.hair == 'long') { b.rect(hx - rx - 2, hcy - 1, 4, ry + 4, cl.hairD); b.rect(hx - rx - 2, hcy - 1, 1, ry + 4, cl.hair); b.rect(hx - rx - 2, hcy + ry + 2, 4, 1, cl.hair); }
+    if (o.hair == 'pony') { b.rect(hx - rx - 2, hcy - 1, 2, 5, cl.hairD); b.px(hx - rx - 2, hcy - 1, '#d8433a'); b.px(hx - rx - 2, hcy, '#d8433a'); b.px(hx - rx - 3, hcy + 2, cl.hairD); }
+    for (var y = hcy - ry; y <= hcy + ry; y++) for (var x = hx - rx; x <= hx + rx; x++) {
+      var dx = (x - hx) / rx, dy2 = (y - hcy) / ry;
+      if (dx * dx + dy2 * dy2 > 1) continue;
+      var hb = hcy - 0.25 * ry - (x - hx) * 0.3; // slanted fringe line
+      if (y <= hb) b.px(x, y, (y <= hcy - ry * 0.7) ? cl.hairL : cl.hair);
+      else if (y <= hb + 1) b.px(x, y, SKD);
+      else b.px(x, y, (y == hcy + ry || x < hx - rx * 0.7) ? SKD : SK);
+    }
+    if (o.hair == 'tuft') { b.px(hx - 1, hcy - ry - 1, cl.hair); b.px(hx, hcy - ry - 1, cl.hair); b.px(hx, hcy - ry - 2, cl.hair); b.px(hx + 1, hcy - ry - 2, cl.hairL); }
+    if (o.hair == 'bun') { b.ell(hx - rx + 2, hcy - ry, 2.3, 2.3, cl.hair); b.px(hx - rx + 1, hcy - ry - 1, cl.hairL); b.px(hx - rx + 2, hcy - ry - 1, cl.hairL); }
+    var ey = hcy + 1; // face: dot eyes + blush
+    b.rect(hx - 1, ey, 1, 2, OUT); b.rect(hx + 2, ey, 1, 2, OUT); b.px(hx - 2, ey + 2, '#f29b9b'); b.px(hx + 3, ey + 2, '#f29b9b');
+    if (o.role == 'farmer') { b.ell(hx, hcy - ry + 1, rx - 1, 2.6, '#e8c46a'); b.rect(hx - rx - 1, hcy - ry + 2, 2 * rx + 3, 2, '#c99a3d'); b.rect(hx - rx + 1, hcy - ry + 2, 2 * rx - 1, 1, '#a8452f'); }
+    if (o.role == 'builder') b.rect(hx - rx + 1, hcy - ry + 3, 2 * rx - 1, 1, '#d8433a');
+    if (o.role == 'fisher') { b.rect(hx - rx + 1, hcy - ry, 2 * rx - 1, 3, '#6c8cb8'); b.rect(hx - rx, hcy - ry + 3, 2 * rx + 1, 1, '#547099'); }
+  };
+}
+
+// ---- props (each draws into its own Buf; wrap with outlined()) ---------------
+function pine(b) { b.rect(6, 21, 4, 5, WOOD); b.rect(6, 21, 1, 5, WOODL); b.tri(8, 0, 9, 4, '#4fb06a', '#2f8a55'); b.tri(8, 6, 9, 6, '#4fb06a', '#2f8a55'); b.tri(8, 12, 10, 7, '#4fb06a', '#2f8a55'); b.px(8, 0, '#7ad88a'); }
+function rtree(b) { b.rect(9, 16, 4, 10, WOOD); b.rect(9, 16, 1, 10, WOODL); b.ell(3, 12, 3, 3, '#2f8545'); b.ell(19, 12, 3, 3, '#2f8545'); b.ell(11, 10, 10, 8.5, '#2f8545'); b.ell(11, 8.5, 9, 7, '#3f9a52'); b.ell(9.5, 6.5, 6, 4.5, '#58b05f'); b.ell(8, 5, 3, 2, '#82d874'); b.px(14, 9, '#e8504a'); b.px(7, 12, '#e8504a'); b.px(16, 12, '#e8504a'); }
+function bush(b) { b.ell(6, 5, 6, 3.2, '#2f8545'); b.ell(5, 4, 4.5, 3, '#3f9a52'); b.ell(4, 3, 2.5, 1.8, '#7cd070'); b.px(8, 5, '#e8504a'); b.px(5, 6, '#e8504a'); }
+function house(b) {
+  b.rect(24, 6, 5, 9, '#b86a4a'); b.rect(23, 5, 7, 2, '#8f4f38'); b.ell(26, 3, 2, 1.6, '#f0f4f8'); b.ell(29, 1, 1.6, 1.4, '#e2e8ee');
+  b.tri(17, 4, 14, 17, '#e0614a', '#b8473a'); b.rect(0, 18, 35, 3, '#c24f3b'); b.rect(0, 20, 35, 1, '#8f3a2d');
+  b.rect(3, 21, 29, 16, '#f4dcae'); b.rect(3, 34, 29, 2, '#e0c28c'); b.rect(3, 21, 1, 16, WOODL); b.rect(31, 21, 1, 16, WOODL);
+  b.rect(14, 25, 8, 12, WOOD); b.ell(18, 25, 4, 3.2, WOOD); b.rect(18, 22, 1, 15, '#6f4528'); b.px(20, 32, '#ffd166');
+  b.ell(8, 28, 3.2, 3.2, '#a8dcf0'); b.rect(8, 25, 1, 7, WOOD); b.rect(5, 28, 7, 1, WOOD);
+  b.ell(27, 28, 3.2, 3.2, '#a8dcf0'); b.rect(27, 25, 1, 7, WOOD); b.rect(24, 28, 7, 1, WOOD);
+  b.rect(5, 31, 7, 2, WOOD); b.px(6, 30, '#e8504a'); b.px(8, 30, '#ffd166'); b.px(10, 30, '#e8504a'); b.rect(3, 36, 29, 2, '#9aa0aa');
+}
+function tent(b) {
+  b.tri(13, 2, 16, 13, '#f2e2b8', '#d8c28c');
+  for (var r = 12; r < 16; r++) { var w = Math.round(13 * (r + 1) / 16); b.rect(13 - w, 2 + r, 2 * w + 1, 1, r % 2 ? '#d8574a' : '#b23f35'); }
+  b.tri(13, 9, 9, 3, '#4a3a2a', '#3a2c20'); b.px(13, 0, '#e0614a'); b.px(14, 0, '#e0614a'); b.px(13, 1, WOOD);
+}
+function fire(b) { b.rect(0, 6, 10, 2, WOOD); b.px(0, 5, '#9aa0aa'); b.px(9, 5, '#9aa0aa'); b.tri(5, 0, 7, 2, '#f59e2b', '#e5732b'); b.tri(5, 3, 4, 1, '#ffe27a', '#ffe27a'); }
+function sheep(b) { b.rect(2, 6, 1, 2, '#4a4150'); b.rect(5, 6, 1, 2, '#4a4150'); b.rect(7, 6, 1, 2, '#4a4150'); b.ell(4.5, 3.5, 4.5, 3, '#f6f6f0'); b.ell(2, 2.5, 2, 2, '#f6f6f0'); b.ell(5, 1.8, 2, 1.8, '#f6f6f0'); b.rect(1, 5, 7, 1, '#d6d6cc'); b.ell(9, 4, 2, 2.2, '#4a4150'); b.px(9, 3, '#ffffff'); b.px(8, 1, '#4a4150'); }
+function rabbit(b) { b.ell(3, 4.5, 3, 2.5, '#c9a98a'); b.ell(5, 3, 2, 2, '#c9a98a'); b.rect(5, 0, 1, 2, '#c9a98a'); b.rect(6, 0, 1, 2, '#e8a8a0'); b.px(0, 4, '#ffffff'); b.px(6, 3, OUT); }
+function bulb(b) { b.ell(4, 4, 4, 4, '#ffe27a'); b.px(2, 2, '#fff8d0'); b.px(3, 1, '#fff8d0'); b.rect(3, 9, 3, 2, '#9aa0aa'); b.rect(3, 11, 3, 1, '#6a6f7a'); }
+function wheat(b) { b.rect(2, 3, 1, 4, '#8fb843'); b.ell(2, 2, 1.4, 2, '#e6c84a'); b.px(1, 5, '#8fb843'); b.px(3, 4, '#8fb843'); }
+function cloud(S, cx, cy, s) { S.ell(cx, cy + 2 * s, 9 * s, 3 * s, '#dbe9ee'); S.ell(cx, cy, 8 * s, 3.5 * s, '#f7fbf7'); S.ell(cx - 5 * s, cy - 1 * s, 4.5 * s, 3 * s, '#f7fbf7'); S.ell(cx + 3 * s, cy - 3 * s, 5 * s, 3.5 * s, '#f7fbf7'); }
+
+// ---- workshop: construction stages (Buf 42x36; base row 28..33) ---------------
+function shopBase(b) { b.rect(0, 28, 40, 6, '#9aa0aa'); for (var x = 5; x < 40; x += 8) b.rect(x, 28, 1, 6, '#7c8190'); b.rect(0, 28, 40, 1, '#bcc0cc'); }
+function planks(b, x, y) { b.rect(x, y + 4, 12, 2, '#d9a566'); b.rect(x + 1, y + 2, 10, 2, '#c58f50'); b.rect(x + 2, y, 8, 2, '#d9a566'); }
+function shopPosts(b) { b.rect(1, 8, 3, 20, '#b57a42'); b.rect(19, 8, 3, 20, '#b57a42'); b.rect(37, 8, 3, 20, '#b57a42'); b.rect(1, 8, 38, 3, '#9a6633'); }
+function shop0(b) { // site: stakes, rope, lumber, sawhorse
+  b.rect(0, 32, 40, 2, '#b7a98a'); b.rect(0, 32, 40, 1, '#d8cba8');
+  for (var i = 0; i < 3; i++) { b.rect(2 + i * 18, 24, 1, 9, WOOD); b.px(2 + i * 18, 24, '#e0614a'); }
+  b.line(2, 26, 38, 26, '#f0e4c0', 1); planks(b, 24, 26);
+  b.line(4, 31, 10, 26, '#a8763e', 2); b.line(14, 31, 8, 26, '#a8763e', 2); b.rect(5, 25, 8, 2, '#c58f50');
+}
+function shop1(b) { shopBase(b); shopPosts(b); b.line(4, 27, 18, 12, '#b57a42', 2); planks(b, 24, 22); } // frame
+function shop2(b) { // half-built
+  shopBase(b); shopPosts(b);
+  b.rect(4, 11, 15, 17, '#f4dcae'); for (var y = 14; y < 28; y += 4) b.rect(4, y, 15, 1, '#d9b985');
+  b.ell(11, 18, 3, 3, '#a8dcf0'); b.rect(11, 15, 1, 6, WOOD); b.rect(8, 18, 7, 1, WOOD);
+  b.line(23, 28, 36, 11, '#b57a42', 2); b.rect(24, 25, 12, 2, '#d9a566'); b.rect(25, 23, 10, 2, '#c58f50'); b.rect(26, 21, 8, 2, '#d9a566');
+  b.line(1, 8, 10, 1, '#9a6633', 2); b.line(10, 1, 38, 9, '#9a6633', 2); b.line(19, 8, 19, 4, '#9a6633', 1); b.tri(10, 2, 6, 8, '#e0614a', '#b8473a');
+}
+function shop3(b) { // complete
+  b.rect(30, 3, 5, 8, '#b86a4a'); b.rect(29, 2, 7, 2, '#8f4f38'); b.ell(32, 0, 2, 1.5, '#f0f4f8');
+  b.tri(20, 2, 12, 20, '#e0614a', '#b8473a'); b.rect(0, 13, 41, 3, '#c24f3b'); b.rect(0, 15, 41, 1, '#8f3a2d');
+  b.rect(3, 16, 35, 12, '#f4dcae'); b.rect(3, 16, 1, 12, '#a6703f'); b.rect(37, 16, 1, 12, '#a6703f');
+  b.rect(16, 18, 9, 10, WOOD); b.ell(20, 18, 4.5, 3.2, WOOD); b.rect(20, 15, 1, 13, '#6f4528'); b.px(23, 24, '#ffd166');
+  b.ell(9, 22, 3.2, 3.2, '#a8dcf0'); b.rect(9, 19, 1, 7, WOOD); b.rect(6, 22, 7, 1, WOOD);
+  b.ell(32, 22, 3.2, 3.2, '#a8dcf0'); b.rect(32, 19, 1, 7, WOOD); b.rect(29, 22, 7, 1, WOOD);
+  b.rect(40, 16, 1, 10, WOOD); b.rect(34, 17, 7, 1, WOOD); b.rect(34, 17, 1, 4, WOOD); b.rect(33, 21, 4, 3, '#d9a566'); b.px(34, 22, '#9aa0aa'); b.px(35, 22, '#9aa0aa');
+  shopBase(b);
+}
