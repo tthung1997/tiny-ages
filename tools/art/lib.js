@@ -258,7 +258,7 @@ function cliff(b) {
   var STR = ['#908d96', '#8a8792', '#9a97a0', '#84818c', '#928f99'], LIT = '#b4b1b9', LITD = '#a09da7', SHADE = '#6f6c78', DEEP = '#5f5c68';
   var x, y, i, k;
   // silhouette: key heights from the bottom, jittered, interpolated, then terraced
-  var keys = [[0, 6], [7, 17], [15, 30], [23, 39], [31, 42], [41, 46], [52, 51], [60, 49], [66, 41], [72, 44], [80, 40], [88, 25], [94, 12], [99, 3]];
+  var keys = [[0, 1], [4, 8], [9, 19], [15, 30], [23, 39], [31, 42], [41, 46], [52, 51], [60, 49], [66, 41], [72, 44], [80, 40], [88, 25], [94, 11], [99, 1]];
   var top = [], h, a, c, t;
   for (i = 0; i < keys.length; i++) keys[i] = [keys[i][0], keys[i][1] + (i == 0 || i == keys.length - 1 ? 0 : Math.round((r() - 0.5) * 4))];
   for (x = 0; x < 100; x++) {
@@ -266,7 +266,7 @@ function cliff(b) {
     a = keys[k]; c = keys[Math.min(k + 1, keys.length - 1)];
     t = c[0] == a[0] ? 0 : (x - a[0]) / (c[0] - a[0]);
     h = a[1] + (c[1] - a[1]) * t + Math.sin(x / 3.1) * 0.9 + Math.sin(x / 1.7 + 2) * 0.5;
-    top.push(54 - Math.max(2, Math.round(h / 2) * 2)); // terraced in steps of two rows
+    top.push(54 - (x < 4 || x > 95 ? Math.max(1, Math.round(h)) : Math.max(2, Math.round(h / 2) * 2))); // terraced in steps of two rows, tapering to a point at both ends
   }
   // strata tones, one per band, plus the drift that tilts the layers
   var band = [];
@@ -290,7 +290,7 @@ function cliff(b) {
     for (k = 0; k < len && y < 50; k++) { b.px(x, y, DEEP); y++; if (r() < 0.45) x += r() < 0.5 ? -1 : 1; }
   }
   // scree and boulders at the foot
-  var boulders = [[3, 50, 4, 3], [12, 51, 3, 2.5], [57, 51, 5, 2.5], [92, 51, 5, 3], [97, 49, 3, 3], [47, 52, 3, 1.8]];
+  var boulders = [[7, 51, 3, 2.5], [14, 51, 3, 2.5], [57, 51, 5, 2.5], [92, 51, 5, 3], [96, 50, 3, 3], [47, 52, 3, 1.8]];
   for (i = 0; i < boulders.length; i++) { var q = boulders[i]; b.ell(q[0], q[1], q[2], q[3], i % 2 ? '#7f7c86' : ROCK); b.ell(q[0] - 1, q[1] - 1, q[2] * 0.6, q[3] * 0.5, LITD); }
   // the mouth: a rough opening, lopsided, under an overhang
   var left = 18, right = 50, cx = 34;
