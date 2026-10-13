@@ -246,15 +246,74 @@ function handprint(b, x, y) { // red-ochre hand on the cave wall
   b.rect(x + 2, y, 1, 3, OCHRE); b.rect(x + 3, y + 1, 1, 3, OCHRE); b.rect(x + 4, y + 4, 1, 2, OCHRE);
 }
 
-// Cliff with the cave mouth, 100x54. The home of the settlement; foot on the bottom row.
+// Cliff with the cave mouth, 100x54. The home of the settlement; foot on the bottom row. A rock
+// outcrop, not a boulder: a stepped, uneven ridge, layered strata tilting a little, facets that
+// catch the light on their upward slopes, cracks, moss and ivy along the ledges, scree at the foot,
+// and a rough mouth under an overhang. It keeps its own random generator, so redrawing it never
+// shifts the pixels of anything drawn after it. The mouth stays where the firelight expects it
+// (cave_strip.js firelit): x 26..42, y 46..53.
 function cliff(b) {
-  b.ell(30, 34, 30, 20, ROCKD); b.ell(72, 38, 28, 16, ROCKD); b.rect(4, 40, 92, 14, ROCKD);
-  b.ell(50, 30, 40, 22, ROCK); b.rect(6, 40, 88, 8, ROCK); b.ell(42, 22, 26, 11, ROCKL);
-  b.line(20, 14, 24, 25, '#5f5c68', 1); b.line(64, 10, 60, 22, '#5f5c68', 1); b.line(82, 26, 86, 38, '#5f5c68', 1);
-  b.ell(24, 12, 6, 2.5, '#4f9a5a'); b.ell(52, 5, 7, 2.5, '#58b05f'); b.ell(80, 21, 6, 2.2, '#4f9a5a'); b.ell(10, 27, 4, 2, '#4f9a5a');
-  // cave mouth: dark arch to the ground (the firelight inside is drawn by cave_strip.js, lit only)
-  b.ell(34, 40, 14, 14, '#2a2433'); b.rect(20, 40, 28, 14, '#2a2433'); b.ell(34, 43, 9, 9, '#3a3040');
-  b.ell(34, 27, 4, 1.5, ROCKD); // brow of the arch
+  var seedc = 11;
+  function r() { seedc = (seedc * 1103515245 + 12345) & 0x7fffffff; return seedc / 0x7fffffff; }
+  var STR = ['#908d96', '#8a8792', '#9a97a0', '#84818c', '#928f99'], LIT = '#b4b1b9', LITD = '#a09da7', SHADE = '#6f6c78', DEEP = '#5f5c68';
+  var x, y, i, k;
+  // silhouette: key heights from the bottom, jittered, interpolated, then terraced
+  var keys = [[0, 6], [7, 17], [15, 30], [23, 39], [31, 42], [41, 46], [52, 51], [60, 49], [66, 41], [72, 44], [80, 40], [88, 25], [94, 12], [99, 3]];
+  var top = [], h, a, c, t;
+  for (i = 0; i < keys.length; i++) keys[i] = [keys[i][0], keys[i][1] + (i == 0 || i == keys.length - 1 ? 0 : Math.round((r() - 0.5) * 4))];
+  for (x = 0; x < 100; x++) {
+    for (k = 0; k < keys.length - 1 && keys[k + 1][0] < x; k++);
+    a = keys[k]; c = keys[Math.min(k + 1, keys.length - 1)];
+    t = c[0] == a[0] ? 0 : (x - a[0]) / (c[0] - a[0]);
+    h = a[1] + (c[1] - a[1]) * t + Math.sin(x / 3.1) * 0.9 + Math.sin(x / 1.7 + 2) * 0.5;
+    top.push(54 - Math.max(2, Math.round(h / 2) * 2)); // terraced in steps of two rows
+  }
+  // strata tones, one per band, plus the drift that tilts the layers
+  var band = [];
+  for (i = 0; i < 14; i++) band.push(STR[Math.floor(r() * STR.length)]);
+  for (x = 0; x < 100; x++) {
+    var slopeR = (top[Math.min(x + 1, 99)] - top[x]) + (top[Math.min(x + 2, 99)] - top[x]); // >0: falling to the right
+    for (y = top[x]; y < 54; y++) {
+      var d = y - top[x], bi = Math.floor((y + Math.floor(x * 0.1)) / 6), col = band[bi % band.length];
+      if (x > 64) col = x > 84 ? SHADE : '#7a7782';
+      if (d < 2) col = slopeR < 0 || slopeR == 0 ? LIT : (d == 0 ? LITD : DEEP);
+      else if (d < 4 && slopeR > 1) col = SHADE;
+      else if (r() < 0.04) col = r() < 0.5 ? LITD : SHADE;
+      if (((y + Math.floor(x * 0.1)) % 6) == 0 && d > 2 && r() < 0.7) col = DEEP; // a strata line, with breaks
+      b.px(x, y, col);
+    }
+  }
+  // cracks: jagged runs down from the ridge
+  for (i = 0; i < 5; i++) {
+    x = 8 + Math.floor(r() * 84); y = top[x] + 2;
+    var len = 7 + Math.floor(r() * 10);
+    for (k = 0; k < len && y < 50; k++) { b.px(x, y, DEEP); y++; if (r() < 0.45) x += r() < 0.5 ? -1 : 1; }
+  }
+  // scree and boulders at the foot
+  var boulders = [[3, 50, 4, 3], [12, 51, 3, 2.5], [57, 51, 5, 2.5], [92, 51, 5, 3], [97, 49, 3, 3], [47, 52, 3, 1.8]];
+  for (i = 0; i < boulders.length; i++) { var q = boulders[i]; b.ell(q[0], q[1], q[2], q[3], i % 2 ? '#7f7c86' : ROCK); b.ell(q[0] - 1, q[1] - 1, q[2] * 0.6, q[3] * 0.5, LITD); }
+  // the mouth: a rough opening, lopsided, under an overhang
+  var left = 18, right = 50, cx = 34;
+  for (x = left; x <= right; x++) {
+    var u = (x - cx) / (x < cx ? 16 : 14);
+    if (Math.abs(u) > 1) continue;
+    var ot = 53 - Math.round(18 * Math.sqrt(1 - u * u)) + (x % 5 == 0 ? 1 : 0) - (x % 7 == 0 ? 1 : 0);
+    for (y = ot; y < 54; y++) b.px(x, y, '#2a2433');
+    b.px(x, ot - 1, DEEP); b.px(x, ot - 2, '#4a4752'); // the underside of the overhang
+    if (x % 3 != 0) b.px(x, ot - 3, LITD);
+  }
+  b.ell(cx, 49, 8, 4.5, '#3a3040'); // a paler floor inside
+  for (y = 40; y < 54; y++) b.px(left + (y > 48 ? 1 : 0), y, LITD); // the lit left jamb
+  b.px(right, 50, DEEP); b.px(right - 1, 44, DEEP); b.px(right, 46, DEEP);
+  // moss and ivy along the ledges
+  for (x = 3; x < 97; x++) {
+    var peak = top[x] <= top[Math.max(x - 2, 0)] && top[x] <= top[Math.min(x + 2, 99)];
+    if (peak || r() < 0.06) {
+      var mw = 2 + r() * 3;
+      b.ell(x, top[x], mw, 1.2 + r(), r() < 0.5 ? '#4f9a5a' : '#58b05f'); b.px(x - 1, top[x] - 1, '#7cd070');
+      if (r() < 0.5) { var iy = top[x] + 1, ln = 3 + Math.floor(r() * 5); for (k = 0; k < ln; k++) b.px(x + (k % 3 == 1 ? 1 : 0), iy + k, k % 2 ? '#3f7f4a' : '#4f9a5a'); }
+    }
+  }
   handprint(b, 62, 28); handprint(b, 70, 31); handprint(b, 66, 36);
   b.px(78, 30, OCHRE); b.px(79, 31, OCHRE); b.px(80, 30, OCHRE); b.px(84, 34, OCHRE); b.px(85, 35, OCHRE);
 }

@@ -75,6 +75,65 @@ func test_props_can_follow_achievements_and_buildings() -> void:
 	assert_true(SceneProps.holds(SceneProps.Kind.BUILDING, &"hut", sim.world))
 
 
+func test_every_prop_shows_for_its_trigger_and_only_then() -> void:
+	for prop_id: StringName in SceneProps.ids():
+		var sim: Simulation = SimFixture.new_sim()
+		var spec: Dictionary = SceneProps.PROPS[prop_id]
+		assert_false(SceneProps.is_shown(prop_id, sim.world), "%s starts hidden" % prop_id)
+		match spec["kind"]:
+			SceneProps.Kind.FLAG:
+				sim.world.flags[spec["key"]] = true
+			SceneProps.Kind.ACHIEVEMENT:
+				sim.world.achievements.append(spec["key"])
+			SceneProps.Kind.BUILDING:
+				var site: BuildingState = BuildingState.new()
+				site.def_id = spec["key"]
+				site.complete = true
+				sim.world.buildings.append(site)
+		assert_true(SceneProps.is_shown(prop_id, sim.world), "%s should show" % prop_id)
+
+
+func test_every_prop_waits_for_something_the_game_can_actually_give() -> void:
+	var content: ContentLibrary = SimFixture.load_content()
+	var flags: Dictionary = {}
+	var earned: Dictionary = {}
+	for event: EventDef in content.events:
+		var effects: Array[SimEffect] = []
+		effects.append_array(event.effects)
+		for choice: ChoiceDef in event.choices:
+			effects.append_array(choice.effects)
+		for effect: SimEffect in effects:
+			if effect.kind == SimEffect.Kind.SET_FLAG:
+				flags[effect.key] = true
+			elif effect.kind == SimEffect.Kind.ACHIEVEMENT:
+				earned[effect.key] = true
+	for building: BuildingDef in content.buildings:
+		earned[building.completion_achievement] = true
+	for prop_id: StringName in SceneProps.ids():
+		var spec: Dictionary = SceneProps.PROPS[prop_id]
+		var key: StringName = spec["key"]
+		if spec["kind"] == SceneProps.Kind.FLAG:
+			assert_true(flags.has(key), "%s waits for flag %s, which nothing sets" % [prop_id, key])
+		elif spec["kind"] == SceneProps.Kind.ACHIEVEMENT:
+			assert_true(earned.has(key), "%s waits for %s, which nothing grants" % [prop_id, key])
+		else:
+			assert_true(content.get_building(key) != null, "%s: unknown building" % prop_id)
+
+
+func test_a_played_settled_age_fills_the_world_with_what_the_group_did() -> void:
+	var sim: Simulation = SimFixture.new_sim(1)
+	sim.advance_era(&"settled")
+	sim.world.flags[&"path_agriculture"] = true
+	var bot: DecisionBot = DecisionBot.new()
+	for _tick: int in 330 * SimFixture.TICKS_PER_DAY:
+		sim.advance_ticks(1)
+		bot.answer_all(sim)
+	var shown: Array[StringName] = SceneProps.shown(sim.world)
+	assert_true(shown.size() >= 8, "Only %d props after a whole age: %s" % [shown.size(), shown])
+	for expected: StringName in [&"west_plot_farm", &"pots", &"cloth_line", &"west_roof_a"]:
+		assert_true(shown.has(expected), "%s should have appeared" % expected)
+
+
 func test_the_hut_art_is_upgraded_when_the_age_turns() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = _view_for(sim)

@@ -271,8 +271,9 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --era=settled enters that age; --build=hut,field completes buildings
-## (their milestones too); --flag=path_hunting,cave_art sets world flags; --give=wood:20,food:5
-## adds stock. For looking at things, not playing.
+## (their milestones too); --flag=path_hunting,cave_art sets world flags; --earn=a_village,
+## fired_clay earns achievements; --give=wood:20,food:5 adds stock. For looking at things, not
+## playing.
 func _apply_dev_world(options: Dictionary) -> void:
 	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
@@ -286,6 +287,9 @@ func _apply_dev_world(options: Dictionary) -> void:
 		sim.complete_building(site)
 	for flag: String in String(options.get("flags", "")).split(",", false):
 		sim.world.flags[StringName(flag)] = true
+	for earned: String in String(options.get("earn", "")).split(",", false):
+		if not sim.world.has_achievement(StringName(earned)):
+			sim.world.achievements.append(StringName(earned))
 	for part: String in String(options.get("give", "")).split(",", false):
 		var pair: PackedStringArray = part.split(":")
 		if pair.size() == 2:
@@ -439,6 +443,8 @@ func _apply_cmdline() -> Dictionary:
 			options["era"] = arg.trim_prefix("--era=")
 		elif arg.begins_with("--build="):
 			options["build"] = arg.trim_prefix("--build=")
+		elif arg.begins_with("--earn="):
+			options["earn"] = arg.trim_prefix("--earn=")
 		elif arg.begins_with("--give="):
 			options["give"] = arg.trim_prefix("--give=")
 		elif arg.begins_with("--panel="):

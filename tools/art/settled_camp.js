@@ -9,6 +9,9 @@
 //   west_plot_farm, west_plot_patch   the sown plot at the west meadow's edge: the farmers' bigger
 //                                 one and the herders' small patch (west page: sprite at x = -384)
 //   west_pen                      the herders' fenced pen and its animals (west page)
+//   pots, cloth_line, cloth_dyed, loom, low_wall, green_stones, hens      what answers and
+//   west_kiln, west_well, west_scarecrow, west_roof_a, west_roof_b       milestones put on the
+//                                 ground (SceneProps decides when each shows)
 // Slots are mirrored in game/scripts/view/world_layout.gd (BUILDINGS, SceneProps): change both
 // together. Preview: art/reference/settled_camp.png.
 seed = 41;
@@ -113,6 +116,110 @@ function pen(b) {
   b.rect(1, 16, 55, 1, '#a6703f');
 }
 
+// ---- what the answers put on the ground (docs/ages.md V10, PR B) ---------------------------------
+var POT = '#c96a42', POTL = '#e08a5c', POTD = '#8a3a22', CLOTH = '#efe6cf', CLOTHD = '#cdc0a0', RED = '#c0504a', REDD = '#8f3a2d';
+
+// Fired pots, 18x10: a big one, a smaller one and a bowl, with a dark mouth each.
+function pots(b) {
+  b.ell(5, 6, 4.5, 3.8, POT); b.rect(2, 1, 6, 2, POT); b.rect(2, 1, 6, 1, POTL); b.rect(3, 2, 4, 1, '#2a2433'); b.px(3, 5, POTL); b.px(7, 8, POTD);
+  b.ell(12, 7, 3.2, 2.8, POT); b.rect(10, 3, 5, 2, POT); b.rect(10, 3, 5, 1, POTL); b.rect(11, 4, 3, 1, '#2a2433'); b.px(11, 7, POTL);
+  b.rect(14, 7, 4, 3, POT); b.rect(14, 7, 4, 1, POTL); b.rect(15, 8, 2, 1, '#2a2433'); b.px(17, 9, POTD);
+  b.rect(0, 9, 18, 1, POTD);
+}
+
+// A kiln, 26x26: a clay dome with a dark mouth, a hole at the top and a thread of smoke.
+function kiln(b) {
+  b.ell(13, 19, 12, 8, '#c27a52'); b.rect(1, 19, 24, 7, '#c27a52'); b.ell(10, 15, 6, 3, '#d99466');
+  b.rect(1, 24, 24, 2, '#9a5a3a');
+  b.ell(13, 22, 4.5, 4, '#2a2433'); b.rect(9, 22, 9, 4, '#2a2433'); b.rect(11, 20, 5, 1, '#e0614a'); b.px(13, 22, '#f59e2b');
+  b.rect(11, 9, 5, 3, '#9a5a3a'); b.rect(12, 9, 3, 1, '#2a2433');
+  b.ell(13, 6, 2.2, 1.8, '#cfd4da'); b.ell(15, 3, 2.6, 2, '#dfe3e8'); b.ell(13, 1, 2.2, 1.5, '#eef0f3');
+}
+
+// Cloth drying on a line, 40x17: two posts, a cord, and three pieces of undyed cloth.
+function cloth(b, only) {
+  var xs = [5, 16, 27], i, x;
+  if (!only) {
+    b.rect(1, 0, 2, 17, WOOD); b.rect(37, 0, 2, 17, WOOD); b.line(2, 2, 38, 3, '#f0e4c0', 1);
+  }
+  for (i = 0; i < xs.length; i++) {
+    if (only && i != 1) continue;
+    x = xs[i];
+    b.rect(x, 3, 8, 9 + (i % 2), only ? RED : CLOTH); b.rect(x + 5, 4, 3, 8 + (i % 2), only ? REDD : CLOTHD);
+    b.rect(x, 12 + (i % 2), 8, 1, only ? REDD : CLOTHD); b.px(x + 1, 13 + (i % 2), only ? RED : CLOTH); b.px(x + 4, 13 + (i % 2), only ? RED : CLOTH);
+  }
+}
+function clothline(b) { cloth(b, false); }
+function dyedcloth(b) { cloth(b, true); }
+
+// An upright loom, 16x16: two posts, a beam top and bottom, taut warp threads and a woven band.
+function loom(b) {
+  var x;
+  b.rect(1, 0, 2, 16, WOOD); b.rect(13, 0, 2, 16, WOOD); b.rect(1, 1, 14, 2, WOODL); b.rect(1, 13, 14, 2, WOODL);
+  for (x = 4; x < 13; x += 2) b.rect(x, 3, 1, 10, CLOTH);
+  b.rect(3, 9, 10, 2, RED); b.rect(3, 11, 10, 1, '#e8c24a'); b.rect(3, 8, 10, 1, REDD);
+  for (x = 4; x < 13; x += 2) { b.px(x, 14, '#8a8792'); b.px(x, 15, '#6f6c78'); }
+}
+
+// A small roundhouse for the village's growth, 26x19.
+function smallhut(b) {
+  var x, y;
+  b.rect(3, 10, 20, 9, DAUB); b.rect(3, 10, 20, 1, DAUBL); b.rect(3, 17, 20, 2, DAUBD);
+  for (x = 5; x < 23; x += 5) b.rect(x, 11, 1, 6, DAUBD);
+  b.tri(13, 0, 12, 13, STRAW, STRAWD);
+  for (y = 3; y < 12; y += 3) for (x = 13 - Math.round(13 * (y + 1) / 12); x <= 13 + Math.round(13 * (y + 1) / 12); x += 2) b.px(x, y, x < 13 ? STRAWL : STRAWX);
+  for (x = 0; x < 26; x += 2) b.px(x, 12, STRAWX);
+  b.rect(10, 12, 6, 7, EARTHD); b.rect(11, 13, 4, 6, '#2a2433');
+}
+
+// A well, 16x17: a stone ring, a post each side with a crossbar, and a bucket on a rope.
+function well(b) {
+  b.rect(2, 10, 12, 7, ROCK); b.ell(8, 10, 6, 2.6, '#2a2433'); b.ell(8, 10, 4.5, 1.6, '#3b79ad');
+  b.rect(2, 10, 12, 1, ROCKL); b.px(5, 13, ROCKD); b.px(9, 15, ROCKD); b.px(12, 13, ROCKD); b.px(3, 15, ROCKL);
+  b.rect(2, 2, 2, 9, WOOD); b.rect(12, 2, 2, 9, WOOD); b.rect(2, 1, 12, 2, WOODL);
+  b.line(8, 3, 8, 8, '#c9a66b', 1); b.rect(7, 8, 3, 2, '#8a5a36');
+}
+
+// A scarecrow, 12x18, in an old tunic and a straw hat.
+function scarecrow(b) {
+  b.rect(5, 5, 2, 13, WOOD); b.rect(0, 7, 12, 2, WOOD);
+  b.rect(3, 6, 6, 7, '#a8703f'); b.rect(3, 6, 6, 1, '#c58f50'); b.rect(3, 12, 6, 1, '#7a4c28');
+  b.ell(6, 4, 2.6, 2.6, '#e8d5a8'); b.px(5, 4, '#1c1917'); b.px(7, 4, '#1c1917');
+  b.rect(2, 2, 8, 1, STRAW); b.rect(4, 0, 4, 2, STRAW);
+  b.px(0, 9, STRAWL); b.px(11, 9, STRAWL); b.px(1, 10, STRAW); b.px(10, 10, STRAW);
+}
+
+// A low wall of fieldstones across the back of the village, 150x9, with a gap for a gate: two
+// courses of blocky stones, the upper one offset, each with a pale top edge and dark joints.
+function lowwall(b) {
+  var row, x, w, h, y, s, tops = ['#b8b5bd', '#a8a5ae', '#c4c1c9'], fills = [ROCK, '#7f7c86', '#8d8a93'];
+  for (row = 0; row < 2; row++) {
+    y = row == 0 ? 4 : 0; h = 4; x = row == 0 ? 0 : 3;
+    while (x < 150) {
+      w = 5 + Math.floor(rnd() * 4);
+      if (x < 96 && x + w > 84) { x = 96; continue; }
+      s = Math.floor(rnd() * 3);
+      b.rect(x, y, w - 1, h, fills[s]); b.rect(x, y, w - 1, 1, tops[s]);
+      b.px(x, y, '#a8a5ae'); b.px(x + w - 2, y + h - 1, ROCKD); b.rect(x, y + h - 1, w - 1, 1, ROCKD);
+      x += w;
+    }
+  }
+  b.rect(0, 8, 150, 1, ROCKD);
+}
+
+// A heap of green stone, 14x8.
+function greenstones(b) {
+  b.ell(5, 5, 4.5, 3, '#3fa88a'); b.ell(10, 5, 3.5, 2.6, '#2a7a64'); b.ell(7, 3, 3, 2, '#5fcfae');
+  b.px(5, 3, '#a8f0d8'); b.px(9, 4, '#5fcfae'); b.px(2, 6, '#2a7a64'); b.px(12, 6, '#3fa88a');
+}
+
+// Three hens, 20x8.
+function hen(b, x0, y0, col, shade) {
+  b.ell(x0 + 3, y0 + 3, 3, 2.4, col); b.rect(x0 + 5, y0, 2, 3, col); b.px(x0 + 6, y0 - 1, '#d8483a'); b.px(x0 + 7, y0 + 1, '#e8b53a');
+  b.px(x0 + 6, y0 + 1, '#1c1917'); b.rect(x0 + 1, y0 + 2, 2, 2, shade); b.px(x0, y0 + 1, shade); b.px(x0 + 3, y0 + 5, '#e8b53a'); b.px(x0 + 4, y0 + 5, '#e8b53a');
+}
+function hens(b) { hen(b, 0, 2, CLOTH, CLOTHD); hen(b, 8, 1, '#c9803a', '#a05830'); hen(b, 13, 3, '#8a5a36', '#6a4326'); }
+
 var layers = {};
 // camp slots: [w, h, cx, foot, draw, shadow]
 var HUT = [34, 24, 268, 71, roundhouse, 14], HUTSITE = [24, 12, 268, 71, hutsite, 9];
@@ -125,6 +232,19 @@ layers.site_field = layerOf([obj(FIELDSITE[0], FIELDSITE[1], FIELDSITE[2], FIELD
 layers.west_plot_farm = layerOf([obj(58, 12, 234, 78, sownplot, { z: 55 })]);
 layers.west_plot_patch = layerOf([obj(26, 9, 234, 78, patch, { z: 55 })]);
 layers.west_pen = layerOf([obj(56, 22, 354, 77, pen, { sh: 0 })]);
+// what the answers put on the ground: camp page first, then the west page (page-local x)
+layers.pots = layerOf([obj(18, 10, 178, 79, pots, { sh: 8 })]);
+layers.cloth_line = layerOf([obj(40, 17, 158, 67, clothline, { sh: 0 })]);
+layers.cloth_dyed = layerOf([obj(40, 17, 158, 67, dyedcloth, { sh: 0, z: 68 })]);
+layers.loom = layerOf([obj(16, 16, 192, 77, loom, { sh: 7 })]);
+layers.low_wall = layerOf([obj(150, 9, 179, 63, lowwall, { sh: 0 })]);
+layers.green_stones = layerOf([obj(14, 8, 9, 79, greenstones, { sh: 6 })]);
+layers.hens = layerOf([obj(20, 8, 262, 79, hens, { sh: 0 })]);
+layers.west_kiln = layerOf([obj(26, 26, 292, 78, kiln, { sh: 12 })]);
+layers.west_well = layerOf([obj(16, 17, 268, 77, well, { sh: 8 })]);
+layers.west_scarecrow = layerOf([obj(12, 18, 234, 76, scarecrow, { sh: 4 })]);
+layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
+layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
 
 // preview: every piece on a plain meadow (the camp slots at their camp x, the west props shown at
 // the page-local x they have in the file)

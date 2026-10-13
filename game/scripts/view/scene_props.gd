@@ -7,7 +7,9 @@ extends RefCounted
 ##
 ## Each prop is a full-width art piece named like the others; `at_x` is the left edge of its
 ## sprite in camp pixels (-384 is the west page), `z` is its draw order, and `kind` and `key` say
-## what the world must hold. Mirrors tools/art/settled_camp.js: change both together.
+## what the world must hold. Mirrors tools/art/settled_camp.js: change both together. The camp's
+## big static pieces (cliff, pine, mammoth) are drawn at z 10, so a prop meant to stand behind them
+## (the low wall) uses z 9.
 
 enum Kind {
 	## Append new kinds at the end.
@@ -20,6 +22,18 @@ const PROPS: Dictionary = {
 	&"west_plot_farm": {"at_x": -384.0, "z": 55, "kind": Kind.FLAG, "key": &"path_agriculture"},
 	&"west_plot_patch": {"at_x": -384.0, "z": 55, "kind": Kind.FLAG, "key": &"path_herding"},
 	&"west_pen": {"at_x": -384.0, "z": 77, "kind": Kind.FLAG, "key": &"path_herding"},
+	&"pots": {"at_x": 0.0, "z": 79, "kind": Kind.ACHIEVEMENT, "key": &"fired_clay"},
+	&"cloth_line": {"at_x": 0.0, "z": 67, "kind": Kind.ACHIEVEMENT, "key": &"woven_cloth"},
+	&"cloth_dyed": {"at_x": 0.0, "z": 68, "kind": Kind.FLAG, "key": &"dyed_cloth"},
+	&"loom": {"at_x": 0.0, "z": 77, "kind": Kind.FLAG, "key": &"loom"},
+	&"low_wall": {"at_x": 0.0, "z": 9, "kind": Kind.FLAG, "key": &"low_wall"},
+	&"green_stones": {"at_x": 0.0, "z": 79, "kind": Kind.FLAG, "key": &"green_stone"},
+	&"hens": {"at_x": 0.0, "z": 79, "kind": Kind.FLAG, "key": &"hens"},
+	&"west_kiln": {"at_x": -384.0, "z": 78, "kind": Kind.FLAG, "key": &"kiln"},
+	&"west_well": {"at_x": -384.0, "z": 77, "kind": Kind.FLAG, "key": &"well_dug"},
+	&"west_scarecrow": {"at_x": -384.0, "z": 76, "kind": Kind.FLAG, "key": &"scarecrow"},
+	&"west_roof_a": {"at_x": -384.0, "z": 72, "kind": Kind.ACHIEVEMENT, "key": &"a_village"},
+	&"west_roof_b": {"at_x": -384.0, "z": 71, "kind": Kind.ACHIEVEMENT, "key": &"a_village"},
 }
 
 
