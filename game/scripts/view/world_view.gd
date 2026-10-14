@@ -10,6 +10,8 @@ extends Node2D
 ## art, drawn by tools/art/cave_pages.js.
 
 signal villager_clicked(villager_id: StringName)
+## A right click on the strip: the game opens its menu.
+signal menu_requested
 
 ## How far the pointer may move between press and release and still be a click, in art pixels.
 const CLICK_SLOP: float = 3.0
@@ -233,6 +235,9 @@ func _handle_button(button: InputEventMouseButton) -> void:
 				_press_position = button.position
 				_drag_mouse_x = button.position.x
 				_drag_camera_x = _camera.shown
+		MOUSE_BUTTON_RIGHT:
+			if button.pressed and _clip.get_global_rect().has_point(button.position):
+				menu_requested.emit()
 		MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_RIGHT:
 			if button.pressed:
 				pan_by(WorldLayout.WHEEL_STEP)

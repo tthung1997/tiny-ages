@@ -3,19 +3,24 @@ extends Node2D
 ## The running game: owns the simulation, drives it from the real clock (so being away is
 ## offline catch-up), saves it, and hosts the world view and the desktop window.
 ##
-## Keys (dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap - L low-processor
-##   N next screen - H hide HUD - [ ] time speed - B auto-answer decisions - Y answer one
+## Right-click the strip for the menu (journal, stores, settings, quit); click the bulb (decision
+##   waiting) or the book (journal) at the top right of the strip.
 ##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
 ##   Esc closes the open panel, or saves and quits; Q saves and quits
-##   Click the bulb (decision waiting) or the book (journal) at the top right of the strip.
-## Launch args (after `--`): --mode= --scale= --fps= --screen= --no-ontop --no-passthrough
-##   --no-lowproc --no-hud  as in the window spike, plus: --new (ignore the save)
-##   --nosave (never write the save) --save=<path> --speed=<x real time> --era=<age id> (start in
+## Dev keys (only with --dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap -
+##   L low-processor - N next screen - H hide HUD - [ ] time speed - B auto-answer decisions -
+##   Y answer one
+## Launch args (after `--`): --dev (the dev keys and the text overlay) --hud (just the overlay)
+##   --mode= --scale= --fps= --screen= --no-ontop --no-passthrough
+##   --no-lowproc  as in the window spike, plus: --new (ignore the save)
+##   --nosave (never write the save or the settings, and ignore the saved settings)
+##   --save=<path> --speed=<x real time> --era=<age id> (start in
 ##   that age, for looking at it) --days=<n> (play n game
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
 ##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
-##   camp is 0) --panel=decision|journal|away|villager (open that panel at start) --shot=<png> (save
+##   camp is 0) --panel=decision|journal|away|villager|menu|stores|settings (open that panel at
+##   start) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
@@ -49,7 +54,9 @@ var _clock_timer: float = 0.0
 var _save_timer: float = 0.0
 var _hud_timer: float = 0.0
 var _save_path: String = SaveStore.DEFAULT_PATH
+var _settings_path: String = UserSettings.DEFAULT_PATH
 var _autosave: bool = true
+var _dev: bool = false
 var _shot_path: String = ""
 
 @onready var _window: DesktopWindow = $DesktopWindow
@@ -59,6 +66,10 @@ var _shot_path: String = ""
 
 
 func _ready() -> void:
+	# The player's saved window settings go in first; launch flags, applied next, win. A run that
+	# must not touch the player's files (--nosave) neither reads nor writes them.
+	if not OS.get_cmdline_user_args().has("--nosave"):
+		UserSettings.load_from(_settings_path).apply_to(_window)
 	var options: Dictionary = _apply_cmdline()
 	var config: SimConfig = load(CONFIG_PATH) as SimConfig
 	var content: ContentLibrary = load(CONTENT_PATH) as ContentLibrary
@@ -92,12 +103,14 @@ func _ready() -> void:
 	_icons.bulb_pressed.connect(_open_decisions)
 	_icons.journal_pressed.connect(_toggle_journal)
 	_world_view.villager_clicked.connect(_on_villager_clicked)
+	_world_view.menu_requested.connect(_on_menu_requested)
 	_panel.choice_picked.connect(_on_choice_picked)
+	_panel.action_picked.connect(_on_action)
 	_panel.decisions_requested.connect(_open_decisions)
 	_panel.closed.connect(_fit_window)
 	_panel.height_changed.connect(_fit_window)
 	_window.layout_changed.connect(_on_layout_changed)
-	_hud.visible = options.get("hud", true)
+	_hud.visible = options.get("hud", false)
 	_refresh_pending()
 	_update_hud_region()
 	_open_startup_panel(options.get("panel", ""))
@@ -134,6 +147,29 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not key.pressed or key.echo:
 		return
 	match key.keycode:
+		KEY_A, KEY_LEFT:
+			_world_view.pan_by(-KEY_PAN_STEP)
+		KEY_D, KEY_RIGHT:
+			_world_view.pan_by(KEY_PAN_STEP)
+		KEY_HOME:
+			_world_view.recenter()
+		KEY_ESCAPE:
+			if _panel.is_open():
+				_panel.close_panel()
+			else:
+				_save()
+				get_tree().quit()
+		KEY_Q:
+			_save()
+			get_tree().quit()
+		_:
+			if _dev:
+				_dev_key(key.keycode)
+
+
+## The keys that only exist with --dev: window knobs, the overlay, time speed and the bot.
+func _dev_key(keycode: Key) -> void:
+	match keycode:
 		KEY_1:
 			_window.set_mode(DesktopWindow.Mode.STRIP)
 		KEY_2:
@@ -161,26 +197,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_change_speed(1)
 		KEY_BRACKETLEFT:
 			_change_speed(-1)
-		KEY_A, KEY_LEFT:
-			_world_view.pan_by(-KEY_PAN_STEP)
-		KEY_D, KEY_RIGHT:
-			_world_view.pan_by(KEY_PAN_STEP)
-		KEY_HOME:
-			_world_view.recenter()
 		KEY_B:
 			_bot_auto = not _bot_auto
 		KEY_Y:
 			if _bot.answer_first(sim):
 				_world_view.on_world_changed()
-		KEY_ESCAPE:
-			if _panel.is_open():
-				_panel.close_panel()
-			else:
-				_save()
-				get_tree().quit()
-		KEY_Q:
-			_save()
-			get_tree().quit()
 
 
 func _advance_clock(delta: float) -> void:
@@ -270,6 +291,49 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 	_fit_window()
 
 
+## A right click on the strip opens the menu; another puts it away.
+func _on_menu_requested() -> void:
+	if _panel.mode() == &"menu":
+		_panel.close_panel()
+		return
+	_panel.show_menu()
+	_fit_window()
+
+
+## A button in the menu, the stores panel or the settings panel.
+func _on_action(action: StringName) -> void:
+	match action:
+		&"menu":
+			_panel.show_menu()
+		&"journal":
+			_panel.show_journal(sim)
+		&"stores":
+			_panel.show_stores(sim)
+		&"settings":
+			_show_settings()
+		&"quit":
+			_save()
+			get_tree().quit()
+		&"screen:next":
+			_window.move_to_next_screen()
+		_:
+			_change_setting(action)
+	_fit_window()
+
+
+func _show_settings() -> void:
+	_panel.show_settings(UserSettings.from_window(_window), DisplayServer.get_screen_count())
+
+
+## Applies a window setting picked in the panel, remembers it, and shows the panel again.
+func _change_setting(action: StringName) -> void:
+	var changed: UserSettings = UserSettings.from_window(_window).changed_by(action)
+	changed.apply_live(_window)
+	if _autosave:
+		changed.save_to(_settings_path)
+	_show_settings()
+
+
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --era=settled enters that age; --build=hut,field completes buildings
 ## (their milestones too); --flag=path_hunting,cave_art sets world flags; --earn=a_village,
@@ -303,7 +367,8 @@ func _fit_window() -> void:
 
 
 ## The "while you were away" summary on launch, or a panel chosen by the dev flag --panel=
-## (decision, journal, away or villager) so each can be looked at without waiting for it to happen.
+## (decision, journal, away, villager, menu, stores or settings) so each can be looked at without
+## waiting for it to happen.
 func _open_startup_panel(requested: String) -> void:
 	match requested:
 		"decision":
@@ -316,6 +381,8 @@ func _open_startup_panel(requested: String) -> void:
 		"villager":
 			_panel.show_villager(sim, sim.world.villagers[0].id)
 			_fit_window()
+		"menu", "stores", "settings":
+			_on_action(StringName(requested))
 		_:
 			var summary: AwaySummary = AwaySummary.present(
 				last_catch_up, sim.world, AWAY_SUMMARY_MIN_SECONDS
@@ -420,6 +487,11 @@ func _apply_cmdline() -> Dictionary:
 			_window.low_processor = false
 		elif arg == "--no-hud":
 			options["hud"] = false
+		elif arg == "--hud":
+			options["hud"] = true
+		elif arg == "--dev":
+			_dev = true
+			options["hud"] = true
 		elif arg == "--new":
 			options["new"] = true
 		elif arg == "--nosave":

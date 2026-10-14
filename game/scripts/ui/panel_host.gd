@@ -8,6 +8,8 @@ extends Control
 
 signal choice_picked(decision_id: StringName, choice_id: StringName)
 signal decisions_requested
+## A menu or settings button was picked (see MenuPresenter); the game applies it.
+signal action_picked(action: StringName)
 signal closed
 ## The open panel switched to content with a different height (the window must follow).
 signal height_changed
@@ -16,9 +18,9 @@ const WIDTH: int = 384
 ## The tallest panel, which most content uses. A kind of content with less to show has its own
 ## shorter height in HEIGHTS.
 const HEIGHT: int = PanelSkin.PANEL_HEIGHT
-## Panel height by kind of content. A villager's thought is a few short lines, so it gets a short
-## panel; the decision, journal and away panels fill a full one.
-const HEIGHTS: Dictionary = {&"villager": 112}
+## Panel height by kind of content. A villager's thought and the menu are short, so they get a
+## short panel; the decision, journal, away, stores and settings panels fill a full one.
+const HEIGHTS: Dictionary = {&"villager": 112, &"menu": 112}
 const TEXT_WIDTH: float = 352.0
 const DAY_WIDTH: float = 34.0
 ## The unroll is stepped, to match the pixel art.
@@ -117,8 +119,8 @@ func is_open() -> bool:
 	return _open
 
 
-## Which kind of content is showing: &"decision", &"journal", &"away", &"villager" or &"" when
-## closed.
+## Which kind of content is showing: &"decision", &"journal", &"away", &"villager", &"menu",
+## &"stores", &"settings" or &"" when closed.
 func mode() -> StringName:
 	return _mode if _open else &""
 
@@ -192,6 +194,86 @@ func show_villager(sim: Simulation, villager_id: StringName) -> void:
 ## Whose panel is showing, or &"" if it is not the villager panel.
 func villager_id() -> StringName:
 	return _villager_id if mode() == &"villager" else &""
+
+
+## The menu opened by a right click on the strip: the journal, the stores, settings and quit.
+func show_menu() -> void:
+	_begin(&"menu", "Menu")
+	var grid: GridContainer = GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	for item: Array in MenuPresenter.MENU_ITEMS:
+		grid.add_child(_action_button(item[0], item[1], false, 120.0))
+	_content.add_child(grid)
+	_footer_label.text = ""
+
+
+## What the settlement holds and who is in it: the details P2 keeps off the strip.
+func show_stores(sim: Simulation) -> void:
+	var view: MenuPresenter.Stores = MenuPresenter.stores(sim.world, sim.config, sim.content)
+	_begin(&"stores", "Stores")
+	_content.add_child(_text(view.heading, true))
+	var stock: HBoxContainer = HBoxContainer.new()
+	stock.add_theme_constant_override("separation", 14)
+	for row: MenuPresenter.StockRow in view.stock:
+		stock.add_child(_stock_item(row.key, row.amount))
+	_content.add_child(stock)
+	for line: String in view.group:
+		_content.add_child(_text(line))
+	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
+	_footer_label.text = ""
+
+
+## The window settings; each button reports its action and the game shows the panel again.
+func show_settings(settings: UserSettings, screens: int = 1) -> void:
+	_begin(&"settings", "Settings")
+	for row: MenuPresenter.Row in MenuPresenter.settings_rows(settings, screens):
+		var line: HBoxContainer = HBoxContainer.new()
+		line.add_theme_constant_override("separation", 4)
+		var label: Label = _text(row.label, true, 64.0)
+		line.add_child(label)
+		for option: MenuPresenter.Option in row.options:
+			if option.action == &"":
+				var plain: Label = _text(option.text, false, 28.0)
+				plain.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				line.add_child(plain)
+			else:
+				line.add_child(_action_button(option.text, option.action, option.selected, 0.0))
+		_content.add_child(line)
+	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
+	_footer_label.text = ""
+
+
+## A button that reports `action`. `selected` draws it pressed in, to mark the current choice.
+func _action_button(
+	text: String, action: StringName, selected: bool, min_width: float
+) -> Button:
+	var button: Button = Button.new()
+	button.text = text
+	button.toggle_mode = true
+	button.button_pressed = selected
+	button.custom_minimum_size = Vector2(min_width, 0)
+	if min_width > 0.0:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(func() -> void: action_picked.emit(action))
+	return button
+
+
+func _stock_item(key: StringName, amount: int) -> Control:
+	var item: HBoxContainer = HBoxContainer.new()
+	item.add_theme_constant_override("separation", 3)
+	var icon: Texture2D = _skin.icon_for(key)
+	if icon != null:
+		var picture: TextureRect = TextureRect.new()
+		picture.texture = icon
+		picture.custom_minimum_size = NEED_ICON_SIZE
+		picture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		item.add_child(picture)
+	var label: Label = Label.new()
+	label.text = "%d" % amount if icon != null else "%s %d" % [String(key).replace("_", " "), amount]
+	item.add_child(label)
+	return item
 
 
 func show_away(summary: AwaySummary) -> void:

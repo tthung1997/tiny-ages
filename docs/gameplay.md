@@ -44,6 +44,15 @@ placeholder and does not yet follow these decisions; see "What this changes".
   (one authored event plays differently per villager). Visible consequences matter most: choices
   change buildings, props and clothing, so there is a reason to look.
 - **P11 Light interaction.** Clicking a villager shows their name, traits and current thought.
+- **P12 The strip shows almost nothing, always.** Permanently on screen there are only the bulb (when
+  a decision waits) and the journal book (with an unread dot). Everything else is on demand: a
+  **right click on the strip** opens a short menu with the journal, **Stores** (where the
+  settlement is, the exact wood and food, and who is in the group: the numbers P2 keeps off the
+  strip), **Settings** (window mode, size, always on top, move to the next screen; remembered in
+  its own file, separate from the save) and Quit. No counters, clocks or speed controls: time of
+  day reads from the light, and time never pauses. The text overlay (day, stock, speed, the last
+  journal line) and the dev keys (mode, speed, bot) are developer tools behind `--dev` (or `--hud`
+  for the overlay alone), so they cannot block the desktop or tempt the player to watch numbers.
 
 ## Safeguards for the gate
 

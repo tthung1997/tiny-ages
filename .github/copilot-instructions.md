@@ -214,8 +214,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
-  `--build=hut,field`, `--flag=`). Always use
-  `--nosave` (or `--save=`) in automated runs so the player's save is not touched. To check
+  `--build=hut,field`, `--flag=`, `--earn=`). **`--dev`** turns on the text overlay and the dev
+  keys (mode, scale, speed, bot...); `--hud` is the overlay alone. Without them the screen has
+  only the player's UI (docs/gameplay.md P12). Always use
+  `--nosave` (or `--save=`) in automated runs so the player's save and window settings are not
+  touched or read. To check
   GUI input without touching the real mouse, push events with
   `get_viewport().push_input(event, true)` (local coordinates) from a temporary script (and
   remove it afterwards); the headless test runner has no running tree for it.
@@ -232,7 +235,11 @@ holds still between ticks).
 with `Simulation.resolve_decision`. While a panel is open `DesktopWindow.set_panel_height`
 grows the window upward by the panel's current height (`PanelHost.current_height()`; a
 villager's panel is shorter, see `PanelHost.HEIGHTS`) and the click region takes in the panel. `StripIcons` is the bulb and
-the journal book. The sim withdraws a decision the world has moved past
+the journal book, the only things always on screen. A right click on the strip
+(`WorldView.menu_requested`) opens the menu panel (journal, stores, settings, quit);
+`MenuPresenter` builds the stores and settings rows as data, `PanelHost` reports `action_picked`,
+and `Game._on_action` applies it. Window settings live in `UserSettings` (`user://settings.cfg`,
+separate from the save; launch flags override them). The sim withdraws a decision the world has moved past
 (`Simulation.withdraw_stale_decisions`), so the UI never asks a stale question.
 
 **Skins, one per age** (`PanelSkin`, `UiTheme`): a skin is the age's material, colours, font and
@@ -242,7 +249,8 @@ skin on `era_advanced`, and an age without one uses the Cave skin (Cave: hide; S
 and clay). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
-panels: `--panel=decision|journal|away|villager`, `--manual`, `--fire`, `--era=settled`,
+panels: `--panel=decision|journal|away|villager|menu|stores|settings`, `--manual`, `--fire`,
+`--era=settled`,
 `--flag=path_hunting`, `--give=wood:6`, `--hour=12`.
 
 Keep a script and its scene at mirrored paths. Every PNG in `game/assets/` is
