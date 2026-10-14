@@ -11,8 +11,8 @@ SHA-256 and generated notes. Nothing is built or uploaded by hand.
 
 ## Is it time?
 
-`pwsh -File game/tools/release_check.ps1` gives a suggestion from simple rules, and the Release check workflow
-posts it on every PR. It counts changes since the last tag that touch files a player gets (`game/scripts`,
+`pwsh -File game/tools/release_check.ps1` gives a suggestion from simple rules, run whenever a PR is opened
+or merged (the `pull-request` skill does it). It counts changes since the last tag that touch files a player gets (`game/scripts`,
 `scenes`, `assets`, `resources`, `project.godot`, the icon): **none** means no release; a **fix** in a small
 batch means a patch; **3 or more** changes, or **14 or more days** with any, means a minor release;
 otherwise "not yet". It also warns when the saved world (`game/scripts/sim/state/`) changed, because saves

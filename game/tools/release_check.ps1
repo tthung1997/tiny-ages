@@ -1,16 +1,12 @@
 ## Says whether it is time to cut a new release, from what changed since the last one.
-##   pwsh -File game/tools/release_check.ps1 [-Markdown] [-Since <tag or commit>] [-Ref HEAD]
+##   pwsh -File game/tools/release_check.ps1 [-Since <tag or commit>] [-Ref HEAD]
 ## It is a suggestion from simple rules, not a decision; the rules and thresholds are at the top and in
-## .github/skills/release/SKILL.md. Run by the release-check workflow on every pull request (which posts
-## it as a comment), and by anyone opening a PR. -PrTitle (or $env:PR_TITLE) stands in for the subject of
-## the merge commit CI checks out, so a "Fix ..." title is noticed.
-## Needs full git history and tags (`git fetch --tags`; in Actions, `fetch-depth: 0`).
+## .github/skills/release/SKILL.md. Run it when opening or merging a PR (the pull-request skill does).
+## Needs the tags: `git fetch --tags`.
 
 param(
 	[string]$Ref = "HEAD",
-	[string]$Since = "",
-	[string]$PrTitle = $env:PR_TITLE,
-	[switch]$Markdown
+	[string]$Since = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,9 +36,7 @@ $range = "$base..$Ref"
 $baseName = if ($base -match '^v[0-9]') { $base } else { (git rev-parse --short $base) }
 
 $changes = [int](git rev-list --first-parent --count $range -- @PlayerFacing)
-$subjects = @(git log --first-parent --format=%s $range -- @PlayerFacing) | ForEach-Object {
-	if ($_ -match '^Merge [0-9a-f]{7,} into ' -and $PrTitle) { $PrTitle } else { $_ }
-}
+$subjects = @(git log --first-parent --format=%s $range -- @PlayerFacing)
 $fixes = @($subjects | Where-Object { $_ -match '(?i)\b(fix|fixes|fixed|bug|crash|hotfix|regression)\b' })
 $saveFiles = @(git diff --name-only $base $Ref -- @SaveFormat | Where-Object { $_ -notmatch '\.uid$' })
 $allCommits = [int](git rev-list --first-parent --count $range)
@@ -96,20 +90,7 @@ if ($next) {
 	$notes += "Play it on a real desktop for a few minutes first (window behaviour can't be tested automatically). Steps: the `release` skill."
 }
 
-if ($Markdown) {
-	$out = @("<!-- release-check -->", "### Release check", "", "**$verdict.** $why", "")
-	$out += "| | |", "|---|---|"
-	$out += "| Last release | $baseName ($days day(s) ago) |"
-	$out += "| Player-facing changes since | $changes of $allCommits |"
-	if ($next) { $out += "| Suggested next version | v$next |" }
-	if ($notes.Count -gt 0) { $out += ""; $out += $notes | ForEach-Object { "- $_" } }
-	$out += ""
-	$out += "<sub>A suggestion from simple rules (`game/tools/release_check.ps1`); only you decide.</sub>"
-	$out -join "`n"
-}
-else {
-	Write-Host "$verdict. $why"
-	Write-Host "Last release $baseName ($days day(s) ago); $changes player-facing change(s) of $allCommits since."
-	if ($next) { Write-Host "Suggested next version: v$next" }
-	foreach ($note in $notes) { Write-Host "- $($note -replace '`', '')" }
-}
+Write-Host "$verdict. $why"
+Write-Host "Last release $baseName ($days day(s) ago); $changes player-facing change(s) of $allCommits since."
+if ($next) { Write-Host "Suggested next version: v$next" }
+foreach ($note in $notes) { Write-Host "- $($note -replace '`', '')" }

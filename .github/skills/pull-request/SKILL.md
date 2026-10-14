@@ -26,14 +26,13 @@ The user's usual instruction is "create PR and merge"; work is only pushed or me
   verified (check result, what was and wasn't looked at), and anything the user must check by eye.
 - A decision or rule worth keeping goes into `docs/` in the same PR, and a plan that changes goes into its
   GitHub issue (issues are the backlog; `docs/` holds what is decided).
-- The **Release** workflow runs on the PR as a dry run (tests and a build) and the **Release check** workflow
-  posts a comment saying whether a release is due. Wait for the first if you are about to merge, and read the
-  second.
+- The **Release** workflow runs on the PR as a dry run (tests and a build). Wait for it if you are about to
+  merge.
 
 ## Give the user a release suggestion
 
-Every time a PR is opened or merged, run `pwsh -File game/tools/release_check.ps1` (or read the PR's
-"Release check" comment) and tell the user its verdict **in one line**: *Not yet*, *Good time for a release*
+Every time a PR is opened or merged, run `pwsh -File game/tools/release_check.ps1` (on a fresh `git fetch
+--tags`) and tell the user its verdict **in one line**: *Not yet*, *Good time for a release*
 or *Release a patch soon*, with the number of player-facing changes since the last tag.
 
 The script only counts files that ship and looks for fix words in titles, so add your own judgment on top
