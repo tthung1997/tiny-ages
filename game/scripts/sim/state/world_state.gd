@@ -44,6 +44,10 @@ const FRACTION_SCALE: float = 1000000.0
 @export var pending: Array[PendingDecision] = []
 @export var journal: Array[JournalEntry] = []
 @export var achievements: Array[StringName] = []
+## The title each achievement was earned under, as the journal told it. The same achievement can
+## have a different title by route ("The First Harvest" or "The First Calves"). Saves from before
+## this existed have none; `AchievementPresenter` falls back to the content.
+@export var achievement_titles: Dictionary[StringName, String] = {}
 @export var event_counts: Dictionary[StringName, int] = {}
 @export var event_last_tick: Dictionary[StringName, int] = {}
 @export var last_decision_tick: int = -1000

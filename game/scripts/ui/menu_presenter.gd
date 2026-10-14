@@ -4,8 +4,8 @@ extends RefCounted
 ## tested without nodes. The panel draws it and reports the action picked; `Game` applies it.
 
 const MENU_ITEMS: Array = [
-	["Journal", &"journal"], ["Villagers", &"villagers"], ["Stores", &"stores"],
-	["Settings", &"settings"], ["Quit", &"quit"],
+	["Journal", &"journal"], ["Villagers", &"villagers"], ["Achievements", &"achievements"],
+	["Stores", &"stores"], ["Settings", &"settings"], ["Quit", &"quit"],
 ]
 const MODE_LABELS: Dictionary = {&"strip": "Strip", &"corner": "Corner", &"window": "Window"}
 ## Resources shown in the stores panel, in this order; anything else the world holds follows.

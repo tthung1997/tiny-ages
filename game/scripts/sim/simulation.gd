@@ -251,6 +251,7 @@ func grant_achievement(key: StringName, title: String) -> void:
 	if world.has_achievement(key):
 		return
 	world.achievements.append(key)
+	world.achievement_titles[key] = title
 	add_journal("Achievement: %s" % title, &"settlement", &"", &"")
 	achievement_earned.emit(key, title)
 

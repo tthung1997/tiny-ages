@@ -141,6 +141,32 @@ func _advances_to(effects: Array[SimEffect], era_id: StringName) -> bool:
 	return false
 
 
+## The title an achievement is earned under, for saves that did not keep it: the first one found
+## (an achievement can carry a different title per route). Empty if nothing grants it.
+func achievement_title(key: StringName) -> String:
+	for event: EventDef in events:
+		var title: String = _effect_title(event.effects, key)
+		for choice: ChoiceDef in event.choices:
+			if title.is_empty():
+				title = _effect_title(choice.effects, key)
+		if not title.is_empty():
+			return title
+	for plant: PlantDef in plants:
+		if plant.flower_achievement == key:
+			return plant.flower_achievement_title
+	for building: BuildingDef in buildings:
+		if building.completion_achievement == key:
+			return building.completion_achievement_title
+	return ""
+
+
+func _effect_title(effects: Array[SimEffect], key: StringName) -> String:
+	for effect: SimEffect in effects:
+		if effect.kind == SimEffect.Kind.ACHIEVEMENT and effect.key == key:
+			return effect.text
+	return ""
+
+
 ## Every achievement some effect, plant or building can grant.
 func _grantable_achievements() -> Dictionary:
 	var grantable: Dictionary = {}

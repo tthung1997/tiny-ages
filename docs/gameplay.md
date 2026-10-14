@@ -49,7 +49,10 @@ placeholder and does not yet follow these decisions; see "What this changes".
 - **P12 The strip shows almost nothing, always.** Permanently on screen there are only the bulb (when
   a decision waits), the journal book (with an unread dot) and a small, quiet **gear**. Everything
   else is on demand: the gear (or a **right click on the strip**, as a shortcut) opens a short
-  menu with the journal, **Villagers** (P11), **Stores** (where the
+  menu with the journal, **Villagers** (P11), **Achievements** (everything the group has earned, oldest
+  first, each with an icon and the title it was earned under: only what is earned, no empty slots, no
+  count or progress, since the age gate stays hidden; earning one stays quiet, the journal line is
+  the moment), **Stores** (where the
   settlement is and the exact wood and food: the numbers P2 keeps off the
   strip), **Settings** (window mode, size, always on top, move to the next screen; remembered in
   its own file, separate from the save) and Quit. No counters, clocks or speed controls: time of

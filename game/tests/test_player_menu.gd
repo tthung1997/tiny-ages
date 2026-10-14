@@ -134,7 +134,9 @@ func test_the_menu_offers_the_journal_the_villagers_the_stores_settings_and_quit
 		actions.append(item[1])
 	assert_eq(
 		actions,
-		[&"journal", &"villagers", &"stores", &"settings", &"quit"] as Array[StringName],
+		[
+			&"journal", &"villagers", &"achievements", &"stores", &"settings", &"quit",
+		] as Array[StringName],
 	)
 
 
@@ -188,12 +190,14 @@ func test_the_menu_panel_reports_the_button_picked() -> void:
 	panel.show_menu()
 	assert_eq(panel.mode(), &"menu")
 	assert_eq(panel.current_height(), PanelHost.height_for(&"menu"))
-	for text: String in ["Journal", "Villagers", "Stores", "Settings", "Quit"]:
+	for text: String in ["Journal", "Villagers", "Achievements", "Stores", "Settings", "Quit"]:
 		assert_true(_button(panel, text) != null, "%s button" % text)
 		_button(panel, text).pressed.emit()
 	assert_eq(
 		picked,
-		[&"journal", &"villagers", &"stores", &"settings", &"quit"] as Array[StringName],
+		[
+			&"journal", &"villagers", &"achievements", &"stores", &"settings", &"quit",
+		] as Array[StringName],
 	)
 	panel.free()
 

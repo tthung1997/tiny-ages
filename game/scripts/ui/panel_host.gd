@@ -120,7 +120,7 @@ func is_open() -> bool:
 
 
 ## Which kind of content is showing: &"decision", &"journal", &"away", &"villager", &"villagers",
-## &"menu", &"stores", &"settings" or &"" when closed.
+## &"menu", &"stores", &"achievements", &"settings" or &"" when closed.
 func mode() -> StringName:
 	return _mode if _open else &""
 
@@ -196,8 +196,8 @@ func villager_id() -> StringName:
 	return _villager_id if mode() == &"villager" else &""
 
 
-## The menu opened by a right click on the strip: the journal, the villagers, the stores, settings
-## and quit.
+## The menu opened by a right click on the strip: the journal, the villagers, the achievements, the
+## stores, settings and quit.
 func show_menu() -> void:
 	_begin(&"menu", "Menu")
 	var grid: GridContainer = GridContainer.new()
@@ -233,6 +233,52 @@ func show_villagers(sim: Simulation) -> void:
 		_content.add_child(_villager_row(view, cloth))
 	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
 	_footer_label.text = ""
+
+
+## Everything the group has earned, oldest first, two to a row. Only what is earned is shown: no
+## empty slots, no count (the age gate stays hidden). Nothing here can be picked.
+func show_achievements(sim: Simulation) -> void:
+	_begin(&"achievements", "Achievements")
+	var earned: Array[AchievementPresenter.Badge] = AchievementPresenter.badges(
+		sim.world, sim.content
+	)
+	if earned.is_empty():
+		_content.add_child(_text("Nothing here yet.", true))
+	else:
+		var grid: GridContainer = GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 8)
+		grid.add_theme_constant_override("v_separation", 3)
+		for badge: AchievementPresenter.Badge in earned:
+			grid.add_child(_badge_row(badge))
+		_content.add_child(grid)
+	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
+	_footer_label.text = ""
+
+
+func _badge_row(badge: AchievementPresenter.Badge) -> Control:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 5)
+	var picture: TextureRect = TextureRect.new()
+	var sheet: Texture2D = load(AchievementPresenter.ICONS_PATH) as Texture2D
+	if sheet != null:
+		var cell: AtlasTexture = AtlasTexture.new()
+		cell.atlas = sheet
+		cell.region = Rect2(
+			Vector2(AchievementPresenter.CELL.x * badge.icon, 0), Vector2(AchievementPresenter.CELL)
+		)
+		picture.texture = cell
+	picture.custom_minimum_size = Vector2(AchievementPresenter.CELL)
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	row.add_child(picture)
+	var label: Label = Label.new()
+	label.text = badge.title
+	label.clip_text = true
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(label)
+	return row
 
 
 ## The window settings; each button reports its action and the game shows the panel again.
