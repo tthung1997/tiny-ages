@@ -301,11 +301,11 @@ func test_old_button_actions_do_not_leak_into_new_content() -> void:
 func test_the_bulb_appears_only_while_a_decision_waits() -> void:
 	var icons: StripIcons = StripIcons.new()
 	assert_false(icons.has_bulb())
-	assert_eq(icons.clickable_regions().size(), 1, "Only the journal is clickable")
+	assert_eq(icons.clickable_regions().size(), 2, "Only the journal and the gear are clickable")
 	icons.update_pending(1)
 	assert_true(icons.has_bulb())
 	assert_eq(icons.badge_text(), "", "No number for a single decision")
-	assert_eq(icons.clickable_regions().size(), 2)
+	assert_eq(icons.clickable_regions().size(), 3)
 	icons.update_pending(3)
 	assert_eq(icons.badge_text(), "3")
 	icons.update_pending(0)
@@ -319,6 +319,29 @@ func test_the_icons_sit_inside_the_viewport() -> void:
 	var viewport: Rect2i = Rect2i(Vector2i.ZERO, WorldLayout.VIEW_SIZE)
 	for region: Rect2i in icons.clickable_regions():
 		assert_true(viewport.encloses(region), "%s is inside the viewport" % region)
+	icons.free()
+
+
+func test_the_gear_is_always_there_and_never_overlaps_another_icon() -> void:
+	var icons: StripIcons = StripIcons.new()
+	icons.update_pending(1)
+	var regions: Array[Rect2i] = icons.clickable_regions()
+	var gear: Rect2i = Rect2i(Vector2i(StripIcons.GEAR_POSITION), StripIcons.GEAR_REGION.size)
+	assert_true(regions.has(gear), "The gear is in the click region")
+	for region: Rect2i in regions:
+		if region != gear:
+			assert_false(gear.intersects(region), "%s does not overlap the gear" % region)
+	icons.update_pending(0)
+	assert_true(icons.clickable_regions().has(gear), "Present with no decision waiting")
+	icons.free()
+
+
+func test_pressing_the_gear_asks_for_the_menu() -> void:
+	var icons: StripIcons = StripIcons.new()
+	var asked: Array[int] = []
+	icons.menu_pressed.connect(func() -> void: asked.append(1))
+	icons._gear.pressed.emit()
+	assert_eq(asked.size(), 1)
 	icons.free()
 
 

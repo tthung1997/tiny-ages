@@ -1,7 +1,7 @@
 // @open art/reference/ui_icons.png
-// @canvas 52x20
-// The strip's icons, one 52x20 sheet: two frames of the idea bulb (18x20 each, the second lit
-// with rays) and the journal book (16x20) -> art/reference/ui_icons.png and
+// @canvas 68x20
+// The strip's icons, one 68x20 sheet: two frames of the idea bulb (18x20 each, the second lit
+// with rays), the journal book (16x20) and the menu gear (16x20) -> art/reference/ui_icons.png and
 // game/assets/ui/icons.png. Frame x positions are mirrored in game/scripts/ui/strip_icons.gd.
 seed = 5;
 var IMG = SPR.layer(0).cel(0).image;
@@ -19,7 +19,18 @@ function bookIcon(b) { // 14x14: brown cover, pages, a red ribbon
   b.rect(10, 9, 2, 5, '#e8504a');
 }
 
-var SHEET = new Buf(52, 20);
+function gearIcon(b) { // 12x12: eight teeth round a ring, a hole in the middle, grey stone
+  var rows = ['....xxxx....', '.xx.xxxx.xx.', '.xxxxxxxxxx.', '..xxxxxxxx..',
+    'xxxx....xxxx', 'xxxx....xxxx', 'xxxx....xxxx', 'xxxx....xxxx',
+    '..xxxxxxxx..', '.xxxxxxxxxx.', '.xx.xxxx.xx.', '....xxxx....'];
+  function on(x, y) { return y >= 0 && y < 12 && x >= 0 && x < 12 && rows[y].charAt(x) == 'x'; }
+  for (var y = 0; y < 12; y++) for (var x = 0; x < 12; x++) {
+    if (!on(x, y)) continue;
+    b.px(x, y, !on(x, y + 1) ? '#6a6f7a' : !on(x, y - 1) ? '#bcc0cc' : '#9aa0aa');
+  }
+}
+
+var SHEET = new Buf(68, 20);
 for (var f = 0; f < 2; f++) {
   var tb = new Buf(14, 16); bulbIcon(tb, f == 1);
   blit(SHEET, outlined(tb, OUT), f * 18 + 1, 2);
@@ -31,6 +42,8 @@ for (var f = 0; f < 2; f++) {
 }
 var bk = new Buf(14, 14); bookIcon(bk);
 blit(SHEET, outlined(bk, OUT), 36, 2);
+var gr = new Buf(12, 12); gearIcon(gr);
+blit(SHEET, outlined(gr, OUT), 53, 3);
 
 IMG.putImageData(SHEET.d); SPR.save();
 SPR.saveAs(DIR + 'game/assets/ui/icons.png');
