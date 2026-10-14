@@ -165,7 +165,10 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   friends. A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
   harmless, a journal line each, a flag for later lines); a quiet moment is `_ambient`,
   `_ambient_about` (a trait) or `_remembered` (a flag). Costs are a `_has` requirement plus
-  a `_spend` effect, so the panel shows "needs 8 wood".
+  a `_spend` effect, so the panel shows "needs 8 wood". A decision is a fork (P13 in
+  `docs/gameplay.md`): it is only asked while two answers are open (`EventDef.min_choices`) and
+  has no pass answer. Decisions not yet converted have `min_choices = 1`; ids in
+  `CONVERTED_DECISIONS` get the new rule, and `test_decision_rules.gd` ratchets the count.
 - `tools/sim_timeline.gd` plays a bot through the sim and prints the journal with real-time
   offsets, every question asked, the longest wait between them and the stock: use it to
   judge pacing instead of guessing (`-- <seed> <days>`).

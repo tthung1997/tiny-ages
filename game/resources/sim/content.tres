@@ -160,6 +160,7 @@ subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_yucx7"),
 chance_per_tick = 0.04
 cooldown_ticks = 24
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_q5tmg"), SubResource("Resource_p2evq")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_4l3lx"]
 script = ExtResource("5_euihr")
@@ -229,6 +230,7 @@ subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_77twe"),
 chance_per_tick = 0.03
 cooldown_ticks = 24
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i53sn"), SubResource("Resource_enlv0")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_0wcny"]
 script = ExtResource("5_euihr")
@@ -317,6 +319,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_nq140"), SubResource("Resource_1db7g")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_gskgd"]
 script = ExtResource("5_euihr")
@@ -391,6 +394,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_tx76g"), SubReso
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_1yjxt"), SubResource("Resource_1a8h2")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_xcvcr"]
 script = ExtResource("5_euihr")
@@ -451,6 +455,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_r3ted"), SubResource("Resource_ssyy1")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_dv42p"]
 script = ExtResource("5_euihr")
@@ -517,6 +522,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_rh0b8"), SubResource("Resource_x87h4")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_0kti4"]
 script = ExtResource("5_euihr")
@@ -575,6 +581,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vu0o0"), SubReso
 chance_per_tick = 0.02
 cooldown_ticks = 72
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_pr1k6"), SubResource("Resource_hxp7e")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_thc00"]
 script = ExtResource("5_euihr")
@@ -686,6 +693,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_b31co"), SubReso
 chance_per_tick = 0.5
 cooldown_ticks = 24
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_mlhbg"), SubResource("Resource_5bnt4"), SubResource("Resource_4dvbm")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_p8a78"]
 script = ExtResource("5_euihr")
@@ -778,6 +786,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_87ffg"), SubReso
 chance_per_tick = 0.5
 cooldown_ticks = 24
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_1vml3"), SubResource("Resource_fw3ni")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_cmxay"]
 script = ExtResource("5_euihr")
@@ -847,6 +856,7 @@ subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1my53"),
 chance_per_tick = 0.06
 cooldown_ticks = 72
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_n6sha"), SubResource("Resource_mv7dv")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_5ov8r"]
 script = ExtResource("5_euihr")
@@ -904,6 +914,7 @@ category = &"exploration"
 needs_subject = true
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_ie0i1"]
 script = ExtResource("5_euihr")
@@ -941,6 +952,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5vn1p")])
 chance_per_tick = 0.01
 cooldown_ticks = 96
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_4vxwp"), SubResource("Resource_y3e8r")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_mf78r"]
 script = ExtResource("5_euihr")
@@ -993,6 +1005,7 @@ title = "Seeds of a new life"
 body = "The plant by the cave has gone to seed: enough to sow a whole field. The herds still move through the valley, and the group has learned enough to stay."
 category = &"settlement"
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_0tvtd"), SubResource("Resource_5mkjn")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_ebukt"]
 script = ExtResource("5_euihr")
@@ -1125,6 +1138,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_iw7nh"), SubResource("Resource_sffxm")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_q4b7p"]
 script = ExtResource("5_euihr")
@@ -1188,6 +1202,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_13y6p"), SubReso
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_qjbgb"), SubResource("Resource_j25dj")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_hdca1"]
 script = ExtResource("5_euihr")
@@ -1249,6 +1264,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_r3hnr"), SubResource("Resource_86046")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_hwb0l"]
 script = ExtResource("5_euihr")
@@ -1310,6 +1326,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_dfipq"), SubResource("Resource_2qoyw")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_e7qkl"]
 script = ExtResource("5_euihr")
@@ -1376,6 +1393,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_upcn7"), SubResource("Resource_pqrag")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_vuh0r"]
 script = ExtResource("5_euihr")
@@ -1442,6 +1460,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_xxmub"), SubResource("Resource_4kvi2")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_onvx5"]
 script = ExtResource("5_euihr")
@@ -1503,6 +1522,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_rnyk2"), SubResource("Resource_uc2n1")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_o71hn"]
 script = ExtResource("5_euihr")
@@ -1566,6 +1586,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_l7kyf"), SubReso
 chance_per_tick = 0.02
 cooldown_ticks = 72
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_pt8vs"), SubResource("Resource_mbjqs")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_wb6jb"]
 script = ExtResource("5_euihr")
@@ -1645,6 +1666,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_acrbp"), SubResource("Resource_yf3ib")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_372ph"]
 script = ExtResource("5_euihr")
@@ -1712,6 +1734,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.03
 cooldown_ticks = 48
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_x5oqn"), SubResource("Resource_qdrhs")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_rnfy7"]
 script = ExtResource("5_euihr")
@@ -1788,6 +1811,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_op37i"), SubReso
 chance_per_tick = 0.02
 cooldown_ticks = 72
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_lbgt6"), SubResource("Resource_ljkj6")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_xq8ed"]
 script = ExtResource("5_euihr")
@@ -1851,6 +1875,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_riuv1"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_euaow"), SubResource("Resource_bpqas")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_j43qt"]
 script = ExtResource("5_euihr")
@@ -1915,6 +1940,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_8r4vg"), SubReso
 chance_per_tick = 0.03
 cooldown_ticks = 240
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_qmsiv"), SubResource("Resource_uumdf")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_x7pvx"]
 script = ExtResource("5_euihr")
@@ -1984,6 +2010,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_000ct"), SubResource("Resource_wkioj")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_aeona"]
 script = ExtResource("5_euihr")
@@ -2047,6 +2074,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7a78u"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_412h4"), SubResource("Resource_cd3jv")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_1j8of"]
 script = ExtResource("5_euihr")
@@ -2113,6 +2141,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_82ulj"), SubResource("Resource_vn3pf")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_qpaad"]
 script = ExtResource("5_euihr")
@@ -2195,6 +2224,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jejg1"), SubReso
 chance_per_tick = 0.03
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_vftdg"), SubResource("Resource_fmyg0")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_uewa4"]
 script = ExtResource("5_euihr")
@@ -2261,6 +2291,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i0q5y"), SubResource("Resource_ecmrj")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_qh55l"]
 script = ExtResource("5_euihr")
@@ -2328,6 +2359,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_u1j1j"), SubResource("Resource_q7u5f")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_oumqj"]
 script = ExtResource("5_euihr")
@@ -2386,6 +2418,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_07eav"), SubResource("Resource_exvfj")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_lvxb5"]
 script = ExtResource("5_euihr")
@@ -2448,6 +2481,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_dv7pw"), SubResource("Resource_32mue")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_sqn5h"]
 script = ExtResource("5_euihr")
@@ -2507,6 +2541,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bnwub"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_mndir"), SubResource("Resource_yns3q")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_vywqk"]
 script = ExtResource("5_euihr")
@@ -2579,6 +2614,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_353pa"), SubResource("Resource_vtlv2")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_h85uf"]
 script = ExtResource("5_euihr")
@@ -2659,6 +2695,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_pmww3"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_s04uw"), SubResource("Resource_50nua")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_3r6ce"]
 script = ExtResource("5_euihr")
@@ -2712,6 +2749,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_liplk"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_c71hx"), SubResource("Resource_cya3x")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_dq2jf"]
 script = ExtResource("5_euihr")
@@ -2769,6 +2807,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_yk6y6"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_drgp1"), SubResource("Resource_76yaw")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_hsrms"]
 script = ExtResource("5_euihr")
@@ -2827,6 +2866,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_g4mmq"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_2ww3g"), SubResource("Resource_c3qk1")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_ajc37"]
 script = ExtResource("5_euihr")
@@ -2890,6 +2930,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ncbn6"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_6d45x"), SubResource("Resource_nf4vj")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_8w5uq"]
 script = ExtResource("5_euihr")
@@ -2943,6 +2984,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_m11pp"), SubResource("Resource_8nkac")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_cqr6y"]
 script = ExtResource("5_euihr")
@@ -2996,6 +3038,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_f2h3s"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_hi612"), SubResource("Resource_lraw8")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_m8bwp"]
 script = ExtResource("5_euihr")
@@ -3059,6 +3102,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_be1tb"), SubResource("Resource_qjgtq")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_p578w"]
 script = ExtResource("5_euihr")
@@ -3110,6 +3154,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_n0hbv"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_sixry"), SubResource("Resource_t30ct")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_psg4g"]
 script = ExtResource("5_euihr")
@@ -3174,6 +3219,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_phiab"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_idwq7"), SubResource("Resource_fq8m7")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_5tqmw"]
 script = ExtResource("5_euihr")
@@ -3224,6 +3270,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_dnb0w"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_8b7hh"), SubResource("Resource_rux1r")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_u7b1y"]
 script = ExtResource("5_euihr")
@@ -3292,6 +3339,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bj3kj"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_26qn7"), SubResource("Resource_n0w6g")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_frl3d"]
 script = ExtResource("5_euihr")
@@ -3356,6 +3404,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_wef8f"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_biwyr"), SubResource("Resource_ylodd")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_xsy5g"]
 script = ExtResource("5_euihr")
@@ -3415,6 +3464,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_pvigw"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_5vlaa"), SubResource("Resource_u6rkq")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_u4mr1"]
 script = ExtResource("5_euihr")
@@ -3465,6 +3515,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vt2j3"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_n58bu"), SubResource("Resource_pylhk")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_c3bjn"]
 script = ExtResource("5_euihr")
@@ -3528,6 +3579,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1b4f2"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_cy4q4"), SubResource("Resource_l38so")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_rxyna"]
 script = ExtResource("5_euihr")
@@ -3592,6 +3644,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1pa8q"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_88c5x"), SubResource("Resource_vj8fc")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_8cye6"]
 script = ExtResource("5_euihr")
@@ -3646,6 +3699,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_hjcsq"), SubResource("Resource_2g7se")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_aukul"]
 script = ExtResource("5_euihr")
@@ -3710,6 +3764,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_c0tc6"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_nn0kw"), SubResource("Resource_02vqv")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_3t6vw"]
 script = ExtResource("5_euihr")
@@ -3764,6 +3819,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_057xc"), SubResource("Resource_yy4jv")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_5hxyg"]
 script = ExtResource("5_euihr")
@@ -3828,6 +3884,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ehy72"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_7hk5j"), SubResource("Resource_6olye")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_p6rsu"]
 script = ExtResource("5_euihr")
@@ -3887,6 +3944,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_oa47m"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_s04bk"), SubResource("Resource_6rwj2")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_pj67d"]
 script = ExtResource("5_euihr")
@@ -3946,6 +4004,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_lk18q"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_syw8r"), SubResource("Resource_rvtoh")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_liinu"]
 script = ExtResource("5_euihr")
@@ -4009,6 +4068,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_wsp37"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_3owh0"), SubResource("Resource_1llec")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_rmhyf"]
 script = ExtResource("5_euihr")
@@ -4081,6 +4141,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_m4m8u"), SubResource("Resource_0plby")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_vyvx0"]
 script = ExtResource("5_euihr")
@@ -4140,6 +4201,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_j5fjq"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_jgmm7"), SubResource("Resource_sx7h8")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_l40eq"]
 script = ExtResource("5_euihr")
@@ -4199,6 +4261,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1wffi"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_emx6x"), SubResource("Resource_6xh45")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_qdoin"]
 script = ExtResource("5_euihr")
@@ -4256,6 +4319,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_i24cu"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_pehcx"), SubResource("Resource_272ht")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_8e3iv"]
 script = ExtResource("5_euihr")
@@ -4315,6 +4379,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_t4muf"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_usv4x"), SubResource("Resource_vh4u0")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_bwi38"]
 script = ExtResource("5_euihr")
@@ -4380,6 +4445,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i226t"), SubResource("Resource_xabqr")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_dypvo"]
 script = ExtResource("5_euihr")
@@ -4444,6 +4510,7 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_brhhp"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_w8y7p"), SubResource("Resource_ilnga")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_xyujt"]
 script = ExtResource("5_euihr")
@@ -4498,6 +4565,7 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_qle70"), SubResource("Resource_s75b3")])
+min_choices = 1
 
 [sub_resource type="Resource" id="Resource_0ibml"]
 script = ExtResource("5_euihr")

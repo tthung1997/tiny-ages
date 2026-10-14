@@ -68,3 +68,4 @@ requires = Array[ExtResource("3_7ygbo")]([SubResource("Resource_c0tc6"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("1_lidwi")]([SubResource("Resource_nn0kw"), SubResource("Resource_02vqv")])
+min_choices = 1

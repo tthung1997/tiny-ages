@@ -80,3 +80,4 @@ requires = Array[ExtResource("3_olr43")]([SubResource("Resource_op37i"), SubReso
 chance_per_tick = 0.02
 cooldown_ticks = 72
 choices = Array[ExtResource("1_jqa0n")]([SubResource("Resource_lbgt6"), SubResource("Resource_ljkj6")])
+min_choices = 1

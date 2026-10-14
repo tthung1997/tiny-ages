@@ -96,3 +96,4 @@ requires = Array[ExtResource("3_r7v3b")]([SubResource("Resource_87ffg"), SubReso
 chance_per_tick = 0.5
 cooldown_ticks = 24
 choices = Array[ExtResource("1_opfvm")]([SubResource("Resource_1vml3"), SubResource("Resource_fw3ni")])
+min_choices = 1

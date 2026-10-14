@@ -8,6 +8,10 @@ extends SceneTree
 const ROOT: String = "res://resources/sim"
 const CAVE: int = 0
 const SETTLED: int = 1
+## Decisions already written as a real choice between two directions (docs/gameplay.md P13).
+## Every other decision still has a "do it or pass" shape and keeps asking with one answer;
+## each stage of the conversion moves ids here, and the list ends as every decision.
+const CONVERTED_DECISIONS: Array[StringName] = []
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -72,6 +76,7 @@ func _init() -> void:
 	library.buildings.assign(_buildings())
 	library.plants.assign(_plants())
 	library.events.assign(_events())
+	_mark_unconverted(library.events)
 	_set_starting_group(library)
 	library.starting_resources = _ints({&"wood": 2, &"food": 4})
 	for era: EraDef in library.eras:
@@ -89,6 +94,12 @@ func _init() -> void:
 		push_error("Content problem: %s" % problem)
 	print("Wrote simulation content (%d problems)." % problems.size())
 	quit(1 if not problems.is_empty() else 0)
+
+
+func _mark_unconverted(events: Array[EventDef]) -> void:
+	for event: EventDef in events:
+		if event.is_decision() and not CONVERTED_DECISIONS.has(event.id):
+			event.min_choices = 1
 
 
 func _eras() -> Array[EraDef]:

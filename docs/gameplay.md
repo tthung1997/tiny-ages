@@ -53,6 +53,18 @@ placeholder and does not yet follow these decisions; see "What this changes".
   day reads from the light, and time never pauses. The text overlay (day, stock, speed, the last
   journal line) and the dev keys (mode, speed, bot) are developer tools behind `--dev` (or `--hud`
   for the overlay alone), so they cannot block the desktop or tempt the player to watch numbers.
+- **P13 A decision is a fork, not a favour.** (1) A decision is only asked while at least two of
+  its answers can be picked right now (`EventDef.min_choices`, default 2); one answer is nothing to
+  decide, so a question the group cannot afford is not asked at all. (2) There is no pass answer
+  ("not now", "leave it"): ignoring the bulb is already "no" and costs nothing. Every answer does
+  something, sets its own flag, and leads somewhere different, so the choice is *which direction*
+  (build A or B, take this road or that), never "yes or no" to something free. (3) A cost may sit on
+  an answer only when the other answer is not simply better. A decision already asked is never
+  withdrawn because stock fell; it waits (P4). The older "do it or pass" decisions keep
+  `min_choices = 1` until converted (`CONVERTED_DECISIONS` in `build_sim_content.gd`); the Cave and
+  the Settled Age are converted in turn, and `test_decision_rules.gd` ratchets the count down.
+  Stock no longer piles up: villagers barely gather what the group already has plenty of
+  (`PLENTY_WEIGHT` 0.02, tested).
 
 ## Safeguards for the gate
 
@@ -63,6 +75,6 @@ placeholder and does not yet follow these decisions; see "What this changes".
 ## What this changes (still to do)
 
 - **Done in the sim**: random seeded traits; no fire at the start, with the two fire routes and the embers fallback; achievements as the hidden gate with a minimum time; the age-turn event asks *how* to settle (field or herds), not whether; all six Cave → Settled milestones, each with more than one route; about 20 small story decisions and 25 ambient lines between the milestones; resource needs shown on choices; a leaner economy that hovers instead of piling up.
-- **Still to do in the sim**: more trait-driven variants of one event; the answers do little beyond the journal and a flag, so later content should read those flags and change what is seen. The Settled Age's fill (24 story decisions, 23 ambient lines) is in; stores in the Settled Age still pile up past what the sinks use, which wants a look when the age is played.
+- **Still to do in the sim**: more trait-driven variants of one event; the answers do little beyond the journal and a flag, so later content should read those flags and change what is seen. The Settled Age's fill (24 story decisions, 23 ambient lines) is in; stores no longer pile up (P13).
 - **View**: built: no fire glow or fire-pit piece until the fire is found, and a cave-mouth place to gather until then; clicking a villager shows their name, traits and thought (`ages.md` V9). Still to do: speech bubbles.
 - **Open**: how many resources exist per age; whether the player can ever see a hint that something is still undiscovered. The Cave → Settled milestones are listed in `ages.md`.

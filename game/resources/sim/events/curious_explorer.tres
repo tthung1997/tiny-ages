@@ -73,3 +73,4 @@ subject_requires = Array[ExtResource("3_ukhhx")]([SubResource("Resource_1my53"),
 chance_per_tick = 0.06
 cooldown_ticks = 72
 choices = Array[ExtResource("1_wn2pb")]([SubResource("Resource_n6sha"), SubResource("Resource_mv7dv")])
+min_choices = 1

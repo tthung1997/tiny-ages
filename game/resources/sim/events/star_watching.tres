@@ -57,3 +57,4 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("1_qeh74")]([SubResource("Resource_m11pp"), SubResource("Resource_8nkac")])
+min_choices = 1

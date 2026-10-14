@@ -61,3 +61,4 @@ category = &"exploration"
 needs_subject = true
 effects = Array[ExtResource("2_f6h81")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
 choices = Array[ExtResource("1_gkumt")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
+min_choices = 1

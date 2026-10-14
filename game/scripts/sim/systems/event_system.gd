@@ -55,7 +55,7 @@ func _roll_new_event(sim: Simulation) -> void:
 			subject = _pick_subject(sim, event)
 			if subject == null:
 				continue
-		if event.is_decision() and not _any_choice_available(sim, event, subject):
+		if event.is_decision() and _available_choices(sim, event, subject) < event.min_choices:
 			continue
 		var chance: float = minf(event.chance_per_tick * event.subject_weight(subject), 1.0)
 		if sim.rng.randf() >= chance:
@@ -82,11 +82,13 @@ func _passes_history(world: WorldState, event: EventDef) -> bool:
 	return true
 
 
-func _any_choice_available(sim: Simulation, event: EventDef, subject: VillagerState) -> bool:
+## A decision is only worth asking while the player really has something to decide.
+func _available_choices(sim: Simulation, event: EventDef, subject: VillagerState) -> int:
+	var count: int = 0
 	for choice: ChoiceDef in event.choices:
 		if sim.choice_available(choice, subject):
-			return true
-	return false
+			count += 1
+	return count
 
 
 func _pick_subject(sim: Simulation, event: EventDef) -> VillagerState:

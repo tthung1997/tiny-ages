@@ -13,7 +13,7 @@ const WEIGHT_HUNT: float = 2.0
 const HUNT_YIELD: float = 2.0
 const TRAIT_BIAS: float = 2.0
 ## Multiplies the wish to gather a resource the group already has plenty of.
-const PLENTY_WEIGHT: float = 0.1
+const PLENTY_WEIGHT: float = 0.02
 ## Chance per tick that an idle villager joins a building site that appears.
 const BUILD_DRIFT_CHANCE: float = 0.5
 

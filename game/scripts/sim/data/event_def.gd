@@ -28,6 +28,10 @@ extends Resource
 ## Applied as soon as the event fires, before any decision opens.
 @export var effects: Array[SimEffect] = []
 @export var choices: Array[ChoiceDef] = []
+## A decision is only asked while at least this many of its choices can be picked right now:
+## with one answer left there is nothing to decide (docs/gameplay.md P13). Decisions still
+## written as "do it or pass" lower this to 1 until they are converted.
+@export_range(1, 8) var min_choices: int = 2
 
 
 func is_decision() -> bool:
