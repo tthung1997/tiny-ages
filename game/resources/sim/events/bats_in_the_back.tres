@@ -64,6 +64,6 @@ title = "Bats in the back"
 body = "Bats have moved into the back of the cave, and hang from the roof all day in a twitching row."
 category = &"nature"
 requires = Array[ExtResource("3_siyif")]([SubResource("Resource_is8yf"), SubResource("Resource_dbl8h")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_ec1xe")]([SubResource("Resource_jvorj"), SubResource("Resource_7fej6")])

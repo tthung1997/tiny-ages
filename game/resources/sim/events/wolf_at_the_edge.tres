@@ -64,6 +64,6 @@ title = "A wolf at the edge"
 body = "A thin grey wolf has begun appearing at dusk, sitting just outside the firelight. It watches the camp and never comes closer."
 category = &"nature"
 requires = Array[ExtResource("3_2cljy")]([SubResource("Resource_riuv1"), SubResource("Resource_2m53r")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_j4hva")]([SubResource("Resource_euaow"), SubResource("Resource_bpqas")])

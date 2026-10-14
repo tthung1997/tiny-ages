@@ -64,6 +64,6 @@ title = "A limping deer"
 body = "A young deer with a hurt leg has been limping near the camp, always at the edge of sight."
 category = &"nature"
 requires = Array[ExtResource("3_i6trk")]([SubResource("Resource_v06kt"), SubResource("Resource_srk4n")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_5fyly")]([SubResource("Resource_2ww3g"), SubResource("Resource_g4mmq")])

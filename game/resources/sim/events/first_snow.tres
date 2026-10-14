@@ -57,6 +57,6 @@ title = "The first snow"
 body = "Snow fell in the night, and the whole valley is white and silent."
 category = &"nature"
 requires = Array[ExtResource("3_y6vf1")]([SubResource("Resource_vqd0a"), SubResource("Resource_ft7w8")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_grorw")]([SubResource("Resource_bfbo4"), SubResource("Resource_tt7fq")])

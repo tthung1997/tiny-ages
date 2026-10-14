@@ -63,6 +63,6 @@ title = "The bee tree"
 body = "A hollow tree in the western wood hums with bees, and the comb inside is heavy with honey."
 category = &"nature"
 requires = Array[ExtResource("3_7vsr4")]([SubResource("Resource_nbsrv"), SubResource("Resource_ucony")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_usnm1")]([SubResource("Resource_48btx"), SubResource("Resource_bmnlf")])

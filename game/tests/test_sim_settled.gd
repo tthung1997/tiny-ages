@@ -43,18 +43,17 @@ func test_the_era_day_condition_counts_from_the_start_of_the_age() -> void:
 	assert_true(condition.is_met(sim.world, sim.config))
 
 
-func test_the_hut_and_the_field_are_staged() -> void:
+func test_the_hut_and_the_field_are_offered_together() -> void:
 	var sim: Simulation = _settled()
 	sim.world.resources[&"wood"] = 50
 	var event: EventDef = sim.content.get_event(&"settled_building_opportunity")
 	var hut: ChoiceDef = event.get_choice(&"build_hut")
 	var field: ChoiceDef = event.get_choice(&"build_field")
 	assert_false(sim.choice_available(hut, null), "No hut on the first day")
+	assert_false(sim.choice_available(field, null), "No field on the first day")
 	SimFixture.jump_to_day(sim, sim.config.day_of(sim.world.tick) + OPENS[&"first_roof"])
 	assert_true(sim.choice_available(hut, null))
-	assert_false(sim.choice_available(field, null), "The field comes later")
-	SimFixture.jump_to_day(sim, sim.config.day_of(sim.world.tick) + OPENS[&"first_harvest"])
-	assert_true(sim.choice_available(field, null))
+	assert_true(sim.choice_available(field, null), "A fork needs both, so they open together")
 
 
 func test_buildings_grant_their_milestones() -> void:
@@ -110,20 +109,29 @@ func test_the_building_routes_and_the_event_routes_all_exist() -> void:
 	assert_eq(table.world.resource_amount(&"food"), 2, "The table costs 10 food")
 
 
-func test_passing_on_a_milestone_earns_nothing() -> void:
-	for pair: Array in [
-		[&"thatched_roof", &"make_do"], [&"clay_hardens", &"leave_the_shell"],
-		[&"shaped_bowls", &"keep_drying"], [&"plaited_reeds", &"keep_it_a_mat"],
-		[&"families_on_the_road", &"point_the_way"], [&"green_stone_found", &"keep_the_bead"],
-		[&"green_stone_traded", &"send_them_on"],
+## Every answer to a milestone question gets there: some at once, some a little later.
+func test_answering_a_milestone_the_other_way_still_earns_it() -> void:
+	for row: Array in [
+		[&"thatched_roof", &"make_do", &"first_roof", false],
+		[&"clay_hardens", &"leave_the_shell", &"fired_clay", false],
+		[&"shaped_bowls", &"keep_drying", &"fired_clay", false],
+		[&"plaited_reeds", &"keep_it_a_mat", &"woven_cloth", false],
+		[&"families_on_the_road", &"point_the_way", &"a_village", false],
+		[&"green_stone_found", &"keep_the_bead", &"green_stone", true],
+		[&"green_stone_traded", &"send_them_on", &"green_stone", true],
+		[&"the_long_table", &"eat_as_usual", &"a_village", true],
 	]:
 		var sim: Simulation = _settled()
 		sim.world.achievements.append(&"first_roof")
-		assert_true(_ask(sim, pair[0], pair[1]))
-		for milestone: StringName in MILESTONES:
-			if milestone != &"first_roof":
-				assert_false(sim.world.has_achievement(milestone), "%s earned %s" % [pair[0], milestone])
-		assert_eq(sim.world.villagers.size(), 3, "Nobody joined after %s" % pair[0])
+		sim.world.achievements.append(&"first_harvest")
+		var milestone: StringName = row[2]
+		sim.world.achievements.erase(milestone)
+		assert_true(_ask(sim, row[0], row[1]), "%s: %s" % [row[0], row[1]])
+		var later: bool = row[3]
+		if later:
+			assert_false(sim.world.has_achievement(milestone), "%s waits a little" % row[1])
+			sim.advance_ticks(120)
+		assert_true(sim.world.has_achievement(milestone), "%s reaches %s" % [row[1], milestone])
 
 
 func test_making_room_grows_the_group() -> void:
@@ -219,9 +227,12 @@ func _assert_finishes(rng_seed: int, path: StringName, declines: int) -> void:
 	for milestone: StringName in MILESTONES:
 		assert_true(earned.has(milestone), "%s: %s was earned" % [label, milestone])
 		if earned.has(milestone):
+			# The Field opens with the Hut, so its harvest can come as early as the roof.
+			var opens: int = OPENS[&"first_roof"] if milestone == &"first_harvest" \
+					else OPENS[milestone]
 			assert_gt(
-				earned[milestone] + 1, OPENS[milestone] * DAY,
-				"%s: %s came before day %d" % [label, milestone, OPENS[milestone]]
+				earned[milestone] + 1, opens * DAY,
+				"%s: %s came before day %d" % [label, milestone, opens]
 			)
 	if earned.has(&"a_village"):
 		assert_gt(earned[&"a_village"], DAY * 150, "%s: the milestones cover most of the age" % label)

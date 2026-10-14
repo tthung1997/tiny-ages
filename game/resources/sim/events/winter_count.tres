@@ -35,20 +35,25 @@ effects = Array[ExtResource("2_62eev")]([SubResource("Resource_8e3iv"), SubResou
 
 [sub_resource type="Resource" id="Resource_ffkr5"]
 script = ExtResource("2_62eev")
-text = "The stores were trusted, and held, and nobody said anything about the counting."
+kind = 1
+key = &"trusted_stores"
 
 [sub_resource type="Resource" id="Resource_vh4u0"]
+script = ExtResource("2_62eev")
+text = "The stores were trusted, and held, and nobody said anything about the counting."
+
+[sub_resource type="Resource" id="Resource_t4muf"]
 script = ExtResource("1_173ko")
 id = &"trust_the_stores"
 label = "Trust the stores"
-effects = Array[ExtResource("2_62eev")]([SubResource("Resource_ffkr5")])
+effects = Array[ExtResource("2_62eev")]([SubResource("Resource_ffkr5"), SubResource("Resource_vh4u0")])
 
-[sub_resource type="Resource" id="Resource_t4muf"]
+[sub_resource type="Resource" id="Resource_jpwq3"]
 script = ExtResource("3_velsq")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_jpwq3"]
+[sub_resource type="Resource" id="Resource_f8tjr"]
 script = ExtResource("3_velsq")
 kind = 11
 amount = 238
@@ -59,8 +64,7 @@ id = &"winter_count"
 title = "Before winter"
 body = "The leaves are turning. Somebody has counted the stores twice, and got two different answers."
 category = &"settlement"
-requires = Array[ExtResource("3_velsq")]([SubResource("Resource_t4muf"), SubResource("Resource_jpwq3")])
-chance_per_tick = 0.02
+requires = Array[ExtResource("3_velsq")]([SubResource("Resource_jpwq3"), SubResource("Resource_f8tjr")])
+chance_per_tick = 0.05
 once = true
-choices = Array[ExtResource("1_173ko")]([SubResource("Resource_usv4x"), SubResource("Resource_vh4u0")])
-min_choices = 1
+choices = Array[ExtResource("1_173ko")]([SubResource("Resource_usv4x"), SubResource("Resource_t4muf")])

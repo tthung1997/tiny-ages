@@ -50,6 +50,6 @@ id = &"echo_in_the_cave"
 title = "The cave answers"
 body = "Someone shouted into the deep back of the cave, and it shouted back, a moment later."
 requires = Array[ExtResource("3_w8sp1")]([SubResource("Resource_paxou"), SubResource("Resource_l7nr1")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_7rva0")]([SubResource("Resource_hua86"), SubResource("Resource_i7f1q")])

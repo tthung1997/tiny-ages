@@ -64,6 +64,6 @@ title = "Smoke in the cave"
 body = "Years of fire have blackened the cave roof, and the smoke lingers every evening."
 category = &"settlement"
 requires = Array[ExtResource("3_c0gic")]([SubResource("Resource_2xraa"), SubResource("Resource_rm6gw")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_4elp6")]([SubResource("Resource_3nio1"), SubResource("Resource_4w27n")])

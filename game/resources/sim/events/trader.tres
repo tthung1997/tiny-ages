@@ -69,6 +69,6 @@ title = "A traveller with dark stone"
 body = "A traveller from beyond the ridge has come to the edge of the camp with a bag of dark, glassy stone, and a hungry look."
 category = &"exploration"
 requires = Array[ExtResource("3_guu4s")]([SubResource("Resource_142bi"), SubResource("Resource_2kjn1"), SubResource("Resource_wrjvt")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_e8x5d")]([SubResource("Resource_6d45x"), SubResource("Resource_ncbn6")])

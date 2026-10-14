@@ -35,20 +35,25 @@ effects = Array[ExtResource("2_7h26c")]([SubResource("Resource_p6rsu"), SubResou
 
 [sub_resource type="Resource" id="Resource_2xgyv"]
 script = ExtResource("2_7h26c")
-text = "The rain stopped on the eleventh day, and the pond took a week to leave."
+kind = 1
+key = &"waited_out_rain"
 
 [sub_resource type="Resource" id="Resource_6rwj2"]
+script = ExtResource("2_7h26c")
+text = "The rain stopped on the eleventh day, and the pond took a week to leave."
+
+[sub_resource type="Resource" id="Resource_oa47m"]
 script = ExtResource("1_vi2sw")
 id = &"wait_it_out"
 label = "Wait for the rain to stop"
-effects = Array[ExtResource("2_7h26c")]([SubResource("Resource_2xgyv")])
+effects = Array[ExtResource("2_7h26c")]([SubResource("Resource_2xgyv"), SubResource("Resource_6rwj2")])
 
-[sub_resource type="Resource" id="Resource_oa47m"]
+[sub_resource type="Resource" id="Resource_8vurv"]
 script = ExtResource("3_7kdei")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_8vurv"]
+[sub_resource type="Resource" id="Resource_q73yh"]
 script = ExtResource("3_7kdei")
 kind = 11
 amount = 130
@@ -59,8 +64,7 @@ id = &"a_wet_summer"
 title = "Nine days of rain"
 body = "The rain has not stopped for nine days, and the low ground by the river has become a pond."
 category = &"nature"
-requires = Array[ExtResource("3_7kdei")]([SubResource("Resource_oa47m"), SubResource("Resource_8vurv")])
-chance_per_tick = 0.02
+requires = Array[ExtResource("3_7kdei")]([SubResource("Resource_8vurv"), SubResource("Resource_q73yh")])
+chance_per_tick = 0.05
 once = true
-choices = Array[ExtResource("1_vi2sw")]([SubResource("Resource_s04bk"), SubResource("Resource_6rwj2")])
-min_choices = 1
+choices = Array[ExtResource("1_vi2sw")]([SubResource("Resource_s04bk"), SubResource("Resource_oa47m")])

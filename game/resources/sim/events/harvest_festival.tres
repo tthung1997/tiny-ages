@@ -35,25 +35,30 @@ effects = Array[ExtResource("2_kxb7b")]([SubResource("Resource_aukul"), SubResou
 
 [sub_resource type="Resource" id="Resource_2pfya"]
 script = ExtResource("2_kxb7b")
-text = "Everything was laid by for the lean months, and the lean months were noticeably less lean."
+kind = 1
+key = &"laid_by"
 
 [sub_resource type="Resource" id="Resource_02vqv"]
+script = ExtResource("2_kxb7b")
+text = "Everything was laid by for the lean months, and the lean months were noticeably less lean."
+
+[sub_resource type="Resource" id="Resource_c0tc6"]
 script = ExtResource("1_lidwi")
 id = &"lay_it_by"
 label = "Lay it by for the lean months"
-effects = Array[ExtResource("2_kxb7b")]([SubResource("Resource_2pfya")])
+effects = Array[ExtResource("2_kxb7b")]([SubResource("Resource_2pfya"), SubResource("Resource_02vqv")])
 
-[sub_resource type="Resource" id="Resource_c0tc6"]
+[sub_resource type="Resource" id="Resource_mlxi4"]
 script = ExtResource("3_7ygbo")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_mlxi4"]
+[sub_resource type="Resource" id="Resource_aybve"]
 script = ExtResource("3_7ygbo")
 kind = 11
 amount = 92
 
-[sub_resource type="Resource" id="Resource_aybve"]
+[sub_resource type="Resource" id="Resource_kunyh"]
 script = ExtResource("3_7ygbo")
 kind = 9
 key = &"first_harvest"
@@ -64,8 +69,7 @@ id = &"harvest_festival"
 title = "More than enough"
 body = "The stores are full for the first time, and nobody can remember a year like it."
 category = &"settlement"
-requires = Array[ExtResource("3_7ygbo")]([SubResource("Resource_c0tc6"), SubResource("Resource_mlxi4"), SubResource("Resource_aybve")])
-chance_per_tick = 0.02
+requires = Array[ExtResource("3_7ygbo")]([SubResource("Resource_mlxi4"), SubResource("Resource_aybve"), SubResource("Resource_kunyh")])
+chance_per_tick = 0.05
 once = true
-choices = Array[ExtResource("1_lidwi")]([SubResource("Resource_nn0kw"), SubResource("Resource_02vqv")])
-min_choices = 1
+choices = Array[ExtResource("1_lidwi")]([SubResource("Resource_nn0kw"), SubResource("Resource_c0tc6")])

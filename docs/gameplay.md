@@ -60,13 +60,15 @@ placeholder and does not yet follow these decisions; see "What this changes".
   something, sets its own flag, and leads somewhere different, so the choice is *which direction*
   (build A or B, take this road or that), never "yes or no" to something free. (3) A cost may sit on
   an answer only when the other answer is not simply better. A decision already asked is never
-  withdrawn because stock fell; it waits (P4). The older "do it or pass" decisions keep
-  `min_choices = 1` until converted (`CONVERTED_DECISIONS` in `build_sim_content.gd`); **the Cave Age
-  is converted** and the Settled Age is next, and `test_decision_rules.gd` ratchets the count down.
+  withdrawn because stock fell; it waits (P4). **Every decision follows this rule** (Cave and
+  Settled): `test_decision_rules.gd` fails on a decision with fewer than two answers that each do
+  something, or one that may be asked with one answer.
   A decision the world no longer has (removed in an update) is withdrawn from a loaded save instead of
   hanging there unanswerable. **Required things need a way that cannot be skipped**: a milestone
   decision's every answer gets there (one sooner, one slower or differently told), and a building is
-  never the only road, so no sequence of choices blocks an age (tested over every order).
+  never the only road, so no sequence of choices blocks an age (tested over every order). A
+  building decision with two buildings (Hut and Field) is a real fork: the one not chosen stays
+  unbuilt, and its milestone has other routes.
   Stock no longer piles up: villagers barely gather what the group already has plenty of
   (`PLENTY_WEIGHT` 0.02, tested).
 

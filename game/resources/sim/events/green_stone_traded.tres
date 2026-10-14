@@ -41,30 +41,41 @@ effects = Array[ExtResource("2_bfq32")]([SubResource("Resource_rnfy7"), SubResou
 
 [sub_resource type="Resource" id="Resource_0toxn"]
 script = ExtResource("2_bfq32")
-text = "The traveller was wished well and went on, and the green beads went with them."
+kind = 1
+key = &"traders_asked"
 
 [sub_resource type="Resource" id="Resource_ljkj6"]
-script = ExtResource("1_jqa0n")
-id = &"send_them_on"
-label = "Wish them well and send them on"
-effects = Array[ExtResource("2_bfq32")]([SubResource("Resource_0toxn")])
+script = ExtResource("2_bfq32")
+kind = 7
+key = &"green_stone_shown"
+amount = 96
 
 [sub_resource type="Resource" id="Resource_op37i"]
+script = ExtResource("2_bfq32")
+text = "The traveller was sent on with bread, and asked to come back by the same road with more of the stones, and a name for where they came from."
+
+[sub_resource type="Resource" id="Resource_2dtns"]
+script = ExtResource("1_jqa0n")
+id = &"send_them_on"
+label = "Send them on with bread, and ask them back with more"
+effects = Array[ExtResource("2_bfq32")]([SubResource("Resource_0toxn"), SubResource("Resource_ljkj6"), SubResource("Resource_op37i")])
+
+[sub_resource type="Resource" id="Resource_3x0mx"]
 script = ExtResource("3_olr43")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_2dtns"]
+[sub_resource type="Resource" id="Resource_nucwh"]
 script = ExtResource("3_olr43")
 kind = 11
 amount = 252
 
-[sub_resource type="Resource" id="Resource_3x0mx"]
+[sub_resource type="Resource" id="Resource_wh851"]
 script = ExtResource("3_olr43")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_nucwh"]
+[sub_resource type="Resource" id="Resource_lawt5"]
 script = ExtResource("3_olr43")
 kind = 9
 key = &"green_stone"
@@ -76,8 +87,7 @@ id = &"green_stone_traded"
 title = "A traveller with green beads"
 body = "A traveller has come over the hills with a string of bright green stones. They want grain, and will not say where the stones are from."
 category = &"exploration"
-requires = Array[ExtResource("3_olr43")]([SubResource("Resource_op37i"), SubResource("Resource_2dtns"), SubResource("Resource_3x0mx"), SubResource("Resource_nucwh")])
+requires = Array[ExtResource("3_olr43")]([SubResource("Resource_3x0mx"), SubResource("Resource_nucwh"), SubResource("Resource_wh851"), SubResource("Resource_lawt5")])
 chance_per_tick = 0.02
 cooldown_ticks = 72
-choices = Array[ExtResource("1_jqa0n")]([SubResource("Resource_lbgt6"), SubResource("Resource_ljkj6")])
-min_choices = 1
+choices = Array[ExtResource("1_jqa0n")]([SubResource("Resource_lbgt6"), SubResource("Resource_2dtns")])

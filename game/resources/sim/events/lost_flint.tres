@@ -50,6 +50,6 @@ id = &"lost_flint"
 title = "The missing flint"
 body = "The best flint in the cave has gone missing, and two of the group are each sure the other has it."
 requires = Array[ExtResource("3_1aemp")]([SubResource("Resource_5fttg"), SubResource("Resource_107h2")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_yujx0")]([SubResource("Resource_fqg5x"), SubResource("Resource_6yfiv")])

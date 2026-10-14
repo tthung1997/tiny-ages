@@ -58,6 +58,6 @@ title = "Heavy grass"
 body = "In the western meadow the wild grass is heavy with seed."
 category = &"nature"
 requires = Array[ExtResource("3_1suvs")]([SubResource("Resource_yk6y6"), SubResource("Resource_7f7x8")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_hb3mq")]([SubResource("Resource_drgp1"), SubResource("Resource_76yaw")])

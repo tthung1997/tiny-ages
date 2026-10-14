@@ -25,26 +25,26 @@ took. 72 days is a real day.
 
 | # | Milestone | Real-world turning point | Ways it can happen | From day | On screen (art, later) |
 |---|---|---|---|---|---|
-| 1 | **A Roof of Your Own** | Permanent houses | Build the Hut, or an industrious villager thatches the hides with reed | 18 | Huts, thatch |
-| 2 | **The First Harvest** | Farming and herding yield | Build the Field (either path); or, when herding, the first calves are tended | 54 | Fields, a pen and herd |
-| 3 | **Fired Clay** | Pottery | A basket's clay hardens by the fire, or someone bakes bowls in hot ash | 108 | Pots by the door |
-| 4 | **Woven Cloth** | Weaving | Farmers find flax; herders gather wool from the thorns; any group may plait reeds (from day 198) | 162 | Looms, cloth |
-| 5 | **A Village** | Community | Two families on the road are offered a roof (needs milestone 1); or a long harvest table (needs milestone 2 and 10 food) | 216 | More villagers |
-| 6 | **Word from the Hills** | Metal ore, trade | A curious villager brings back a green-streaked stone and follows the stream to its source; or a traveller trades a pouch of it for 8 food (needs milestone 2). Sets the flag `green_stone` | 252 | A path into the hills (later) |
+| 1 | **A Roof of Your Own** | Permanent houses | Build the Hut; or thatch the roofs with reed, or lay turf over the poles (both earn it) | 18 | Huts, thatch |
+| 2 | **The First Harvest** | Farming and herding yield | Build the Field (either path); or, when herding, the first calves are penned or sent to graze (both earn it) | 18 (Field), 54 (calves) | Fields, a pen and herd |
+| 3 | **Fired Clay** | Pottery | A basket's clay hardens by the fire: fire a pot in the embers, or bake a dish on hot stones; or bake bowls in the ashes or in a pit under the cook fire | 108 | Pots by the door |
+| 4 | **Woven Cloth** | Weaving | Farmers find flax (spin it or beat it and weave); herders gather wool (spin or felt it); any group may plait reeds (teach it, or plait finer; from day 198) | 162 | Looms, cloth |
+| 5 | **A Village** | Community | Two families on the road are made room for, or offered the ground by the river (needs milestone 1); or a long harvest table (10 food), or a dish from every family at the old fire (a little later) (needs milestone 2) | 216 | More villagers |
+| 6 | **Word from the Hills** | Metal ore, trade | A curious villager brings back a green-streaked stone and follows the stream to its source, or shows the bead to the elders (a little later); or a traveller trades a pouch of it for 8 food, or is asked back with more (needs milestone 2). Sets the flag `green_stone` | 252 | A path into the hills (later) |
 
 - **Why these six.** They are what the next age stands on, and the candidate next age is the **Bronze Age** (metal, trade, walls, first towns; not designed yet). A surplus (2), kilns (3), craft goods to trade (4) and a settlement big enough to need walls (1, 5) are its preconditions. Milestone 6 is the Settled Age's outward look, as the scout and the seed were the Cave Age's: copper ore, and the first contact with people who trade. The Bronze Age's turn event would read `green_stone` and ask *how* to start working it, as the Settled turn asks how to settle. Until Bronze is designed this is only a stated direction.
 
 - There is no gate out of the Settled Age yet (G7): once the six are earned the age simply keeps
-  going. The Hut and the Field are offered by the "Building a settlement" decision, each from its
-  milestone's day.
-- The Cave Age's design rules carry over: every answer is harmless, a declined decision comes back,
-  and a test (`test_sim_settled.gd`) plays from the turn on both paths, accepting everything and
-  passing on everything twice first, and proves all six are earned, never before their day.
+  going. The Hut and the Field are offered together by the "Building a settlement" decision from
+  day 18 of the age: a real fork, so the one not chosen stays unbuilt (each milestone has other routes).
+- The Cave Age's design rules carry over (P13): every answer does something, and a test (`test_sim_settled.gd`) plays
+  from the turn on both paths, accepting everything and taking the last answer twice first, and
+  proves all six are earned, never before their day (the Field's harvest may come with the roof).
 - **Still to do for the Settled Age**: nothing planned. Its milestones, fill, skin, world art and clothes are in (V8, V10); the next age is the Bronze Age (not designed).
 
 ## Settled Age: between the milestones
 
-Same rules as the Cave Age's fill (two harmless answers, a journal line each, a flag for later lines, nothing fails), paced by one table (`SETTLED_STORY_DAY`, days into the age). A bot answering at once is asked something every 3-9 real hours across the age. Costs are bigger than the Cave Age's (4-25) because the stores are fuller; they are what the stores are for.
+Same rules as the Cave Age's fill (two answers that each do something, a journal line each, a flag a later line remembers, nothing fails), paced by one table (`SETTLED_STORY_DAY`, days into the age). A bot answering at once is asked something every 2-5 real hours across the age (five forks were added in the longest stretches: mud at the door, the longest day, small hands, three days of fog, the long evenings). Costs are bigger than the Cave Age's (4-25) because the stores are fuller; they are what the stores are for.
 
 | From day | Decision | What the answers do |
 |---|---|---|

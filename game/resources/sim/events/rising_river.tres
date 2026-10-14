@@ -64,6 +64,6 @@ title = "The river is rising"
 body = "Snowmelt has the river high, and it is creeping up the bank towards the cave mouth."
 category = &"nature"
 requires = Array[ExtResource("3_pqxmy")]([SubResource("Resource_alfwo"), SubResource("Resource_rw5c0")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_d6hwr")]([SubResource("Resource_jgs54"), SubResource("Resource_nrqgl")])

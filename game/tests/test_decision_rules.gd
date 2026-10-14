@@ -3,9 +3,6 @@ extends McpTestSuite
 ## two answers can be picked, it has no "pass" answer, and the economy does not pile up stock.
 
 const DAY: int = SimFixture.TICKS_PER_DAY
-## How many decisions still have the old "do it or pass" shape. It only ever goes down; the
-## stages that convert the Cave and Settled decisions lower it until it reaches zero.
-const MAX_UNCONVERTED: int = 36
 const WOOD_CEILING: int = 100
 const FOOD_CEILING: int = 250
 
@@ -54,7 +51,7 @@ func test_a_decision_is_asked_once_two_answers_are_open() -> void:
 	assert_eq(sim.world.pending.size(), 1)
 
 
-func test_an_event_can_still_ask_with_a_single_answer_while_unconverted() -> void:
+func test_a_decision_can_be_authored_to_ask_with_one_answer() -> void:
 	var event: EventDef = _test_event(10)
 	event.min_choices = 1
 	var sim: Simulation = _sim_with(event)
@@ -83,31 +80,24 @@ func _is_pass(choice: ChoiceDef) -> bool:
 	return true
 
 
-func test_converted_decisions_have_no_pass_answer() -> void:
+func test_every_decision_is_a_fork_with_no_pass_answer() -> void:
 	var content: ContentLibrary = SimFixture.load_content()
 	var problems: PackedStringArray = []
+	var decisions: int = 0
 	for event: EventDef in content.events:
-		if not event.is_decision() or event.min_choices < 2:
+		if not event.is_decision():
 			continue
+		decisions += 1
+		if event.min_choices < 2:
+			problems.append("%s may be asked with one answer" % event.id)
 		var real: int = 0
 		for choice: ChoiceDef in event.choices:
 			if not _is_pass(choice):
 				real += 1
 		if real < 2:
 			problems.append("%s needs two answers that each do something" % event.id)
+	assert_gt(decisions, 60, "The content has its decisions")
 	assert_eq(problems.size(), 0, ", ".join(problems))
-
-
-func test_the_unconverted_decisions_only_shrink() -> void:
-	var content: ContentLibrary = SimFixture.load_content()
-	var unconverted: int = 0
-	for event: EventDef in content.events:
-		if event.is_decision() and event.min_choices < 2:
-			unconverted += 1
-	assert_true(
-		unconverted <= MAX_UNCONVERTED,
-		"%d decisions still allow one answer (limit %d)" % [unconverted, MAX_UNCONVERTED]
-	)
 
 
 func test_stock_does_not_pile_up_over_a_long_game() -> void:

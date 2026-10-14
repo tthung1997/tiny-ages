@@ -51,6 +51,6 @@ title = "The cold floor"
 body = "The cave floor is bare rock, and the nights have been cold underneath."
 category = &"settlement"
 requires = Array[ExtResource("3_jqvf4")]([SubResource("Resource_uyi7g"), SubResource("Resource_p4jij")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_37v1s")]([SubResource("Resource_i0j6w"), SubResource("Resource_vj0k5")])

@@ -35,25 +35,30 @@ effects = Array[ExtResource("2_7v8co")]([SubResource("Resource_liinu"), SubResou
 
 [sub_resource type="Resource" id="Resource_11yrt"]
 script = ExtResource("2_7v8co")
-text = "The cloth was kept plain, and was said to be none the worse for it."
+kind = 1
+key = &"plain_cloth"
 
 [sub_resource type="Resource" id="Resource_1llec"]
+script = ExtResource("2_7v8co")
+text = "The cloth was kept plain, and was said to be none the worse for it."
+
+[sub_resource type="Resource" id="Resource_wsp37"]
 script = ExtResource("1_a5kxe")
 id = &"keep_it_plain"
 label = "Keep it plain"
-effects = Array[ExtResource("2_7v8co")]([SubResource("Resource_11yrt")])
+effects = Array[ExtResource("2_7v8co")]([SubResource("Resource_11yrt"), SubResource("Resource_1llec")])
 
-[sub_resource type="Resource" id="Resource_wsp37"]
+[sub_resource type="Resource" id="Resource_7q0wc"]
 script = ExtResource("3_y1k3m")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_7q0wc"]
+[sub_resource type="Resource" id="Resource_ftse5"]
 script = ExtResource("3_y1k3m")
 kind = 11
 amount = 172
 
-[sub_resource type="Resource" id="Resource_ftse5"]
+[sub_resource type="Resource" id="Resource_jp4bm"]
 script = ExtResource("3_y1k3m")
 kind = 9
 key = &"woven_cloth"
@@ -63,8 +68,7 @@ script = ExtResource("4_x2e4w")
 id = &"dyed_cloth"
 title = "A colour for the cloth"
 body = "The cloth is soft and strong and exactly the colour of a sheep, and someone has started to mind."
-requires = Array[ExtResource("3_y1k3m")]([SubResource("Resource_wsp37"), SubResource("Resource_7q0wc"), SubResource("Resource_ftse5")])
-chance_per_tick = 0.02
+requires = Array[ExtResource("3_y1k3m")]([SubResource("Resource_7q0wc"), SubResource("Resource_ftse5"), SubResource("Resource_jp4bm")])
+chance_per_tick = 0.05
 once = true
-choices = Array[ExtResource("1_a5kxe")]([SubResource("Resource_3owh0"), SubResource("Resource_1llec")])
-min_choices = 1
+choices = Array[ExtResource("1_a5kxe")]([SubResource("Resource_3owh0"), SubResource("Resource_wsp37")])

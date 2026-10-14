@@ -69,6 +69,6 @@ title = "Room for the newcomers"
 body = "The two newcomers have been sleeping in the cave mouth, as close to the fire as they dare."
 category = &"settlement"
 requires = Array[ExtResource("3_1rxbs")]([SubResource("Resource_a7lp5"), SubResource("Resource_sfs3d"), SubResource("Resource_h21dc")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_7qfao")]([SubResource("Resource_s04uw"), SubResource("Resource_pmww3")])

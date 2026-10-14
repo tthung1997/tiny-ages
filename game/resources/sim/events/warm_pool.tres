@@ -51,6 +51,6 @@ title = "The warm pool"
 body = "A pool up the valley steams in the cold, and the water is warm to the hand."
 category = &"nature"
 requires = Array[ExtResource("3_ucmlf")]([SubResource("Resource_exp27"), SubResource("Resource_4sidy")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_semqx")]([SubResource("Resource_3bn2l"), SubResource("Resource_urqu0")])

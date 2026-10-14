@@ -64,6 +64,6 @@ title = "Scratching in the night"
 body = "Something has been scratching at the cave wall after dark, always just out of sight."
 category = &"nature"
 requires = Array[ExtResource("3_p5iqn")]([SubResource("Resource_vfl8e"), SubResource("Resource_yynuk")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_85ahv")]([SubResource("Resource_2rdj6"), SubResource("Resource_uml5d")])

@@ -64,6 +64,6 @@ title = "The hard crossing"
 body = "The river is easiest to cross at one place, and everyone has begun to slip there."
 category = &"settlement"
 requires = Array[ExtResource("3_6u0pf")]([SubResource("Resource_20v5u"), SubResource("Resource_2mn0s")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_ehg53")]([SubResource("Resource_x3l25"), SubResource("Resource_ccqih")])

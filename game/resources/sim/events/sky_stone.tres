@@ -51,6 +51,6 @@ title = "A stone from the sky"
 body = "A streak of light crossed the sky in the night, and in the morning there is a heavy black stone in the meadow, still warm."
 category = &"nature"
 requires = Array[ExtResource("3_0sgq3")]([SubResource("Resource_x3588"), SubResource("Resource_1y4ky")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_rgaop")]([SubResource("Resource_w37a8"), SubResource("Resource_kio87")])

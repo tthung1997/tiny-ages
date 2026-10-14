@@ -60,6 +60,6 @@ id = &"living_story"
 title = "The long story"
 body = "The story told by the fire has grown long. Everyone has added a piece, and they no longer agree on how it goes."
 requires = Array[ExtResource("3_45nes")]([SubResource("Resource_bnwub"), SubResource("Resource_tb3k0"), SubResource("Resource_8608u"), SubResource("Resource_p5ic4")])
-chance_per_tick = 0.02
+chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_ufc7j")]([SubResource("Resource_mndir"), SubResource("Resource_yns3q")])
