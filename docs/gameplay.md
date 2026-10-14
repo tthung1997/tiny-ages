@@ -45,8 +45,9 @@ placeholder and does not yet follow these decisions; see "What this changes".
   change buildings, props and clothing, so there is a reason to look.
 - **P11 Light interaction.** Clicking a villager shows their name, traits and current thought.
 - **P12 The strip shows almost nothing, always.** Permanently on screen there are only the bulb (when
-  a decision waits) and the journal book (with an unread dot). Everything else is on demand: a
-  **right click on the strip** opens a short menu with the journal, **Stores** (where the
+  a decision waits), the journal book (with an unread dot) and a small, quiet **gear**. Everything
+  else is on demand: the gear (or a **right click on the strip**, as a shortcut) opens a short
+  menu with the journal, **Stores** (where the
   settlement is, the exact wood and food, and who is in the group: the numbers P2 keeps off the
   strip), **Settings** (window mode, size, always on top, move to the next screen; remembered in
   its own file, separate from the save) and Quit. No counters, clocks or speed controls: time of

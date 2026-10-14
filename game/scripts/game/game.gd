@@ -102,6 +102,7 @@ func _ready() -> void:
 	sim.era_advanced.connect(func(era: EraDef) -> void: _panel.set_skin(PanelSkin.for_era(era.id)))
 	_icons.bulb_pressed.connect(_open_decisions)
 	_icons.journal_pressed.connect(_toggle_journal)
+	_icons.menu_pressed.connect(_on_menu_requested)
 	_world_view.villager_clicked.connect(_on_villager_clicked)
 	_world_view.menu_requested.connect(_on_menu_requested)
 	_panel.choice_picked.connect(_on_choice_picked)
@@ -291,7 +292,7 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 	_fit_window()
 
 
-## A right click on the strip opens the menu; another puts it away.
+## The gear or a right click on the strip opens the menu; another puts it away.
 func _on_menu_requested() -> void:
 	if _panel.mode() == &"menu":
 		_panel.close_panel()

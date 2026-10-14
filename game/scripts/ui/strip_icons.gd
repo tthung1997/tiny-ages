@@ -1,22 +1,28 @@
 class_name StripIcons
 extends Control
-## The icons floating at the top right of the viewport: the idea bulb (only while a decision
-## waits, with a count when several do) and the journal book. They stay put while the world
-## scrolls. Everything here is in viewport art pixels.
+## The icons floating at the top right of the viewport, left to right: the idea bulb (only while
+## a decision waits, with a count when several do), the journal book and the menu gear. The
+## bulb comes and goes at the left end, so the book and gear never move. They stay put while
+## the world scrolls. Everything here is in viewport art pixels.
 
 signal bulb_pressed
 signal journal_pressed
+signal menu_pressed
 
 const SHEET_PATH: String = "res://assets/ui/icons.png"
 const BULB_FRAME: Vector2i = Vector2i(18, 20)
 const JOURNAL_REGION: Rect2i = Rect2i(36, 0, 16, 20)
-const BULB_POSITION: Vector2 = Vector2(362.0, 3.0)
-const JOURNAL_POSITION: Vector2 = Vector2(345.0, 3.0)
+const GEAR_REGION: Rect2i = Rect2i(52, 0, 16, 20)
+const BULB_POSITION: Vector2 = Vector2(331.0, 3.0)
+const JOURNAL_POSITION: Vector2 = Vector2(349.0, 3.0)
+const GEAR_POSITION: Vector2 = Vector2(366.0, 3.0)
+const GEAR_QUIET: Color = Color(1.0, 1.0, 1.0, 0.7)
 const BLINK_SECONDS: float = 0.5
 
 var _sheet: Texture2D
 var _bulb: TextureButton = TextureButton.new()
 var _journal: TextureButton = TextureButton.new()
+var _gear: TextureButton = TextureButton.new()
 var _badge: Label = Label.new()
 var _time: float = 0.0
 var _frames: Array[AtlasTexture] = []
@@ -43,6 +49,13 @@ func _init() -> void:
 	_journal.position = JOURNAL_POSITION
 	_journal.pressed.connect(func() -> void: journal_pressed.emit())
 	add_child(_journal)
+	_gear.texture_normal = _atlas(GEAR_REGION)
+	_gear.position = GEAR_POSITION
+	_gear.self_modulate = GEAR_QUIET
+	_gear.mouse_entered.connect(func() -> void: _gear.self_modulate = Color.WHITE)
+	_gear.mouse_exited.connect(func() -> void: _gear.self_modulate = GEAR_QUIET)
+	_gear.pressed.connect(func() -> void: menu_pressed.emit())
+	add_child(_gear)
 	add_child(_bulb)
 
 
@@ -63,7 +76,10 @@ func badge_text() -> String:
 
 ## The areas that must stay clickable in strip mode, in viewport art pixels.
 func clickable_regions() -> Array[Rect2i]:
-	var regions: Array[Rect2i] = [Rect2i(Vector2i(_journal.position), JOURNAL_REGION.size)]
+	var regions: Array[Rect2i] = [
+		Rect2i(Vector2i(_journal.position), JOURNAL_REGION.size),
+		Rect2i(Vector2i(_gear.position), GEAR_REGION.size),
+	]
 	if _bulb.visible:
 		regions.append(Rect2i(Vector2i(_bulb.position), BULB_FRAME))
 	return regions
