@@ -1,8 +1,8 @@
-# Screenhaven
+# Tiny Ages
 
-A tiny settlement that lives at the edge of your screen: a few villagers, a cave and a fire on a thin strip above your taskbar, with a world that goes on while you work. Time brings progress, your choices give it character, and nothing is ever demanded of you.
+A tiny settlement that lives at the edge of your screen and grows through the ages: a few villagers, a cave and a fire on a thin strip above your taskbar, with a world that goes on while you work. Time brings progress, your choices give it character, and nothing is ever demanded of you.
 
-**Play it:** download the latest Windows build from [Releases](https://github.com/tthung1997/screenhaven/releases), unzip it and run `Screenhaven.exe`. See [`PLAYING.md`](PLAYING.md) for how it works.
+**Play it:** download the latest Windows build from [Releases](https://github.com/tthung1997/tiny-ages/releases), unzip it and run `TinyAges.exe`. See [`PLAYING.md`](PLAYING.md) for how it works.
 
 ## Project notes
 
@@ -30,7 +30,7 @@ Conventions are in [`.github/copilot-instructions.md`](.github/copilot-instructi
 ## Releasing
 
 `pwsh -File game/tools/build_release.ps1` exports the Windows build and zips it with the licences and
-`PLAYING.md` (as `README.txt`) into `game/build/Screenhaven-<version>-windows.zip`, plus a SHA-256 file.
+`PLAYING.md` (as `README.txt`) into `game/build/TinyAges-<version>-windows.zip`, plus a SHA-256 file.
 It needs the Windows export templates for the engine version (Editor > Manage Export Templates, or
 `%APPDATA%\Godot\export_templates\4.7.1.stable\`). Bump `config/version` in `game/project.godot` (and the
 two versions in `game/export_presets.cfg`) first, then publish with `gh release create v<version> <zip>

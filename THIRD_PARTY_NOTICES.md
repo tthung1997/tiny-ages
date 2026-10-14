@@ -1,6 +1,6 @@
 # Third-party notices
 
-Screenhaven itself is MIT licensed (see `LICENSE`). It includes or is built with:
+Tiny Ages itself is MIT licensed (see `LICENSE`). It includes or is built with:
 
 | Component | Licence | Where |
 |---|---|---|

@@ -3,7 +3,7 @@ extends RefCounted
 ## Saves and loads a WorldState as a text resource. Loading executes script references inside
 ## the file, so only load saves this game wrote, never files from untrusted sources.
 
-const DEFAULT_PATH: String = "user://screenhaven_save.tres"
+const DEFAULT_PATH: String = "user://tiny_ages_save.tres"
 
 
 static func save_world(world: WorldState, path: String = DEFAULT_PATH) -> Error:

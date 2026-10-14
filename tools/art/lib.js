@@ -1,4 +1,4 @@
-// Screenhaven art library for LibreSprite scripts.
+// Tiny Ages art library for LibreSprite scripts.
 // Not run directly: tools/art/bundle.py prepends an app.open(...) header and
 // concatenates this file with a scene script. Pure ES5-style JS, no imports.
 

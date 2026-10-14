@@ -1,6 +1,6 @@
-# Screenhaven — Copilot Instructions
+# Tiny Ages — Copilot Instructions
 
-Screenhaven is a **2D desktop-companion game** built with **Godot 4.7** and
+Tiny Ages is a **2D desktop-companion game** built with **Godot 4.7** and
 **GDScript** (standard build, not .NET): a tiny settlement that lives at the edge of
 the screen. The Godot project is in **`game/`**; everything else in the repo is
 docs, art sources and art tooling.
@@ -68,7 +68,7 @@ Enums come **before** constants; `@onready` comes **last** among variables.
   long await.
 - Use `is` / `is not` / `assert()` for type checks; `as` silently yields `null`.
 
-## Architecture rules specific to Screenhaven
+## Architecture rules specific to Tiny Ages
 
 - **Simulation is separate from rendering.** The settlement sim (characters, needs,
   events, time) must run without drawing and be testable headless. Prefer

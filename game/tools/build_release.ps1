@@ -1,6 +1,6 @@
 ## Builds the Windows release: exports the game and zips it with its licences.
 ##   pwsh -File game/tools/build_release.ps1
-## Output: game/build/Screenhaven-<version>-windows.zip (version from project.godot) and a
+## Output: game/build/TinyAges-<version>-windows.zip (version from project.godot) and a
 ## SHA-256 file beside it. The engine comes from $env:GODOT or godot / godot4 on PATH, and the
 ## Windows export templates for that engine version must be installed
 ## (Editor > Manage Export Templates, or %APPDATA%\Godot\export_templates\<version>\).
@@ -29,8 +29,8 @@ $repo = Split-Path $game -Parent
 $build = Join-Path $game "build"
 
 $version = (Select-String -Path (Join-Path $game "project.godot") -Pattern '^config/version="(.+)"').Matches[0].Groups[1].Value
-$name = "Screenhaven-$version-windows"
-$exe = Join-Path $build "Screenhaven.exe"
+$name = "TinyAges-$version-windows"
+$exe = Join-Path $build "TinyAges.exe"
 $zip = Join-Path $build "$name.zip"
 
 if (Test-Path -LiteralPath $build) {
@@ -43,7 +43,7 @@ New-Item -ItemType Directory -Path $build | Out-Null
 $log = & $godot --headless --path $game --export-release "Windows Desktop" $exe 2>&1 | Out-String
 if (-not (Test-Path -LiteralPath $exe)) {
 	Write-Host $log
-	$Host.UI.WriteErrorLine("Export failed: no Screenhaven.exe was written.")
+	$Host.UI.WriteErrorLine("Export failed: no TinyAges.exe was written.")
 	exit 1
 }
 if ($log -match "SCRIPT ERROR|Parse Error|ERROR:") {

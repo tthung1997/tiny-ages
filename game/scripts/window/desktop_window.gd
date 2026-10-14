@@ -1,6 +1,6 @@
 class_name DesktopWindow
 extends Node
-## Applies Screenhaven's desktop display modes to the main window: a borderless
+## Applies Tiny Ages' desktop display modes to the main window: a borderless
 ## transparent strip along the bottom of a screen, a corner window, or a normal window.
 ##
 ## The art's alpha silhouette doubles as the clickable region, so clicks on transparent

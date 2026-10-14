@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bundle Screenhaven art scripts into single LibreSprite-runnable files.
+"""Bundle Tiny Ages art scripts into single LibreSprite-runnable files.
 
 LibreSprite resets its script environment on app.open(), so every script must
 open its document first and then define everything else. This tool emits, per

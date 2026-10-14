@@ -1,13 +1,13 @@
-# Screenhaven
+# Tiny Ages
 
-A tiny settlement that lives at the edge of your screen. A few villagers, a cave and a fire sit on a thin strip above your taskbar, and the world goes on while you work. Nothing is ever demanded of you: no timers, no penalties, nothing that expires. When something needs a decision, a small light bulb appears, and you answer whenever you like.
+A tiny settlement that lives at the edge of your screen, and grows through the ages. A few villagers, a cave and a fire sit on a thin strip above your taskbar, and the world goes on while you work. Nothing is ever demanded of you: no timers, no penalties, nothing that expires. When something needs a decision, a small light bulb appears, and you answer whenever you like.
 
 This is an early version (0.1.0), for Windows 10/11 (64-bit).
 
 ## Run it
 
 1. Unzip the folder anywhere.
-2. Double-click `Screenhaven.exe`.
+2. Double-click `TinyAges.exe`.
 
 There is no installer. The first time, Windows SmartScreen may say the app is "unrecognised", because it is not code-signed. Choose **More info**, then **Run anyway**. The checksum is published with each release if you want to verify the download.
 
@@ -26,8 +26,8 @@ The game keeps going while it is closed: time passes at about 20 minutes per day
 
 ## Your save
 
-Your save and settings are two small files in `%APPDATA%\Godot\app_userdata\Screenhaven\` (`screenhaven_save.tres` and `settings.cfg`). Delete them to start a new settlement.
+Your save and settings are two small files in `%APPDATA%\TinyAges\` (`tiny_ages_save.tres` and `settings.cfg`). Delete them to start a new settlement.
 
 ## Licence
 
-MIT. See `LICENSE`, and `THIRD_PARTY_NOTICES.md` for the engine and font licences. Source: <https://github.com/tthung1997/screenhaven>.
+MIT. See `LICENSE`, and `THIRD_PARTY_NOTICES.md` for the engine and font licences. Source: <https://github.com/tthung1997/tiny-ages>.

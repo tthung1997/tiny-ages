@@ -1,6 +1,6 @@
 # Art tools
 
-Scripts that generate Screenhaven's reference art from code, using LibreSprite. See [engine and art direction](../../docs/engine-and-art.md) for the style rules these implement.
+Scripts that generate Tiny Ages' reference art from code, using LibreSprite. See [engine and art direction](../../docs/engine-and-art.md) for the style rules these implement.
 
 ## Requirements
 
