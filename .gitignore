@@ -10,9 +10,8 @@ game/export.cfg
 # and backups here.
 game/addons/.godot_ai_update/
 
-# Export presets often contain absolute paths, signing keys and store
-# credentials. Keep them local.
-game/export_presets.cfg
+# Export presets are committed (game/export_presets.cfg): they hold no keys or machine paths.
+# Keep signing keys and store credentials out of them, and out of git.
 
 # Build output
 game/build/

@@ -296,6 +296,7 @@ Use a `_console` build — the plain Windows `.exe` prints nothing.
 pwsh -File game/tools/check.ps1                                  # validate
 pwsh -File game/tools/run_game.ps1 [--nosave --days=12 --bot]    # run the game standalone
 pwsh -File game/tools/run_spike.ps1 [--mode=...]                 # run the old window spike
+pwsh -File game/tools/build_release.ps1                          # export + zip the Windows release (see README)
 & $env:GODOT --headless --path game --import                     # import new assets
 & $env:GODOT --headless --path game --script res://tools/x.gd    # run a tool script
 python tools/art/bundle.py --run                                 # regenerate reference art
