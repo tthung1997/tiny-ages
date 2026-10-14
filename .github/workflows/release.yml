@@ -1,10 +1,12 @@
 name: Release
 
-# Push a tag like v0.2.0 to build, test and publish a release. Running it by hand
-# (Actions > Release > Run workflow) does everything except publish, as a dry run.
+# Push a tag like v0.2.0 to build, test and publish a release. Pull requests and manual runs
+# (Actions > Release > Run workflow) do everything except publish, as a dry run.
 on:
   push:
     tags: ["v*"]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

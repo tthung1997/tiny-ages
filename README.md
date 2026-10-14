@@ -39,8 +39,8 @@ git push origin v0.2.0
 The [Release workflow](.github/workflows/release.yml) installs Godot, runs the full check, builds the
 Windows zip and publishes a GitHub Release with the zip, its SHA-256 and generated notes
 (`.github/release-notes.md` plus the merged PRs). It refuses a tag that does not match `config/version`.
-**Actions > Release > Run workflow** does the same without publishing, as a dry run. Public repos run Actions
-for free.
+Every pull request, and **Actions > Release > Run workflow**, does the same without publishing, as a
+dry run, so a PR shows whether the tests and the build pass. Public repos run Actions for free.
 
 To build by hand: `pwsh -File game/tools/build_release.ps1` exports the Windows build and zips it with the
 licences and `PLAYING.md` (as `README.txt`) into `game/build/TinyAges-<version>-windows.zip`, plus a SHA-256
