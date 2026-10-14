@@ -9,6 +9,18 @@ A release is a git tag. Pushing a tag like `v0.2.0` runs `.github/workflows/rele
 Godot, runs the full check, builds the Windows zip and publishes a GitHub Release with the zip, its
 SHA-256 and generated notes. Nothing is built or uploaded by hand.
 
+## Is it time?
+
+`pwsh -File game/tools/release_check.ps1` gives a suggestion from simple rules, and the Release check workflow
+posts it on every PR. It counts changes since the last tag that touch files a player gets (`game/scripts`,
+`scenes`, `assets`, `resources`, `project.godot`, the icon): **none** means no release; a **fix** in a small
+batch means a patch; **3 or more** changes, or **14 or more days** with any, means a minor release;
+otherwise "not yet". It also warns when the saved world (`game/scripts/sim/state/`) changed, because saves
+have no migration. The thresholds are constants at the top of the script. It is a heuristic: it cannot see
+how big a change is or whether `main` is stable, so judge on top of it (the `pull-request` skill lists
+what to consider). Do not release just because the count is reached; release when a theme is done, a fix
+matters, or the user wants it.
+
 ## Before you start
 
 1. `main` is the commit to release, and its last change is merged. Check `git status` is clean and you are

@@ -310,6 +310,13 @@ saves the rendered viewport, alpha included, for automated visual checks.
 On Windows, `DisplayServer.window_set_mouse_passthrough()` also clips drawing — anything
 that must be visible has to be inside the passthrough polygon.
 
+## Pull requests and releases
+
+Land work with the `pull-request` skill (`.github/skills/pull-request/`): branch, check, commit as the
+GitHub noreply address, PR, squash merge. **Every time you open or merge a PR, tell the user in one line
+whether a release is due**, from `pwsh -File game/tools/release_check.ps1` (it is also posted on each PR by
+the Release check workflow). Never tag or publish unless asked; the `release` skill has the steps.
+
 ## Before you claim something works
 
 Run `pwsh -File game/tools/check.ps1`. It parses every `.gd` file with
