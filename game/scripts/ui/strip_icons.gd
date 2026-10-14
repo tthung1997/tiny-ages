@@ -1,8 +1,9 @@
 class_name StripIcons
 extends Control
-## The icons floating at the top right of the viewport: the idea bulb (only while a decision
-## waits, with a count when several do), the journal book and the menu gear. They stay put
-## while the world scrolls. Everything here is in viewport art pixels.
+## The icons floating at the top right of the viewport, left to right: the idea bulb (only while
+## a decision waits, with a count when several do), the journal book and the menu gear. The
+## bulb comes and goes at the left end, so the book and gear never move. They stay put while
+## the world scrolls. Everything here is in viewport art pixels.
 
 signal bulb_pressed
 signal journal_pressed
@@ -12,9 +13,9 @@ const SHEET_PATH: String = "res://assets/ui/icons.png"
 const BULB_FRAME: Vector2i = Vector2i(18, 20)
 const JOURNAL_REGION: Rect2i = Rect2i(36, 0, 16, 20)
 const GEAR_REGION: Rect2i = Rect2i(52, 0, 16, 20)
-const BULB_POSITION: Vector2 = Vector2(362.0, 3.0)
-const JOURNAL_POSITION: Vector2 = Vector2(345.0, 3.0)
-const GEAR_POSITION: Vector2 = Vector2(328.0, 3.0)
+const BULB_POSITION: Vector2 = Vector2(331.0, 3.0)
+const JOURNAL_POSITION: Vector2 = Vector2(349.0, 3.0)
+const GEAR_POSITION: Vector2 = Vector2(366.0, 3.0)
 const GEAR_QUIET: Color = Color(1.0, 1.0, 1.0, 0.7)
 const BLINK_SECONDS: float = 0.5
 
