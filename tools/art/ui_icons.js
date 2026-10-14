@@ -1,7 +1,9 @@
 // @open art/reference/ui_icons.png
-// @canvas 68x20
-// The strip's icons, one 68x20 sheet: two frames of the idea bulb (18x20 each, the second lit
-// with rays), the journal book (16x20) and the menu gear (16x20) -> art/reference/ui_icons.png and
+// @canvas 110x20
+// The strip's icons, one 110x20 sheet: two frames of the idea bulb (18x20 each, the second lit
+// with rays), the journal book (16x20), the menu gear (16x20), the wood and food icons for the
+// stock gauge (12x12 each), its two trend arrows (7x5, up above down) and its three pip rows
+// (10x4 each, one, two or three pips lit, stacked) -> art/reference/ui_icons.png and
 // game/assets/ui/icons.png. Frame x positions are mirrored in game/scripts/ui/strip_icons.gd.
 seed = 5;
 var IMG = SPR.layer(0).cel(0).image;
@@ -30,7 +32,23 @@ function gearIcon(b) { // 12x12: eight teeth round a ring, a hole in the middle,
   }
 }
 
-var SHEET = new Buf(68, 20);
+function woodIcon(b) { // 10x10: two stacked logs, end grain on the right
+  b.rect(1, 1, 8, 4, WOOD); b.rect(1, 1, 8, 1, WOODL); b.ell(8.5, 3, 1.5, 2, '#d9a566'); b.px(8, 3, '#b07f44');
+  b.rect(0, 5, 8, 4, WOOD); b.rect(0, 5, 8, 1, WOODL); b.ell(7.5, 7, 1.5, 2, '#d9a566'); b.px(7, 7, '#b07f44');
+}
+function foodIcon(b) { // 10x10: a haunch of meat on the bone
+  b.ell(4, 4.5, 3.8, 3.4, '#b86a4a'); b.ell(3, 3.5, 2, 1.6, '#d98a68');
+  b.rect(7, 6, 3, 2, '#e9dcc0'); b.px(9, 5, '#e9dcc0'); b.px(9, 8, '#e9dcc0');
+}
+function arrowIcon(b, up, c) { // 5x3: a small triangle
+  var rows = up ? ['..x..', '.xxx.', 'xxxxx'] : ['xxxxx', '.xxx.', '..x..'];
+  for (var y = 0; y < 3; y++) for (var x = 0; x < 5; x++) if (rows[y].charAt(x) == 'x') b.px(x, y, c);
+}
+function pipsIcon(b, lit) { // 8x2: three pips, `lit` of them bright
+  for (var i = 0; i < 3; i++) b.rect(i * 3, 0, 2, 2, i < lit ? '#f3e9d2' : '#6a6f7a');
+}
+
+var SHEET = new Buf(110, 20);
 for (var f = 0; f < 2; f++) {
   var tb = new Buf(14, 16); bulbIcon(tb, f == 1);
   blit(SHEET, outlined(tb, OUT), f * 18 + 1, 2);
@@ -44,6 +62,13 @@ var bk = new Buf(14, 14); bookIcon(bk);
 blit(SHEET, outlined(bk, OUT), 36, 2);
 var gr = new Buf(12, 12); gearIcon(gr);
 blit(SHEET, outlined(gr, OUT), 53, 3);
+var wd = new Buf(10, 10); woodIcon(wd); blit(SHEET, outlined(wd, OUT), 68, 0);
+var fd = new Buf(10, 10); foodIcon(fd); blit(SHEET, outlined(fd, OUT), 80, 0);
+var au = new Buf(5, 3); arrowIcon(au, true, '#a8e08a'); blit(SHEET, outlined(au, OUT), 92, 0);
+var ad = new Buf(5, 3); arrowIcon(ad, false, '#f0a060'); blit(SHEET, outlined(ad, OUT), 92, 6);
+for (var lv = 1; lv <= 3; lv++) {
+  var pp = new Buf(8, 2); pipsIcon(pp, lv); blit(SHEET, outlined(pp, OUT), 100, (lv - 1) * 6);
+}
 
 IMG.putImageData(SHEET.d); SPR.save();
 SPR.saveAs(DIR + 'game/assets/ui/icons.png');

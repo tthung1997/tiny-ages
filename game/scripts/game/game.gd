@@ -97,6 +97,7 @@ func _ready() -> void:
 	if options.has("cam"):
 		_world_view.jump_camera(options["cam"])
 	_icons.update_pending(0)
+	_icons.update_stock(sim.world, sim.config)
 	_hud_layer.add_child(_icons)
 	_hud_layer.add_child(_panel)
 	_panel.animated = true
@@ -105,6 +106,7 @@ func _ready() -> void:
 	_icons.bulb_pressed.connect(_open_decisions)
 	_icons.journal_pressed.connect(_toggle_journal)
 	_icons.menu_pressed.connect(_on_menu_requested)
+	_icons.stores_pressed.connect(_toggle_stores)
 	_world_view.villager_clicked.connect(_on_villager_clicked)
 	_world_view.menu_requested.connect(_on_menu_requested)
 	_panel.choice_picked.connect(_on_choice_picked)
@@ -128,6 +130,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_advance_clock(delta)
 	_refresh_pending()
+	_icons.update_stock(sim.world, sim.config)
 	_world_view.update_light()
 	_save_timer += delta
 	if _autosave and _save_timer >= SAVE_INTERVAL_SECONDS:
@@ -282,6 +285,15 @@ func _toggle_journal() -> void:
 		_panel.close_panel()
 		return
 	_panel.show_journal(sim)
+	_fit_window()
+
+
+## The wood and food gauges open the stores panel, where the numbers are; again puts it away.
+func _toggle_stores() -> void:
+	if _panel.mode() == &"stores":
+		_panel.close_panel()
+		return
+	_panel.show_stores(sim)
 	_fit_window()
 
 
