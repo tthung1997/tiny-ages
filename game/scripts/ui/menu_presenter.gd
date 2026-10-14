@@ -4,7 +4,8 @@ extends RefCounted
 ## tested without nodes. The panel draws it and reports the action picked; `Game` applies it.
 
 const MENU_ITEMS: Array = [
-	["Journal", &"journal"], ["Stores", &"stores"], ["Settings", &"settings"], ["Quit", &"quit"],
+	["Journal", &"journal"], ["Villagers", &"villagers"], ["Stores", &"stores"],
+	["Settings", &"settings"], ["Quit", &"quit"],
 ]
 const MODE_LABELS: Dictionary = {&"strip": "Strip", &"corner": "Corner", &"window": "Window"}
 ## Resources shown in the stores panel, in this order; anything else the world holds follows.
@@ -36,8 +37,6 @@ class Stores:
 	## For example "Cave Age - day 12".
 	var heading: String = ""
 	var stock: Array[StockRow] = []
-	## One line per villager: "Mira - Curious, social - Scout".
-	var group: Array[String] = []
 
 
 static func _option(text: String, action: StringName, selected: bool = false) -> Option:
@@ -77,7 +76,7 @@ static func settings_rows(settings: UserSettings, screens: int) -> Array[Row]:
 	return rows
 
 
-## The stores panel: where the settlement is, what it holds and who is in it.
+## The stores panel: where the settlement is and what it holds.
 static func stores(world: WorldState, config: SimConfig, content: ContentLibrary) -> Stores:
 	var view: Stores = Stores.new()
 	var era: EraDef = content.get_era(world.era)
@@ -95,12 +94,4 @@ static func stores(world: WorldState, config: SimConfig, content: ContentLibrary
 		row.amount = world.resource_amount(key)
 		if row.amount > 0 or STOCK_ORDER.has(key):
 			view.stock.append(row)
-	for villager: VillagerState in world.villagers:
-		var card: VillagerPresenter = VillagerPresenter.new()
-		card.traits_text = VillagerPresenter.traits_text_for(villager)
-		card.role_text = String(villager.profession).replace("_", " ").capitalize()
-		var line: String = villager.display_name
-		if not card.byline().is_empty():
-			line += " - " + card.byline()
-		view.group.append(line)
 	return view
