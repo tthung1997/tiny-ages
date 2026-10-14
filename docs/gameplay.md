@@ -12,7 +12,9 @@ placeholder and does not yet follow these decisions; see "What this changes".
   - A choice shows what it needs. If the group cannot afford it yet, it reads as "we'll start when we
     have enough"; it waits and nothing fails.
   - Scarcity is told as story ("food is running low" in the journal) and can make a choice appear
-    (hunt or forage). Exact stock lives in a details panel, never on the strip.
+    (hunt or forage). Exact stock lives in a details panel, never on the strip. The strip shows
+    only a quiet **gauge** for wood and food: three pips (one lit is low, two fine, three plenty)
+    and a small arrow while the stock is clearly rising or falling. No numbers, no rates.
   - Resources can also be hidden inputs to milestones (enough stone to learn knapping).
 - **P3 Two rhythms of activity.** Something small every 10-20 real minutes (a speech bubble, a journal
   line, a visitor or an animal) and something meaningful every few hours (a decision). Away or not,
@@ -46,8 +48,9 @@ placeholder and does not yet follow these decisions; see "What this changes".
 - **P11 Light interaction.** Clicking a villager shows their name, traits and current thought. The
   **Villagers** list in the menu shows the whole group at once: one row each with a full-body
   figure, name, traits and profession; picking a row opens that villager's panel.
-- **P12 The strip shows almost nothing, always.** Permanently on screen there are only the bulb (when
-  a decision waits), the journal book (with an unread dot) and a small, quiet **gear**. Everything
+- **P12 The strip shows almost nothing, always.** Permanently on screen there are only the wood and
+  food gauges (P2), the bulb (when a decision waits), the journal book (with an unread dot) and a
+  small, quiet **gear**. Everything
   else is on demand: the gear (or a **right click on the strip**, as a shortcut) opens a short
   menu with the journal, **Villagers** (P11), **Achievements** (everything the group has earned, oldest
   first, each with an icon and the title it was earned under: only what is earned, no empty slots, no

@@ -1,18 +1,31 @@
 class_name StripIcons
 extends Control
-## The icons floating at the top right of the viewport, left to right: the idea bulb (only while
-## a decision waits, with a count when several do), the journal book and the menu gear. The
-## bulb comes and goes at the left end, so the book and gear never move. They stay put while
-## the world scrolls. Everything here is in viewport art pixels.
+## The icons floating at the top right of the viewport, left to right: the wood and food gauges
+## (a quiet level and trend, never a number: docs/gameplay.md P2), the idea bulb (only while a
+## decision waits, with a count when several do), the journal book and the menu gear. The bulb
+## comes and goes at the left end of its group, so the book and gear never move. They stay put
+## while the world scrolls. Everything here is in viewport art pixels.
 
 signal bulb_pressed
 signal journal_pressed
 signal menu_pressed
+## A wood or food gauge was picked: the numbers are in the stores panel.
+signal stores_pressed
 
 const SHEET_PATH: String = "res://assets/ui/icons.png"
 const BULB_FRAME: Vector2i = Vector2i(18, 20)
 const JOURNAL_REGION: Rect2i = Rect2i(36, 0, 16, 20)
 const GEAR_REGION: Rect2i = Rect2i(52, 0, 16, 20)
+const WOOD_REGION: Rect2i = Rect2i(68, 0, 12, 12)
+const FOOD_REGION: Rect2i = Rect2i(80, 0, 12, 12)
+const ARROW_UP_REGION: Rect2i = Rect2i(92, 0, 7, 5)
+const ARROW_DOWN_REGION: Rect2i = Rect2i(92, 6, 7, 5)
+## One, two and three pips lit, stacked.
+const PIPS_REGIONS: Array[Rect2i] = [
+	Rect2i(100, 0, 10, 4), Rect2i(100, 6, 10, 4), Rect2i(100, 12, 10, 4),
+]
+const WOOD_POSITION: Vector2 = Vector2(285.0, 3.0)
+const FOOD_POSITION: Vector2 = Vector2(307.0, 3.0)
 const BULB_POSITION: Vector2 = Vector2(331.0, 3.0)
 const JOURNAL_POSITION: Vector2 = Vector2(349.0, 3.0)
 const GEAR_POSITION: Vector2 = Vector2(366.0, 3.0)
@@ -23,6 +36,8 @@ var _sheet: Texture2D
 var _bulb: TextureButton = TextureButton.new()
 var _journal: TextureButton = TextureButton.new()
 var _gear: TextureButton = TextureButton.new()
+var _wood: StockIcon
+var _food: StockIcon
 var _badge: Label = Label.new()
 var _time: float = 0.0
 var _frames: Array[AtlasTexture] = []
@@ -32,6 +47,8 @@ func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	size = Vector2(WorldLayout.VIEW_SIZE)
 	_sheet = load(SHEET_PATH) as Texture2D
+	_wood = _stock_icon(&"wood", WOOD_REGION, WOOD_POSITION)
+	_food = _stock_icon(&"food", FOOD_REGION, FOOD_POSITION)
 	for frame: int in 2:
 		_frames.append(_atlas(Rect2i(Vector2i(frame * BULB_FRAME.x, 0), BULB_FRAME)))
 	_bulb.texture_normal = _frames[0]
@@ -59,6 +76,21 @@ func _init() -> void:
 	add_child(_bulb)
 
 
+## Reads the wood and food stocks. Cheap to call every frame.
+func update_stock(world: WorldState, config: SimConfig) -> void:
+	_wood.update_from(world, config)
+	_food.update_from(world, config)
+
+
+## The wood gauge, and the food one, for looking at what they show.
+func wood_gauge() -> StockIcon:
+	return _wood
+
+
+func food_gauge() -> StockIcon:
+	return _food
+
+
 ## `waiting` is how many decisions are pending.
 func update_pending(waiting: int) -> void:
 	_bulb.visible = waiting > 0
@@ -77,6 +109,8 @@ func badge_text() -> String:
 ## The areas that must stay clickable in strip mode, in viewport art pixels.
 func clickable_regions() -> Array[Rect2i]:
 	var regions: Array[Rect2i] = [
+		Rect2i(Vector2i(_wood.position), Vector2i(StockIcon.SIZE)),
+		Rect2i(Vector2i(_food.position), Vector2i(StockIcon.SIZE)),
 		Rect2i(Vector2i(_journal.position), JOURNAL_REGION.size),
 		Rect2i(Vector2i(_gear.position), GEAR_REGION.size),
 	]
@@ -91,6 +125,18 @@ func _process(delta: float) -> void:
 	_time += delta
 	_bulb.texture_normal = _frames[int(_time / BLINK_SECONDS) % 2]
 	_bulb.position.y = BULB_POSITION.y + (1.0 if fmod(_time, 1.4) > 0.7 else 0.0)
+
+
+func _stock_icon(resource: StringName, region: Rect2i, at: Vector2) -> StockIcon:
+	var arrows: Array[Texture2D] = [_atlas(ARROW_UP_REGION), _atlas(ARROW_DOWN_REGION)]
+	var pips: Array[Texture2D] = []
+	for pips_region: Rect2i in PIPS_REGIONS:
+		pips.append(_atlas(pips_region))
+	var icon: StockIcon = StockIcon.new(resource, _atlas(region), arrows, pips)
+	icon.position = at
+	icon.stores_requested.connect(func() -> void: stores_pressed.emit())
+	add_child(icon)
+	return icon
 
 
 func _atlas(region: Rect2i) -> AtlasTexture:

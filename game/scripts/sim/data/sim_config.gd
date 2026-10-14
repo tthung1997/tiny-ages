@@ -35,6 +35,12 @@ extends Resource
 ## Construction progress added per builder per tick.
 @export_range(0.1, 5.0, 0.1) var build_rate_per_builder: float = 1.0
 
+@export_group("Strip")
+## How the wood and food icons on the strip read a stock (StockGauge), as fractions of
+## `comfortable_stock`: below the first is "low", from the second up is "plenty".
+@export_range(0.0, 1.0, 0.05) var low_stock_fraction: float = 0.25
+@export_range(0.0, 1.0, 0.05) var plenty_stock_fraction: float = 0.75
+
 
 func seconds_per_tick() -> float:
 	return real_seconds_per_game_day / float(ticks_per_day)

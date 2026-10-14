@@ -301,11 +301,11 @@ func test_old_button_actions_do_not_leak_into_new_content() -> void:
 func test_the_bulb_appears_only_while_a_decision_waits() -> void:
 	var icons: StripIcons = StripIcons.new()
 	assert_false(icons.has_bulb())
-	assert_eq(icons.clickable_regions().size(), 2, "Only the journal and the gear are clickable")
+	assert_eq(icons.clickable_regions().size(), 4, "The two gauges, the journal and the gear")
 	icons.update_pending(1)
 	assert_true(icons.has_bulb())
 	assert_eq(icons.badge_text(), "", "No number for a single decision")
-	assert_eq(icons.clickable_regions().size(), 3)
+	assert_eq(icons.clickable_regions().size(), 5)
 	icons.update_pending(3)
 	assert_eq(icons.badge_text(), "3")
 	icons.update_pending(0)
