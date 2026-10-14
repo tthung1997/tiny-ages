@@ -29,12 +29,24 @@ Conventions are in [`.github/copilot-instructions.md`](.github/copilot-instructi
 
 ## Releasing
 
-`pwsh -File game/tools/build_release.ps1` exports the Windows build and zips it with the licences and
-`PLAYING.md` (as `README.txt`) into `game/build/TinyAges-<version>-windows.zip`, plus a SHA-256 file.
-It needs the Windows export templates for the engine version (Editor > Manage Export Templates, or
-`%APPDATA%\Godot\export_templates\4.7.1.stable\`). Bump `config/version` in `game/project.godot` (and the
-two versions in `game/export_presets.cfg`) first, then publish with `gh release create v<version> <zip>
-<zip>.sha256`. The build is not code-signed, so Windows SmartScreen warns on first run (`PLAYING.md` says so).
+Bump `config/version` in `game/project.godot` (the only place), merge it, then push a tag:
+
+```
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+The [Release workflow](.github/workflows/release.yml) installs Godot, runs the full check, builds the
+Windows zip and publishes a GitHub Release with the zip, its SHA-256 and generated notes
+(`.github/release-notes.md` plus the merged PRs). It refuses a tag that does not match `config/version`.
+Every pull request, and **Actions > Release > Run workflow**, does the same without publishing, as a
+dry run, so a PR shows whether the tests and the build pass. Public repos run Actions for free.
+
+To build by hand: `pwsh -File game/tools/build_release.ps1` exports the Windows build and zips it with the
+licences and `PLAYING.md` (as `README.txt`) into `game/build/TinyAges-<version>-windows.zip`, plus a SHA-256
+file. It needs the Windows export templates for the engine version; `pwsh -File game/tools/install_godot.ps1`
+installs the engine and templates (checksum-verified) on a fresh machine. The build is not code-signed, so
+Windows SmartScreen warns on first run (`PLAYING.md` says so).
 
 ## License
 
