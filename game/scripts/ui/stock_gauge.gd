@@ -10,14 +10,15 @@ extends RefCounted
 enum Level { LOW, FINE, PLENTY }
 enum Trend { STEADY, UP, DOWN }
 
-## The stretch the trend looks back over. A tick is about 50 real seconds, so this is about ten
-## real minutes.
-const WINDOW_TICKS: int = 12
+## The stretch the trend looks back over. A tick is about 50 real seconds, so this is two game
+## days, about forty real minutes: stock grows slowly (a unit every several ticks), so a shorter
+## stretch would rarely show a rise.
+const WINDOW_TICKS: int = 48
 ## The trend is not judged until the samples span at least this much.
 const MIN_SPAN_TICKS: int = 6
 ## A change this big starts a trend; it ends once the change is below the smaller number.
-const TREND_STARTS_AT: int = 4
-const TREND_ENDS_BELOW: int = 2
+const TREND_STARTS_AT: int = 2
+const TREND_ENDS_BELOW: int = 1
 
 var _ticks: PackedInt32Array = PackedInt32Array()
 var _amounts: PackedInt32Array = PackedInt32Array()

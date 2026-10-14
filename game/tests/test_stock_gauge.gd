@@ -66,17 +66,27 @@ func test_small_wobbles_never_show() -> void:
 		assert_eq(gauge.trend(), StockGauge.Trend.STEADY, "Tick %d" % tick)
 
 
-func test_the_arrow_stays_until_the_change_has_mostly_faded() -> void:
+func test_the_arrow_stays_until_the_change_has_faded() -> void:
 	var gauge: StockGauge = StockGauge.new()
 	_ramp(gauge, 0, 10, 1, 10)
 	assert_eq(gauge.trend(), StockGauge.Trend.UP)
-	# The stock stops at 20. The change over the window shrinks tick by tick.
-	for tick: int in range(11, 20):
+	# The stock stops at 20. The change over the window shrinks as the climb leaves it.
+	for tick: int in range(11, 10 + StockGauge.WINDOW_TICKS):
 		gauge.record(tick, 20)
 	assert_eq(gauge.trend(), StockGauge.Trend.UP, "Not dropped the moment the climb stopped")
-	for tick: int in range(20, 30):
-		gauge.record(tick, 20)
+	gauge.record(10 + StockGauge.WINDOW_TICKS, 20)
 	assert_eq(gauge.trend(), StockGauge.Trend.STEADY, "...but gone once the stock has settled")
+
+
+func test_the_pace_of_real_gathering_shows_a_rise() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var gauge: StockGauge = StockGauge.new()
+	var rose: bool = false
+	for _tick: int in SimFixture.TICKS_PER_DAY * 6:
+		sim.advance_ticks(1)
+		gauge.record(sim.world.tick, sim.world.resource_amount(&"wood"))
+		rose = rose or gauge.trend() == StockGauge.Trend.UP
+	assert_true(rose, "Stock grows a unit every few ticks, and the arrow must be able to see that")
 
 
 func test_spending_shows_as_falling() -> void:
