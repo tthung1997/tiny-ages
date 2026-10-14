@@ -3,8 +3,8 @@ extends Node2D
 ## The running game: owns the simulation, drives it from the real clock (so being away is
 ## offline catch-up), saves it, and hosts the world view and the desktop window.
 ##
-## Click the gear or right-click the strip for the menu (journal, villagers, stores, settings,
-##   quit); click the bulb (decision
+## Click the gear or right-click the strip for the menu (journal, villagers, achievements, stores,
+##   settings, quit); click the bulb (decision
 ##   waiting) or the book (journal) at the top right of the strip.
 ##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
 ##   Esc closes the open panel, or saves and quits; Q saves and quits
@@ -20,8 +20,8 @@ extends Node2D
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
 ##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
-##   camp is 0) --panel=decision|journal|away|villager|villagers|menu|stores|settings (open
-##   that panel at
+##   camp is 0) --panel=decision|journal|away|villager|villagers|achievements|menu|stores|settings
+##   (open that panel at
 ##   start) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
@@ -316,6 +316,8 @@ func _on_action(action: StringName) -> void:
 			_panel.show_journal(sim)
 		&"villagers":
 			_panel.show_villagers(sim)
+		&"achievements":
+			_panel.show_achievements(sim)
 		&"stores":
 			_panel.show_stores(sim)
 		&"settings":
@@ -376,8 +378,8 @@ func _fit_window() -> void:
 
 
 ## The "while you were away" summary on launch, or a panel chosen by the dev flag --panel=
-## (decision, journal, away, villager, villagers, menu, stores or settings) so each can be looked
-## at without
+## (decision, journal, away, villager, villagers, achievements, menu, stores or settings) so each
+## can be looked at without
 ## waiting for it to happen.
 func _open_startup_panel(requested: String) -> void:
 	match requested:
@@ -391,7 +393,7 @@ func _open_startup_panel(requested: String) -> void:
 		"villager":
 			_panel.show_villager(sim, sim.world.villagers[0].id)
 			_fit_window()
-		"menu", "villagers", "stores", "settings":
+		"menu", "villagers", "achievements", "stores", "settings":
 			_on_action(StringName(requested))
 		_:
 			var summary: AwaySummary = AwaySummary.present(
