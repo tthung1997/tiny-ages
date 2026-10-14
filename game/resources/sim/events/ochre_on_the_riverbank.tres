@@ -28,30 +28,41 @@ effects = Array[ExtResource("2_sr52k")]([SubResource("Resource_dv42p"), SubResou
 
 [sub_resource type="Resource" id="Resource_mhbw0"]
 script = ExtResource("2_sr52k")
-text = "{subject} washed the red earth off in the river."
+kind = 1
+key = &"body_paint"
 
 [sub_resource type="Resource" id="Resource_x87h4"]
-script = ExtResource("1_7i8o0")
-id = &"wash_it_off"
-label = "Wash it off in the river"
-effects = Array[ExtResource("2_sr52k")]([SubResource("Resource_mhbw0")])
+script = ExtResource("2_sr52k")
+text = "{subject} painted a red line down a friend's cheek, and by dark the whole camp wore it."
 
 [sub_resource type="Resource" id="Resource_7moip"]
+script = ExtResource("2_sr52k")
+kind = 10
+key = &"shared_stories"
+text = "Shared Stories"
+
+[sub_resource type="Resource" id="Resource_gqh3j"]
+script = ExtResource("1_7i8o0")
+id = &"paint_faces"
+label = "Let them paint faces and hands instead"
+effects = Array[ExtResource("2_sr52k")]([SubResource("Resource_mhbw0"), SubResource("Resource_x87h4"), SubResource("Resource_7moip")])
+
+[sub_resource type="Resource" id="Resource_2rd3f"]
 script = ExtResource("3_xmxwf")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_gqh3j"]
+[sub_resource type="Resource" id="Resource_xc55e"]
 script = ExtResource("3_xmxwf")
 kind = 9
 key = &"shared_stories"
 negate = true
 
-[sub_resource type="Resource" id="Resource_2rd3f"]
+[sub_resource type="Resource" id="Resource_0rrmw"]
 script = ExtResource("3_xmxwf")
 kind = 5
 amount = 108
 
-[sub_resource type="Resource" id="Resource_xc55e"]
+[sub_resource type="Resource" id="Resource_5okuw"]
 script = ExtResource("3_xmxwf")
 kind = 7
 
@@ -61,13 +72,12 @@ id = &"ochre_on_the_riverbank"
 title = "Red earth"
 body = "{subject} came back from the riverbank with hands stained deep red, and a lump of the earth that did it."
 category = &"nature"
-requires = Array[ExtResource("3_xmxwf")]([SubResource("Resource_7moip"), SubResource("Resource_gqh3j"), SubResource("Resource_2rd3f")])
+requires = Array[ExtResource("3_xmxwf")]([SubResource("Resource_2rd3f"), SubResource("Resource_xc55e"), SubResource("Resource_0rrmw")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_xmxwf")]([SubResource("Resource_xc55e")])
+subject_requires = Array[ExtResource("3_xmxwf")]([SubResource("Resource_5okuw")])
 trait_weights = Dictionary[StringName, float]({
 &"nature_loving": 3.0
 })
 chance_per_tick = 0.03
 cooldown_ticks = 48
-choices = Array[ExtResource("1_7i8o0")]([SubResource("Resource_rh0b8"), SubResource("Resource_x87h4")])
-min_choices = 1
+choices = Array[ExtResource("1_7i8o0")]([SubResource("Resource_rh0b8"), SubResource("Resource_gqh3j")])

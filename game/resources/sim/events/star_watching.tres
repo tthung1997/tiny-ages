@@ -22,24 +22,29 @@ effects = Array[ExtResource("2_q67bn")]([SubResource("Resource_8w5uq"), SubResou
 
 [sub_resource type="Resource" id="Resource_rfabi"]
 script = ExtResource("2_q67bn")
-text = "{subject} kept the stars private, and seemed happier for it."
+kind = 1
+key = &"stars_private"
 
 [sub_resource type="Resource" id="Resource_8nkac"]
+script = ExtResource("2_q67bn")
+text = "{subject} kept the stars private, and seemed happier for it."
+
+[sub_resource type="Resource" id="Resource_hrmek"]
 script = ExtResource("1_qeh74")
 id = &"keep_it_theirs"
 label = "Let them keep the sky to themselves"
-effects = Array[ExtResource("2_q67bn")]([SubResource("Resource_rfabi")])
+effects = Array[ExtResource("2_q67bn")]([SubResource("Resource_rfabi"), SubResource("Resource_8nkac")])
 
-[sub_resource type="Resource" id="Resource_hrmek"]
+[sub_resource type="Resource" id="Resource_lskgu"]
 script = ExtResource("3_rp2to")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_lskgu"]
+[sub_resource type="Resource" id="Resource_agh4g"]
 script = ExtResource("3_rp2to")
 kind = 5
 amount = 294
 
-[sub_resource type="Resource" id="Resource_agh4g"]
+[sub_resource type="Resource" id="Resource_y41p0"]
 script = ExtResource("3_rp2to")
 kind = 7
 
@@ -48,13 +53,12 @@ script = ExtResource("4_aracw")
 id = &"star_watching"
 title = "Counting stars"
 body = "{subject} has taken to lying awake outside, counting the stars, and losing count."
-requires = Array[ExtResource("3_rp2to")]([SubResource("Resource_hrmek"), SubResource("Resource_lskgu")])
+requires = Array[ExtResource("3_rp2to")]([SubResource("Resource_lskgu"), SubResource("Resource_agh4g")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_rp2to")]([SubResource("Resource_agh4g")])
+subject_requires = Array[ExtResource("3_rp2to")]([SubResource("Resource_y41p0")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_qeh74")]([SubResource("Resource_m11pp"), SubResource("Resource_8nkac")])
-min_choices = 1
+choices = Array[ExtResource("1_qeh74")]([SubResource("Resource_m11pp"), SubResource("Resource_hrmek")])

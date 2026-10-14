@@ -6,11 +6,19 @@ func suite_name() -> String:
 	return "sim_events"
 
 
-func test_building_decision_opens_once_there_is_enough_wood() -> void:
+func test_building_decision_opens_once_there_are_two_buildings_to_choose_from() -> void:
 	var sim: Simulation = SimFixture.new_sim()
-	sim.world.resources[&"wood"] = 10
+	SimFixture.jump_to_day(sim, 18)
+	sim.world.resources[&"wood"] = 12
 	var used: int = SimFixture.advance_until_pending(sim, &"building_opportunity", 30)
-	assert_gt(used, 0, "A building decision should open soon after wood is available")
+	assert_gt(used, 0, "A building decision should open once there are two to choose from")
+
+
+func test_a_single_building_to_choose_is_not_a_decision() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.resources[&"wood"] = 30
+	sim.advance_ticks(SimFixture.TICKS_PER_DAY * 10)
+	assert_eq(sim.world.event_counts.get(&"building_opportunity", 0), 0, "Only the Lookout so far")
 
 
 func test_choices_the_settlement_cannot_afford_are_refused() -> void:
@@ -92,6 +100,7 @@ func test_a_decision_can_still_be_answered_after_others_are_withdrawn() -> void:
 
 func test_the_same_decision_never_stacks_up() -> void:
 	var sim: Simulation = SimFixture.new_sim(3)
+	SimFixture.jump_to_day(sim, 18)
 	sim.world.resources[&"wood"] = 50
 	var most_at_once: int = 0
 	for _tick: int in SimFixture.TICKS_PER_DAY * 15:

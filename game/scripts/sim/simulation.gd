@@ -121,7 +121,7 @@ func resolve_decision(decision_id: StringName, choice_id: StringName) -> bool:
 func is_decision_stale(decision: PendingDecision) -> bool:
 	var event: EventDef = content.get_event(decision.event_id)
 	if event == null:
-		return false
+		return true
 	for condition: SimCondition in event.requires:
 		var not_yet: bool = not condition.negate and (
 			condition.kind == SimCondition.Kind.DAYS_AT_LEAST

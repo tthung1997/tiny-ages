@@ -115,36 +115,41 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_6rj1x"), SubResou
 
 [sub_resource type="Resource" id="Resource_f50tm"]
 script = ExtResource("5_euihr")
-text = "The group kept away from the burning tree."
+kind = 1
+key = &"embers_waited"
 
 [sub_resource type="Resource" id="Resource_5nyoe"]
+script = ExtResource("5_euihr")
+text = "The group watched the burning tree from a distance until it was ash and embers."
+
+[sub_resource type="Resource" id="Resource_p2evq"]
 script = ExtResource("5_euihr")
 kind = 7
 key = &"embers_remain"
 amount = 48
 
-[sub_resource type="Resource" id="Resource_p2evq"]
-script = ExtResource("4_0wd41")
-id = &"stay_away"
-label = "Keep well away from it"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_f50tm"), SubResource("Resource_5nyoe")])
-
 [sub_resource type="Resource" id="Resource_pmj0e"]
+script = ExtResource("4_0wd41")
+id = &"wait_for_embers"
+label = "Wait for it to burn down, then take the embers"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_f50tm"), SubResource("Resource_5nyoe"), SubResource("Resource_p2evq")])
+
+[sub_resource type="Resource" id="Resource_jlu4w"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 negate = true
 
-[sub_resource type="Resource" id="Resource_jlu4w"]
+[sub_resource type="Resource" id="Resource_yucx7"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 1
 
-[sub_resource type="Resource" id="Resource_yucx7"]
+[sub_resource type="Resource" id="Resource_vju30"]
 script = ExtResource("6_x2sw1")
 kind = 6
 key = &"curious"
 
-[sub_resource type="Resource" id="Resource_vju30"]
+[sub_resource type="Resource" id="Resource_pg0lq"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
@@ -154,13 +159,12 @@ id = &"fire_from_storm"
 title = "A burning tree"
 body = "A storm rolled over the valley in the night. On the ridge a lone tree is burning, and even from here its glow is warm."
 category = &"nature"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_pmj0e"), SubResource("Resource_jlu4w")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jlu4w"), SubResource("Resource_yucx7")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_yucx7"), SubResource("Resource_vju30")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vju30"), SubResource("Resource_pg0lq")])
 chance_per_tick = 0.04
 cooldown_ticks = 24
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_q5tmg"), SubResource("Resource_p2evq")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_q5tmg"), SubResource("Resource_pmj0e")])
 
 [sub_resource type="Resource" id="Resource_4l3lx"]
 script = ExtResource("5_euihr")
@@ -185,36 +189,41 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4l3lx"), SubResou
 
 [sub_resource type="Resource" id="Resource_t78ct"]
 script = ExtResource("5_euihr")
-text = "{subject} brushed the spark away before it could grow."
+kind = 1
+key = &"embers_waited"
 
 [sub_resource type="Resource" id="Resource_umemd"]
+script = ExtResource("5_euihr")
+text = "{subject} cupped the spark in the moss all night, and by dawn it was a bed of embers."
+
+[sub_resource type="Resource" id="Resource_enlv0"]
 script = ExtResource("5_euihr")
 kind = 7
 key = &"embers_remain"
 amount = 72
 
-[sub_resource type="Resource" id="Resource_enlv0"]
-script = ExtResource("4_0wd41")
-id = &"let_it_die"
-label = "Brush it away"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_t78ct"), SubResource("Resource_umemd")])
-
 [sub_resource type="Resource" id="Resource_sg63w"]
+script = ExtResource("4_0wd41")
+id = &"tend_the_spark"
+label = "Shelter it and tend it until morning"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_t78ct"), SubResource("Resource_umemd"), SubResource("Resource_enlv0")])
+
+[sub_resource type="Resource" id="Resource_1kdaf"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 negate = true
 
-[sub_resource type="Resource" id="Resource_1kdaf"]
+[sub_resource type="Resource" id="Resource_77twe"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 1
 
-[sub_resource type="Resource" id="Resource_77twe"]
+[sub_resource type="Resource" id="Resource_bouk4"]
 script = ExtResource("6_x2sw1")
 kind = 6
 key = &"industrious"
 
-[sub_resource type="Resource" id="Resource_bouk4"]
+[sub_resource type="Resource" id="Resource_8lllr"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
@@ -224,13 +233,12 @@ id = &"fire_from_sparks"
 title = "Sparks"
 body = "{subject} was knocking two stones together when a spark caught in a nest of dry moss."
 category = &"settlement"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_sg63w"), SubResource("Resource_1kdaf")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1kdaf"), SubResource("Resource_77twe")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_77twe"), SubResource("Resource_bouk4")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bouk4"), SubResource("Resource_8lllr")])
 chance_per_tick = 0.03
 cooldown_ticks = 24
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i53sn"), SubResource("Resource_enlv0")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i53sn"), SubResource("Resource_sg63w")])
 
 [sub_resource type="Resource" id="Resource_0wcny"]
 script = ExtResource("5_euihr")
@@ -278,30 +286,47 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mvseo"), SubResou
 
 [sub_resource type="Resource" id="Resource_eblq6"]
 script = ExtResource("5_euihr")
-text = "{subject} tossed the split stone onto the pile."
+kind = 1
+key = &"nut_hammer"
 
 [sub_resource type="Resource" id="Resource_1db7g"]
-script = ExtResource("4_0wd41")
-id = &"toss_it"
-label = "Toss it aside"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_eblq6")])
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 3
 
 [sub_resource type="Resource" id="Resource_2pm21"]
+script = ExtResource("5_euihr")
+text = "{subject} kept cracking nuts with the split stone, and the others queued up to try it."
+
+[sub_resource type="Resource" id="Resource_qavbm"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"hammerstone_splits"
+amount = 96
+
+[sub_resource type="Resource" id="Resource_6nvsr"]
+script = ExtResource("4_0wd41")
+id = &"keep_cracking"
+label = "Keep cracking nuts with it"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_eblq6"), SubResource("Resource_1db7g"), SubResource("Resource_2pm21"), SubResource("Resource_qavbm")])
+
+[sub_resource type="Resource" id="Resource_15npt"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_qavbm"]
+[sub_resource type="Resource" id="Resource_yrdla"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"stone_tools"
 negate = true
 
-[sub_resource type="Resource" id="Resource_6nvsr"]
+[sub_resource type="Resource" id="Resource_oeop2"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 18
 
-[sub_resource type="Resource" id="Resource_15npt"]
+[sub_resource type="Resource" id="Resource_o71v1"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
@@ -310,16 +335,39 @@ script = ExtResource("3_0otko")
 id = &"cracking_nuts"
 title = "A sharp stone"
 body = "{subject} was cracking nuts with a river stone when it split, leaving an edge sharper than anything the group owns."
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_2pm21"), SubResource("Resource_qavbm"), SubResource("Resource_6nvsr")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_15npt"), SubResource("Resource_yrdla"), SubResource("Resource_oeop2")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_15npt")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_o71v1")])
 trait_weights = Dictionary[StringName, float]({
 &"nature_loving": 3.0
 })
 chance_per_tick = 0.03
 cooldown_ticks = 48
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_nq140"), SubResource("Resource_1db7g")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_nq140"), SubResource("Resource_6nvsr")])
+
+[sub_resource type="Resource" id="Resource_tbs7y"]
+script = ExtResource("5_euihr")
+text = "The old nut stone finally split clean across, and the edge it left was sharper than anything the group owned. By evening everyone was making edges."
+
+[sub_resource type="Resource" id="Resource_renrp"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"stone_tools"
+text = "Stone Tools"
+
+[sub_resource type="Resource" id="Resource_x1bq2"]
+script = ExtResource("6_x2sw1")
+kind = 9
+key = &"stone_tools"
+negate = true
+
+[sub_resource type="Resource" id="Resource_5po8p"]
+script = ExtResource("3_0otko")
+id = &"hammerstone_splits"
+title = "The hammerstone breaks"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_x1bq2")])
+needs_subject = true
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tbs7y"), SubResource("Resource_renrp")])
 
 [sub_resource type="Resource" id="Resource_gskgd"]
 script = ExtResource("5_euihr")
@@ -358,104 +406,148 @@ script = ExtResource("5_euihr")
 text = "The group wove reed baskets and spent the day gathering along the river."
 
 [sub_resource type="Resource" id="Resource_1a8h2"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"baskets_keep"
+amount = 96
+
+[sub_resource type="Resource" id="Resource_tx76g"]
 script = ExtResource("4_0wd41")
 id = &"forage"
 label = "Weave baskets and gather instead"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_sqbeo"), SubResource("Resource_c1nta"), SubResource("Resource_7465g")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_sqbeo"), SubResource("Resource_c1nta"), SubResource("Resource_7465g"), SubResource("Resource_1a8h2")])
 
-[sub_resource type="Resource" id="Resource_tx76g"]
+[sub_resource type="Resource" id="Resource_ujdoq"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"stone_tools"
 
-[sub_resource type="Resource" id="Resource_ujdoq"]
+[sub_resource type="Resource" id="Resource_5kknf"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"reliable_food"
 negate = true
 
-[sub_resource type="Resource" id="Resource_5kknf"]
+[sub_resource type="Resource" id="Resource_2i0db"]
 script = ExtResource("6_x2sw1")
 key = &"path_foraging"
 negate = true
 
-[sub_resource type="Resource" id="Resource_2i0db"]
+[sub_resource type="Resource" id="Resource_rw8wq"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 54
 
-[sub_resource type="Resource" id="Resource_5po8p"]
+[sub_resource type="Resource" id="Resource_1iwjt"]
 script = ExtResource("3_0otko")
 id = &"herds_nearby"
 title = "The herds are close"
 body = "A herd has wandered into the valley below the cave. Food has been uncertain for days, and this might be the chance to change that."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_tx76g"), SubResource("Resource_ujdoq"), SubResource("Resource_5kknf"), SubResource("Resource_2i0db")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ujdoq"), SubResource("Resource_5kknf"), SubResource("Resource_2i0db"), SubResource("Resource_rw8wq")])
 chance_per_tick = 0.03
 cooldown_ticks = 48
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_1yjxt"), SubResource("Resource_1a8h2")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_1yjxt"), SubResource("Resource_tx76g")])
+
+[sub_resource type="Resource" id="Resource_240v7"]
+script = ExtResource("5_euihr")
+text = "The baskets hung from the cave roof stayed full through the lean weeks, and nobody woke hungry."
+
+[sub_resource type="Resource" id="Resource_2qdr6"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"reliable_food"
+text = "Enough to Eat"
+
+[sub_resource type="Resource" id="Resource_fopld"]
+script = ExtResource("6_x2sw1")
+kind = 9
+key = &"reliable_food"
+negate = true
+
+[sub_resource type="Resource" id="Resource_u7x25"]
+script = ExtResource("3_0otko")
+id = &"baskets_keep"
+title = "Baskets that keep"
+category = &"settlement"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_fopld")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_240v7"), SubResource("Resource_2qdr6")])
 
 [sub_resource type="Resource" id="Resource_xcvcr"]
 script = ExtResource("5_euihr")
-text = "{subject} told the story of the day, and soon everyone was adding to it. By the end they told it the same way each night."
+kind = 1
+key = &"tales_told"
 
 [sub_resource type="Resource" id="Resource_knoha"]
+script = ExtResource("5_euihr")
+text = "{subject} told the story of the day, and soon everyone was adding to it. By the end they told it the same way each night."
+
+[sub_resource type="Resource" id="Resource_r3ted"]
 script = ExtResource("5_euihr")
 kind = 10
 key = &"shared_stories"
 text = "Shared Stories"
 
-[sub_resource type="Resource" id="Resource_r3ted"]
+[sub_resource type="Resource" id="Resource_q3sdm"]
 script = ExtResource("4_0wd41")
 id = &"tell_it"
 label = "Gather everyone to listen"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_xcvcr"), SubResource("Resource_knoha")])
-
-[sub_resource type="Resource" id="Resource_q3sdm"]
-script = ExtResource("5_euihr")
-text = "The fire burned down and everyone drifted to sleep."
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_xcvcr"), SubResource("Resource_knoha"), SubResource("Resource_r3ted")])
 
 [sub_resource type="Resource" id="Resource_ssyy1"]
-script = ExtResource("4_0wd41")
-id = &"let_it_pass"
-label = "Let the fire burn down"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_q3sdm")])
+script = ExtResource("5_euihr")
+kind = 1
+key = &"songs_sung"
 
 [sub_resource type="Resource" id="Resource_1x1dx"]
+script = ExtResource("5_euihr")
+text = "{subject} sang the story of the day, and one by one the others found the tune. By the end they sang it the same way each night."
+
+[sub_resource type="Resource" id="Resource_8resg"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"shared_stories"
+text = "Shared Stories"
+
+[sub_resource type="Resource" id="Resource_vdjin"]
+script = ExtResource("4_0wd41")
+id = &"sing_it"
+label = "Let them sing it instead"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ssyy1"), SubResource("Resource_1x1dx"), SubResource("Resource_8resg")])
+
+[sub_resource type="Resource" id="Resource_4ixx8"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_8resg"]
+[sub_resource type="Resource" id="Resource_e2jdv"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"shared_stories"
 negate = true
 
-[sub_resource type="Resource" id="Resource_vdjin"]
+[sub_resource type="Resource" id="Resource_lya7x"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 108
 
-[sub_resource type="Resource" id="Resource_4ixx8"]
+[sub_resource type="Resource" id="Resource_mwpdt"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_1iwjt"]
+[sub_resource type="Resource" id="Resource_qkyvo"]
 script = ExtResource("3_0otko")
 id = &"stories_by_the_fire"
 title = "A story by the fire"
 body = "{subject} has started telling the others about the day, and for once nobody is eager to sleep."
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1x1dx"), SubResource("Resource_8resg"), SubResource("Resource_vdjin")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4ixx8"), SubResource("Resource_e2jdv"), SubResource("Resource_lya7x")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4ixx8")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_mwpdt")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })
 chance_per_tick = 0.03
 cooldown_ticks = 48
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_r3ted"), SubResource("Resource_ssyy1")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_q3sdm"), SubResource("Resource_vdjin")])
 
 [sub_resource type="Resource" id="Resource_dv42p"]
 script = ExtResource("5_euihr")
@@ -480,108 +572,237 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_dv42p"), SubResou
 
 [sub_resource type="Resource" id="Resource_mhbw0"]
 script = ExtResource("5_euihr")
-text = "{subject} washed the red earth off in the river."
+kind = 1
+key = &"body_paint"
 
 [sub_resource type="Resource" id="Resource_x87h4"]
-script = ExtResource("4_0wd41")
-id = &"wash_it_off"
-label = "Wash it off in the river"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mhbw0")])
+script = ExtResource("5_euihr")
+text = "{subject} painted a red line down a friend's cheek, and by dark the whole camp wore it."
 
 [sub_resource type="Resource" id="Resource_7moip"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"shared_stories"
+text = "Shared Stories"
+
+[sub_resource type="Resource" id="Resource_gqh3j"]
+script = ExtResource("4_0wd41")
+id = &"paint_faces"
+label = "Let them paint faces and hands instead"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mhbw0"), SubResource("Resource_x87h4"), SubResource("Resource_7moip")])
+
+[sub_resource type="Resource" id="Resource_2rd3f"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_gqh3j"]
+[sub_resource type="Resource" id="Resource_xc55e"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"shared_stories"
 negate = true
 
-[sub_resource type="Resource" id="Resource_2rd3f"]
+[sub_resource type="Resource" id="Resource_0rrmw"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 108
 
-[sub_resource type="Resource" id="Resource_xc55e"]
+[sub_resource type="Resource" id="Resource_5okuw"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_u7x25"]
+[sub_resource type="Resource" id="Resource_ggqur"]
 script = ExtResource("3_0otko")
 id = &"ochre_on_the_riverbank"
 title = "Red earth"
 body = "{subject} came back from the riverbank with hands stained deep red, and a lump of the earth that did it."
 category = &"nature"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7moip"), SubResource("Resource_gqh3j"), SubResource("Resource_2rd3f")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_2rd3f"), SubResource("Resource_xc55e"), SubResource("Resource_0rrmw")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_xc55e")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5okuw")])
 trait_weights = Dictionary[StringName, float]({
 &"nature_loving": 3.0
 })
 chance_per_tick = 0.03
 cooldown_ticks = 48
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_rh0b8"), SubResource("Resource_x87h4")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_rh0b8"), SubResource("Resource_gqh3j")])
 
 [sub_resource type="Resource" id="Resource_0kti4"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"strangers_welcomed"
+
+[sub_resource type="Resource" id="Resource_6sv48"]
 script = ExtResource("5_euihr")
 kind = 13
 amount = 2
 
-[sub_resource type="Resource" id="Resource_6sv48"]
+[sub_resource type="Resource" id="Resource_uxeq2"]
 script = ExtResource("5_euihr")
 text = "The two strangers came down from the ridge, and the group grew."
 
-[sub_resource type="Resource" id="Resource_uxeq2"]
+[sub_resource type="Resource" id="Resource_pr1k6"]
 script = ExtResource("5_euihr")
 kind = 10
 key = &"bigger_group"
 text = "A Bigger Group"
 
-[sub_resource type="Resource" id="Resource_pr1k6"]
+[sub_resource type="Resource" id="Resource_po17a"]
 script = ExtResource("4_0wd41")
 id = &"welcome_them"
 label = "Welcome them to the fire"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_0kti4"), SubResource("Resource_6sv48"), SubResource("Resource_uxeq2")])
-
-[sub_resource type="Resource" id="Resource_po17a"]
-script = ExtResource("5_euihr")
-text = "The group watched the strangers, and the strangers watched back."
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_0kti4"), SubResource("Resource_6sv48"), SubResource("Resource_uxeq2"), SubResource("Resource_pr1k6")])
 
 [sub_resource type="Resource" id="Resource_hxp7e"]
-script = ExtResource("4_0wd41")
-id = &"keep_watch"
-label = "Keep watching from a distance"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_po17a")])
+script = ExtResource("5_euihr")
+kind = 1
+key = &"strangers_courted"
 
 [sub_resource type="Resource" id="Resource_vu0o0"]
+script = ExtResource("5_euihr")
+text = "A bundle of food was left at the edge of the light, and the strangers watched it for a long time."
+
+[sub_resource type="Resource" id="Resource_usxtu"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"strangers_come"
+amount = 72
+
+[sub_resource type="Resource" id="Resource_sik6l"]
+script = ExtResource("4_0wd41")
+id = &"leave_food"
+label = "Leave food at the edge of the light"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_hxp7e"), SubResource("Resource_vu0o0"), SubResource("Resource_usxtu")])
+
+[sub_resource type="Resource" id="Resource_15wvp"]
 script = ExtResource("6_x2sw1")
 kind = 0
 key = &"lookout"
 
-[sub_resource type="Resource" id="Resource_usxtu"]
+[sub_resource type="Resource" id="Resource_yoh05"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"bigger_group"
 negate = true
 
-[sub_resource type="Resource" id="Resource_sik6l"]
+[sub_resource type="Resource" id="Resource_oh40o"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 162
 
-[sub_resource type="Resource" id="Resource_qkyvo"]
+[sub_resource type="Resource" id="Resource_b3l6f"]
 script = ExtResource("3_0otko")
 id = &"strangers_on_the_ridge"
 title = "Strangers on the ridge"
 body = "From the lookout, two strangers can be seen on the ridge, watching the smoke of the cave fire. They have kept their distance for two days."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vu0o0"), SubResource("Resource_usxtu"), SubResource("Resource_sik6l")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_15wvp"), SubResource("Resource_yoh05"), SubResource("Resource_oh40o")])
 chance_per_tick = 0.02
 cooldown_ticks = 72
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_pr1k6"), SubResource("Resource_hxp7e")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_po17a"), SubResource("Resource_sik6l")])
+
+[sub_resource type="Resource" id="Resource_yoajj"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"strangers_welcomed"
+
+[sub_resource type="Resource" id="Resource_gdio1"]
+script = ExtResource("5_euihr")
+kind = 13
+amount = 2
+
+[sub_resource type="Resource" id="Resource_tvk6s"]
+script = ExtResource("5_euihr")
+text = "The two strangers came down from the ridge, and the group grew."
+
+[sub_resource type="Resource" id="Resource_h4lu7"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"bigger_group"
+text = "A Bigger Group"
+
+[sub_resource type="Resource" id="Resource_clbmf"]
+script = ExtResource("4_0wd41")
+id = &"welcome_them"
+label = "Welcome them to the fire"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_yoajj"), SubResource("Resource_gdio1"), SubResource("Resource_tvk6s"), SubResource("Resource_h4lu7")])
+
+[sub_resource type="Resource" id="Resource_11tgp"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"strangers_courted"
+
+[sub_resource type="Resource" id="Resource_xhaj2"]
+script = ExtResource("5_euihr")
+text = "A bundle of food was left at the edge of the light, and the strangers watched it for a long time."
+
+[sub_resource type="Resource" id="Resource_j8ypc"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"strangers_come"
+amount = 72
+
+[sub_resource type="Resource" id="Resource_1s72i"]
+script = ExtResource("4_0wd41")
+id = &"leave_food"
+label = "Leave food at the edge of the light"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_11tgp"), SubResource("Resource_xhaj2"), SubResource("Resource_j8ypc")])
+
+[sub_resource type="Resource" id="Resource_y3a7t"]
+script = ExtResource("6_x2sw1")
+kind = 0
+key = &"lookout"
+negate = true
+
+[sub_resource type="Resource" id="Resource_nvmks"]
+script = ExtResource("6_x2sw1")
+kind = 9
+key = &"bigger_group"
+negate = true
+
+[sub_resource type="Resource" id="Resource_ki4rq"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 192
+
+[sub_resource type="Resource" id="Resource_epblf"]
+script = ExtResource("3_0otko")
+id = &"strangers_at_the_edge"
+title = "Strangers at the edge"
+body = "Two strangers have been seen at dusk, just beyond the firelight, watching the smoke of the cave fire. They have kept their distance for two days."
+category = &"exploration"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y3a7t"), SubResource("Resource_nvmks"), SubResource("Resource_ki4rq")])
+chance_per_tick = 0.02
+cooldown_ticks = 72
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_clbmf"), SubResource("Resource_1s72i")])
+
+[sub_resource type="Resource" id="Resource_hprci"]
+script = ExtResource("5_euihr")
+kind = 13
+amount = 2
+
+[sub_resource type="Resource" id="Resource_shmac"]
+script = ExtResource("5_euihr")
+text = "The bundle was gone one morning, and that evening the two strangers walked in on their own and sat down at the edge of the fire."
+
+[sub_resource type="Resource" id="Resource_7hnqq"]
+script = ExtResource("5_euihr")
+kind = 10
+key = &"bigger_group"
+text = "A Bigger Group"
+
+[sub_resource type="Resource" id="Resource_v8fs8"]
+script = ExtResource("6_x2sw1")
+kind = 9
+key = &"bigger_group"
+negate = true
+
+[sub_resource type="Resource" id="Resource_l2b1f"]
+script = ExtResource("3_0otko")
+id = &"strangers_come"
+title = "The strangers come in"
+category = &"exploration"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_v8fs8")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_hprci"), SubResource("Resource_shmac"), SubResource("Resource_7hnqq")])
 
 [sub_resource type="Resource" id="Resource_thc00"]
 script = ExtResource("5_euihr")
@@ -683,7 +904,7 @@ kind = 2
 key = &"wood"
 amount = 8
 
-[sub_resource type="Resource" id="Resource_ggqur"]
+[sub_resource type="Resource" id="Resource_0e7a7"]
 script = ExtResource("3_0otko")
 id = &"building_opportunity"
 title = "Ready to build"
@@ -693,7 +914,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_b31co"), SubReso
 chance_per_tick = 0.5
 cooldown_ticks = 24
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_mlhbg"), SubResource("Resource_5bnt4"), SubResource("Resource_4dvbm")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_p8a78"]
 script = ExtResource("5_euihr")
@@ -776,7 +996,7 @@ kind = 2
 key = &"wood"
 amount = 12
 
-[sub_resource type="Resource" id="Resource_b3l6f"]
+[sub_resource type="Resource" id="Resource_5rvqx"]
 script = ExtResource("3_0otko")
 id = &"settled_building_opportunity"
 title = "Building a settlement"
@@ -790,169 +1010,326 @@ min_choices = 1
 
 [sub_resource type="Resource" id="Resource_cmxay"]
 script = ExtResource("5_euihr")
+kind = 1
+key = &"scouted_alone"
+
+[sub_resource type="Resource" id="Resource_15eqs"]
+script = ExtResource("5_euihr")
 kind = 11
 key = &"scout"
 
-[sub_resource type="Resource" id="Resource_15eqs"]
+[sub_resource type="Resource" id="Resource_grhtu"]
 script = ExtResource("5_euihr")
 kind = 6
 key = &"western_forest"
 amount = 36
 
-[sub_resource type="Resource" id="Resource_grhtu"]
+[sub_resource type="Resource" id="Resource_d7xf6"]
 script = ExtResource("5_euihr")
 kind = 7
 key = &"explorer_returns"
 amount = 36
 
-[sub_resource type="Resource" id="Resource_d7xf6"]
+[sub_resource type="Resource" id="Resource_n6sha"]
 script = ExtResource("5_euihr")
 text = "{subject} set off to scout the western forest."
 
-[sub_resource type="Resource" id="Resource_n6sha"]
-script = ExtResource("4_0wd41")
-id = &"encourage"
-label = "Encourage them to scout"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cmxay"), SubResource("Resource_15eqs"), SubResource("Resource_grhtu"), SubResource("Resource_d7xf6")])
-
 [sub_resource type="Resource" id="Resource_mv7dv"]
 script = ExtResource("4_0wd41")
-id = &"remain"
-label = "Ask them to stay"
+id = &"encourage"
+label = "Let them scout alone"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cmxay"), SubResource("Resource_15eqs"), SubResource("Resource_grhtu"), SubResource("Resource_d7xf6"), SubResource("Resource_n6sha")])
 
 [sub_resource type="Resource" id="Resource_y02xf"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"scouted_together"
+
+[sub_resource type="Resource" id="Resource_4n7r8"]
+script = ExtResource("5_euihr")
+kind = 6
+key = &"western_forest"
+amount = 60
+
+[sub_resource type="Resource" id="Resource_su141"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"explorer_returns"
+amount = 60
+
+[sub_resource type="Resource" id="Resource_1my53"]
+script = ExtResource("5_euihr")
+text = "The group walked out to the western forest together, slowly, and {subject} led the way back."
+
+[sub_resource type="Resource" id="Resource_2e4id"]
+script = ExtResource("4_0wd41")
+id = &"walk_together"
+label = "Walk out there together"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8"), SubResource("Resource_su141"), SubResource("Resource_1my53")])
+
+[sub_resource type="Resource" id="Resource_y16a4"]
 script = ExtResource("6_x2sw1")
 kind = 0
 key = &"lookout"
 
-[sub_resource type="Resource" id="Resource_4n7r8"]
+[sub_resource type="Resource" id="Resource_ufpjm"]
 script = ExtResource("6_x2sw1")
 key = &"western_forest_explored"
 negate = true
 
-[sub_resource type="Resource" id="Resource_su141"]
+[sub_resource type="Resource" id="Resource_qr2nn"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 216
 
-[sub_resource type="Resource" id="Resource_1my53"]
+[sub_resource type="Resource" id="Resource_fykb5"]
 script = ExtResource("6_x2sw1")
 kind = 6
 key = &"curious"
 
-[sub_resource type="Resource" id="Resource_2e4id"]
+[sub_resource type="Resource" id="Resource_1g1os"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_epblf"]
+[sub_resource type="Resource" id="Resource_pgpg8"]
 script = ExtResource("3_0otko")
 id = &"curious_explorer"
 title = "A curious scout"
 body = "{subject} keeps climbing the lookout to stare at the ridge beyond the western forest."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y02xf"), SubResource("Resource_4n7r8"), SubResource("Resource_su141")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y16a4"), SubResource("Resource_ufpjm"), SubResource("Resource_qr2nn")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1my53"), SubResource("Resource_2e4id")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_fykb5"), SubResource("Resource_1g1os")])
 chance_per_tick = 0.06
 cooldown_ticks = 72
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_n6sha"), SubResource("Resource_mv7dv")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_mv7dv"), SubResource("Resource_2e4id")])
+
+[sub_resource type="Resource" id="Resource_wwwm0"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"scouted_alone"
+
+[sub_resource type="Resource" id="Resource_4d4rp"]
+script = ExtResource("5_euihr")
+kind = 11
+key = &"scout"
+
+[sub_resource type="Resource" id="Resource_jawoh"]
+script = ExtResource("5_euihr")
+kind = 6
+key = &"western_forest"
+amount = 36
+
+[sub_resource type="Resource" id="Resource_n6cxd"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"explorer_returns"
+amount = 36
+
+[sub_resource type="Resource" id="Resource_eohsr"]
+script = ExtResource("5_euihr")
+text = "{subject} set off to scout the western forest."
+
+[sub_resource type="Resource" id="Resource_63i7g"]
+script = ExtResource("4_0wd41")
+id = &"encourage"
+label = "Let them scout alone"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wwwm0"), SubResource("Resource_4d4rp"), SubResource("Resource_jawoh"), SubResource("Resource_n6cxd"), SubResource("Resource_eohsr")])
+
+[sub_resource type="Resource" id="Resource_1on3i"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"scouted_together"
+
+[sub_resource type="Resource" id="Resource_kanje"]
+script = ExtResource("5_euihr")
+kind = 6
+key = &"western_forest"
+amount = 60
+
+[sub_resource type="Resource" id="Resource_4jtls"]
+script = ExtResource("5_euihr")
+kind = 7
+key = &"explorer_returns"
+amount = 60
+
+[sub_resource type="Resource" id="Resource_536bv"]
+script = ExtResource("5_euihr")
+text = "The group walked out to the western forest together, slowly, and {subject} led the way back."
+
+[sub_resource type="Resource" id="Resource_hi2mr"]
+script = ExtResource("4_0wd41")
+id = &"walk_together"
+label = "Walk out there together"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1on3i"), SubResource("Resource_kanje"), SubResource("Resource_4jtls"), SubResource("Resource_536bv")])
+
+[sub_resource type="Resource" id="Resource_n5ip8"]
+script = ExtResource("6_x2sw1")
+kind = 0
+key = &"lookout"
+negate = true
+
+[sub_resource type="Resource" id="Resource_dp2ut"]
+script = ExtResource("6_x2sw1")
+key = &"western_forest_explored"
+negate = true
+
+[sub_resource type="Resource" id="Resource_3ch8m"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 246
+
+[sub_resource type="Resource" id="Resource_a5h63"]
+script = ExtResource("6_x2sw1")
+kind = 6
+key = &"curious"
+
+[sub_resource type="Resource" id="Resource_2rgfc"]
+script = ExtResource("6_x2sw1")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_osd2p"]
+script = ExtResource("3_0otko")
+id = &"restless_explorer"
+title = "A curious scout"
+body = "{subject} keeps wandering to the edge of the western forest to stare at the ridge beyond it."
+category = &"exploration"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_n5ip8"), SubResource("Resource_dp2ut"), SubResource("Resource_3ch8m")])
+needs_subject = true
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_a5h63"), SubResource("Resource_2rgfc")])
+chance_per_tick = 0.06
+cooldown_ticks = 72
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_63i7g"), SubResource("Resource_hi2mr")])
 
 [sub_resource type="Resource" id="Resource_5ov8r"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"seed_in_sun"
+
+[sub_resource type="Resource" id="Resource_gpkxw"]
 script = ExtResource("5_euihr")
 kind = 8
 key = &"strange_seed"
 
-[sub_resource type="Resource" id="Resource_gpkxw"]
-script = ExtResource("5_euihr")
-text = "{subject} pressed the strange seed into the soil by the cave mouth."
-
 [sub_resource type="Resource" id="Resource_xp2u3"]
+script = ExtResource("5_euihr")
+text = "{subject} pressed the strange seed into the sunny soil by the cave mouth."
+
+[sub_resource type="Resource" id="Resource_bikoi"]
 script = ExtResource("6_x2sw1")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
-[sub_resource type="Resource" id="Resource_bikoi"]
+[sub_resource type="Resource" id="Resource_q6vl7"]
 script = ExtResource("4_0wd41")
 id = &"plant_it"
-label = "Plant it"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_xp2u3")])
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5ov8r"), SubResource("Resource_gpkxw")])
-
-[sub_resource type="Resource" id="Resource_q6vl7"]
-script = ExtResource("5_euihr")
-text = "The strange seed was wrapped in a hide pouch for safekeeping."
+label = "Plant it in the sun at the cave mouth"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bikoi")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5ov8r"), SubResource("Resource_gpkxw"), SubResource("Resource_xp2u3")])
 
 [sub_resource type="Resource" id="Resource_ik0y3"]
-script = ExtResource("4_0wd41")
-id = &"keep_it"
-label = "Keep it safe"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_q6vl7")])
+script = ExtResource("5_euihr")
+kind = 1
+key = &"seed_in_shade"
 
 [sub_resource type="Resource" id="Resource_ntkxq"]
+script = ExtResource("5_euihr")
+kind = 8
+key = &"strange_seed"
+
+[sub_resource type="Resource" id="Resource_86jub"]
+script = ExtResource("5_euihr")
+text = "{subject} pressed the strange seed into the cool soil under the overhang."
+
+[sub_resource type="Resource" id="Resource_kx622"]
+script = ExtResource("4_0wd41")
+id = &"plant_in_shade"
+label = "Plant it in the shade of the overhang"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bikoi")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ik0y3"), SubResource("Resource_ntkxq"), SubResource("Resource_86jub")])
+
+[sub_resource type="Resource" id="Resource_uyheh"]
 script = ExtResource("5_euihr")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
-[sub_resource type="Resource" id="Resource_86jub"]
+[sub_resource type="Resource" id="Resource_t0jcc"]
 script = ExtResource("5_euihr")
 kind = 1
 key = &"western_forest_explored"
 
-[sub_resource type="Resource" id="Resource_kx622"]
+[sub_resource type="Resource" id="Resource_brpbm"]
 script = ExtResource("5_euihr")
 text = "{subject} returned from the western forest carrying the seed of an unfamiliar plant."
 
-[sub_resource type="Resource" id="Resource_l2b1f"]
+[sub_resource type="Resource" id="Resource_rcq87"]
 script = ExtResource("3_0otko")
 id = &"explorer_returns"
 title = "A scout returns"
 body = "{subject} is back from the forest, carrying something unfamiliar."
 category = &"exploration"
 needs_subject = true
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ntkxq"), SubResource("Resource_86jub"), SubResource("Resource_kx622")])
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_bikoi"), SubResource("Resource_ik0y3")])
-min_choices = 1
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_uyheh"), SubResource("Resource_t0jcc"), SubResource("Resource_brpbm")])
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_q6vl7"), SubResource("Resource_kx622")])
 
 [sub_resource type="Resource" id="Resource_ie0i1"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"seed_in_sun"
+
+[sub_resource type="Resource" id="Resource_aajyu"]
 script = ExtResource("5_euihr")
 kind = 8
 key = &"strange_seed"
 
-[sub_resource type="Resource" id="Resource_aajyu"]
-script = ExtResource("5_euihr")
-text = "The strange seed was planted at last."
-
 [sub_resource type="Resource" id="Resource_4vxwp"]
-script = ExtResource("4_0wd41")
-id = &"plant_it"
-label = "Plant it"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ie0i1"), SubResource("Resource_aajyu")])
+script = ExtResource("5_euihr")
+text = "The strange seed was planted in the sun at last."
 
 [sub_resource type="Resource" id="Resource_y3e8r"]
 script = ExtResource("4_0wd41")
-id = &"wait"
-label = "Wait a while longer"
+id = &"plant_it"
+label = "Plant it in the sun at the cave mouth"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ie0i1"), SubResource("Resource_aajyu"), SubResource("Resource_4vxwp")])
 
 [sub_resource type="Resource" id="Resource_5vn1p"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"seed_in_shade"
+
+[sub_resource type="Resource" id="Resource_vtc80"]
+script = ExtResource("5_euihr")
+kind = 8
+key = &"strange_seed"
+
+[sub_resource type="Resource" id="Resource_6ukvv"]
+script = ExtResource("5_euihr")
+text = "The strange seed was planted in the shade at last."
+
+[sub_resource type="Resource" id="Resource_jhs7q"]
+script = ExtResource("4_0wd41")
+id = &"plant_in_shade"
+label = "Plant it in the shade of the overhang"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5vn1p"), SubResource("Resource_vtc80"), SubResource("Resource_6ukvv")])
+
+[sub_resource type="Resource" id="Resource_aw00l"]
 script = ExtResource("6_x2sw1")
 kind = 3
 key = &"strange_seed"
 amount = 1
 
-[sub_resource type="Resource" id="Resource_0e7a7"]
+[sub_resource type="Resource" id="Resource_bpwt8"]
 script = ExtResource("3_0otko")
 id = &"seed_in_pouch"
 title = "The seed in the pouch"
 body = "The strange seed in its hide pouch looks ready to be planted."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5vn1p")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_aw00l")])
 chance_per_tick = 0.01
 cooldown_ticks = 96
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_4vxwp"), SubResource("Resource_y3e8r")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_y3e8r"), SubResource("Resource_jhs7q")])
 
 [sub_resource type="Resource" id="Resource_mf78r"]
 script = ExtResource("5_euihr")
@@ -998,14 +1375,13 @@ id = &"settle_herds"
 label = "Settle where the herds winter, and sow a small plot"
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_av210"), SubResource("Resource_h81lb"), SubResource("Resource_71g3m")])
 
-[sub_resource type="Resource" id="Resource_5rvqx"]
+[sub_resource type="Resource" id="Resource_36fvu"]
 script = ExtResource("3_0otko")
 id = &"seeds_of_a_new_life"
 title = "Seeds of a new life"
 body = "The plant by the cave has gone to seed: enough to sow a whole field. The herds still move through the valley, and the group has learned enough to stay."
 category = &"settlement"
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_0tvtd"), SubResource("Resource_5mkjn")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_ebukt"]
 script = ExtResource("5_euihr")
@@ -1031,7 +1407,7 @@ script = ExtResource("6_x2sw1")
 key = &"butterfly_seen"
 negate = true
 
-[sub_resource type="Resource" id="Resource_pgpg8"]
+[sub_resource type="Resource" id="Resource_dd8cf"]
 script = ExtResource("3_0otko")
 id = &"rare_butterfly"
 title = "A rare visitor"
@@ -1045,7 +1421,7 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ebukt"), SubResou
 script = ExtResource("5_euihr")
 text = "It rained heavily and everyone crowded in the cave."
 
-[sub_resource type="Resource" id="Resource_osd2p"]
+[sub_resource type="Resource" id="Resource_ce0tw"]
 script = ExtResource("3_0otko")
 id = &"heavy_rain"
 title = "Heavy rain"
@@ -1068,7 +1444,7 @@ kind = 8
 amount = 1
 negate = true
 
-[sub_resource type="Resource" id="Resource_rcq87"]
+[sub_resource type="Resource" id="Resource_vygxo"]
 script = ExtResource("3_0otko")
 id = &"cold_night"
 title = "A cold night"
@@ -1124,7 +1500,7 @@ negate = true
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_bpwt8"]
+[sub_resource type="Resource" id="Resource_u8j8n"]
 script = ExtResource("3_0otko")
 id = &"thatched_roof"
 title = "Rain through the hides"
@@ -1192,7 +1568,7 @@ kind = 9
 key = &"first_harvest"
 negate = true
 
-[sub_resource type="Resource" id="Resource_36fvu"]
+[sub_resource type="Resource" id="Resource_se6h3"]
 script = ExtResource("3_0otko")
 id = &"first_calves"
 title = "Calves in the spring"
@@ -1250,7 +1626,7 @@ negate = true
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_dd8cf"]
+[sub_resource type="Resource" id="Resource_cky1a"]
 script = ExtResource("3_0otko")
 id = &"clay_hardens"
 title = "Clay by the fire"
@@ -1312,7 +1688,7 @@ negate = true
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_ce0tw"]
+[sub_resource type="Resource" id="Resource_ar3v3"]
 script = ExtResource("3_0otko")
 id = &"shaped_bowls"
 title = "Bowls in the sun"
@@ -1378,7 +1754,7 @@ key = &"path_agriculture"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_vygxo"]
+[sub_resource type="Resource" id="Resource_3lfw1"]
 script = ExtResource("3_0otko")
 id = &"flax_in_the_field"
 title = "Something in the field"
@@ -1445,7 +1821,7 @@ key = &"path_herding"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_u8j8n"]
+[sub_resource type="Resource" id="Resource_sxvj6"]
 script = ExtResource("3_0otko")
 id = &"wool_on_the_thorns"
 title = "Wool on the thorns"
@@ -1508,7 +1884,7 @@ negate = true
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_se6h3"]
+[sub_resource type="Resource" id="Resource_t7rsy"]
 script = ExtResource("3_0otko")
 id = &"plaited_reeds"
 title = "Mats of reed"
@@ -1576,7 +1952,7 @@ kind = 9
 key = &"a_village"
 negate = true
 
-[sub_resource type="Resource" id="Resource_cky1a"]
+[sub_resource type="Resource" id="Resource_rj6gk"]
 script = ExtResource("3_0otko")
 id = &"families_on_the_road"
 title = "Families on the road"
@@ -1652,7 +2028,7 @@ key = &"first_harvest"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_ar3v3"]
+[sub_resource type="Resource" id="Resource_xykxt"]
 script = ExtResource("3_0otko")
 id = &"the_long_table"
 title = "The long table"
@@ -1719,7 +2095,7 @@ negate = true
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_3lfw1"]
+[sub_resource type="Resource" id="Resource_027qw"]
 script = ExtResource("3_0otko")
 id = &"green_stone_found"
 title = "A green stone"
@@ -1801,7 +2177,7 @@ kind = 9
 key = &"green_stone"
 negate = true
 
-[sub_resource type="Resource" id="Resource_sxvj6"]
+[sub_resource type="Resource" id="Resource_rvfm3"]
 script = ExtResource("3_0otko")
 id = &"green_stone_traded"
 title = "A traveller with green beads"
@@ -1865,7 +2241,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 4
 
-[sub_resource type="Resource" id="Resource_t7rsy"]
+[sub_resource type="Resource" id="Resource_xy6sl"]
 script = ExtResource("3_0otko")
 id = &"wolf_at_the_edge"
 title = "A wolf at the edge"
@@ -1875,7 +2251,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_riuv1"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_euaow"), SubResource("Resource_bpqas")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_j43qt"]
 script = ExtResource("5_euihr")
@@ -1930,7 +2305,7 @@ key = &"food"
 amount = 4
 negate = true
 
-[sub_resource type="Resource" id="Resource_rj6gk"]
+[sub_resource type="Resource" id="Resource_mfbm3"]
 script = ExtResource("3_0otko")
 id = &"hungry_mornings"
 title = "Hungry mornings"
@@ -1940,7 +2315,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_8r4vg"), SubReso
 chance_per_tick = 0.03
 cooldown_ticks = 240
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_qmsiv"), SubResource("Resource_uumdf")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_x7pvx"]
 script = ExtResource("5_euihr")
@@ -1996,7 +2370,7 @@ key = &"stone_tools"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_xykxt"]
+[sub_resource type="Resource" id="Resource_rv0nl"]
 script = ExtResource("3_0otko")
 id = &"flint_edge"
 title = "What the edge is for"
@@ -2010,7 +2384,6 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_000ct"), SubResource("Resource_wkioj")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_aeona"]
 script = ExtResource("5_euihr")
@@ -2064,7 +2437,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 32
 
-[sub_resource type="Resource" id="Resource_027qw"]
+[sub_resource type="Resource" id="Resource_88eak"]
 script = ExtResource("3_0otko")
 id = &"first_hard_frost"
 title = "The first hard frost"
@@ -2074,7 +2447,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7a78u"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_412h4"), SubResource("Resource_cd3jv")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_1j8of"]
 script = ExtResource("5_euihr")
@@ -2100,48 +2472,52 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1j8of"), SubResou
 
 [sub_resource type="Resource" id="Resource_g5upw"]
 script = ExtResource("5_euihr")
-text = "{subject} looked back at the forest a few times that evening."
+kind = 1
+key = &"prints_read"
 
 [sub_resource type="Resource" id="Resource_vn3pf"]
-script = ExtResource("4_0wd41")
-id = &"stay_home"
-label = "Ask them to stay"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_g5upw")])
+script = ExtResource("5_euihr")
+text = "The group pressed ash over the prints at dawn and read them together: a bear, and an old one."
 
 [sub_resource type="Resource" id="Resource_3tyfm"]
+script = ExtResource("4_0wd41")
+id = &"read_the_prints"
+label = "Wait for daylight and read the prints together"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_g5upw"), SubResource("Resource_vn3pf")])
+
+[sub_resource type="Resource" id="Resource_qyqtj"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_qyqtj"]
+[sub_resource type="Resource" id="Resource_trtps"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 42
 
-[sub_resource type="Resource" id="Resource_trtps"]
+[sub_resource type="Resource" id="Resource_733q3"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_733q3"]
+[sub_resource type="Resource" id="Resource_vfs2j"]
 script = ExtResource("6_x2sw1")
 kind = 6
 key = &"curious"
 
-[sub_resource type="Resource" id="Resource_rvfm3"]
+[sub_resource type="Resource" id="Resource_6wyg6"]
 script = ExtResource("3_0otko")
 id = &"strange_prints"
 title = "Strange prints"
 body = "{subject} found a line of strange prints at the edge of the western forest, and wants to follow them."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_3tyfm"), SubResource("Resource_qyqtj")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_qyqtj"), SubResource("Resource_trtps")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_trtps"), SubResource("Resource_733q3")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_733q3"), SubResource("Resource_vfs2j")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_82ulj"), SubResource("Resource_vn3pf")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_82ulj"), SubResource("Resource_3tyfm")])
 
 [sub_resource type="Resource" id="Resource_qpaad"]
 script = ExtResource("5_euihr")
@@ -2153,7 +2529,7 @@ amount = 5
 script = ExtResource("5_euihr")
 text = "{subject} came home at dusk. The prints were a bear's, days old, but there were pine nuts beneath the tree where it had sat."
 
-[sub_resource type="Resource" id="Resource_xy6sl"]
+[sub_resource type="Resource" id="Resource_6iklo"]
 script = ExtResource("3_0otko")
 id = &"prints_end"
 title = "The prints end"
@@ -2169,62 +2545,71 @@ amount = -12
 
 [sub_resource type="Resource" id="Resource_asm0k"]
 script = ExtResource("5_euihr")
-text = "The fire was loud that night. Everyone ate until they laughed."
+kind = 1
+key = &"feast_held"
 
 [sub_resource type="Resource" id="Resource_kt7rp"]
+script = ExtResource("5_euihr")
+text = "The fire was loud that night. Everyone ate until they laughed."
+
+[sub_resource type="Resource" id="Resource_vftdg"]
 script = ExtResource("6_x2sw1")
 kind = 2
 key = &"food"
 amount = 12
 
-[sub_resource type="Resource" id="Resource_vftdg"]
+[sub_resource type="Resource" id="Resource_rnn76"]
 script = ExtResource("4_0wd41")
 id = &"hold_a_feast"
 label = "Hold a feast by the fire"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_kt7rp")])
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tdynu"), SubResource("Resource_asm0k")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vftdg")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tdynu"), SubResource("Resource_asm0k"), SubResource("Resource_kt7rp")])
 
-[sub_resource type="Resource" id="Resource_rnn76"]
+[sub_resource type="Resource" id="Resource_fmyg0"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"food_dried"
+
+[sub_resource type="Resource" id="Resource_jejg1"]
 script = ExtResource("5_euihr")
 text = "The extra was split thin and hung to dry along the cave wall."
 
-[sub_resource type="Resource" id="Resource_fmyg0"]
+[sub_resource type="Resource" id="Resource_7p5wx"]
 script = ExtResource("4_0wd41")
 id = &"dry_the_rest"
 label = "Dry the rest for lean days"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_rnn76")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_fmyg0"), SubResource("Resource_jejg1")])
 
-[sub_resource type="Resource" id="Resource_jejg1"]
+[sub_resource type="Resource" id="Resource_rglcx"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_7p5wx"]
+[sub_resource type="Resource" id="Resource_760qm"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 60
 
-[sub_resource type="Resource" id="Resource_rglcx"]
+[sub_resource type="Resource" id="Resource_dw37k"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"reliable_food"
 
-[sub_resource type="Resource" id="Resource_760qm"]
+[sub_resource type="Resource" id="Resource_iir2i"]
 script = ExtResource("6_x2sw1")
 kind = 2
 key = &"food"
 amount = 16
 
-[sub_resource type="Resource" id="Resource_mfbm3"]
+[sub_resource type="Resource" id="Resource_vdfhv"]
 script = ExtResource("3_0otko")
 id = &"too_much_food"
 title = "More than enough"
 body = "There is more food in the cave than the group can eat before it turns."
 category = &"settlement"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jejg1"), SubResource("Resource_7p5wx"), SubResource("Resource_rglcx"), SubResource("Resource_760qm")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_rglcx"), SubResource("Resource_760qm"), SubResource("Resource_dw37k"), SubResource("Resource_iir2i")])
 chance_per_tick = 0.03
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_vftdg"), SubResource("Resource_fmyg0")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_rnn76"), SubResource("Resource_7p5wx")])
 
 [sub_resource type="Resource" id="Resource_uewa4"]
 script = ExtResource("5_euihr")
@@ -2256,42 +2641,46 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_uewa4"), SubResou
 
 [sub_resource type="Resource" id="Resource_t8610"]
 script = ExtResource("5_euihr")
-text = "They agreed to take turns, mostly."
+kind = 1
+key = &"fire_turns"
 
 [sub_resource type="Resource" id="Resource_ecmrj"]
+script = ExtResource("5_euihr")
+text = "They agreed to take turns, mostly."
+
+[sub_resource type="Resource" id="Resource_jaap8"]
 script = ExtResource("4_0wd41")
 id = &"take_turns"
 label = "Take turns by the fire"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_t8610")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_t8610"), SubResource("Resource_ecmrj")])
 
-[sub_resource type="Resource" id="Resource_jaap8"]
+[sub_resource type="Resource" id="Resource_d25sb"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_d25sb"]
+[sub_resource type="Resource" id="Resource_jy24r"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 72
 
-[sub_resource type="Resource" id="Resource_jy24r"]
+[sub_resource type="Resource" id="Resource_wt63d"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_rv0nl"]
+[sub_resource type="Resource" id="Resource_1bq40"]
 script = ExtResource("3_0otko")
 id = &"second_hearth"
 title = "The warm spot"
 body = "Two of the group both want the warm place by the fire, and {subject} has taken to sitting at the edge of the light, alone."
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jaap8"), SubResource("Resource_d25sb")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_d25sb"), SubResource("Resource_jy24r")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jy24r")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_wt63d")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i0q5y"), SubResource("Resource_ecmrj")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i0q5y"), SubResource("Resource_jaap8")])
 
 [sub_resource type="Resource" id="Resource_qh55l"]
 script = ExtResource("5_euihr")
@@ -2323,43 +2712,47 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_qh55l"), SubResou
 
 [sub_resource type="Resource" id="Resource_07m3k"]
 script = ExtResource("5_euihr")
-text = "Everyone kept a careful distance, and the mammoth kept its own."
+kind = 1
+key = &"mammoth_distant"
 
 [sub_resource type="Resource" id="Resource_q7u5f"]
+script = ExtResource("5_euihr")
+text = "Everyone kept a careful distance, and the mammoth kept its own."
+
+[sub_resource type="Resource" id="Resource_tfuh8"]
 script = ExtResource("4_0wd41")
 id = &"keep_distance"
 label = "Keep a respectful distance"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_07m3k")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_07m3k"), SubResource("Resource_q7u5f")])
 
-[sub_resource type="Resource" id="Resource_tfuh8"]
+[sub_resource type="Resource" id="Resource_ebw3j"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_ebw3j"]
+[sub_resource type="Resource" id="Resource_6si2k"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 88
 
-[sub_resource type="Resource" id="Resource_6si2k"]
+[sub_resource type="Resource" id="Resource_48t1x"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_88eak"]
+[sub_resource type="Resource" id="Resource_bjmsn"]
 script = ExtResource("3_0otko")
 id = &"mammoth_neighbour"
 title = "The neighbour"
 body = "A woolly mammoth has been grazing at the edge of camp for days, ignoring everyone. {subject} has started talking to it."
 category = &"nature"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_tfuh8"), SubResource("Resource_ebw3j")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ebw3j"), SubResource("Resource_6si2k")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_6si2k")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_48t1x")])
 trait_weights = Dictionary[StringName, float]({
 &"nature_loving": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_u1j1j"), SubResource("Resource_q7u5f")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_u1j1j"), SubResource("Resource_tfuh8")])
 
 [sub_resource type="Resource" id="Resource_oumqj"]
 script = ExtResource("5_euihr")
@@ -2378,47 +2771,51 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_oumqj"), SubResou
 
 [sub_resource type="Resource" id="Resource_bnduq"]
 script = ExtResource("5_euihr")
-text = "{subject} kept the rhythm in their head, and tapped it on their knee."
+kind = 1
+key = &"work_quiet"
 
 [sub_resource type="Resource" id="Resource_exvfj"]
+script = ExtResource("5_euihr")
+text = "{subject} kept the rhythm in their head, and tapped it on their knee."
+
+[sub_resource type="Resource" id="Resource_bd76c"]
 script = ExtResource("4_0wd41")
 id = &"keep_it_quiet"
 label = "Ask for quiet while they work"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_bnduq")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_bnduq"), SubResource("Resource_exvfj")])
 
-[sub_resource type="Resource" id="Resource_bd76c"]
+[sub_resource type="Resource" id="Resource_krpaq"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_krpaq"]
+[sub_resource type="Resource" id="Resource_0t3jv"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 115
 
-[sub_resource type="Resource" id="Resource_0t3jv"]
+[sub_resource type="Resource" id="Resource_b4vr8"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"shared_stories"
 
-[sub_resource type="Resource" id="Resource_b4vr8"]
+[sub_resource type="Resource" id="Resource_jkfq2"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_6wyg6"]
+[sub_resource type="Resource" id="Resource_d4scu"]
 script = ExtResource("3_0otko")
 id = &"work_song"
 title = "A rhythm to work to"
 body = "{subject} has made up a rhythm to chop to, and keeps humming it. Others have begun to tap along."
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bd76c"), SubResource("Resource_krpaq"), SubResource("Resource_0t3jv")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_krpaq"), SubResource("Resource_0t3jv"), SubResource("Resource_b4vr8")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_b4vr8")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_jkfq2")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_07eav"), SubResource("Resource_exvfj")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_07eav"), SubResource("Resource_bd76c")])
 
 [sub_resource type="Resource" id="Resource_lvxb5"]
 script = ExtResource("5_euihr")
@@ -2467,7 +2864,7 @@ key = &"cave_art"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_6iklo"]
+[sub_resource type="Resource" id="Resource_euf81"]
 script = ExtResource("3_0otko")
 id = &"crowded_wall"
 title = "The crowded wall"
@@ -2481,7 +2878,6 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_dv7pw"), SubResource("Resource_32mue")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_sqn5h"]
 script = ExtResource("5_euihr")
@@ -2532,7 +2928,7 @@ script = ExtResource("6_x2sw1")
 key = &"cave_art"
 negate = true
 
-[sub_resource type="Resource" id="Resource_vdfhv"]
+[sub_resource type="Resource" id="Resource_q1sem"]
 script = ExtResource("3_0otko")
 id = &"living_story"
 title = "The long story"
@@ -2541,7 +2937,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_bnwub"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_mndir"), SubResource("Resource_yns3q")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_vywqk"]
 script = ExtResource("5_euihr")
@@ -2567,54 +2962,58 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_vywqk"), SubResou
 
 [sub_resource type="Resource" id="Resource_5qqv4"]
 script = ExtResource("5_euihr")
-text = "The smoke came and went. Someone was always at the lookout that week."
+kind = 1
+key = &"ridge_watched"
 
 [sub_resource type="Resource" id="Resource_vtlv2"]
+script = ExtResource("5_euihr")
+text = "The smoke came and went. Someone was always at the lookout that week."
+
+[sub_resource type="Resource" id="Resource_qtdk7"]
 script = ExtResource("4_0wd41")
 id = &"keep_watching"
 label = "Keep watching from the lookout"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5qqv4")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5qqv4"), SubResource("Resource_vtlv2")])
 
-[sub_resource type="Resource" id="Resource_qtdk7"]
+[sub_resource type="Resource" id="Resource_lvt05"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_lvt05"]
+[sub_resource type="Resource" id="Resource_1tqqs"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 140
 
-[sub_resource type="Resource" id="Resource_1tqqs"]
+[sub_resource type="Resource" id="Resource_d5fqk"]
 script = ExtResource("6_x2sw1")
 kind = 0
 key = &"lookout"
 
-[sub_resource type="Resource" id="Resource_d5fqk"]
+[sub_resource type="Resource" id="Resource_f67q4"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"bigger_group"
 negate = true
 
-[sub_resource type="Resource" id="Resource_f67q4"]
+[sub_resource type="Resource" id="Resource_1m8lx"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_1bq40"]
+[sub_resource type="Resource" id="Resource_y7cvq"]
 script = ExtResource("3_0otko")
 id = &"smoke_on_the_ridge"
 title = "Smoke on the ridge"
 body = "A thin line of smoke has been rising from the far ridge, where nobody has lived."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_qtdk7"), SubResource("Resource_lvt05"), SubResource("Resource_1tqqs"), SubResource("Resource_d5fqk")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_lvt05"), SubResource("Resource_1tqqs"), SubResource("Resource_d5fqk"), SubResource("Resource_f67q4")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_f67q4")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1m8lx")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_353pa"), SubResource("Resource_vtlv2")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_353pa"), SubResource("Resource_qtdk7")])
 
 [sub_resource type="Resource" id="Resource_h85uf"]
 script = ExtResource("5_euihr")
@@ -2625,7 +3024,7 @@ key = &"ridge_footprints"
 script = ExtResource("5_euihr")
 text = "{subject} found a cold ring of stones and many footprints on the ridge, and came home thoughtful."
 
-[sub_resource type="Resource" id="Resource_bjmsn"]
+[sub_resource type="Resource" id="Resource_2367r"]
 script = ExtResource("3_0otko")
 id = &"ridge_empty"
 title = "The cold fire"
@@ -2663,39 +3062,43 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_d2waj"), SubResou
 
 [sub_resource type="Resource" id="Resource_wlyuc"]
 script = ExtResource("5_euihr")
-text = "The group shuffled along the wall and made room."
+kind = 1
+key = &"shared_cave"
 
 [sub_resource type="Resource" id="Resource_50nua"]
+script = ExtResource("5_euihr")
+text = "The group shuffled along the wall and made room."
+
+[sub_resource type="Resource" id="Resource_pmww3"]
 script = ExtResource("4_0wd41")
 id = &"share_the_cave"
 label = "Make room for them in the cave"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wlyuc")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wlyuc"), SubResource("Resource_50nua")])
 
-[sub_resource type="Resource" id="Resource_pmww3"]
+[sub_resource type="Resource" id="Resource_a7lp5"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_a7lp5"]
+[sub_resource type="Resource" id="Resource_sfs3d"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 172
 
-[sub_resource type="Resource" id="Resource_sfs3d"]
+[sub_resource type="Resource" id="Resource_h21dc"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"bigger_group"
 
-[sub_resource type="Resource" id="Resource_d4scu"]
+[sub_resource type="Resource" id="Resource_8ok0w"]
 script = ExtResource("3_0otko")
 id = &"newcomers_shelter"
 title = "Room for the newcomers"
 body = "The two newcomers have been sleeping in the cave mouth, as close to the fire as they dare."
 category = &"settlement"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_pmww3"), SubResource("Resource_a7lp5"), SubResource("Resource_sfs3d")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_a7lp5"), SubResource("Resource_sfs3d"), SubResource("Resource_h21dc")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_s04uw"), SubResource("Resource_50nua")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_s04uw"), SubResource("Resource_pmww3")])
 
 [sub_resource type="Resource" id="Resource_3r6ce"]
 script = ExtResource("5_euihr")
@@ -2705,51 +3108,60 @@ amount = -6
 
 [sub_resource type="Resource" id="Resource_i8wtr"]
 script = ExtResource("5_euihr")
-text = "Everything went up to the ledge, and the river reached the old fire pit and no further."
+kind = 1
+key = &"stores_on_ledge"
 
 [sub_resource type="Resource" id="Resource_vp8v6"]
+script = ExtResource("5_euihr")
+text = "Everything went up to the ledge, and the river reached the old fire pit and no further."
+
+[sub_resource type="Resource" id="Resource_c71hx"]
 script = ExtResource("6_x2sw1")
 kind = 2
 key = &"wood"
 amount = 6
 
-[sub_resource type="Resource" id="Resource_c71hx"]
+[sub_resource type="Resource" id="Resource_jgs54"]
 script = ExtResource("4_0wd41")
 id = &"move_up"
 label = "Carry the stores up to the ledge"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vp8v6")])
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_3r6ce"), SubResource("Resource_i8wtr")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_c71hx")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_3r6ce"), SubResource("Resource_i8wtr"), SubResource("Resource_vp8v6")])
 
-[sub_resource type="Resource" id="Resource_jgs54"]
+[sub_resource type="Resource" id="Resource_cya3x"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"trusted_bank"
+
+[sub_resource type="Resource" id="Resource_liplk"]
 script = ExtResource("5_euihr")
 text = "The river rose to the edge of the camp, thought about it, and went back."
 
-[sub_resource type="Resource" id="Resource_cya3x"]
+[sub_resource type="Resource" id="Resource_nrqgl"]
 script = ExtResource("4_0wd41")
 id = &"trust_the_bank"
 label = "Trust the bank"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_jgs54")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cya3x"), SubResource("Resource_liplk")])
 
-[sub_resource type="Resource" id="Resource_liplk"]
+[sub_resource type="Resource" id="Resource_alfwo"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_nrqgl"]
+[sub_resource type="Resource" id="Resource_rw5c0"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 192
 
-[sub_resource type="Resource" id="Resource_euf81"]
+[sub_resource type="Resource" id="Resource_atclf"]
 script = ExtResource("3_0otko")
 id = &"rising_river"
 title = "The river is rising"
 body = "Snowmelt has the river high, and it is creeping up the bank towards the cave mouth."
 category = &"nature"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_liplk"), SubResource("Resource_nrqgl")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_alfwo"), SubResource("Resource_rw5c0")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_c71hx"), SubResource("Resource_cya3x")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_jgs54"), SubResource("Resource_nrqgl")])
 
 [sub_resource type="Resource" id="Resource_dq2jf"]
 script = ExtResource("5_euihr")
@@ -2797,7 +3209,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 232
 
-[sub_resource type="Resource" id="Resource_q1sem"]
+[sub_resource type="Resource" id="Resource_g63xs"]
 script = ExtResource("3_0otko")
 id = &"wild_grain"
 title = "Heavy grass"
@@ -2807,7 +3219,6 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_yk6y6"), SubReso
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_drgp1"), SubResource("Resource_76yaw")])
-min_choices = 1
 
 [sub_resource type="Resource" id="Resource_hsrms"]
 script = ExtResource("5_euihr")
@@ -2839,34 +3250,38 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_hsrms"), SubResou
 
 [sub_resource type="Resource" id="Resource_4vp0s"]
 script = ExtResource("5_euihr")
-text = "The deer limped on out of sight, and nobody mentioned it."
+kind = 1
+key = &"deer_left"
 
 [sub_resource type="Resource" id="Resource_c3qk1"]
+script = ExtResource("5_euihr")
+text = "The deer limped on out of sight, and nobody mentioned it."
+
+[sub_resource type="Resource" id="Resource_g4mmq"]
 script = ExtResource("4_0wd41")
 id = &"leave_it_be"
 label = "Let nature take its course"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4vp0s")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4vp0s"), SubResource("Resource_c3qk1")])
 
-[sub_resource type="Resource" id="Resource_g4mmq"]
+[sub_resource type="Resource" id="Resource_v06kt"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_v06kt"]
+[sub_resource type="Resource" id="Resource_srk4n"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 252
 
-[sub_resource type="Resource" id="Resource_y7cvq"]
+[sub_resource type="Resource" id="Resource_s2jsa"]
 script = ExtResource("3_0otko")
 id = &"hurt_deer"
 title = "A limping deer"
 body = "A young deer with a hurt leg has been limping near the camp, always at the edge of sight."
 category = &"nature"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_g4mmq"), SubResource("Resource_v06kt")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_v06kt"), SubResource("Resource_srk4n")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_2ww3g"), SubResource("Resource_c3qk1")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_2ww3g"), SubResource("Resource_g4mmq")])
 
 [sub_resource type="Resource" id="Resource_ajc37"]
 script = ExtResource("5_euihr")
@@ -2898,39 +3313,43 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ajc37"), SubResou
 
 [sub_resource type="Resource" id="Resource_1rncm"]
 script = ExtResource("5_euihr")
-text = "The traveller ate by the fire, said a few words nobody understood, and went on."
+kind = 1
+key = &"meal_shared"
 
 [sub_resource type="Resource" id="Resource_nf4vj"]
+script = ExtResource("5_euihr")
+text = "The traveller ate by the fire, said a few words nobody understood, and went on."
+
+[sub_resource type="Resource" id="Resource_ncbn6"]
 script = ExtResource("4_0wd41")
 id = &"share_a_meal"
 label = "Share a meal and send them on"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1rncm")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1rncm"), SubResource("Resource_nf4vj")])
 
-[sub_resource type="Resource" id="Resource_ncbn6"]
+[sub_resource type="Resource" id="Resource_142bi"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_142bi"]
+[sub_resource type="Resource" id="Resource_2kjn1"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 272
 
-[sub_resource type="Resource" id="Resource_2kjn1"]
+[sub_resource type="Resource" id="Resource_wrjvt"]
 script = ExtResource("6_x2sw1")
 kind = 9
 key = &"bigger_group"
 
-[sub_resource type="Resource" id="Resource_2367r"]
+[sub_resource type="Resource" id="Resource_5wnlb"]
 script = ExtResource("3_0otko")
 id = &"trader"
 title = "A traveller with dark stone"
 body = "A traveller from beyond the ridge has come to the edge of the camp with a bag of dark, glassy stone, and a hungry look."
 category = &"exploration"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ncbn6"), SubResource("Resource_142bi"), SubResource("Resource_2kjn1")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_142bi"), SubResource("Resource_2kjn1"), SubResource("Resource_wrjvt")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_6d45x"), SubResource("Resource_nf4vj")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_6d45x"), SubResource("Resource_ncbn6")])
 
 [sub_resource type="Resource" id="Resource_8w5uq"]
 script = ExtResource("5_euihr")
@@ -2949,42 +3368,46 @@ effects = Array[ExtResource("5_euihr")]([SubResource("Resource_8w5uq"), SubResou
 
 [sub_resource type="Resource" id="Resource_rfabi"]
 script = ExtResource("5_euihr")
-text = "{subject} kept the stars private, and seemed happier for it."
+kind = 1
+key = &"stars_private"
 
 [sub_resource type="Resource" id="Resource_8nkac"]
+script = ExtResource("5_euihr")
+text = "{subject} kept the stars private, and seemed happier for it."
+
+[sub_resource type="Resource" id="Resource_hrmek"]
 script = ExtResource("4_0wd41")
 id = &"keep_it_theirs"
 label = "Let them keep the sky to themselves"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_rfabi")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_rfabi"), SubResource("Resource_8nkac")])
 
-[sub_resource type="Resource" id="Resource_hrmek"]
+[sub_resource type="Resource" id="Resource_lskgu"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_lskgu"]
+[sub_resource type="Resource" id="Resource_agh4g"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 294
 
-[sub_resource type="Resource" id="Resource_agh4g"]
+[sub_resource type="Resource" id="Resource_y41p0"]
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_8ok0w"]
+[sub_resource type="Resource" id="Resource_g3wce"]
 script = ExtResource("3_0otko")
 id = &"star_watching"
 title = "Counting stars"
 body = "{subject} has taken to lying awake outside, counting the stars, and losing count."
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_hrmek"), SubResource("Resource_lskgu")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_lskgu"), SubResource("Resource_agh4g")])
 needs_subject = true
-subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_agh4g")])
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y41p0")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_m11pp"), SubResource("Resource_8nkac")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_m11pp"), SubResource("Resource_hrmek")])
 
 [sub_resource type="Resource" id="Resource_cqr6y"]
 script = ExtResource("5_euihr")
@@ -2994,51 +3417,60 @@ amount = -8
 
 [sub_resource type="Resource" id="Resource_agmq0"]
 script = ExtResource("5_euihr")
-text = "A gap in the roof drew the smoke up, and the stars showed through it."
+kind = 1
+key = &"smoke_hole"
 
 [sub_resource type="Resource" id="Resource_40uik"]
+script = ExtResource("5_euihr")
+text = "A gap in the roof drew the smoke up, and the stars showed through it."
+
+[sub_resource type="Resource" id="Resource_hi612"]
 script = ExtResource("6_x2sw1")
 kind = 2
 key = &"wood"
 amount = 8
 
-[sub_resource type="Resource" id="Resource_hi612"]
+[sub_resource type="Resource" id="Resource_3nio1"]
 script = ExtResource("4_0wd41")
 id = &"dig_a_smoke_hole"
 label = "Open a gap in the roof above the fire"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_40uik")])
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cqr6y"), SubResource("Resource_agmq0")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_hi612")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cqr6y"), SubResource("Resource_agmq0"), SubResource("Resource_40uik")])
 
-[sub_resource type="Resource" id="Resource_3nio1"]
+[sub_resource type="Resource" id="Resource_lraw8"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"smoky_cave"
+
+[sub_resource type="Resource" id="Resource_f2h3s"]
 script = ExtResource("5_euihr")
 text = "Everyone coughed a little less each year, or said so."
 
-[sub_resource type="Resource" id="Resource_lraw8"]
+[sub_resource type="Resource" id="Resource_4w27n"]
 script = ExtResource("4_0wd41")
 id = &"live_with_it"
 label = "Live with the smoke"
-effects = Array[ExtResource("5_euihr")]([SubResource("Resource_3nio1")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_lraw8"), SubResource("Resource_f2h3s")])
 
-[sub_resource type="Resource" id="Resource_f2h3s"]
+[sub_resource type="Resource" id="Resource_2xraa"]
 script = ExtResource("6_x2sw1")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_4w27n"]
+[sub_resource type="Resource" id="Resource_rm6gw"]
 script = ExtResource("6_x2sw1")
 kind = 5
 amount = 316
 
-[sub_resource type="Resource" id="Resource_atclf"]
+[sub_resource type="Resource" id="Resource_0r047"]
 script = ExtResource("3_0otko")
 id = &"smoke_in_the_cave"
 title = "Smoke in the cave"
 body = "Years of fire have blackened the cave roof, and the smoke lingers every evening."
 category = &"settlement"
-requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_f2h3s"), SubResource("Resource_4w27n")])
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_2xraa"), SubResource("Resource_rm6gw")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_hi612"), SubResource("Resource_lraw8")])
-min_choices = 1
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_3nio1"), SubResource("Resource_4w27n")])
 
 [sub_resource type="Resource" id="Resource_m8bwp"]
 script = ExtResource("5_euihr")
@@ -3088,7 +3520,7 @@ key = &"stone_tools"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_g63xs"]
+[sub_resource type="Resource" id="Resource_euy71"]
 script = ExtResource("3_0otko")
 id = &"tools_pile"
 title = "The pile by the cave"
@@ -3102,7 +3534,752 @@ trait_weights = Dictionary[StringName, float]({
 chance_per_tick = 0.02
 once = true
 choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_be1tb"), SubResource("Resource_qjgtq")])
-min_choices = 1
+
+[sub_resource type="Resource" id="Resource_oeg60"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"hide_floor"
+
+[sub_resource type="Resource" id="Resource_e8vh0"]
+script = ExtResource("5_euihr")
+text = "The hides went down in rows, and the cave smelled of animals and was a good deal warmer."
+
+[sub_resource type="Resource" id="Resource_i0j6w"]
+script = ExtResource("4_0wd41")
+id = &"hang_hides"
+label = "Spread the spare hides over the floor"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_oeg60"), SubResource("Resource_e8vh0")])
+
+[sub_resource type="Resource" id="Resource_ovd0c"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"reed_beds"
+
+[sub_resource type="Resource" id="Resource_i1y8r"]
+script = ExtResource("5_euihr")
+text = "Armfuls of reeds were carried up from the river, and everyone slept on a rustling bed."
+
+[sub_resource type="Resource" id="Resource_vj0k5"]
+script = ExtResource("4_0wd41")
+id = &"cut_reeds"
+label = "Cut reeds from the river for bedding"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ovd0c"), SubResource("Resource_i1y8r")])
+
+[sub_resource type="Resource" id="Resource_uyi7g"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_p4jij"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 11
+
+[sub_resource type="Resource" id="Resource_ph7u5"]
+script = ExtResource("3_0otko")
+id = &"cold_floors"
+title = "The cold floor"
+body = "The cave floor is bare rock, and the nights have been cold underneath."
+category = &"settlement"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_uyi7g"), SubResource("Resource_p4jij")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_i0j6w"), SubResource("Resource_vj0k5")])
+
+[sub_resource type="Resource" id="Resource_h80au"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"wrestled"
+
+[sub_resource type="Resource" id="Resource_n5472"]
+script = ExtResource("5_euihr")
+text = "They wrestled in the firelight until both were laughing, and the flint turned up in a boot."
+
+[sub_resource type="Resource" id="Resource_fqg5x"]
+script = ExtResource("4_0wd41")
+id = &"wrestle_it_out"
+label = "Let them settle it with a wrestle by the fire"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_h80au"), SubResource("Resource_n5472")])
+
+[sub_resource type="Resource" id="Resource_liob6"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"searched_together"
+
+[sub_resource type="Resource" id="Resource_uacha"]
+script = ExtResource("5_euihr")
+text = "The whole group searched the cave, and found the flint, and a good many other lost things."
+
+[sub_resource type="Resource" id="Resource_6yfiv"]
+script = ExtResource("4_0wd41")
+id = &"search_together"
+label = "Turn the whole cave over, everyone together"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_liob6"), SubResource("Resource_uacha")])
+
+[sub_resource type="Resource" id="Resource_5fttg"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_107h2"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 80
+
+[sub_resource type="Resource" id="Resource_qc1fm"]
+script = ExtResource("3_0otko")
+id = &"lost_flint"
+title = "The missing flint"
+body = "The best flint in the cave has gone missing, and two of the group are each sure the other has it."
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5fttg"), SubResource("Resource_107h2")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_fqg5x"), SubResource("Resource_6yfiv")])
+
+[sub_resource type="Resource" id="Resource_dnq42"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"wood"
+amount = -3
+
+[sub_resource type="Resource" id="Resource_k02aa"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"torch_at_mouth"
+
+[sub_resource type="Resource" id="Resource_r7n33"]
+script = ExtResource("5_euihr")
+text = "A torch burned at the cave mouth all night, and the scratching stopped."
+
+[sub_resource type="Resource" id="Resource_k32wg"]
+script = ExtResource("6_x2sw1")
+kind = 2
+key = &"wood"
+amount = 3
+
+[sub_resource type="Resource" id="Resource_2rdj6"]
+script = ExtResource("4_0wd41")
+id = &"keep_a_torch"
+label = "Keep a torch burning at the cave mouth"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_k32wg")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_dnq42"), SubResource("Resource_k02aa"), SubResource("Resource_r7n33")])
+
+[sub_resource type="Resource" id="Resource_p0sna"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"deep_sleepers"
+
+[sub_resource type="Resource" id="Resource_jqelv"]
+script = ExtResource("5_euihr")
+text = "The beds were moved to the back of the cave, where the sound could not reach."
+
+[sub_resource type="Resource" id="Resource_uml5d"]
+script = ExtResource("4_0wd41")
+id = &"sleep_deeper"
+label = "Move the beds deeper into the cave"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_p0sna"), SubResource("Resource_jqelv")])
+
+[sub_resource type="Resource" id="Resource_vfl8e"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_yynuk"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 98
+
+[sub_resource type="Resource" id="Resource_dld4y"]
+script = ExtResource("3_0otko")
+id = &"night_noises"
+title = "Scratching in the night"
+body = "Something has been scratching at the cave wall after dark, always just out of sight."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vfl8e"), SubResource("Resource_yynuk")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_2rdj6"), SubResource("Resource_uml5d")])
+
+[sub_resource type="Resource" id="Resource_e6uqf"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"stepping_stones"
+
+[sub_resource type="Resource" id="Resource_0f378"]
+script = ExtResource("5_euihr")
+text = "A line of flat stones was laid across the shallows, each one carried from the bank."
+
+[sub_resource type="Resource" id="Resource_x3l25"]
+script = ExtResource("4_0wd41")
+id = &"lay_stepping_stones"
+label = "Lay a line of flat stones across it"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_e6uqf"), SubResource("Resource_0f378")])
+
+[sub_resource type="Resource" id="Resource_2a0as"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"wood"
+amount = -6
+
+[sub_resource type="Resource" id="Resource_ph5e0"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"log_bridge"
+
+[sub_resource type="Resource" id="Resource_5li3s"]
+script = ExtResource("5_euihr")
+text = "A tree came down across the river with a crack, and by dusk everyone had walked over it."
+
+[sub_resource type="Resource" id="Resource_efy31"]
+script = ExtResource("6_x2sw1")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_ccqih"]
+script = ExtResource("4_0wd41")
+id = &"fell_a_log"
+label = "Fell a tree to lie across it"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_efy31")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_2a0as"), SubResource("Resource_ph5e0"), SubResource("Resource_5li3s")])
+
+[sub_resource type="Resource" id="Resource_20v5u"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_2mn0s"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 152
+
+[sub_resource type="Resource" id="Resource_ph6lk"]
+script = ExtResource("3_0otko")
+id = &"the_ford"
+title = "The hard crossing"
+body = "The river is easiest to cross at one place, and everyone has begun to slip there."
+category = &"settlement"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_20v5u"), SubResource("Resource_2mn0s")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_x3l25"), SubResource("Resource_ccqih")])
+
+[sub_resource type="Resource" id="Resource_mhpcy"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"feather_worn"
+
+[sub_resource type="Resource" id="Resource_ut2ld"]
+script = ExtResource("5_euihr")
+text = "{subject} tied the feather into their hair, and walked about as if nobody noticed."
+
+[sub_resource type="Resource" id="Resource_pdiur"]
+script = ExtResource("4_0wd41")
+id = &"wear_the_feather"
+label = "Let them keep it, tied in their hair"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mhpcy"), SubResource("Resource_ut2ld")])
+
+[sub_resource type="Resource" id="Resource_tia5i"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"feather_shared"
+
+[sub_resource type="Resource" id="Resource_4b5ow"]
+script = ExtResource("5_euihr")
+text = "The feather was pinned above the fire, where everyone could see it."
+
+[sub_resource type="Resource" id="Resource_oen3r"]
+script = ExtResource("4_0wd41")
+id = &"share_the_feather"
+label = "Pin it up in the cave for everyone"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tia5i"), SubResource("Resource_4b5ow")])
+
+[sub_resource type="Resource" id="Resource_qmnal"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_h3e3i"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 182
+
+[sub_resource type="Resource" id="Resource_5vaop"]
+script = ExtResource("6_x2sw1")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_ntc30"]
+script = ExtResource("3_0otko")
+id = &"bright_feather"
+title = "A bright feather"
+body = "{subject} found a long blue feather by the river, and has been carrying it about all day."
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_qmnal"), SubResource("Resource_h3e3i")])
+needs_subject = true
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5vaop")])
+trait_weights = Dictionary[StringName, float]({
+&"nature_loving": 3.0
+})
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_pdiur"), SubResource("Resource_oen3r")])
+
+[sub_resource type="Resource" id="Resource_obqrw"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"wood"
+amount = -3
+
+[sub_resource type="Resource" id="Resource_d7fe5"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"bats_smoked"
+
+[sub_resource type="Resource" id="Resource_mux0k"]
+script = ExtResource("5_euihr")
+text = "A green fire at the back of the cave sent the bats out in a long dark stream."
+
+[sub_resource type="Resource" id="Resource_srekh"]
+script = ExtResource("6_x2sw1")
+kind = 2
+key = &"wood"
+amount = 3
+
+[sub_resource type="Resource" id="Resource_jvorj"]
+script = ExtResource("4_0wd41")
+id = &"smoke_them_out"
+label = "Smoke them out with a green fire"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_srekh")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_obqrw"), SubResource("Resource_d7fe5"), SubResource("Resource_mux0k")])
+
+[sub_resource type="Resource" id="Resource_weofu"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"bats_kept"
+
+[sub_resource type="Resource" id="Resource_imi7h"]
+script = ExtResource("5_euihr")
+text = "The bats stayed, and the cave stopped being full of midges at dusk."
+
+[sub_resource type="Resource" id="Resource_7fej6"]
+script = ExtResource("4_0wd41")
+id = &"keep_the_bats"
+label = "Leave them, and be glad of the quiet midges"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_weofu"), SubResource("Resource_imi7h")])
+
+[sub_resource type="Resource" id="Resource_is8yf"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_dbl8h"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 204
+
+[sub_resource type="Resource" id="Resource_ns0l7"]
+script = ExtResource("3_0otko")
+id = &"bats_in_the_back"
+title = "Bats in the back"
+body = "Bats have moved into the back of the cave, and hang from the roof all day in a twitching row."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_is8yf"), SubResource("Resource_dbl8h")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_jvorj"), SubResource("Resource_7fej6")])
+
+[sub_resource type="Resource" id="Resource_l7svc"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_68ghf"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"honey_taken"
+
+[sub_resource type="Resource" id="Resource_qlxak"]
+script = ExtResource("5_euihr")
+text = "They took the whole comb, and sticky, swollen, everyone ate until they ached."
+
+[sub_resource type="Resource" id="Resource_48btx"]
+script = ExtResource("4_0wd41")
+id = &"take_the_comb"
+label = "Take the whole comb, and put up with the stings"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_l7svc"), SubResource("Resource_68ghf"), SubResource("Resource_qlxak")])
+
+[sub_resource type="Resource" id="Resource_dam18"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 3
+
+[sub_resource type="Resource" id="Resource_4fmvy"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"honey_shared"
+
+[sub_resource type="Resource" id="Resource_vdst5"]
+script = ExtResource("5_euihr")
+text = "They took one small piece of comb and left the tree humming, and the bees stayed."
+
+[sub_resource type="Resource" id="Resource_bmnlf"]
+script = ExtResource("4_0wd41")
+id = &"take_a_little"
+label = "Take a little and leave the hive standing"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_dam18"), SubResource("Resource_4fmvy"), SubResource("Resource_vdst5")])
+
+[sub_resource type="Resource" id="Resource_nbsrv"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_ucony"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 227
+
+[sub_resource type="Resource" id="Resource_kgw7h"]
+script = ExtResource("3_0otko")
+id = &"bee_tree"
+title = "The bee tree"
+body = "A hollow tree in the western wood hums with bees, and the comb inside is heavy with honey."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_nbsrv"), SubResource("Resource_ucony")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_48btx"), SubResource("Resource_bmnlf")])
+
+[sub_resource type="Resource" id="Resource_kn7hr"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 5
+
+[sub_resource type="Resource" id="Resource_jiyep"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"fish_by_hand"
+
+[sub_resource type="Resource" id="Resource_586jb"]
+script = ExtResource("5_euihr")
+text = "Half the camp ended up in the river, and came out soaked, laughing, and carrying fish."
+
+[sub_resource type="Resource" id="Resource_hryes"]
+script = ExtResource("4_0wd41")
+id = &"wade_in"
+label = "Wade in with spears and bare hands"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_kn7hr"), SubResource("Resource_jiyep"), SubResource("Resource_586jb")])
+
+[sub_resource type="Resource" id="Resource_oi1pw"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"wood"
+amount = -4
+
+[sub_resource type="Resource" id="Resource_bhc8e"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 9
+
+[sub_resource type="Resource" id="Resource_usjk6"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"fish_trap"
+
+[sub_resource type="Resource" id="Resource_usvho"]
+script = ExtResource("5_euihr")
+text = "A trap of woven willow went across the channel, and by morning it was heavy with fish."
+
+[sub_resource type="Resource" id="Resource_mnxtf"]
+script = ExtResource("6_x2sw1")
+kind = 2
+key = &"wood"
+amount = 4
+
+[sub_resource type="Resource" id="Resource_b7hm6"]
+script = ExtResource("4_0wd41")
+id = &"weave_a_trap"
+label = "Weave a trap across the narrow channel"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_mnxtf")])
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_oi1pw"), SubResource("Resource_bhc8e"), SubResource("Resource_usjk6"), SubResource("Resource_usvho")])
+
+[sub_resource type="Resource" id="Resource_yf7l1"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_3wseg"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 246
+
+[sub_resource type="Resource" id="Resource_eppu6"]
+script = ExtResource("3_0otko")
+id = &"fish_run"
+title = "The run of fish"
+body = "The river is full of fish, thick in the shallows, all heading the same way."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_yf7l1"), SubResource("Resource_3wseg")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_hryes"), SubResource("Resource_b7hm6")])
+
+[sub_resource type="Resource" id="Resource_fsxck"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"log_drum"
+
+[sub_resource type="Resource" id="Resource_k5nae"]
+script = ExtResource("5_euihr")
+text = "{subject} stretched a hide across the log, and the whole valley heard the first drum."
+
+[sub_resource type="Resource" id="Resource_h63ig"]
+script = ExtResource("4_0wd41")
+id = &"beat_a_drum"
+label = "Stretch a hide over the end, and beat it"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_fsxck"), SubResource("Resource_k5nae")])
+
+[sub_resource type="Resource" id="Resource_4trpk"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"bone_pipe"
+
+[sub_resource type="Resource" id="Resource_gc8bv"]
+script = ExtResource("5_euihr")
+text = "{subject} bored holes in a bird bone, and by dusk it was a small clear voice."
+
+[sub_resource type="Resource" id="Resource_awec6"]
+script = ExtResource("4_0wd41")
+id = &"carve_a_flute"
+label = "Carve a bone into a pipe instead"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4trpk"), SubResource("Resource_gc8bv")])
+
+[sub_resource type="Resource" id="Resource_wdn7j"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_w6lnj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 265
+
+[sub_resource type="Resource" id="Resource_ajufr"]
+script = ExtResource("6_x2sw1")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_tq8lk"]
+script = ExtResource("3_0otko")
+id = &"hollow_log"
+title = "A hollow log"
+body = "{subject} found a hollow log, and found it made a sound when struck."
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_wdn7j"), SubResource("Resource_w6lnj")])
+needs_subject = true
+subject_requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ajufr")])
+trait_weights = Dictionary[StringName, float]({
+&"social": 3.0
+})
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_h63ig"), SubResource("Resource_awec6")])
+
+[sub_resource type="Resource" id="Resource_wq0yk"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"snow_figure"
+
+[sub_resource type="Resource" id="Resource_01vvu"]
+script = ExtResource("5_euihr")
+text = "A snow figure with a stick for an arm stood at the cave mouth, and nobody would say who had made it."
+
+[sub_resource type="Resource" id="Resource_bfbo4"]
+script = ExtResource("4_0wd41")
+id = &"build_a_snow_figure"
+label = "Build something in the snow at the cave mouth"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wq0yk"), SubResource("Resource_01vvu")])
+
+[sub_resource type="Resource" id="Resource_wbptk"]
+script = ExtResource("5_euihr")
+kind = 0
+key = &"food"
+amount = 3
+
+[sub_resource type="Resource" id="Resource_vgg1v"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"snow_tracks"
+
+[sub_resource type="Resource" id="Resource_3rys0"]
+script = ExtResource("5_euihr")
+text = "They followed the tracks of a hare, a fox, and one that nobody could name."
+
+[sub_resource type="Resource" id="Resource_tt7fq"]
+script = ExtResource("4_0wd41")
+id = &"read_the_tracks"
+label = "Walk out and read what has crossed the snow"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wbptk"), SubResource("Resource_vgg1v"), SubResource("Resource_3rys0")])
+
+[sub_resource type="Resource" id="Resource_vqd0a"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_ft7w8"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 285
+
+[sub_resource type="Resource" id="Resource_1jopo"]
+script = ExtResource("3_0otko")
+id = &"first_snow"
+title = "The first snow"
+body = "Snow fell in the night, and the whole valley is white and silent."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vqd0a"), SubResource("Resource_ft7w8")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_bfbo4"), SubResource("Resource_tt7fq")])
+
+[sub_resource type="Resource" id="Resource_jgbn8"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"echo_games"
+
+[sub_resource type="Resource" id="Resource_c0n8w"]
+script = ExtResource("5_euihr")
+text = "The whole group shouted questions into the dark, and the cave answered every one with the last word."
+
+[sub_resource type="Resource" id="Resource_hua86"]
+script = ExtResource("4_0wd41")
+id = &"shout_questions"
+label = "Shout questions into it, all together"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_jgbn8"), SubResource("Resource_c0n8w")])
+
+[sub_resource type="Resource" id="Resource_b1603"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"echo_whispers"
+
+[sub_resource type="Resource" id="Resource_311yh"]
+script = ExtResource("5_euihr")
+text = "They whispered into the cave, one at a time, and held their breath for the reply."
+
+[sub_resource type="Resource" id="Resource_i7f1q"]
+script = ExtResource("4_0wd41")
+id = &"whisper_and_listen"
+label = "Whisper, and listen to what comes back"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_b1603"), SubResource("Resource_311yh")])
+
+[sub_resource type="Resource" id="Resource_paxou"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_l7nr1"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 307
+
+[sub_resource type="Resource" id="Resource_gf0cy"]
+script = ExtResource("3_0otko")
+id = &"echo_in_the_cave"
+title = "The cave answers"
+body = "Someone shouted into the deep back of the cave, and it shouted back, a moment later."
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_paxou"), SubResource("Resource_l7nr1")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_hua86"), SubResource("Resource_i7f1q")])
+
+[sub_resource type="Resource" id="Resource_8mqif"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"sky_stone_kept"
+
+[sub_resource type="Resource" id="Resource_mq7si"]
+script = ExtResource("5_euihr")
+text = "Four of them carried the black stone to the cave, and it sat by the fire like a guest."
+
+[sub_resource type="Resource" id="Resource_w37a8"]
+script = ExtResource("4_0wd41")
+id = &"keep_the_sky_stone"
+label = "Carry it back and keep it by the fire"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_8mqif"), SubResource("Resource_mq7si")])
+
+[sub_resource type="Resource" id="Resource_rep5b"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"sky_stone_marked"
+
+[sub_resource type="Resource" id="Resource_23rvi"]
+script = ExtResource("5_euihr")
+text = "They ringed the black stone with white pebbles, and left it to the sky."
+
+[sub_resource type="Resource" id="Resource_kio87"]
+script = ExtResource("4_0wd41")
+id = &"mark_the_sky_stone"
+label = "Leave it where it fell, and ring it with white stones"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_rep5b"), SubResource("Resource_23rvi")])
+
+[sub_resource type="Resource" id="Resource_x3588"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_1y4ky"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 331
+
+[sub_resource type="Resource" id="Resource_gx0a7"]
+script = ExtResource("3_0otko")
+id = &"sky_stone"
+title = "A stone from the sky"
+body = "A streak of light crossed the sky in the night, and in the morning there is a heavy black stone in the meadow, still warm."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_x3588"), SubResource("Resource_1y4ky")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_w37a8"), SubResource("Resource_kio87")])
+
+[sub_resource type="Resource" id="Resource_v20ff"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"warm_pool_used"
+
+[sub_resource type="Resource" id="Resource_ggy8l"]
+script = ExtResource("5_euihr")
+text = "They walked up the valley in the frost and sat in the warm pool up to their chins."
+
+[sub_resource type="Resource" id="Resource_3bn2l"]
+script = ExtResource("4_0wd41")
+id = &"bathe_in_it"
+label = "Go and bathe in it on the coldest days"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_v20ff"), SubResource("Resource_ggy8l")])
+
+[sub_resource type="Resource" id="Resource_sp1eu"]
+script = ExtResource("5_euihr")
+kind = 1
+key = &"warm_bags"
+
+[sub_resource type="Resource" id="Resource_0qhw8"]
+script = ExtResource("5_euihr")
+text = "Hide bags of warm water were carried home, and everyone slept with one at their feet."
+
+[sub_resource type="Resource" id="Resource_urqu0"]
+script = ExtResource("4_0wd41")
+id = &"carry_the_warmth"
+label = "Fill hide bags and carry the warmth home"
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_sp1eu"), SubResource("Resource_0qhw8")])
+
+[sub_resource type="Resource" id="Resource_exp27"]
+script = ExtResource("6_x2sw1")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_4sidy"]
+script = ExtResource("6_x2sw1")
+kind = 5
+amount = 350
+
+[sub_resource type="Resource" id="Resource_5s62b"]
+script = ExtResource("3_0otko")
+id = &"warm_pool"
+title = "The warm pool"
+body = "A pool up the valley steams in the cold, and the water is warm to the hand."
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_exp27"), SubResource("Resource_4sidy")])
+chance_per_tick = 0.02
+once = true
+choices = Array[ExtResource("4_0wd41")]([SubResource("Resource_3bn2l"), SubResource("Resource_urqu0")])
 
 [sub_resource type="Resource" id="Resource_p578w"]
 script = ExtResource("5_euihr")
@@ -3144,7 +4321,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 2
 
-[sub_resource type="Resource" id="Resource_s2jsa"]
+[sub_resource type="Resource" id="Resource_p3ixc"]
 script = ExtResource("3_0otko")
 id = &"what_the_cave_is_for"
 title = "What the cave is for"
@@ -3209,7 +4386,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 8
 
-[sub_resource type="Resource" id="Resource_5wnlb"]
+[sub_resource type="Resource" id="Resource_n8gec"]
 script = ExtResource("3_0otko")
 id = &"marking_the_ground"
 title = "Whose ground"
@@ -3260,7 +4437,7 @@ amount = 14
 script = ExtResource("6_x2sw1")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_g3wce"]
+[sub_resource type="Resource" id="Resource_venu4"]
 script = ExtResource("3_0otko")
 id = &"first_furrows"
 title = "The digging sticks"
@@ -3329,7 +4506,7 @@ amount = 14
 script = ExtResource("6_x2sw1")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_0r047"]
+[sub_resource type="Resource" id="Resource_wr4nm"]
 script = ExtResource("3_0otko")
 id = &"pasture_gate"
 title = "Into the sown ground"
@@ -3394,7 +4571,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"first_roof"
 
-[sub_resource type="Resource" id="Resource_euy71"]
+[sub_resource type="Resource" id="Resource_cdahx"]
 script = ExtResource("3_0otko")
 id = &"mending_the_roof"
 title = "Rain through the thatch"
@@ -3454,7 +4631,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 46
 
-[sub_resource type="Resource" id="Resource_ph7u5"]
+[sub_resource type="Resource" id="Resource_6n1ki"]
 script = ExtResource("3_0otko")
 id = &"the_well"
 title = "A place to fetch water"
@@ -3505,7 +4682,7 @@ amount = 58
 script = ExtResource("6_x2sw1")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_qc1fm"]
+[sub_resource type="Resource" id="Resource_4yh2e"]
 script = ExtResource("3_0otko")
 id = &"the_scarecrow"
 title = "Birds in the field"
@@ -3569,7 +4746,7 @@ amount = 58
 script = ExtResource("6_x2sw1")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_dld4y"]
+[sub_resource type="Resource" id="Resource_ok5eu"]
 script = ExtResource("3_0otko")
 id = &"the_herd_dog"
 title = "A dog at the fold"
@@ -3634,7 +4811,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_ph6lk"]
+[sub_resource type="Resource" id="Resource_8dw7o"]
 script = ExtResource("3_0otko")
 id = &"a_dry_store"
 title = "Damp grain"
@@ -3685,7 +4862,7 @@ amount = 82
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_ntc30"]
+[sub_resource type="Resource" id="Resource_j8hqa"]
 script = ExtResource("3_0otko")
 id = &"the_quarrel"
 title = "Over the fence"
@@ -3754,7 +4931,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_ns0l7"]
+[sub_resource type="Resource" id="Resource_kgfng"]
 script = ExtResource("3_0otko")
 id = &"harvest_festival"
 title = "More than enough"
@@ -3805,7 +4982,7 @@ amount = 100
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_kgw7h"]
+[sub_resource type="Resource" id="Resource_3bvkb"]
 script = ExtResource("3_0otko")
 id = &"the_oldest_voice"
 title = "Before the huts"
@@ -3874,7 +5051,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_eppu6"]
+[sub_resource type="Resource" id="Resource_fip82"]
 script = ExtResource("3_0otko")
 id = &"the_kiln_pit"
 title = "A pit for the pots"
@@ -3934,7 +5111,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 130
 
-[sub_resource type="Resource" id="Resource_tq8lk"]
+[sub_resource type="Resource" id="Resource_rx7mr"]
 script = ExtResource("3_0otko")
 id = &"a_wet_summer"
 title = "Nine days of rain"
@@ -3994,7 +5171,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 142
 
-[sub_resource type="Resource" id="Resource_1jopo"]
+[sub_resource type="Resource" id="Resource_kuww2"]
 script = ExtResource("3_0otko")
 id = &"wild_fowl"
 title = "Small brown birds"
@@ -4059,7 +5236,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"woven_cloth"
 
-[sub_resource type="Resource" id="Resource_gf0cy"]
+[sub_resource type="Resource" id="Resource_pxiyj"]
 script = ExtResource("3_0otko")
 id = &"dyed_cloth"
 title = "A colour for the cloth"
@@ -4127,7 +5304,7 @@ key = &"woven_cloth"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_gx0a7"]
+[sub_resource type="Resource" id="Resource_n87ae"]
 script = ExtResource("3_0otko")
 id = &"the_loom_frame"
 title = "Two posts and some thread"
@@ -4191,7 +5368,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 196
 
-[sub_resource type="Resource" id="Resource_5s62b"]
+[sub_resource type="Resource" id="Resource_jni75"]
 script = ExtResource("3_0otko")
 id = &"the_flood"
 title = "The river is rising"
@@ -4251,7 +5428,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 208
 
-[sub_resource type="Resource" id="Resource_p3ixc"]
+[sub_resource type="Resource" id="Resource_a4qn0"]
 script = ExtResource("3_0otko")
 id = &"smoke_in_the_next_valley"
 title = "Smoke beyond the ridge"
@@ -4309,7 +5486,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_n8gec"]
+[sub_resource type="Resource" id="Resource_3tmqq"]
 script = ExtResource("3_0otko")
 id = &"pots_for_salt"
 title = "Salt"
@@ -4369,7 +5546,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 238
 
-[sub_resource type="Resource" id="Resource_venu4"]
+[sub_resource type="Resource" id="Resource_hcgj7"]
 script = ExtResource("3_0otko")
 id = &"winter_count"
 title = "Before winter"
@@ -4430,7 +5607,7 @@ key = &"green_stone"
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_wr4nm"]
+[sub_resource type="Resource" id="Resource_bmapd"]
 script = ExtResource("3_0otko")
 id = &"green_beads"
 title = "What the stone does"
@@ -4500,7 +5677,7 @@ script = ExtResource("6_x2sw1")
 kind = 11
 amount = 286
 
-[sub_resource type="Resource" id="Resource_cdahx"]
+[sub_resource type="Resource" id="Resource_tapjy"]
 script = ExtResource("3_0otko")
 id = &"the_low_wall"
 title = "How far the village goes"
@@ -4551,7 +5728,7 @@ amount = 312
 script = ExtResource("6_x2sw1")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_6n1ki"]
+[sub_resource type="Resource" id="Resource_xllvq"]
 script = ExtResource("3_0otko")
 id = &"looking_back"
 title = "Up at the cave"
@@ -4575,7 +5752,7 @@ text = "Mist lay on the river until midday, and the camp was very quiet."
 script = ExtResource("6_x2sw1")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_4yh2e"]
+[sub_resource type="Resource" id="Resource_mgqkr"]
 script = ExtResource("3_0otko")
 id = &"morning_mist"
 title = "A quiet moment"
@@ -4593,7 +5770,7 @@ text = "A heron stood in the shallows all afternoon, as if it had business there
 script = ExtResource("6_x2sw1")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_ok5eu"]
+[sub_resource type="Resource" id="Resource_nfa5u"]
 script = ExtResource("3_0otko")
 id = &"heron"
 title = "A quiet moment"
@@ -4612,7 +5789,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 20
 
-[sub_resource type="Resource" id="Resource_8dw7o"]
+[sub_resource type="Resource" id="Resource_im1hx"]
 script = ExtResource("3_0otko")
 id = &"frost_glitter"
 title = "A quiet moment"
@@ -4631,7 +5808,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 30
 
-[sub_resource type="Resource" id="Resource_j8hqa"]
+[sub_resource type="Resource" id="Resource_btc77"]
 script = ExtResource("3_0otko")
 id = &"geese"
 title = "A quiet moment"
@@ -4649,7 +5826,7 @@ text = "Thunder grumbled far off, and everyone looked up and nobody was afraid."
 script = ExtResource("6_x2sw1")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_kgfng"]
+[sub_resource type="Resource" id="Resource_7iwfm"]
 script = ExtResource("3_0otko")
 id = &"far_thunder"
 title = "A quiet moment"
@@ -4668,7 +5845,7 @@ script = ExtResource("6_x2sw1")
 kind = 5
 amount = 10
 
-[sub_resource type="Resource" id="Resource_3bvkb"]
+[sub_resource type="Resource" id="Resource_tlued"]
 script = ExtResource("3_0otko")
 id = &"warm_wind"
 title = "A quiet moment"
@@ -4699,7 +5876,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_fip82"]
+[sub_resource type="Resource" id="Resource_wnh4f"]
 script = ExtResource("3_0otko")
 id = &"watching_ants"
 title = "A quiet moment"
@@ -4731,7 +5908,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_rx7mr"]
+[sub_resource type="Resource" id="Resource_ejjpc"]
 script = ExtResource("3_0otko")
 id = &"shiny_pebble"
 title = "A quiet moment"
@@ -4763,7 +5940,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_kuww2"]
+[sub_resource type="Resource" id="Resource_5oq4u"]
 script = ExtResource("3_0otko")
 id = &"humming"
 title = "A quiet moment"
@@ -4795,7 +5972,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_pxiyj"]
+[sub_resource type="Resource" id="Resource_lvbo7"]
 script = ExtResource("3_0otko")
 id = &"a_joke"
 title = "A quiet moment"
@@ -4827,7 +6004,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_n87ae"]
+[sub_resource type="Resource" id="Resource_o55pb"]
 script = ExtResource("3_0otko")
 id = &"sharpened_everything"
 title = "A quiet moment"
@@ -4859,7 +6036,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_jni75"]
+[sub_resource type="Resource" id="Resource_202c3"]
 script = ExtResource("3_0otko")
 id = &"woodpile"
 title = "A quiet moment"
@@ -4891,7 +6068,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_a4qn0"]
+[sub_resource type="Resource" id="Resource_rb8g7"]
 script = ExtResource("3_0otko")
 id = &"crocuses"
 title = "A quiet moment"
@@ -4923,7 +6100,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_3tmqq"]
+[sub_resource type="Resource" id="Resource_myemd"]
 script = ExtResource("3_0otko")
 id = &"bird_call"
 title = "A quiet moment"
@@ -4946,7 +6123,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"wolf_fed"
 
-[sub_resource type="Resource" id="Resource_hcgj7"]
+[sub_resource type="Resource" id="Resource_jv7hd"]
 script = ExtResource("3_0otko")
 id = &"wolf_waits"
 title = "A quiet moment"
@@ -4968,7 +6145,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"wolf_driven_off"
 
-[sub_resource type="Resource" id="Resource_bmapd"]
+[sub_resource type="Resource" id="Resource_5lak7"]
 script = ExtResource("3_0otko")
 id = &"wolf_howl"
 title = "A quiet moment"
@@ -4990,7 +6167,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"work_song"
 
-[sub_resource type="Resource" id="Resource_tapjy"]
+[sub_resource type="Resource" id="Resource_dem84"]
 script = ExtResource("3_0otko")
 id = &"song_again"
 title = "A quiet moment"
@@ -5012,7 +6189,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"art_herd"
 
-[sub_resource type="Resource" id="Resource_xllvq"]
+[sub_resource type="Resource" id="Resource_f7kau"]
 script = ExtResource("3_0otko")
 id = &"herd_on_the_wall"
 title = "A quiet moment"
@@ -5034,7 +6211,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"art_sky"
 
-[sub_resource type="Resource" id="Resource_mgqkr"]
+[sub_resource type="Resource" id="Resource_i7j5c"]
 script = ExtResource("3_0otko")
 id = &"moon_on_the_wall"
 title = "A quiet moment"
@@ -5056,7 +6233,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"second_hearth"
 
-[sub_resource type="Resource" id="Resource_nfa5u"]
+[sub_resource type="Resource" id="Resource_03aes"]
 script = ExtResource("3_0otko")
 id = &"two_fires"
 title = "A quiet moment"
@@ -5078,7 +6255,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"snares"
 
-[sub_resource type="Resource" id="Resource_im1hx"]
+[sub_resource type="Resource" id="Resource_u67f1"]
 script = ExtResource("3_0otko")
 id = &"snare_rabbit"
 title = "A quiet moment"
@@ -5100,7 +6277,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"mammoth_fed"
 
-[sub_resource type="Resource" id="Resource_btc77"]
+[sub_resource type="Resource" id="Resource_ocqsx"]
 script = ExtResource("3_0otko")
 id = &"mammoth_stays"
 title = "A quiet moment"
@@ -5122,7 +6299,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"deer_tended"
 
-[sub_resource type="Resource" id="Resource_7iwfm"]
+[sub_resource type="Resource" id="Resource_t40kq"]
 script = ExtResource("3_0otko")
 id = &"deer_returns"
 title = "A quiet moment"
@@ -5144,7 +6321,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"star_names"
 
-[sub_resource type="Resource" id="Resource_tlued"]
+[sub_resource type="Resource" id="Resource_hextx"]
 script = ExtResource("3_0otko")
 id = &"hunter_overhead"
 title = "A quiet moment"
@@ -5166,7 +6343,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"living_tale"
 
-[sub_resource type="Resource" id="Resource_wnh4f"]
+[sub_resource type="Resource" id="Resource_inhey"]
 script = ExtResource("3_0otko")
 id = &"tale_told_again"
 title = "A quiet moment"
@@ -5188,7 +6365,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"path_hunting"
 
-[sub_resource type="Resource" id="Resource_ejjpc"]
+[sub_resource type="Resource" id="Resource_tmcvw"]
 script = ExtResource("3_0otko")
 id = &"hunters_home"
 title = "A quiet moment"
@@ -5210,7 +6387,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"path_hunting"
 
-[sub_resource type="Resource" id="Resource_5oq4u"]
+[sub_resource type="Resource" id="Resource_he8y4"]
 script = ExtResource("3_0otko")
 id = &"one_that_got_away"
 title = "A quiet moment"
@@ -5232,7 +6409,7 @@ kind = 5
 script = ExtResource("6_x2sw1")
 key = &"path_foraging"
 
-[sub_resource type="Resource" id="Resource_lvbo7"]
+[sub_resource type="Resource" id="Resource_rlo75"]
 script = ExtResource("3_0otko")
 id = &"baskets_full"
 title = "A quiet moment"
@@ -5241,6 +6418,1150 @@ requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_f7kat"), SubReso
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_f8bmp")])
+
+[sub_resource type="Resource" id="Resource_ly2jy"]
+script = ExtResource("5_euihr")
+text = "Someone banked the fire for the night with ash, the way you do with something that was waited for."
+
+[sub_resource type="Resource" id="Resource_3t1ow"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_vpcvb"]
+script = ExtResource("6_x2sw1")
+key = &"embers_waited"
+
+[sub_resource type="Resource" id="Resource_4fjua"]
+script = ExtResource("3_0otko")
+id = &"fire_banked"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_3t1ow"), SubResource("Resource_vpcvb")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ly2jy")])
+
+[sub_resource type="Resource" id="Resource_cs2qi"]
+script = ExtResource("5_euihr")
+text = "The round river stone was cracking nuts again, and still as good as ever."
+
+[sub_resource type="Resource" id="Resource_4um1h"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_wubab"]
+script = ExtResource("6_x2sw1")
+key = &"nut_hammer"
+
+[sub_resource type="Resource" id="Resource_ma63a"]
+script = ExtResource("3_0otko")
+id = &"nut_stone_again"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4um1h"), SubResource("Resource_wubab")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_cs2qi")])
+
+[sub_resource type="Resource" id="Resource_rwlm0"]
+script = ExtResource("5_euihr")
+text = "The story was told again by the fire, everyone in their usual place."
+
+[sub_resource type="Resource" id="Resource_vjigj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_cvug0"]
+script = ExtResource("6_x2sw1")
+key = &"tales_told"
+
+[sub_resource type="Resource" id="Resource_4lbu0"]
+script = ExtResource("3_0otko")
+id = &"tale_by_the_fire"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vjigj"), SubResource("Resource_cvug0")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_rwlm0")])
+
+[sub_resource type="Resource" id="Resource_ouamt"]
+script = ExtResource("5_euihr")
+text = "Someone started the fire-song, and the whole cave knew the words."
+
+[sub_resource type="Resource" id="Resource_5qn0n"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_07jrr"]
+script = ExtResource("6_x2sw1")
+key = &"songs_sung"
+
+[sub_resource type="Resource" id="Resource_f55ls"]
+script = ExtResource("3_0otko")
+id = &"fire_song"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5qn0n"), SubResource("Resource_07jrr")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ouamt")])
+
+[sub_resource type="Resource" id="Resource_vfiak"]
+script = ExtResource("5_euihr")
+text = "A red handprint dried on someone's cheek, and nobody wiped it off."
+
+[sub_resource type="Resource" id="Resource_s58am"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_jo8gw"]
+script = ExtResource("6_x2sw1")
+key = &"body_paint"
+
+[sub_resource type="Resource" id="Resource_ge3xv"]
+script = ExtResource("3_0otko")
+id = &"red_cheek"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_s58am"), SubResource("Resource_jo8gw")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_vfiak")])
+
+[sub_resource type="Resource" id="Resource_yte7o"]
+script = ExtResource("5_euihr")
+text = "One of the newcomers laughed by the fire, and the others turned round in surprise."
+
+[sub_resource type="Resource" id="Resource_poust"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_sw2at"]
+script = ExtResource("6_x2sw1")
+key = &"strangers_welcomed"
+
+[sub_resource type="Resource" id="Resource_ccg0i"]
+script = ExtResource("3_0otko")
+id = &"newcomer_laughs"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_poust"), SubResource("Resource_sw2at")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_yte7o")])
+
+[sub_resource type="Resource" id="Resource_1sg2y"]
+script = ExtResource("5_euihr")
+text = "A bundle of food was set out at dusk again, though the strangers had long since come in."
+
+[sub_resource type="Resource" id="Resource_nvfq5"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_ktt1g"]
+script = ExtResource("6_x2sw1")
+key = &"strangers_courted"
+
+[sub_resource type="Resource" id="Resource_p65dx"]
+script = ExtResource("3_0otko")
+id = &"food_at_dusk"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_nvfq5"), SubResource("Resource_ktt1g")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1sg2y")])
+
+[sub_resource type="Resource" id="Resource_go370"]
+script = ExtResource("5_euihr")
+text = "The scout's boots stood by the cave mouth, still muddy from the forest."
+
+[sub_resource type="Resource" id="Resource_xp3ly"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_vaqlf"]
+script = ExtResource("6_x2sw1")
+key = &"scouted_alone"
+
+[sub_resource type="Resource" id="Resource_5o20g"]
+script = ExtResource("3_0otko")
+id = &"scout_boots"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_xp3ly"), SubResource("Resource_vaqlf")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_go370")])
+
+[sub_resource type="Resource" id="Resource_m86b0"]
+script = ExtResource("5_euihr")
+text = "Someone told the story of the day the whole camp walked to the western forest."
+
+[sub_resource type="Resource" id="Resource_lrj67"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_wsr06"]
+script = ExtResource("6_x2sw1")
+key = &"scouted_together"
+
+[sub_resource type="Resource" id="Resource_tex2y"]
+script = ExtResource("3_0otko")
+id = &"walk_to_the_forest"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_lrj67"), SubResource("Resource_wsr06")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_m86b0")])
+
+[sub_resource type="Resource" id="Resource_nxyot"]
+script = ExtResource("5_euihr")
+text = "Someone checked the strange seed in the sun at the cave mouth, for the third time today."
+
+[sub_resource type="Resource" id="Resource_1dusu"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_57brg"]
+script = ExtResource("6_x2sw1")
+key = &"seed_in_sun"
+
+[sub_resource type="Resource" id="Resource_dfght"]
+script = ExtResource("3_0otko")
+id = &"sunny_seed"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_1dusu"), SubResource("Resource_57brg")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_nxyot")])
+
+[sub_resource type="Resource" id="Resource_865fm"]
+script = ExtResource("5_euihr")
+text = "Someone crouched under the overhang to look at the strange seed, and said nothing."
+
+[sub_resource type="Resource" id="Resource_40txg"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_fn7le"]
+script = ExtResource("6_x2sw1")
+key = &"seed_in_shade"
+
+[sub_resource type="Resource" id="Resource_cp2lu"]
+script = ExtResource("3_0otko")
+id = &"shady_seed"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_40txg"), SubResource("Resource_fn7le")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_865fm")])
+
+[sub_resource type="Resource" id="Resource_5o22l"]
+script = ExtResource("5_euihr")
+text = "Someone lay awake outside, and nobody asked what they were looking at."
+
+[sub_resource type="Resource" id="Resource_45jpd"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_kwdgm"]
+script = ExtResource("6_x2sw1")
+key = &"stars_private"
+
+[sub_resource type="Resource" id="Resource_3odwt"]
+script = ExtResource("3_0otko")
+id = &"private_sky"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_45jpd"), SubResource("Resource_kwdgm")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_5o22l")])
+
+[sub_resource type="Resource" id="Resource_ty3jb"]
+script = ExtResource("5_euihr")
+text = "A bear's paw was drawn in the ash by the fire, to show how big they get."
+
+[sub_resource type="Resource" id="Resource_fnnsb"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_bf1ej"]
+script = ExtResource("6_x2sw1")
+key = &"prints_read"
+
+[sub_resource type="Resource" id="Resource_solnv"]
+script = ExtResource("3_0otko")
+id = &"bear_in_ash"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_fnnsb"), SubResource("Resource_bf1ej")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ty3jb")])
+
+[sub_resource type="Resource" id="Resource_o6idn"]
+script = ExtResource("5_euihr")
+text = "Someone was still humming the feast song while scraping out the bowls."
+
+[sub_resource type="Resource" id="Resource_om2lv"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_d5k2v"]
+script = ExtResource("6_x2sw1")
+key = &"feast_held"
+
+[sub_resource type="Resource" id="Resource_r1ogh"]
+script = ExtResource("3_0otko")
+id = &"feast_song"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_om2lv"), SubResource("Resource_d5k2v")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_o6idn")])
+
+[sub_resource type="Resource" id="Resource_8xinj"]
+script = ExtResource("5_euihr")
+text = "Dried meat hung along the cave wall, and the whole cave smelled of smoke and berries."
+
+[sub_resource type="Resource" id="Resource_g13g4"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_s1cur"]
+script = ExtResource("6_x2sw1")
+key = &"food_dried"
+
+[sub_resource type="Resource" id="Resource_qdrbr"]
+script = ExtResource("3_0otko")
+id = &"dried_food"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_g13g4"), SubResource("Resource_s1cur")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_8xinj")])
+
+[sub_resource type="Resource" id="Resource_hmi0a"]
+script = ExtResource("5_euihr")
+text = "The best seat by the fire went to someone new tonight, as agreed."
+
+[sub_resource type="Resource" id="Resource_7csuj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_sntqn"]
+script = ExtResource("6_x2sw1")
+key = &"fire_turns"
+
+[sub_resource type="Resource" id="Resource_4hmtb"]
+script = ExtResource("3_0otko")
+id = &"seat_by_the_fire"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7csuj"), SubResource("Resource_sntqn")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_hmi0a")])
+
+[sub_resource type="Resource" id="Resource_pv1d7"]
+script = ExtResource("5_euihr")
+text = "The mammoth watched the camp from the far edge of the grass, and the camp watched back."
+
+[sub_resource type="Resource" id="Resource_s8qvi"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_wotib"]
+script = ExtResource("6_x2sw1")
+key = &"mammoth_distant"
+
+[sub_resource type="Resource" id="Resource_je3wh"]
+script = ExtResource("3_0otko")
+id = &"mammoth_far_edge"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_s8qvi"), SubResource("Resource_wotib")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_pv1d7")])
+
+[sub_resource type="Resource" id="Resource_tl5mf"]
+script = ExtResource("5_euihr")
+text = "Someone tapped a rhythm on their knee while they worked, and it was nobody's but theirs."
+
+[sub_resource type="Resource" id="Resource_7v4ro"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_3mxpb"]
+script = ExtResource("6_x2sw1")
+key = &"work_quiet"
+
+[sub_resource type="Resource" id="Resource_c38qe"]
+script = ExtResource("3_0otko")
+id = &"knee_rhythm"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7v4ro"), SubResource("Resource_3mxpb")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tl5mf")])
+
+[sub_resource type="Resource" id="Resource_4q3o7"]
+script = ExtResource("5_euihr")
+text = "Someone at the lookout was looking at the ridge again, even in the rain."
+
+[sub_resource type="Resource" id="Resource_035li"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_jn6fd"]
+script = ExtResource("6_x2sw1")
+key = &"ridge_watched"
+
+[sub_resource type="Resource" id="Resource_you37"]
+script = ExtResource("3_0otko")
+id = &"ridge_in_the_rain"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_035li"), SubResource("Resource_jn6fd")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4q3o7")])
+
+[sub_resource type="Resource" id="Resource_dod5r"]
+script = ExtResource("5_euihr")
+text = "It was crowded in the cave tonight, and warm, and nobody minded."
+
+[sub_resource type="Resource" id="Resource_aqebt"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_gpqao"]
+script = ExtResource("6_x2sw1")
+key = &"shared_cave"
+
+[sub_resource type="Resource" id="Resource_cvets"]
+script = ExtResource("3_0otko")
+id = &"warm_and_crowded"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_aqebt"), SubResource("Resource_gpqao")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_dod5r")])
+
+[sub_resource type="Resource" id="Resource_0t45p"]
+script = ExtResource("5_euihr")
+text = "The river was high again. Everyone looked at the bank, and the bank held."
+
+[sub_resource type="Resource" id="Resource_vtuo7"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_ymb7r"]
+script = ExtResource("6_x2sw1")
+key = &"trusted_bank"
+
+[sub_resource type="Resource" id="Resource_bhfx2"]
+script = ExtResource("3_0otko")
+id = &"bank_held"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_vtuo7"), SubResource("Resource_ymb7r")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_0t45p")])
+
+[sub_resource type="Resource" id="Resource_mq3m2"]
+script = ExtResource("5_euihr")
+text = "The stores on the ledge were dry and in easy reach, and everyone was quietly pleased."
+
+[sub_resource type="Resource" id="Resource_y27bo"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_f7hx3"]
+script = ExtResource("6_x2sw1")
+key = &"stores_on_ledge"
+
+[sub_resource type="Resource" id="Resource_v8xsm"]
+script = ExtResource("3_0otko")
+id = &"ledge_stores"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y27bo"), SubResource("Resource_f7hx3")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mq3m2")])
+
+[sub_resource type="Resource" id="Resource_66suj"]
+script = ExtResource("5_euihr")
+text = "A deer was seen on the far bank, favouring one leg, and then it was not."
+
+[sub_resource type="Resource" id="Resource_u85fr"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_nm82l"]
+script = ExtResource("6_x2sw1")
+key = &"deer_left"
+
+[sub_resource type="Resource" id="Resource_frd55"]
+script = ExtResource("3_0otko")
+id = &"limp_on_the_far_bank"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_u85fr"), SubResource("Resource_nm82l")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_66suj")])
+
+[sub_resource type="Resource" id="Resource_6js02"]
+script = ExtResource("5_euihr")
+text = "Someone used a word the traveller had said, and was understood by nobody."
+
+[sub_resource type="Resource" id="Resource_kmj8p"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_8nbom"]
+script = ExtResource("6_x2sw1")
+key = &"meal_shared"
+
+[sub_resource type="Resource" id="Resource_2ce7b"]
+script = ExtResource("3_0otko")
+id = &"traveller_word"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_kmj8p"), SubResource("Resource_8nbom")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_6js02")])
+
+[sub_resource type="Resource" id="Resource_7cw83"]
+script = ExtResource("5_euihr")
+text = "Everyone's eyes were red from the smoke, and everyone laughed about it."
+
+[sub_resource type="Resource" id="Resource_ywcux"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_7yt3v"]
+script = ExtResource("6_x2sw1")
+key = &"smoky_cave"
+
+[sub_resource type="Resource" id="Resource_6cj6i"]
+script = ExtResource("3_0otko")
+id = &"red_eyes"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ywcux"), SubResource("Resource_7yt3v")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_7cw83")])
+
+[sub_resource type="Resource" id="Resource_wjuim"]
+script = ExtResource("5_euihr")
+text = "The stars showed through the gap in the roof, and the smoke went up to meet them."
+
+[sub_resource type="Resource" id="Resource_ru1ee"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_7e43w"]
+script = ExtResource("6_x2sw1")
+key = &"smoke_hole"
+
+[sub_resource type="Resource" id="Resource_xf0wq"]
+script = ExtResource("3_0otko")
+id = &"stars_through_the_roof"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ru1ee"), SubResource("Resource_7e43w")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_wjuim")])
+
+[sub_resource type="Resource" id="Resource_watyo"]
+script = ExtResource("5_euihr")
+text = "Bare feet came down warm on the hide floor, and someone said how good it felt."
+
+[sub_resource type="Resource" id="Resource_gqfdl"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_h43ma"]
+script = ExtResource("6_x2sw1")
+key = &"hide_floor"
+
+[sub_resource type="Resource" id="Resource_jye1w"]
+script = ExtResource("3_0otko")
+id = &"hide_floor_warm"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_gqfdl"), SubResource("Resource_h43ma")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_watyo")])
+
+[sub_resource type="Resource" id="Resource_0ilmq"]
+script = ExtResource("5_euihr")
+text = "The reed beds rustled all night, and someone swore they could hear the river in them."
+
+[sub_resource type="Resource" id="Resource_w87n3"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_nnr13"]
+script = ExtResource("6_x2sw1")
+key = &"reed_beds"
+
+[sub_resource type="Resource" id="Resource_k3vke"]
+script = ExtResource("3_0otko")
+id = &"reeds_rustle"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_w87n3"), SubResource("Resource_nnr13")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_0ilmq")])
+
+[sub_resource type="Resource" id="Resource_a5krv"]
+script = ExtResource("5_euihr")
+text = "Two of the group wrestled by the fire again, for nothing at all, and both won."
+
+[sub_resource type="Resource" id="Resource_rxmru"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_0ued1"]
+script = ExtResource("6_x2sw1")
+key = &"wrestled"
+
+[sub_resource type="Resource" id="Resource_7b330"]
+script = ExtResource("3_0otko")
+id = &"wrestle_again"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_rxmru"), SubResource("Resource_0ued1")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_a5krv")])
+
+[sub_resource type="Resource" id="Resource_nj2hl"]
+script = ExtResource("5_euihr")
+text = "Somebody turned up another thing that had been lost since the big search."
+
+[sub_resource type="Resource" id="Resource_14r1h"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_322ok"]
+script = ExtResource("6_x2sw1")
+key = &"searched_together"
+
+[sub_resource type="Resource" id="Resource_bjcwf"]
+script = ExtResource("3_0otko")
+id = &"lost_things"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_14r1h"), SubResource("Resource_322ok")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_nj2hl")])
+
+[sub_resource type="Resource" id="Resource_ykxcp"]
+script = ExtResource("5_euihr")
+text = "The torch at the cave mouth burned low, and someone got up to trim it."
+
+[sub_resource type="Resource" id="Resource_2qjhg"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_i6bfm"]
+script = ExtResource("6_x2sw1")
+key = &"torch_at_mouth"
+
+[sub_resource type="Resource" id="Resource_1it0c"]
+script = ExtResource("3_0otko")
+id = &"torch_at_the_mouth"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_2qjhg"), SubResource("Resource_i6bfm")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ykxcp")])
+
+[sub_resource type="Resource" id="Resource_ps8e0"]
+script = ExtResource("5_euihr")
+text = "It was very quiet at the back of the cave, and everyone slept late."
+
+[sub_resource type="Resource" id="Resource_uwxxj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_sjuca"]
+script = ExtResource("6_x2sw1")
+key = &"deep_sleepers"
+
+[sub_resource type="Resource" id="Resource_cdaif"]
+script = ExtResource("3_0otko")
+id = &"back_of_the_cave"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_uwxxj"), SubResource("Resource_sjuca")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_ps8e0")])
+
+[sub_resource type="Resource" id="Resource_6c4ag"]
+script = ExtResource("5_euihr")
+text = "Someone crossed the stepping stones with a full basket, not looking down once."
+
+[sub_resource type="Resource" id="Resource_5lkm3"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_om0ll"]
+script = ExtResource("6_x2sw1")
+key = &"stepping_stones"
+
+[sub_resource type="Resource" id="Resource_a743v"]
+script = ExtResource("3_0otko")
+id = &"stones_in_the_river"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_5lkm3"), SubResource("Resource_om0ll")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_6c4ag")])
+
+[sub_resource type="Resource" id="Resource_lsbvi"]
+script = ExtResource("5_euihr")
+text = "The log over the river creaked under three people at once, and held."
+
+[sub_resource type="Resource" id="Resource_ihtnh"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_pbsqc"]
+script = ExtResource("6_x2sw1")
+key = &"log_bridge"
+
+[sub_resource type="Resource" id="Resource_fimve"]
+script = ExtResource("3_0otko")
+id = &"log_bridge_creaks"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ihtnh"), SubResource("Resource_pbsqc")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_lsbvi")])
+
+[sub_resource type="Resource" id="Resource_iycyv"]
+script = ExtResource("5_euihr")
+text = "The blue feather in someone's hair caught the light, and they stood a little taller."
+
+[sub_resource type="Resource" id="Resource_nd4yx"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_a4sv8"]
+script = ExtResource("6_x2sw1")
+key = &"feather_worn"
+
+[sub_resource type="Resource" id="Resource_po8x5"]
+script = ExtResource("3_0otko")
+id = &"feather_in_hair"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_nd4yx"), SubResource("Resource_a4sv8")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_iycyv")])
+
+[sub_resource type="Resource" id="Resource_nbisx"]
+script = ExtResource("5_euihr")
+text = "The blue feather above the fire turned in the warm air, and everyone looked up."
+
+[sub_resource type="Resource" id="Resource_x2stt"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_ycdes"]
+script = ExtResource("6_x2sw1")
+key = &"feather_shared"
+
+[sub_resource type="Resource" id="Resource_4rwfm"]
+script = ExtResource("3_0otko")
+id = &"feather_over_the_fire"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_x2stt"), SubResource("Resource_ycdes")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_nbisx")])
+
+[sub_resource type="Resource" id="Resource_j8pfl"]
+script = ExtResource("5_euihr")
+text = "The bats went out at dusk in a long stream, and the midges did not come."
+
+[sub_resource type="Resource" id="Resource_dierj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_rink8"]
+script = ExtResource("6_x2sw1")
+key = &"bats_kept"
+
+[sub_resource type="Resource" id="Resource_cphko"]
+script = ExtResource("3_0otko")
+id = &"bats_leave_dusk"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_dierj"), SubResource("Resource_rink8")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_j8pfl")])
+
+[sub_resource type="Resource" id="Resource_46cn8"]
+script = ExtResource("5_euihr")
+text = "The back of the cave smelled of green smoke for days, and was quiet."
+
+[sub_resource type="Resource" id="Resource_raci6"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_08bn4"]
+script = ExtResource("6_x2sw1")
+key = &"bats_smoked"
+
+[sub_resource type="Resource" id="Resource_ebqmo"]
+script = ExtResource("3_0otko")
+id = &"smoked_cave"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_raci6"), SubResource("Resource_08bn4")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_46cn8")])
+
+[sub_resource type="Resource" id="Resource_4sogo"]
+script = ExtResource("5_euihr")
+text = "Someone was still picking wax out of their hair, and refused to regret it."
+
+[sub_resource type="Resource" id="Resource_7otv6"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_dxdjq"]
+script = ExtResource("6_x2sw1")
+key = &"honey_taken"
+
+[sub_resource type="Resource" id="Resource_sjndk"]
+script = ExtResource("3_0otko")
+id = &"honey_again"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_7otv6"), SubResource("Resource_dxdjq")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_4sogo")])
+
+[sub_resource type="Resource" id="Resource_f6fa7"]
+script = ExtResource("5_euihr")
+text = "The bee tree hummed on in the western wood, and someone nodded to it passing."
+
+[sub_resource type="Resource" id="Resource_uypmy"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_hc1bj"]
+script = ExtResource("6_x2sw1")
+key = &"honey_shared"
+
+[sub_resource type="Resource" id="Resource_bd0an"]
+script = ExtResource("3_0otko")
+id = &"bees_still_there"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_uypmy"), SubResource("Resource_hc1bj")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_f6fa7")])
+
+[sub_resource type="Resource" id="Resource_j5a1q"]
+script = ExtResource("5_euihr")
+text = "Someone was still telling the story of the day everyone went into the river."
+
+[sub_resource type="Resource" id="Resource_h0jdk"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_2206t"]
+script = ExtResource("6_x2sw1")
+key = &"fish_by_hand"
+
+[sub_resource type="Resource" id="Resource_7qamo"]
+script = ExtResource("3_0otko")
+id = &"wet_and_laughing"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_h0jdk"), SubResource("Resource_2206t")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_j5a1q")])
+
+[sub_resource type="Resource" id="Resource_a4xut"]
+script = ExtResource("5_euihr")
+text = "The willow trap in the channel was checked at dawn, and was not empty."
+
+[sub_resource type="Resource" id="Resource_y7434"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_bcnng"]
+script = ExtResource("6_x2sw1")
+key = &"fish_trap"
+
+[sub_resource type="Resource" id="Resource_oiilm"]
+script = ExtResource("3_0otko")
+id = &"trap_in_the_channel"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_y7434"), SubResource("Resource_bcnng")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_a4xut")])
+
+[sub_resource type="Resource" id="Resource_tbk7w"]
+script = ExtResource("5_euihr")
+text = "The drum sounded across the valley at dusk, and something answered far off."
+
+[sub_resource type="Resource" id="Resource_8dsbt"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_36ibf"]
+script = ExtResource("6_x2sw1")
+key = &"log_drum"
+
+[sub_resource type="Resource" id="Resource_6yjj8"]
+script = ExtResource("3_0otko")
+id = &"drum_in_the_valley"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_8dsbt"), SubResource("Resource_36ibf")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_tbk7w")])
+
+[sub_resource type="Resource" id="Resource_paoa4"]
+script = ExtResource("5_euihr")
+text = "A thin pipe tune drifted over the camp, and everyone pretended not to listen."
+
+[sub_resource type="Resource" id="Resource_v6hus"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_n64b5"]
+script = ExtResource("6_x2sw1")
+key = &"bone_pipe"
+
+[sub_resource type="Resource" id="Resource_s5o1e"]
+script = ExtResource("3_0otko")
+id = &"pipe_at_night"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_v6hus"), SubResource("Resource_n64b5")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_paoa4")])
+
+[sub_resource type="Resource" id="Resource_a2oo5"]
+script = ExtResource("5_euihr")
+text = "The snow figure at the cave mouth was still standing, a little lopsided."
+
+[sub_resource type="Resource" id="Resource_kbkeb"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_y4anr"]
+script = ExtResource("6_x2sw1")
+key = &"snow_figure"
+
+[sub_resource type="Resource" id="Resource_1pgg2"]
+script = ExtResource("3_0otko")
+id = &"snow_figure_stands"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_kbkeb"), SubResource("Resource_y4anr")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_a2oo5")])
+
+[sub_resource type="Resource" id="Resource_1a015"]
+script = ExtResource("5_euihr")
+text = "Someone drew the unnamed track in the dirt, and nobody could say what made it."
+
+[sub_resource type="Resource" id="Resource_gjhls"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_ywre5"]
+script = ExtResource("6_x2sw1")
+key = &"snow_tracks"
+
+[sub_resource type="Resource" id="Resource_lpwfu"]
+script = ExtResource("3_0otko")
+id = &"unknown_tracks"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_gjhls"), SubResource("Resource_ywre5")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_1a015")])
+
+[sub_resource type="Resource" id="Resource_mi2b5"]
+script = ExtResource("5_euihr")
+text = "Someone shouted a nonsense word into the back of the cave, and the cave shouted it back."
+
+[sub_resource type="Resource" id="Resource_4ewjk"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_dqg1q"]
+script = ExtResource("6_x2sw1")
+key = &"echo_games"
+
+[sub_resource type="Resource" id="Resource_tk683"]
+script = ExtResource("3_0otko")
+id = &"echo_game"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_4ewjk"), SubResource("Resource_dqg1q")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_mi2b5")])
+
+[sub_resource type="Resource" id="Resource_r3ncm"]
+script = ExtResource("5_euihr")
+text = "A whisper came out of the back of the cave, and everyone looked round to see whose."
+
+[sub_resource type="Resource" id="Resource_0wt3t"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_s1unv"]
+script = ExtResource("6_x2sw1")
+key = &"echo_whispers"
+
+[sub_resource type="Resource" id="Resource_66j5g"]
+script = ExtResource("3_0otko")
+id = &"echo_whisper"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_0wt3t"), SubResource("Resource_s1unv")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_r3ncm")])
+
+[sub_resource type="Resource" id="Resource_u2hvd"]
+script = ExtResource("5_euihr")
+text = "The black stone by the fire was warm to the touch long after the fire had burned low."
+
+[sub_resource type="Resource" id="Resource_pdy75"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_bjsm5"]
+script = ExtResource("6_x2sw1")
+key = &"sky_stone_kept"
+
+[sub_resource type="Resource" id="Resource_t5c7n"]
+script = ExtResource("3_0otko")
+id = &"stone_by_the_fire"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_pdy75"), SubResource("Resource_bjsm5")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_u2hvd")])
+
+[sub_resource type="Resource" id="Resource_n3mqu"]
+script = ExtResource("5_euihr")
+text = "Someone walked out to the ring of white stones in the meadow, and stood a while."
+
+[sub_resource type="Resource" id="Resource_cqw6a"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_bpsmq"]
+script = ExtResource("6_x2sw1")
+key = &"sky_stone_marked"
+
+[sub_resource type="Resource" id="Resource_5s0ii"]
+script = ExtResource("3_0otko")
+id = &"ring_of_white"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_cqw6a"), SubResource("Resource_bpsmq")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_n3mqu")])
+
+[sub_resource type="Resource" id="Resource_eyqra"]
+script = ExtResource("5_euihr")
+text = "A column of steam stood over the pool up the valley, and somebody was already walking to it."
+
+[sub_resource type="Resource" id="Resource_j6dnj"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_1rps3"]
+script = ExtResource("6_x2sw1")
+key = &"warm_pool_used"
+
+[sub_resource type="Resource" id="Resource_jtpsn"]
+script = ExtResource("3_0otko")
+id = &"steam_up_the_valley"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_j6dnj"), SubResource("Resource_1rps3")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_eyqra")])
+
+[sub_resource type="Resource" id="Resource_s4nsg"]
+script = ExtResource("5_euihr")
+text = "Everyone slept with a bag of warm water at their feet, and not one was cold."
+
+[sub_resource type="Resource" id="Resource_ihavw"]
+script = ExtResource("6_x2sw1")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_xgoxe"]
+script = ExtResource("6_x2sw1")
+key = &"warm_bags"
+
+[sub_resource type="Resource" id="Resource_bjgap"]
+script = ExtResource("3_0otko")
+id = &"warm_feet"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_x2sw1")]([SubResource("Resource_ihavw"), SubResource("Resource_xgoxe")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_euihr")]([SubResource("Resource_s4nsg")])
 
 [sub_resource type="Resource" id="Resource_s4wa6"]
 script = ExtResource("5_euihr")
@@ -5256,7 +7577,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"first_roof"
 
-[sub_resource type="Resource" id="Resource_o55pb"]
+[sub_resource type="Resource" id="Resource_mv4j8"]
 script = ExtResource("3_0otko")
 id = &"smoke_from_roofs"
 title = "A quiet moment"
@@ -5275,7 +7596,7 @@ script = ExtResource("6_x2sw1")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_202c3"]
+[sub_resource type="Resource" id="Resource_hcxon"]
 script = ExtResource("3_0otko")
 id = &"swallows"
 title = "A quiet moment"
@@ -5294,7 +7615,7 @@ script = ExtResource("6_x2sw1")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_rb8g7"]
+[sub_resource type="Resource" id="Resource_qvt5g"]
 script = ExtResource("3_0otko")
 id = &"dogs_at_dusk"
 title = "A quiet moment"
@@ -5313,7 +7634,7 @@ script = ExtResource("6_x2sw1")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_myemd"]
+[sub_resource type="Resource" id="Resource_vo4kx"]
 script = ExtResource("3_0otko")
 id = &"harvest_moon"
 title = "A quiet moment"
@@ -5332,7 +7653,7 @@ script = ExtResource("6_x2sw1")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_jv7hd"]
+[sub_resource type="Resource" id="Resource_i2nd5"]
 script = ExtResource("3_0otko")
 id = &"worn_path"
 title = "A quiet moment"
@@ -5356,7 +7677,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_5lak7"]
+[sub_resource type="Resource" id="Resource_4s6l1"]
 script = ExtResource("3_0otko")
 id = &"smell_of_bread"
 title = "A quiet moment"
@@ -5380,7 +7701,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_dem84"]
+[sub_resource type="Resource" id="Resource_kmqyp"]
 script = ExtResource("3_0otko")
 id = &"pots_ring"
 title = "A quiet moment"
@@ -5404,7 +7725,7 @@ script = ExtResource("6_x2sw1")
 kind = 9
 key = &"woven_cloth"
 
-[sub_resource type="Resource" id="Resource_f7kau"]
+[sub_resource type="Resource" id="Resource_rgjj3"]
 script = ExtResource("3_0otko")
 id = &"spindle_turns"
 title = "A quiet moment"
@@ -5427,7 +7748,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_i7j5c"]
+[sub_resource type="Resource" id="Resource_cq3jj"]
 script = ExtResource("3_0otko")
 id = &"rain_on_the_field"
 title = "A quiet moment"
@@ -5450,7 +7771,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_03aes"]
+[sub_resource type="Resource" id="Resource_hm6yr"]
 script = ExtResource("3_0otko")
 id = &"bleating_at_night"
 title = "A quiet moment"
@@ -5482,7 +7803,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_u67f1"]
+[sub_resource type="Resource" id="Resource_88w4w"]
 script = ExtResource("3_0otko")
 id = &"counting_roofs"
 title = "A quiet moment"
@@ -5515,7 +7836,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_ocqsx"]
+[sub_resource type="Resource" id="Resource_wqjox"]
 script = ExtResource("3_0otko")
 id = &"everyones_business"
 title = "A quiet moment"
@@ -5548,7 +7869,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_t40kq"]
+[sub_resource type="Resource" id="Resource_yxvn6"]
 script = ExtResource("3_0otko")
 id = &"same_fence"
 title = "A quiet moment"
@@ -5581,7 +7902,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_hextx"]
+[sub_resource type="Resource" id="Resource_bfvwe"]
 script = ExtResource("3_0otko")
 id = &"flower_corner"
 title = "A quiet moment"
@@ -5614,7 +7935,7 @@ kind = 7
 script = ExtResource("6_x2sw1")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_inhey"]
+[sub_resource type="Resource" id="Resource_wpyys"]
 script = ExtResource("3_0otko")
 id = &"with_the_herd"
 title = "A quiet moment"
@@ -5638,7 +7959,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"cave_store"
 
-[sub_resource type="Resource" id="Resource_tmcvw"]
+[sub_resource type="Resource" id="Resource_0yld7"]
 script = ExtResource("3_0otko")
 id = &"stores_in_the_cave"
 title = "A quiet moment"
@@ -5661,7 +7982,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"well_dug"
 
-[sub_resource type="Resource" id="Resource_he8y4"]
+[sub_resource type="Resource" id="Resource_itrrt"]
 script = ExtResource("3_0otko")
 id = &"well_water"
 title = "A quiet moment"
@@ -5684,7 +8005,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"scarecrow"
 
-[sub_resource type="Resource" id="Resource_rlo75"]
+[sub_resource type="Resource" id="Resource_wpnbs"]
 script = ExtResource("3_0otko")
 id = &"scarecrow_hat"
 title = "A quiet moment"
@@ -5707,7 +8028,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"festival"
 
-[sub_resource type="Resource" id="Resource_4fjua"]
+[sub_resource type="Resource" id="Resource_tugnu"]
 script = ExtResource("3_0otko")
 id = &"festival_tune"
 title = "A quiet moment"
@@ -5730,7 +8051,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"kiln"
 
-[sub_resource type="Resource" id="Resource_ma63a"]
+[sub_resource type="Resource" id="Resource_jvm7t"]
 script = ExtResource("3_0otko")
 id = &"kiln_night"
 title = "A quiet moment"
@@ -5753,7 +8074,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"dyed_cloth"
 
-[sub_resource type="Resource" id="Resource_4lbu0"]
+[sub_resource type="Resource" id="Resource_p7j6f"]
 script = ExtResource("3_0otko")
 id = &"red_tunic"
 title = "A quiet moment"
@@ -5776,7 +8097,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"low_wall"
 
-[sub_resource type="Resource" id="Resource_f55ls"]
+[sub_resource type="Resource" id="Resource_4ju8w"]
 script = ExtResource("3_0otko")
 id = &"wall_at_dusk"
 title = "A quiet moment"
@@ -5799,7 +8120,7 @@ amount = 1
 script = ExtResource("6_x2sw1")
 key = &"green_beads"
 
-[sub_resource type="Resource" id="Resource_ge3xv"]
+[sub_resource type="Resource" id="Resource_lv1wy"]
 script = ExtResource("3_0otko")
 id = &"beads_clicking"
 title = "A quiet moment"
@@ -5809,7 +8130,7 @@ chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("5_euihr")]([SubResource("Resource_kimpa")])
 
-[sub_resource type="Resource" id="Resource_ccg0i"]
+[sub_resource type="Resource" id="Resource_mn5ya"]
 script = ExtResource("7_xydym")
 id = &"strange_flower"
 display_name = "Strange flower"
@@ -5821,9 +8142,9 @@ flower_achievement_title = "Unexpected Garden"
 
 [resource]
 script = ExtResource("8_yklc2")
-events = Array[ExtResource("3_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8"), SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv")])
+events = Array[ExtResource("3_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8"), SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv"), SubResource("Resource_ccg0i"), SubResource("Resource_p65dx"), SubResource("Resource_5o20g"), SubResource("Resource_tex2y"), SubResource("Resource_dfght"), SubResource("Resource_cp2lu"), SubResource("Resource_3odwt"), SubResource("Resource_solnv"), SubResource("Resource_r1ogh"), SubResource("Resource_qdrbr"), SubResource("Resource_4hmtb"), SubResource("Resource_je3wh"), SubResource("Resource_c38qe"), SubResource("Resource_you37"), SubResource("Resource_cvets"), SubResource("Resource_bhfx2"), SubResource("Resource_v8xsm"), SubResource("Resource_frd55"), SubResource("Resource_2ce7b"), SubResource("Resource_6cj6i"), SubResource("Resource_xf0wq"), SubResource("Resource_jye1w"), SubResource("Resource_k3vke"), SubResource("Resource_7b330"), SubResource("Resource_bjcwf"), SubResource("Resource_1it0c"), SubResource("Resource_cdaif"), SubResource("Resource_a743v"), SubResource("Resource_fimve"), SubResource("Resource_po8x5"), SubResource("Resource_4rwfm"), SubResource("Resource_cphko"), SubResource("Resource_ebqmo"), SubResource("Resource_sjndk"), SubResource("Resource_bd0an"), SubResource("Resource_7qamo"), SubResource("Resource_oiilm"), SubResource("Resource_6yjj8"), SubResource("Resource_s5o1e"), SubResource("Resource_1pgg2"), SubResource("Resource_lpwfu"), SubResource("Resource_tk683"), SubResource("Resource_66j5g"), SubResource("Resource_t5c7n"), SubResource("Resource_5s0ii"), SubResource("Resource_jtpsn"), SubResource("Resource_bjgap"), SubResource("Resource_mv4j8"), SubResource("Resource_hcxon"), SubResource("Resource_qvt5g"), SubResource("Resource_vo4kx"), SubResource("Resource_i2nd5"), SubResource("Resource_4s6l1"), SubResource("Resource_kmqyp"), SubResource("Resource_rgjj3"), SubResource("Resource_cq3jj"), SubResource("Resource_hm6yr"), SubResource("Resource_88w4w"), SubResource("Resource_wqjox"), SubResource("Resource_yxvn6"), SubResource("Resource_bfvwe"), SubResource("Resource_wpyys"), SubResource("Resource_0yld7"), SubResource("Resource_itrrt"), SubResource("Resource_wpnbs"), SubResource("Resource_tugnu"), SubResource("Resource_jvm7t"), SubResource("Resource_p7j6f"), SubResource("Resource_4ju8w"), SubResource("Resource_lv1wy")])
 buildings = Array[ExtResource("1_mqys7")]([SubResource("Resource_cekk5"), SubResource("Resource_5n80e"), SubResource("Resource_jqx0p"), SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8")])
-plants = Array[ExtResource("7_xydym")]([SubResource("Resource_ccg0i")])
+plants = Array[ExtResource("7_xydym")]([SubResource("Resource_mn5ya")])
 eras = Array[ExtResource("2_wh8jf")]([SubResource("Resource_4ragh"), SubResource("Resource_pgv5y")])
 villager_names = Array[String](["Mira", "Theo", "Wren", "Ash", "Bram", "Cora", "Dov", "Elm", "Fenn", "Gale", "Hale", "Ivo", "Juno", "Kest", "Lark", "Moss", "Nia", "Orin", "Pike", "Rue", "Sage", "Tarn", "Una", "Vale"])
 villager_traits = Array[StringName]([&"curious", &"social", &"industrious", &"nature_loving"])

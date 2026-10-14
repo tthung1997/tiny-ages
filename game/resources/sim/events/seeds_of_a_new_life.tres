@@ -56,4 +56,3 @@ title = "Seeds of a new life"
 body = "The plant by the cave has gone to seed: enough to sow a whole field. The herds still move through the valley, and the group has learned enough to stay."
 category = &"settlement"
 choices = Array[ExtResource("1_48jrg")]([SubResource("Resource_0tvtd"), SubResource("Resource_5mkjn")])
-min_choices = 1

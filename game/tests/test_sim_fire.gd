@@ -1,6 +1,7 @@
 extends McpTestSuite
 ## Fire is the first milestone: the Cave Age starts cold and dark, fire is found by one of two
-## routes, and a player who passes on both still gets it, a little later.
+## routes, and a group that waits for the embers instead of carrying a branch home still gets it,
+## a little later.
 
 const DAY: int = SimFixture.TICKS_PER_DAY
 const SEEDS: Array[int] = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -45,15 +46,15 @@ func test_accepting_lights_the_fire() -> void:
 		assert_true(sim.world.has_achievement(&"fire"))
 
 
-func test_passing_on_every_route_still_ends_with_fire() -> void:
+func test_waiting_for_the_embers_still_ends_with_fire() -> void:
 	for rng_seed: int in SEEDS:
 		var sim: Simulation = SimFixture.new_sim(rng_seed, false)
 		for _tick: int in DAY * 14:
 			sim.advance_ticks(1)
 			for decision: PendingDecision in sim.world.pending.duplicate():
 				var event: EventDef = sim.content.get_event(decision.event_id)
-				var decline: StringName = &"stay_away" if event.id == &"fire_from_storm" \
-						else &"let_it_die"
+				var decline: StringName = &"wait_for_embers" if event.id == &"fire_from_storm" \
+						else &"tend_the_spark"
 				if event.get_choice(decline) != null:
 					sim.resolve_decision(decision.id, decline)
 				else:
@@ -85,7 +86,7 @@ func test_embers_are_dropped_if_fire_was_already_lit() -> void:
 	var decision: PendingDecision = null
 	sim.fire_event(sim.content.get_event(&"fire_from_storm"), sim.world.villagers[0])
 	decision = SimFixture.pending_for(sim, &"fire_from_storm")
-	assert_true(sim.resolve_decision(decision.id, &"stay_away"))
+	assert_true(sim.resolve_decision(decision.id, &"wait_for_embers"))
 	SimFixture.light_fire(sim.world)
 	sim.advance_ticks(100)
 	assert_eq(SimFixture.journal_index(sim.world, "glowing embers"), -1)

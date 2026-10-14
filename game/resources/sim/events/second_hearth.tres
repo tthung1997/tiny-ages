@@ -35,24 +35,29 @@ effects = Array[ExtResource("2_ddj1g")]([SubResource("Resource_uewa4"), SubResou
 
 [sub_resource type="Resource" id="Resource_t8610"]
 script = ExtResource("2_ddj1g")
-text = "They agreed to take turns, mostly."
+kind = 1
+key = &"fire_turns"
 
 [sub_resource type="Resource" id="Resource_ecmrj"]
+script = ExtResource("2_ddj1g")
+text = "They agreed to take turns, mostly."
+
+[sub_resource type="Resource" id="Resource_jaap8"]
 script = ExtResource("1_w7e27")
 id = &"take_turns"
 label = "Take turns by the fire"
-effects = Array[ExtResource("2_ddj1g")]([SubResource("Resource_t8610")])
+effects = Array[ExtResource("2_ddj1g")]([SubResource("Resource_t8610"), SubResource("Resource_ecmrj")])
 
-[sub_resource type="Resource" id="Resource_jaap8"]
+[sub_resource type="Resource" id="Resource_d25sb"]
 script = ExtResource("3_55nhg")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_d25sb"]
+[sub_resource type="Resource" id="Resource_jy24r"]
 script = ExtResource("3_55nhg")
 kind = 5
 amount = 72
 
-[sub_resource type="Resource" id="Resource_jy24r"]
+[sub_resource type="Resource" id="Resource_wt63d"]
 script = ExtResource("3_55nhg")
 kind = 7
 
@@ -61,13 +66,12 @@ script = ExtResource("4_braub")
 id = &"second_hearth"
 title = "The warm spot"
 body = "Two of the group both want the warm place by the fire, and {subject} has taken to sitting at the edge of the light, alone."
-requires = Array[ExtResource("3_55nhg")]([SubResource("Resource_jaap8"), SubResource("Resource_d25sb")])
+requires = Array[ExtResource("3_55nhg")]([SubResource("Resource_d25sb"), SubResource("Resource_jy24r")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_55nhg")]([SubResource("Resource_jy24r")])
+subject_requires = Array[ExtResource("3_55nhg")]([SubResource("Resource_wt63d")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_w7e27")]([SubResource("Resource_i0q5y"), SubResource("Resource_ecmrj")])
-min_choices = 1
+choices = Array[ExtResource("1_w7e27")]([SubResource("Resource_i0q5y"), SubResource("Resource_jaap8")])

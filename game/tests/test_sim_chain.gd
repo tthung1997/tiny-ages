@@ -26,15 +26,25 @@ func test_the_chain_is_reproducible_from_a_seed() -> void:
 	assert_eq(SimFixture.snapshot(first.world), SimFixture.snapshot(second.world))
 
 
-func test_ignoring_the_explorer_just_delays_the_chain() -> void:
+func test_walking_out_together_still_brings_the_seed_home() -> void:
 	var sim: Simulation = SimFixture.new_sim(2)
 	_build_hut(sim)
 	assert_gt(SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 20), 0)
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"curious_explorer")
-	assert_true(sim.resolve_decision(decision.id, &"remain"))
-	assert_false(sim.world.find_villager(decision.subject_id).is_away())
-	var again: int = SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 30)
-	assert_gt(again, 0, "Asking them to stay should not end the story; they ask again later")
+	assert_true(sim.resolve_decision(decision.id, &"walk_together"))
+	assert_true(sim.world.has_flag(&"scouted_together"))
+	var returned: int = SimFixture.advance_until_pending(sim, &"explorer_returns", DAY * 4)
+	assert_gt(returned, 0, "Going together is slower, but the seed still comes home")
+	assert_eq(sim.world.item_count(&"strange_seed"), 1)
+
+
+func test_without_a_lookout_the_scout_still_asks_a_month_later() -> void:
+	var sim: Simulation = SimFixture.new_sim(2)
+	SimFixture.jump_to_day(sim, 216)
+	SimFixture.advance_until_asked(sim, &"curious_explorer", DAY * 20)
+	assert_eq(sim.world.event_counts.get(&"curious_explorer", 0), 0)
+	var late: int = SimFixture.advance_until_asked(sim, &"restless_explorer", DAY * 40)
+	assert_gt(late, 0, "A group that never built a Lookout still gets its scout")
 
 
 func _run_chain(rng_seed: int) -> void:
@@ -94,10 +104,13 @@ func _assert_journal_tells_the_story(world: WorldState, scout: String, label: St
 		previous = index
 
 
-## Waits for the building decision, picks the Lookout, and waits for it to be built.
+## Waits for the building decision, picks the Lookout, and waits for it to be built. There is
+## nothing to choose between before day 18, so the first building decision is not asked until then.
 func _build_hut(sim: Simulation) -> void:
+	SimFixture.jump_to_day(sim, 18)
+	sim.world.resources[&"wood"] = 12
 	var opened: int = SimFixture.advance_until_pending(sim, &"building_opportunity", DAY * 12)
-	assert_gt(opened, 0, "A building decision opens in the first days")
+	assert_gt(opened, 0, "A building decision opens once there are two buildings to choose from")
 	if opened < 0:
 		return
 	var decision: PendingDecision = SimFixture.pending_for(sim, &"building_opportunity")
@@ -118,5 +131,5 @@ func _play_through_hut_and_exploration(sim: Simulation) -> void:
 	SimFixture.advance_until_pending(sim, &"explorer_returns", DAY * 3)
 	var found: PendingDecision = SimFixture.pending_for(sim, &"explorer_returns")
 	if found != null:
-		sim.resolve_decision(found.id, &"keep_it")
+		sim.resolve_decision(found.id, &"plant_in_shade")
 	sim.advance_ticks(DAY * 5)

@@ -5,7 +5,7 @@ extends McpTestSuite
 const DAY: int = SimFixture.TICKS_PER_DAY
 ## How many decisions still have the old "do it or pass" shape. It only ever goes down; the
 ## stages that convert the Cave and Settled decisions lower it until it reaches zero.
-const MAX_UNCONVERTED: int = 68
+const MAX_UNCONVERTED: int = 36
 const WOOD_CEILING: int = 100
 const FOOD_CEILING: int = 250
 
@@ -122,3 +122,55 @@ func test_stock_does_not_pile_up_over_a_long_game() -> void:
 		most_food = maxi(most_food, sim.world.resource_amount(&"food"))
 	assert_true(most_wood <= WOOD_CEILING, "Wood peaked at %d" % most_wood)
 	assert_true(most_food <= FOOD_CEILING, "Food peaked at %d" % most_food)
+
+
+func test_a_pending_decision_for_a_removed_event_is_withdrawn() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var gone: PendingDecision = PendingDecision.new()
+	gone.id = &"decision_gone"
+	gone.event_id = &"an_event_an_older_version_had"
+	sim.world.pending.append(gone)
+	sim.advance_ticks(1)
+	assert_true(sim.world.find_pending(&"decision_gone") == null, "Nothing is left unanswerable")
+
+
+## Every order of building picks, and ignoring the question for good, must still reach the
+## Settled Age: no building is something the age cannot do without.
+func test_no_order_of_building_picks_blocks_the_age() -> void:
+	var lookout: StringName = &"build_lookout"
+	var rack: StringName = &"build_drying_rack"
+	var knap: StringName = &"build_knapping_spot"
+	var orders: Array = [
+		[lookout, rack, knap], [lookout, knap, rack], [rack, lookout, knap],
+		[rack, knap, lookout], [knap, lookout, rack], [knap, rack, lookout], [],
+	]
+	for order: Array in orders:
+		assert_true(_reaches_settled(order), "Order %s reaches the Settled Age" % [order])
+
+
+func _reaches_settled(order: Array) -> bool:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	var bot: DecisionBot = DecisionBot.new()
+	var settled: EraDef = sim.content.get_era(&"settled")
+	var limit: int = settled.min_ticks_in_previous_era + DAY * 150
+	for _tick: int in limit:
+		sim.advance_ticks(1)
+		for decision: PendingDecision in sim.world.pending.duplicate():
+			if decision.event_id == &"building_opportunity":
+				_answer_building(sim, decision, order)
+		bot.answer_all(sim)
+		if sim.world.era == &"settled":
+			return true
+	return false
+
+
+## Picks the first building in `order` that can be chosen now; an empty order never answers.
+func _answer_building(sim: Simulation, decision: PendingDecision, order: Array) -> void:
+	var event: EventDef = sim.content.get_event(decision.event_id)
+	for wanted: StringName in order:
+		var choice: ChoiceDef = event.get_choice(wanted)
+		if choice != null and sim.choice_available(choice, null):
+			sim.resolve_decision(decision.id, wanted)
+			return
+	if order.is_empty():
+		sim.world.pending.erase(decision)

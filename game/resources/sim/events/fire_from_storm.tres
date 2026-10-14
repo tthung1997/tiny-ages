@@ -28,36 +28,41 @@ effects = Array[ExtResource("2_y8c6m")]([SubResource("Resource_6rj1x"), SubResou
 
 [sub_resource type="Resource" id="Resource_f50tm"]
 script = ExtResource("2_y8c6m")
-text = "The group kept away from the burning tree."
+kind = 1
+key = &"embers_waited"
 
 [sub_resource type="Resource" id="Resource_5nyoe"]
+script = ExtResource("2_y8c6m")
+text = "The group watched the burning tree from a distance until it was ash and embers."
+
+[sub_resource type="Resource" id="Resource_p2evq"]
 script = ExtResource("2_y8c6m")
 kind = 7
 key = &"embers_remain"
 amount = 48
 
-[sub_resource type="Resource" id="Resource_p2evq"]
-script = ExtResource("1_krfew")
-id = &"stay_away"
-label = "Keep well away from it"
-effects = Array[ExtResource("2_y8c6m")]([SubResource("Resource_f50tm"), SubResource("Resource_5nyoe")])
-
 [sub_resource type="Resource" id="Resource_pmj0e"]
+script = ExtResource("1_krfew")
+id = &"wait_for_embers"
+label = "Wait for it to burn down, then take the embers"
+effects = Array[ExtResource("2_y8c6m")]([SubResource("Resource_f50tm"), SubResource("Resource_5nyoe"), SubResource("Resource_p2evq")])
+
+[sub_resource type="Resource" id="Resource_jlu4w"]
 script = ExtResource("3_hudai")
 key = &"fire_found"
 negate = true
 
-[sub_resource type="Resource" id="Resource_jlu4w"]
+[sub_resource type="Resource" id="Resource_yucx7"]
 script = ExtResource("3_hudai")
 kind = 5
 amount = 1
 
-[sub_resource type="Resource" id="Resource_yucx7"]
+[sub_resource type="Resource" id="Resource_vju30"]
 script = ExtResource("3_hudai")
 kind = 6
 key = &"curious"
 
-[sub_resource type="Resource" id="Resource_vju30"]
+[sub_resource type="Resource" id="Resource_pg0lq"]
 script = ExtResource("3_hudai")
 kind = 7
 
@@ -67,10 +72,9 @@ id = &"fire_from_storm"
 title = "A burning tree"
 body = "A storm rolled over the valley in the night. On the ridge a lone tree is burning, and even from here its glow is warm."
 category = &"nature"
-requires = Array[ExtResource("3_hudai")]([SubResource("Resource_pmj0e"), SubResource("Resource_jlu4w")])
+requires = Array[ExtResource("3_hudai")]([SubResource("Resource_jlu4w"), SubResource("Resource_yucx7")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_hudai")]([SubResource("Resource_yucx7"), SubResource("Resource_vju30")])
+subject_requires = Array[ExtResource("3_hudai")]([SubResource("Resource_vju30"), SubResource("Resource_pg0lq")])
 chance_per_tick = 0.04
 cooldown_ticks = 24
-choices = Array[ExtResource("1_krfew")]([SubResource("Resource_q5tmg"), SubResource("Resource_p2evq")])
-min_choices = 1
+choices = Array[ExtResource("1_krfew")]([SubResource("Resource_q5tmg"), SubResource("Resource_pmj0e")])

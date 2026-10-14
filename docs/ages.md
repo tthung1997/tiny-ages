@@ -110,7 +110,7 @@ milestones must be earned, and the minimum time must have passed. Milestones are
 
 ## Cave Age: between the milestones
 
-The milestones are far apart (hours to days), so each stretch has its own small decisions and a stream of one-line journal moments. None of it is required, nothing fails, every answer is harmless, and an answer only shows up in the journal and sometimes in a later line. Which game day each opens is one table (`STORY_DAY` in `tools/build_sim_content.gd`); 72 game days is a real day.
+The milestones are far apart (hours to days), so each stretch has its own small decisions and a stream of one-line journal moments. None of it is required, nothing fails, and every answer does something small: it shows up in the journal and sets a flag that a later line remembers. There is no "pass" answer (P13). Which game day each opens is one table (`STORY_DAY` in `tools/build_sim_content.gd`); 72 game days is a real day. The first building decision is not asked until day 18 (about 6 real hours), because it needs two buildings to choose between; the Lookout is the only one open before then.
 
 | From day | Decision (two answers each) | What the answers do |
 |---|---|---|
@@ -118,13 +118,13 @@ The milestones are far apart (hours to days), so each stretch has its own small 
 | 6 | **Hungry mornings** (only when food is low) | Forage together or set snares; food and a flag |
 | 24 | **What the edge is for** (needs Stone Tools) | Hand axes (wood) or hide scrapers |
 | 32 | **The first hard frost** | Keep the fire high all night (8 wood) or huddle close |
-| 42 | **Strange prints** (a curious villager) | Follow them (away 18 ticks, comes back with pine nuts) or stay |
+| 42 | **Strange prints** (a curious villager) | Follow them (away 18 ticks, comes back with pine nuts) or read them together at dawn |
 | 60 | **More than enough** (needs Enough to Eat and a full store) | Hold a feast (12 food) or dry the rest |
 | 72 | **The warm spot** | A second small fire (6 wood) or take turns |
 | 88 | **The neighbour** (the mammoth at the camp's edge) | Offer greens (3 food) or keep a distance |
 | 115 | **A rhythm to work to** (needs Shared Stories) | Let everyone join in or ask for quiet |
 | 126 | **The crowded wall** (cave art route) or **The long story** (storytelling route) | Paint the herd or the sky; or fix the story or let it change |
-| 140 | **Smoke on the ridge** (needs the Lookout; before the strangers) | Send a scout (finds a cold fire ring) or keep watching |
+| 140 | **Smoke on the ridge** (needs the Lookout; before the strangers) | Send a scout (finds a cold fire ring) or keep watching from the lookout |
 | 172 | **Room for the newcomers** (needs A Bigger Group) | A shelter (8 wood) or share the cave |
 | 192 | **The river is rising** | Carry the stores up (6 wood) or trust the bank |
 | 232 | **Heavy grass** | Gather every seed head (10 food) or half, leaving the rest to scatter |
@@ -135,14 +135,14 @@ The milestones are far apart (hours to days), so each stretch has its own small 
 | 342 | **The pile by the cave** (an industrious villager) | Sort the good stone or bury it |
 
 - **Ambient lines**: about 25 one-line moments (mist, a heron, geese, thunder; a curious villager watching ants; a social one humming; an industrious one stacking wood; a nature-loving one bringing back crocuses; plus lines that remember an earlier answer). Each repeats at most every 5 real hours (360 ticks). A line about a villager is never told while they are asleep (`SUBJECT_AWAKE`).
-- **Pace** (bot answering at once, `tools/sim_timeline.gd`): about 29 questions across the 5 days including the buildings and milestones, never more than about 9 real hours apart, and a journal line roughly every 20 real minutes. That is about 4-6 questions per workday for a player who is at the desk for a third of the time.
+- **Pace** (bot answering at once, `tools/sim_timeline.gd`): about 44 questions across the 5 days including the buildings and milestones, never more than about 5 real hours apart (it was 8-9 before 13 more small forks were added in the longest stretches, so a workday is never without one), and a journal line roughly every 20 real minutes. Added forks: the cold floor (11), the missing flint (80), scratching in the night (98), the hard crossing (152), a bright feather (182), bats in the back (204), the bee tree (227), the run of fish (246), a hollow log (265), the first snow (285), the cave answers (307), a stone from the sky (331) and the warm pool (350). Move a day in `STORY_DAY` if a stretch feels long.
 - **Resources stay context** (P2): a choice shows what it needs and only waits for it. Villagers stop gathering a resource once the store reaches `comfortable_stock` (40), and buildings stop adding to a full store, so stock hovers around that instead of piling up; building costs are 8-14 wood.
 
 ## What is built in the sim
 
 - `EraDef` (id, name, `order`, intro text, and the hidden gate: `required_achievements`, `min_ticks_in_previous_era`, `turn_event`) in `ContentLibrary.eras`; the world stores the current `era`, `era_order` and `era_started_tick`.
 - `EraSystem` opens the next age when its gate is met: it fires the turn event (or advances at once). `SimCondition.ERA_AT_LEAST` gates events and choices; `SimEffect.ADVANCE_ERA` moves forward only and writes the era's intro to the journal. Buildings can grant a milestone on completion (`BuildingDef.completion_achievement`).
-- Built: all six milestones, each with at least two routes or a way to pass and be asked again. Fire (burning tree for a curious villager, sparks for an industrious one, embers if both are passed). Stone Tools (Knapping Spot, or a lucky split stone). Enough to Eat (the hunt, or foraging plus the Drying Rack). Shared Stories (a story by the fire, or red earth for the cave wall). A Bigger Group (strangers seen from the Lookout; two newcomers join). Unexpected Garden (the seed chain).
+- Built: all six milestones. Under P13 every answer to a milestone decision does something and still gets there, so no answer is a pass: the other answer reaches the same milestone by a different, slower or differently flavoured road, and a building is never the only way. Fire (carry a burning branch home, or wait and take the embers; the embers come about 2 to 3 days later). Stone Tools (the Knapping Spot, a kept split stone, or keep cracking nuts with it until it breaks). Enough to Eat (the hunt, foraging until the baskets prove their worth, or the Drying Rack). Shared Stories (tell it or sing it; mark the wall or paint faces). A Bigger Group (welcome the strangers, or leave food and they come in on their own). Unexpected Garden (the seed chain: scout alone or walk out together; plant in sun or shade). The **Lookout is optional**: with it the strangers and the scout come at their staged day; without it the same events come a month later (`NO_LOOKOUT_DELAY`) with text that does not mention a tower. `test_decision_rules.gd` plays every order of building picks, and a player who ignores the building question for good, to the Settled Age.
 - Milestone events let *anyone* at home be the subject; a matching trait only makes someone likelier (`EventDef.trait_weights`), so no random group can be locked out.
 - Newcomers get a random unused name and traits (`Simulation.add_villager`), and reuse the three villager looks until more art exists.
 - Cave and Settled ages exist, with era-gated buildings (Field, Hut), cave-only flavour events and the Settled Age's six milestones (see "Settled Age: the milestones").

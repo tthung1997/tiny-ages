@@ -35,19 +35,24 @@ effects = Array[ExtResource("2_q6nky")]([SubResource("Resource_hsrms"), SubResou
 
 [sub_resource type="Resource" id="Resource_4vp0s"]
 script = ExtResource("2_q6nky")
-text = "The deer limped on out of sight, and nobody mentioned it."
+kind = 1
+key = &"deer_left"
 
 [sub_resource type="Resource" id="Resource_c3qk1"]
+script = ExtResource("2_q6nky")
+text = "The deer limped on out of sight, and nobody mentioned it."
+
+[sub_resource type="Resource" id="Resource_g4mmq"]
 script = ExtResource("1_5fyly")
 id = &"leave_it_be"
 label = "Let nature take its course"
-effects = Array[ExtResource("2_q6nky")]([SubResource("Resource_4vp0s")])
+effects = Array[ExtResource("2_q6nky")]([SubResource("Resource_4vp0s"), SubResource("Resource_c3qk1")])
 
-[sub_resource type="Resource" id="Resource_g4mmq"]
+[sub_resource type="Resource" id="Resource_v06kt"]
 script = ExtResource("3_i6trk")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_v06kt"]
+[sub_resource type="Resource" id="Resource_srk4n"]
 script = ExtResource("3_i6trk")
 kind = 5
 amount = 252
@@ -58,8 +63,7 @@ id = &"hurt_deer"
 title = "A limping deer"
 body = "A young deer with a hurt leg has been limping near the camp, always at the edge of sight."
 category = &"nature"
-requires = Array[ExtResource("3_i6trk")]([SubResource("Resource_g4mmq"), SubResource("Resource_v06kt")])
+requires = Array[ExtResource("3_i6trk")]([SubResource("Resource_v06kt"), SubResource("Resource_srk4n")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_5fyly")]([SubResource("Resource_2ww3g"), SubResource("Resource_c3qk1")])
-min_choices = 1
+choices = Array[ExtResource("1_5fyly")]([SubResource("Resource_2ww3g"), SubResource("Resource_g4mmq")])

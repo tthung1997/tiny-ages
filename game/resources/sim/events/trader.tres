@@ -35,24 +35,29 @@ effects = Array[ExtResource("2_dsj0n")]([SubResource("Resource_ajc37"), SubResou
 
 [sub_resource type="Resource" id="Resource_1rncm"]
 script = ExtResource("2_dsj0n")
-text = "The traveller ate by the fire, said a few words nobody understood, and went on."
+kind = 1
+key = &"meal_shared"
 
 [sub_resource type="Resource" id="Resource_nf4vj"]
+script = ExtResource("2_dsj0n")
+text = "The traveller ate by the fire, said a few words nobody understood, and went on."
+
+[sub_resource type="Resource" id="Resource_ncbn6"]
 script = ExtResource("1_e8x5d")
 id = &"share_a_meal"
 label = "Share a meal and send them on"
-effects = Array[ExtResource("2_dsj0n")]([SubResource("Resource_1rncm")])
+effects = Array[ExtResource("2_dsj0n")]([SubResource("Resource_1rncm"), SubResource("Resource_nf4vj")])
 
-[sub_resource type="Resource" id="Resource_ncbn6"]
+[sub_resource type="Resource" id="Resource_142bi"]
 script = ExtResource("3_guu4s")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_142bi"]
+[sub_resource type="Resource" id="Resource_2kjn1"]
 script = ExtResource("3_guu4s")
 kind = 5
 amount = 272
 
-[sub_resource type="Resource" id="Resource_2kjn1"]
+[sub_resource type="Resource" id="Resource_wrjvt"]
 script = ExtResource("3_guu4s")
 kind = 9
 key = &"bigger_group"
@@ -63,8 +68,7 @@ id = &"trader"
 title = "A traveller with dark stone"
 body = "A traveller from beyond the ridge has come to the edge of the camp with a bag of dark, glassy stone, and a hungry look."
 category = &"exploration"
-requires = Array[ExtResource("3_guu4s")]([SubResource("Resource_ncbn6"), SubResource("Resource_142bi"), SubResource("Resource_2kjn1")])
+requires = Array[ExtResource("3_guu4s")]([SubResource("Resource_142bi"), SubResource("Resource_2kjn1"), SubResource("Resource_wrjvt")])
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_e8x5d")]([SubResource("Resource_6d45x"), SubResource("Resource_nf4vj")])
-min_choices = 1
+choices = Array[ExtResource("1_e8x5d")]([SubResource("Resource_6d45x"), SubResource("Resource_ncbn6")])

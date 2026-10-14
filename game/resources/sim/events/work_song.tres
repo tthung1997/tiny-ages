@@ -22,29 +22,34 @@ effects = Array[ExtResource("2_wqceg")]([SubResource("Resource_oumqj"), SubResou
 
 [sub_resource type="Resource" id="Resource_bnduq"]
 script = ExtResource("2_wqceg")
-text = "{subject} kept the rhythm in their head, and tapped it on their knee."
+kind = 1
+key = &"work_quiet"
 
 [sub_resource type="Resource" id="Resource_exvfj"]
+script = ExtResource("2_wqceg")
+text = "{subject} kept the rhythm in their head, and tapped it on their knee."
+
+[sub_resource type="Resource" id="Resource_bd76c"]
 script = ExtResource("1_g2ajc")
 id = &"keep_it_quiet"
 label = "Ask for quiet while they work"
-effects = Array[ExtResource("2_wqceg")]([SubResource("Resource_bnduq")])
+effects = Array[ExtResource("2_wqceg")]([SubResource("Resource_bnduq"), SubResource("Resource_exvfj")])
 
-[sub_resource type="Resource" id="Resource_bd76c"]
+[sub_resource type="Resource" id="Resource_krpaq"]
 script = ExtResource("3_804k5")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_krpaq"]
+[sub_resource type="Resource" id="Resource_0t3jv"]
 script = ExtResource("3_804k5")
 kind = 5
 amount = 115
 
-[sub_resource type="Resource" id="Resource_0t3jv"]
+[sub_resource type="Resource" id="Resource_b4vr8"]
 script = ExtResource("3_804k5")
 kind = 9
 key = &"shared_stories"
 
-[sub_resource type="Resource" id="Resource_b4vr8"]
+[sub_resource type="Resource" id="Resource_jkfq2"]
 script = ExtResource("3_804k5")
 kind = 7
 
@@ -53,13 +58,12 @@ script = ExtResource("4_etjmt")
 id = &"work_song"
 title = "A rhythm to work to"
 body = "{subject} has made up a rhythm to chop to, and keeps humming it. Others have begun to tap along."
-requires = Array[ExtResource("3_804k5")]([SubResource("Resource_bd76c"), SubResource("Resource_krpaq"), SubResource("Resource_0t3jv")])
+requires = Array[ExtResource("3_804k5")]([SubResource("Resource_krpaq"), SubResource("Resource_0t3jv"), SubResource("Resource_b4vr8")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_804k5")]([SubResource("Resource_b4vr8")])
+subject_requires = Array[ExtResource("3_804k5")]([SubResource("Resource_jkfq2")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_g2ajc")]([SubResource("Resource_07eav"), SubResource("Resource_exvfj")])
-min_choices = 1
+choices = Array[ExtResource("1_g2ajc")]([SubResource("Resource_07eav"), SubResource("Resource_bd76c")])

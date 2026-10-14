@@ -28,36 +28,41 @@ effects = Array[ExtResource("2_v40m8")]([SubResource("Resource_4l3lx"), SubResou
 
 [sub_resource type="Resource" id="Resource_t78ct"]
 script = ExtResource("2_v40m8")
-text = "{subject} brushed the spark away before it could grow."
+kind = 1
+key = &"embers_waited"
 
 [sub_resource type="Resource" id="Resource_umemd"]
+script = ExtResource("2_v40m8")
+text = "{subject} cupped the spark in the moss all night, and by dawn it was a bed of embers."
+
+[sub_resource type="Resource" id="Resource_enlv0"]
 script = ExtResource("2_v40m8")
 kind = 7
 key = &"embers_remain"
 amount = 72
 
-[sub_resource type="Resource" id="Resource_enlv0"]
-script = ExtResource("1_ffobe")
-id = &"let_it_die"
-label = "Brush it away"
-effects = Array[ExtResource("2_v40m8")]([SubResource("Resource_t78ct"), SubResource("Resource_umemd")])
-
 [sub_resource type="Resource" id="Resource_sg63w"]
+script = ExtResource("1_ffobe")
+id = &"tend_the_spark"
+label = "Shelter it and tend it until morning"
+effects = Array[ExtResource("2_v40m8")]([SubResource("Resource_t78ct"), SubResource("Resource_umemd"), SubResource("Resource_enlv0")])
+
+[sub_resource type="Resource" id="Resource_1kdaf"]
 script = ExtResource("3_vjdw2")
 key = &"fire_found"
 negate = true
 
-[sub_resource type="Resource" id="Resource_1kdaf"]
+[sub_resource type="Resource" id="Resource_77twe"]
 script = ExtResource("3_vjdw2")
 kind = 5
 amount = 1
 
-[sub_resource type="Resource" id="Resource_77twe"]
+[sub_resource type="Resource" id="Resource_bouk4"]
 script = ExtResource("3_vjdw2")
 kind = 6
 key = &"industrious"
 
-[sub_resource type="Resource" id="Resource_bouk4"]
+[sub_resource type="Resource" id="Resource_8lllr"]
 script = ExtResource("3_vjdw2")
 kind = 7
 
@@ -67,10 +72,9 @@ id = &"fire_from_sparks"
 title = "Sparks"
 body = "{subject} was knocking two stones together when a spark caught in a nest of dry moss."
 category = &"settlement"
-requires = Array[ExtResource("3_vjdw2")]([SubResource("Resource_sg63w"), SubResource("Resource_1kdaf")])
+requires = Array[ExtResource("3_vjdw2")]([SubResource("Resource_1kdaf"), SubResource("Resource_77twe")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_vjdw2")]([SubResource("Resource_77twe"), SubResource("Resource_bouk4")])
+subject_requires = Array[ExtResource("3_vjdw2")]([SubResource("Resource_bouk4"), SubResource("Resource_8lllr")])
 chance_per_tick = 0.03
 cooldown_ticks = 24
-choices = Array[ExtResource("1_ffobe")]([SubResource("Resource_i53sn"), SubResource("Resource_enlv0")])
-min_choices = 1
+choices = Array[ExtResource("1_ffobe")]([SubResource("Resource_i53sn"), SubResource("Resource_sg63w")])

@@ -32,11 +32,14 @@ func test_stone_tools_can_come_from_a_lucky_stone_instead_of_a_building() -> voi
 	assert_false(sim.world.has_building(&"knapping_spot"))
 
 
-func test_tossing_the_stone_aside_earns_nothing_yet() -> void:
+func test_keeping_the_nut_stone_earns_stone_tools_a_little_later() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var decision: PendingDecision = _fire(sim, &"cracking_nuts")
-	assert_true(sim.resolve_decision(decision.id, &"toss_it"))
+	assert_true(sim.resolve_decision(decision.id, &"keep_cracking"))
 	assert_false(sim.world.has_achievement(&"stone_tools"))
+	assert_true(sim.world.has_flag(&"nut_hammer"))
+	sim.advance_ticks(100)
+	assert_true(sim.world.has_achievement(&"stone_tools"), "The stone breaks, and they learn")
 
 
 func test_hunting_makes_food_reliable_at_once() -> void:
@@ -48,7 +51,7 @@ func test_hunting_makes_food_reliable_at_once() -> void:
 	assert_true(sim.world.has_flag(&"path_hunting"))
 
 
-func test_foraging_needs_the_drying_rack_to_make_food_reliable() -> void:
+func test_foraging_makes_food_reliable_with_the_rack_or_a_little_later() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	sim.world.achievements.append(&"stone_tools")
 	var decision: PendingDecision = _fire(sim, &"herds_nearby")
@@ -60,6 +63,12 @@ func test_foraging_needs_the_drying_rack_to_make_food_reliable() -> void:
 	sim.world.buildings.append(rack)
 	sim.complete_building(rack)
 	assert_true(sim.world.has_achievement(&"reliable_food"))
+	var later: Simulation = SimFixture.new_sim()
+	later.world.achievements.append(&"stone_tools")
+	var asked: PendingDecision = _fire(later, &"herds_nearby")
+	assert_true(later.resolve_decision(asked.id, &"forage"))
+	later.advance_ticks(100)
+	assert_true(later.world.has_achievement(&"reliable_food"), "No rack needed to get there")
 
 
 func test_the_hunt_waits_for_stone_tools_and_stops_once_chosen() -> void:
@@ -72,19 +81,16 @@ func test_the_hunt_waits_for_stone_tools_and_stops_once_chosen() -> void:
 	assert_gt(asked, 0, "Once there are tools the herds come near")
 
 
-func test_shared_stories_have_two_routes() -> void:
-	for route: Array in [[&"stories_by_the_fire", &"tell_it"], [&"ochre_on_the_riverbank", &"paint_the_wall"]]:
+func test_shared_stories_have_two_routes_and_every_answer_gets_there() -> void:
+	for route: Array in [
+		[&"stories_by_the_fire", &"tell_it"], [&"stories_by_the_fire", &"sing_it"],
+		[&"ochre_on_the_riverbank", &"paint_the_wall"],
+		[&"ochre_on_the_riverbank", &"paint_faces"],
+	]:
 		var sim: Simulation = SimFixture.new_sim()
 		var decision: PendingDecision = _fire(sim, route[0])
 		assert_true(sim.resolve_decision(decision.id, route[1]))
 		assert_true(sim.world.has_achievement(&"shared_stories"), "%s" % route[0])
-
-
-func test_passing_on_a_story_earns_nothing() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	var decision: PendingDecision = _fire(sim, &"stories_by_the_fire")
-	assert_true(sim.resolve_decision(decision.id, &"let_it_pass"))
-	assert_false(sim.world.has_achievement(&"shared_stories"))
 
 
 func test_milestone_events_can_happen_to_anyone_in_any_group() -> void:
@@ -96,21 +102,27 @@ func test_milestone_events_can_happen_to_anyone_in_any_group() -> void:
 			[VillagerState.TRAIT_CURIOUS, VillagerState.TRAIT_INDUSTRIOUS],
 			[VillagerState.TRAIT_CURIOUS, VillagerState.TRAIT_INDUSTRIOUS],
 		])
-		var asked: int = SimFixture.advance_until_asked(sim, &"stories_by_the_fire", DAY * 40)
+		var asked: int = SimFixture.advance_until_asked(sim, &"stories_by_the_fire", DAY * 90)
 		assert_gt(asked, 0, "seed %d: nobody social, but the story still happens" % rng_seed)
 
 
-func test_strangers_only_appear_once_there_is_a_lookout() -> void:
+func test_strangers_are_seen_from_a_lookout_and_a_month_later_without_one() -> void:
 	var sim: Simulation = SimFixture.new_sim(2)
 	SimFixture.jump_to_day(sim, 162)
-	SimFixture.advance_until_asked(sim, &"strangers_on_the_ridge", DAY * 30)
+	SimFixture.advance_until_asked(sim, &"strangers_on_the_ridge", DAY * 20)
 	assert_eq(sim.world.event_counts.get(&"strangers_on_the_ridge", 0), 0)
+	assert_eq(sim.world.event_counts.get(&"strangers_at_the_edge", 0), 0, "Not yet: a month to go")
+	var late: int = SimFixture.advance_until_asked(sim, &"strangers_at_the_edge", DAY * 40)
+	assert_gt(late, 0, "Without a Lookout they are still noticed, later")
+	assert_eq(sim.world.event_counts.get(&"strangers_on_the_ridge", 0), 0)
+	var seen: Simulation = SimFixture.new_sim(2)
+	SimFixture.jump_to_day(seen, 162)
 	var lookout: BuildingState = BuildingState.new()
 	lookout.def_id = &"lookout"
-	sim.world.buildings.append(lookout)
-	sim.complete_building(lookout)
-	var asked: int = SimFixture.advance_until_asked(sim, &"strangers_on_the_ridge", DAY * 30)
-	assert_gt(asked, 0)
+	seen.world.buildings.append(lookout)
+	seen.complete_building(lookout)
+	var asked: int = SimFixture.advance_until_asked(seen, &"strangers_on_the_ridge", DAY * 90)
+	assert_gt(asked, 0, "With a Lookout they are seen on the ridge at once")
 
 
 func test_welcoming_strangers_grows_the_group() -> void:
@@ -125,12 +137,16 @@ func test_welcoming_strangers_grows_the_group() -> void:
 	assert_gt(SimFixture.journal_index(sim.world, "joined the group"), -1)
 
 
-func test_keeping_watch_does_not_grow_the_group() -> void:
+func test_leaving_food_brings_the_strangers_in_a_little_later() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var decision: PendingDecision = _fire(sim, &"strangers_on_the_ridge")
-	assert_true(sim.resolve_decision(decision.id, &"keep_watch"))
+	assert_true(sim.resolve_decision(decision.id, &"leave_food"))
 	assert_eq(sim.world.villagers.size(), 3)
 	assert_false(sim.world.has_achievement(&"bigger_group"))
+	assert_true(sim.world.has_flag(&"strangers_courted"))
+	sim.advance_ticks(100)
+	assert_eq(sim.world.villagers.size(), 5)
+	assert_true(sim.world.has_achievement(&"bigger_group"))
 
 
 func test_newcomers_are_unique_even_past_the_name_pool() -> void:

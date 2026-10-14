@@ -11,7 +11,19 @@ const SETTLED: int = 1
 ## Decisions already written as a real choice between two directions (docs/gameplay.md P13).
 ## Every other decision still has a "do it or pass" shape and keeps asking with one answer;
 ## each stage of the conversion moves ids here, and the list ends as every decision.
-const CONVERTED_DECISIONS: Array[StringName] = []
+const CONVERTED_DECISIONS: Array[StringName] = [
+	&"fire_from_storm", &"fire_from_sparks", &"cracking_nuts", &"herds_nearby",
+	&"stories_by_the_fire", &"ochre_on_the_riverbank", &"strangers_on_the_ridge",
+	&"strangers_at_the_edge", &"building_opportunity", &"curious_explorer", &"restless_explorer",
+	&"explorer_returns", &"seed_in_pouch", &"seeds_of_a_new_life", &"wolf_at_the_edge",
+	&"hungry_mornings", &"flint_edge", &"first_hard_frost", &"strange_prints", &"too_much_food",
+	&"second_hearth", &"mammoth_neighbour", &"work_song", &"crowded_wall", &"living_story",
+	&"smoke_on_the_ridge", &"newcomers_shelter", &"rising_river", &"wild_grain", &"hurt_deer",
+	&"trader", &"star_watching", &"smoke_in_the_cave", &"tools_pile", &"cold_floors",
+	&"lost_flint", &"night_noises", &"the_ford", &"bright_feather", &"bats_in_the_back",
+	&"bee_tree", &"fish_run", &"hollow_log", &"first_snow", &"echo_in_the_cave", &"sky_stone",
+	&"warm_pool",
+]
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -29,6 +41,9 @@ const STORY_DAY: Dictionary = {
 	&"hearth": 72, &"mammoth": 88, &"song": 115, &"wall": 126, &"ridge_smoke": 140,
 	&"shelter": 172, &"river": 192, &"grain": 232, &"deer": 252, &"trader": 272, &"stars": 294,
 	&"smoke": 316, &"tools_pile": 342,
+	&"floors": 11, &"lost_flint": 80, &"night_noises": 98, &"ford": 152, &"feather": 182,
+	&"bats": 204, &"honey": 227, &"fish_run": 246, &"drum": 265, &"first_snow": 285,
+	&"echo": 307, &"sky_stone": 331, &"warm_pool": 350,
 }
 ## Days into the Settled Age (not since the start) before each of its milestones can happen. The
 ## age is paced like the Cave Age: five hidden milestones spread over about the same five real
@@ -61,6 +76,9 @@ const AMBIENT_COOLDOWN: int = 360
 ## Units a villager gathers per tick of work; the starting stock is a few units, so early choices
 ## wait a little (docs/simulation.md, pacing).
 const GATHER_RATE: float = 0.06
+## Days later that a Lookout milestone still happens for a group that never built one. The Lookout
+## makes the strangers and the scout come sooner; nothing depends on having it (docs/gameplay.md P13).
+const NO_LOOKOUT_DELAY: int = 30
 
 
 func _init() -> void:
@@ -180,13 +198,18 @@ func _events() -> Array[EventDef]:
 		_fire_from_sparks(),
 		_embers_remain(),
 		_cracking_nuts(),
+		_hammerstone_splits(),
 		_herds_nearby(),
+		_baskets_keep(),
 		_stories_by_the_fire(),
 		_ochre_on_the_riverbank(),
 		_strangers_on_the_ridge(),
+		_strangers_at_the_edge(),
+		_strangers_come(),
 		_building_opportunity(),
 		_settled_building_opportunity(),
 		_curious_explorer(),
+		_restless_explorer(),
 		_explorer_returns(),
 		_seed_in_pouch(),
 		_seeds_of_a_new_life(),
@@ -223,9 +246,13 @@ func _fire_from_storm() -> EventDef:
 	carry.effects = _effs(_fire_found_effects(
 		"{subject} carried a burning branch back through the rain, and the cave was warm for the first time."
 	))
-	var avoid: ChoiceDef = _choice(&"stay_away", "Keep well away from it")
+	var avoid: ChoiceDef = _choice(&"wait_for_embers", "Wait for it to burn down, then take the embers")
 	avoid.effects = _effs([
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "The group kept away from the burning tree."),
+		_eff(SimEffect.Kind.SET_FLAG, &"embers_waited"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The group watched the burning tree from a distance until it was ash and embers."
+		),
 		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"embers_remain", 48),
 	])
 	event.choices = _choices([carry, avoid])
@@ -251,16 +278,20 @@ func _fire_from_sparks() -> EventDef:
 	blow.effects = _effs(_fire_found_effects(
 		"{subject} blew on the spark until the moss glowed, and the first fire of the camp was lit."
 	))
-	var brush: ChoiceDef = _choice(&"let_it_die", "Brush it away")
+	var brush: ChoiceDef = _choice(&"tend_the_spark", "Shelter it and tend it until morning")
 	brush.effects = _effs([
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} brushed the spark away before it could grow."),
+		_eff(SimEffect.Kind.SET_FLAG, &"embers_waited"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"{subject} cupped the spark in the moss all night, and by dawn it was a bed of embers."
+		),
 		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"embers_remain", 72),
 	])
 	event.choices = _choices([blow, brush])
 	return event
 
 
-## Scheduled only: the fallback that guarantees fire for a player who passed on both routes.
+## Scheduled only: the slower road to fire for a group that waited instead of carrying it home.
 func _embers_remain() -> EventDef:
 	var event: EventDef = _event(&"embers_remain", "Embers", &"nature")
 	event.requires = _conds([_cond(SimCondition.Kind.FLAG_SET, &"fire_found", 0, true)])
@@ -312,11 +343,36 @@ func _cracking_nuts() -> EventDef:
 		),
 		_eff(SimEffect.Kind.ACHIEVEMENT, &"stone_tools", 0, "Stone Tools"),
 	])
-	var toss: ChoiceDef = _choice(&"toss_it", "Toss it aside")
+	var toss: ChoiceDef = _choice(&"keep_cracking", "Keep cracking nuts with it")
 	toss.effects = _effs([
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} tossed the split stone onto the pile."),
+		_eff(SimEffect.Kind.SET_FLAG, &"nut_hammer"),
+		_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"{subject} kept cracking nuts with the split stone, and the others queued up to try it."
+		),
+		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"hammerstone_splits", 96),
 	])
 	event.choices = _choices([keep, toss])
+	return event
+
+
+## Scheduled only: the stone that was kept for cracking nuts breaks, and the group learns the
+## same thing the other way round.
+func _hammerstone_splits() -> EventDef:
+	var event: EventDef = _event(&"hammerstone_splits", "The hammerstone breaks", &"character")
+	event.needs_subject = true
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"stone_tools", 0, true),
+	])
+	event.effects = _effs([
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The old nut stone finally split clean across, and the edge it left was sharper than "
+			+ "anything the group owned. By evening everyone was making edges."
+		),
+		_eff(SimEffect.Kind.ACHIEVEMENT, &"stone_tools", 0, "Stone Tools"),
+	])
 	return event
 
 
@@ -351,8 +407,27 @@ func _herds_nearby() -> EventDef:
 			SimEffect.Kind.JOURNAL, &"", 0,
 			"The group wove reed baskets and spent the day gathering along the river."
 		),
+		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"baskets_keep", 96),
 	])
 	event.choices = _choices([hunt, forage])
+	return event
+
+
+## Scheduled only: the foragers' road to Reliable Food, a little slower than the hunters'. The
+## Drying Rack still gets there first.
+func _baskets_keep() -> EventDef:
+	var event: EventDef = _event(&"baskets_keep", "Baskets that keep", &"settlement")
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"reliable_food", 0, true),
+	])
+	event.effects = _effs([
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The baskets hung from the cave roof stayed full through the lean weeks, and nobody "
+			+ "woke hungry."
+		),
+		_eff(SimEffect.Kind.ACHIEVEMENT, &"reliable_food", 0, "Enough to Eat"),
+	])
 	return event
 
 
@@ -370,15 +445,21 @@ func _stories_by_the_fire() -> EventDef:
 	])
 	var tell: ChoiceDef = _choice(&"tell_it", "Gather everyone to listen")
 	tell.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"tales_told"),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
 			"{subject} told the story of the day, and soon everyone was adding to it. By the end they told it the same way each night."
 		),
 		_eff(SimEffect.Kind.ACHIEVEMENT, &"shared_stories", 0, "Shared Stories"),
 	])
-	var pass_on: ChoiceDef = _choice(&"let_it_pass", "Let the fire burn down")
+	var pass_on: ChoiceDef = _choice(&"sing_it", "Let them sing it instead")
 	pass_on.effects = _effs([
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "The fire burned down and everyone drifted to sleep."),
+		_eff(SimEffect.Kind.SET_FLAG, &"songs_sung"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"{subject} sang the story of the day, and one by one the others found the tune. By the end they sang it the same way each night."
+		),
+		_eff(SimEffect.Kind.ACHIEVEMENT, &"shared_stories", 0, "Shared Stories"),
 	])
 	event.choices = _choices([tell, pass_on])
 	return event
@@ -405,9 +486,14 @@ func _ochre_on_the_riverbank() -> EventDef:
 		),
 		_eff(SimEffect.Kind.ACHIEVEMENT, &"shared_stories", 0, "Shared Stories"),
 	])
-	var wash: ChoiceDef = _choice(&"wash_it_off", "Wash it off in the river")
+	var wash: ChoiceDef = _choice(&"paint_faces", "Let them paint faces and hands instead")
 	wash.effects = _effs([
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} washed the red earth off in the river."),
+		_eff(SimEffect.Kind.SET_FLAG, &"body_paint"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"{subject} painted a red line down a friend's cheek, and by dark the whole camp wore it."
+		),
+		_eff(SimEffect.Kind.ACHIEVEMENT, &"shared_stories", 0, "Shared Stories"),
 	])
 	event.choices = _choices([paint, wash])
 	return event
@@ -425,8 +511,31 @@ func _strangers_on_the_ridge() -> EventDef:
 	])
 	event.chance_per_tick = 0.02
 	event.cooldown_ticks = 72
+	event.choices = _strangers_choices()
+	return event
+
+
+## The same strangers for a group with no Lookout: nobody sees them coming, so they are noticed a
+## month later at the edge of the firelight. The Lookout is only ever a faster road.
+func _strangers_at_the_edge() -> EventDef:
+	var event: EventDef = _event(&"strangers_at_the_edge", "Strangers at the edge", &"exploration")
+	event.body = "Two strangers have been seen at dusk, just beyond the firelight, watching the " \
+			+ "smoke of the cave fire. They have kept their distance for two days."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.HAS_BUILDING, &"lookout", 0, true),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"bigger_group", 0, true),
+		_cond(SimCondition.Kind.DAYS_AT_LEAST, &"", UNLOCK_DAY[&"bigger_group"] + NO_LOOKOUT_DELAY),
+	])
+	event.chance_per_tick = 0.02
+	event.cooldown_ticks = 72
+	event.choices = _strangers_choices()
+	return event
+
+
+func _strangers_choices() -> Array[ChoiceDef]:
 	var welcome: ChoiceDef = _choice(&"welcome_them", "Welcome them to the fire")
 	welcome.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"strangers_welcomed"),
 		_eff(SimEffect.Kind.ADD_VILLAGER, &"", 2),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
@@ -434,14 +543,34 @@ func _strangers_on_the_ridge() -> EventDef:
 		),
 		_eff(SimEffect.Kind.ACHIEVEMENT, &"bigger_group", 0, "A Bigger Group"),
 	])
-	var watch: ChoiceDef = _choice(&"keep_watch", "Keep watching from a distance")
-	watch.effects = _effs([
+	var court: ChoiceDef = _choice(&"leave_food", "Leave food at the edge of the light")
+	court.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"strangers_courted"),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
-			"The group watched the strangers, and the strangers watched back."
+			"A bundle of food was left at the edge of the light, and the strangers watched it "
+			+ "for a long time."
 		),
+		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"strangers_come", 72),
 	])
-	event.choices = _choices([welcome, watch])
+	return _choices([welcome, court])
+
+
+## Scheduled only: the cautious road to A Bigger Group, where the strangers decide for themselves.
+func _strangers_come() -> EventDef:
+	var event: EventDef = _event(&"strangers_come", "The strangers come in", &"exploration")
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"bigger_group", 0, true),
+	])
+	event.effects = _effs([
+		_eff(SimEffect.Kind.ADD_VILLAGER, &"", 2),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The bundle was gone one morning, and that evening the two strangers walked in on "
+			+ "their own and sat down at the edge of the fire."
+		),
+		_eff(SimEffect.Kind.ACHIEVEMENT, &"bigger_group", 0, "A Bigger Group"),
+	])
 	return event
 
 
@@ -818,15 +947,45 @@ func _curious_explorer() -> EventDef:
 	])
 	event.chance_per_tick = 0.06
 	event.cooldown_ticks = 72
-	var go: ChoiceDef = _choice(&"encourage", "Encourage them to scout")
+	event.choices = _scout_choices()
+	return event
+
+
+## The same restless villager for a group with no Lookout, a month later (NO_LOOKOUT_DELAY).
+func _restless_explorer() -> EventDef:
+	var event: EventDef = _curious_explorer()
+	event.id = &"restless_explorer"
+	event.body = "{subject} keeps wandering to the edge of the western forest to stare at the " \
+			+ "ridge beyond it."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.HAS_BUILDING, &"lookout", 0, true),
+		_cond(SimCondition.Kind.FLAG_SET, &"western_forest_explored", 0, true),
+		_cond(SimCondition.Kind.DAYS_AT_LEAST, &"", UNLOCK_DAY[&"seed_chain"] + NO_LOOKOUT_DELAY),
+	])
+	return event
+
+
+func _scout_choices() -> Array[ChoiceDef]:
+	var go: ChoiceDef = _choice(&"encourage", "Let them scout alone")
 	go.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"scouted_alone"),
 		_eff(SimEffect.Kind.SET_PROFESSION, &"scout"),
 		_eff(SimEffect.Kind.SEND_AWAY, &"western_forest", 36),
 		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"explorer_returns", 36),
 		_eff(SimEffect.Kind.JOURNAL, &"", 0, "{subject} set off to scout the western forest."),
 	])
-	event.choices = _choices([go, _choice(&"remain", "Ask them to stay")])
-	return event
+	var together: ChoiceDef = _choice(&"walk_together", "Walk out there together")
+	together.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"scouted_together"),
+		_eff(SimEffect.Kind.SEND_AWAY, &"western_forest", 60),
+		_eff(SimEffect.Kind.SCHEDULE_EVENT, &"explorer_returns", 60),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The group walked out to the western forest together, slowly, and {subject} led "
+			+ "the way back."
+		),
+	])
+	return _choices([go, together])
 
 
 func _explorer_returns() -> EventDef:
@@ -841,23 +1000,30 @@ func _explorer_returns() -> EventDef:
 			"{subject} returned from the western forest carrying the seed of an unfamiliar plant."
 		),
 	])
-	var plant: ChoiceDef = _choice(&"plant_it", "Plant it")
-	plant.requires = _conds([_cond(SimCondition.Kind.ITEM_AT_LEAST, &"strange_seed", 1)])
+	var seed_needed: Array[SimCondition] = [
+		_cond(SimCondition.Kind.ITEM_AT_LEAST, &"strange_seed", 1)
+	]
+	var plant: ChoiceDef = _choice(&"plant_it", "Plant it in the sun at the cave mouth")
+	plant.requires = _conds(seed_needed)
 	plant.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"seed_in_sun"),
 		_eff(SimEffect.Kind.PLANT, &"strange_seed"),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
-			"{subject} pressed the strange seed into the soil by the cave mouth."
+			"{subject} pressed the strange seed into the sunny soil by the cave mouth."
 		),
 	])
-	var keep: ChoiceDef = _choice(&"keep_it", "Keep it safe")
-	keep.effects = _effs([
+	var shade: ChoiceDef = 	_choice(&"plant_in_shade", "Plant it in the shade of the overhang")
+	shade.requires = _conds(seed_needed)
+	shade.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"seed_in_shade"),
+		_eff(SimEffect.Kind.PLANT, &"strange_seed"),
 		_eff(
 			SimEffect.Kind.JOURNAL, &"", 0,
-			"The strange seed was wrapped in a hide pouch for safekeeping."
+			"{subject} pressed the strange seed into the cool soil under the overhang."
 		),
 	])
-	event.choices = _choices([plant, keep])
+	event.choices = _choices([plant, shade])
 	return event
 
 
@@ -867,12 +1033,19 @@ func _seed_in_pouch() -> EventDef:
 	event.requires = _conds([_cond(SimCondition.Kind.ITEM_AT_LEAST, &"strange_seed", 1)])
 	event.chance_per_tick = 0.01
 	event.cooldown_ticks = 96
-	var plant: ChoiceDef = _choice(&"plant_it", "Plant it")
+	var plant: ChoiceDef = _choice(&"plant_it", "Plant it in the sun at the cave mouth")
 	plant.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"seed_in_sun"),
 		_eff(SimEffect.Kind.PLANT, &"strange_seed"),
-		_eff(SimEffect.Kind.JOURNAL, &"", 0, "The strange seed was planted at last."),
+		_eff(SimEffect.Kind.JOURNAL, &"", 0, "The strange seed was planted in the sun at last."),
 	])
-	event.choices = _choices([plant, _choice(&"wait", "Wait a while longer")])
+	var shade: ChoiceDef = 	_choice(&"plant_in_shade", "Plant it in the shade of the overhang")
+	shade.effects = _effs([
+		_eff(SimEffect.Kind.SET_FLAG, &"seed_in_shade"),
+		_eff(SimEffect.Kind.PLANT, &"strange_seed"),
+		_eff(SimEffect.Kind.JOURNAL, &"", 0, "The strange seed was planted in the shade at last."),
+	])
+	event.choices = _choices([plant, shade])
 	return event
 
 
@@ -950,7 +1123,9 @@ func _story_decisions() -> Array[EventDef]:
 		_strange_prints(), _prints_end(), _too_much_food(), _second_hearth(), _mammoth_neighbour(),
 		_work_song(), _crowded_wall(), _living_story(), _smoke_on_the_ridge(), _ridge_empty(),
 		_newcomers_shelter(), _rising_river(), _wild_grain(), _hurt_deer(), _trader(),
-		_star_watching(), _smoke_in_the_cave(), _tools_pile(),
+		_star_watching(), _smoke_in_the_cave(), _tools_pile(), _cold_floors(), _lost_flint(),
+		_night_noises(), _the_ford(), _bright_feather(), _bats_in_the_back(), _bee_tree(),
+		_fish_run(), _hollow_log(), _first_snow(), _echo_in_the_cave(), _sky_stone(), _warm_pool(),
 	]
 
 
@@ -1073,8 +1248,10 @@ func _strange_prints() -> EventDef:
 			],
 		),
 		_answer(
-			&"stay_home", "Ask them to stay",
-			"{subject} looked back at the forest a few times that evening.",
+			&"read_the_prints", "Wait for daylight and read the prints together",
+			"The group pressed ash over the prints at dawn and read them together: a bear, "
+			+ "and an old one.",
+			[_set_flag(&"prints_read")],
 		),
 	])
 	return event
@@ -1108,12 +1285,13 @@ func _too_much_food() -> EventDef:
 		_answer(
 			&"hold_a_feast", "Hold a feast by the fire",
 			"The fire was loud that night. Everyone ate until they laughed.",
-			[_spend(&"food", 12)],
+			[_spend(&"food", 12), _set_flag(&"feast_held")],
 			[_has(&"food", 12)],
 		),
 		_answer(
 			&"dry_the_rest", "Dry the rest for lean days",
 			"The extra was split thin and hung to dry along the cave wall.",
+			[_set_flag(&"food_dried")],
 		),
 	])
 	return event
@@ -1136,6 +1314,7 @@ func _second_hearth() -> EventDef:
 		_answer(
 			&"take_turns", "Take turns by the fire",
 			"They agreed to take turns, mostly.",
+			[_set_flag(&"fire_turns")],
 		),
 	])
 	return event
@@ -1159,6 +1338,7 @@ func _work_song() -> EventDef:
 		_answer(
 			&"keep_it_quiet", "Ask for quiet while they work",
 			"{subject} kept the rhythm in their head, and tapped it on their knee.",
+			[_set_flag(&"work_quiet")],
 		),
 	])
 	return event
@@ -1205,6 +1385,7 @@ func _mammoth_neighbour() -> EventDef:
 		_answer(
 			&"keep_distance", "Keep a respectful distance",
 			"Everyone kept a careful distance, and the mammoth kept its own.",
+			[_set_flag(&"mammoth_distant")],
 		),
 	])
 	return event
@@ -1257,6 +1438,7 @@ func _smoke_on_the_ridge() -> EventDef:
 		_answer(
 			&"keep_watching", "Keep watching from the lookout",
 			"The smoke came and went. Someone was always at the lookout that week.",
+			[_set_flag(&"ridge_watched")],
 		),
 	])
 	return event
@@ -1293,6 +1475,7 @@ func _newcomers_shelter() -> EventDef:
 		_answer(
 			&"share_the_cave", "Make room for them in the cave",
 			"The group shuffled along the wall and made room.",
+			[_set_flag(&"shared_cave")],
 		),
 	])
 	return event
@@ -1308,12 +1491,13 @@ func _rising_river() -> EventDef:
 			&"move_up", "Carry the stores up to the ledge",
 			"Everything went up to the ledge, and the river reached the old fire pit and "
 			+ "no further.",
-			[_spend(&"wood", 6)],
+			[_spend(&"wood", 6), _set_flag(&"stores_on_ledge")],
 			[_has(&"wood", 6)],
 		),
 		_answer(
 			&"trust_the_bank", "Trust the bank",
 			"The river rose to the edge of the camp, thought about it, and went back.",
+			[_set_flag(&"trusted_bank")],
 		),
 	])
 	return event
@@ -1358,6 +1542,7 @@ func _hurt_deer() -> EventDef:
 		_answer(
 			&"leave_it_be", "Let nature take its course",
 			"The deer limped on out of sight, and nobody mentioned it.",
+			[_set_flag(&"deer_left")],
 		),
 	])
 	return event
@@ -1379,6 +1564,7 @@ func _star_watching() -> EventDef:
 		_answer(
 			&"keep_it_theirs", "Let them keep the sky to themselves",
 			"{subject} kept the stars private, and seemed happier for it.",
+			[_set_flag(&"stars_private")],
 		),
 	])
 	return event
@@ -1401,6 +1587,7 @@ func _trader() -> EventDef:
 		_answer(
 			&"share_a_meal", "Share a meal and send them on",
 			"The traveller ate by the fire, said a few words nobody understood, and went on.",
+			[_set_flag(&"meal_shared")],
 		),
 	])
 	return event
@@ -1430,6 +1617,286 @@ func _tools_pile() -> EventDef:
 	return event
 
 
+## Ten small forks added so a workday is never without a question (docs/gameplay.md P10): they
+## sit in the longest stretches between the others. Each answer does something and sets a flag
+## that a quiet line remembers later.
+func _cold_floors() -> EventDef:
+	var event: EventDef = _story(
+		&"cold_floors", "The cold floor", &"settlement", STORY_DAY[&"floors"],
+		"The cave floor is bare rock, and the nights have been cold underneath."
+	)
+	event.choices = _choices([
+		_answer(
+			&"hang_hides", "Spread the spare hides over the floor",
+			"The hides went down in rows, and the cave smelled of animals and was a good deal warmer.",
+			[_set_flag(&"hide_floor")],
+		),
+		_answer(
+			&"cut_reeds", "Cut reeds from the river for bedding",
+			"Armfuls of reeds were carried up from the river, and everyone slept on a rustling bed.",
+			[_set_flag(&"reed_beds")],
+		),
+	])
+	return event
+
+
+func _lost_flint() -> EventDef:
+	var event: EventDef = _story(
+		&"lost_flint", "The missing flint", &"character", STORY_DAY[&"lost_flint"],
+		"The best flint in the cave has gone missing, and two of the group are each sure the "
+		+ "other has it."
+	)
+	event.choices = _choices([
+		_answer(
+			&"wrestle_it_out", "Let them settle it with a wrestle by the fire",
+			"They wrestled in the firelight until both were laughing, and the flint turned up in "
+			+ "a boot.",
+			[_set_flag(&"wrestled")],
+		),
+		_answer(
+			&"search_together", "Turn the whole cave over, everyone together",
+			"The whole group searched the cave, and found the flint, and a good many other lost "
+			+ "things.",
+			[_set_flag(&"searched_together")],
+		),
+	])
+	return event
+
+
+func _night_noises() -> EventDef:
+	var event: EventDef = _story(
+		&"night_noises", "Scratching in the night", &"nature", STORY_DAY[&"night_noises"],
+		"Something has been scratching at the cave wall after dark, always just out of sight."
+	)
+	event.choices = _choices([
+		_answer(
+			&"keep_a_torch", "Keep a torch burning at the cave mouth",
+			"A torch burned at the cave mouth all night, and the scratching stopped.",
+			[_spend(&"wood", 3), _set_flag(&"torch_at_mouth")],
+			[_has(&"wood", 3)],
+		),
+		_answer(
+			&"sleep_deeper", "Move the beds deeper into the cave",
+			"The beds were moved to the back of the cave, where the sound could not reach.",
+			[_set_flag(&"deep_sleepers")],
+		),
+	])
+	return event
+
+
+func _the_ford() -> EventDef:
+	var event: EventDef = _story(
+		&"the_ford", "The hard crossing", &"settlement", STORY_DAY[&"ford"],
+		"The river is easiest to cross at one place, and everyone has begun to slip there."
+	)
+	event.choices = _choices([
+		_answer(
+			&"lay_stepping_stones", "Lay a line of flat stones across it",
+			"A line of flat stones was laid across the shallows, each one carried from the bank.",
+			[_set_flag(&"stepping_stones")],
+		),
+		_answer(
+			&"fell_a_log", "Fell a tree to lie across it",
+			"A tree came down across the river with a crack, and by dusk everyone had walked over it.",
+			[_spend(&"wood", 6), _set_flag(&"log_bridge")],
+			[_has(&"wood", 6)],
+		),
+	])
+	return event
+
+
+func _bright_feather() -> EventDef:
+	var event: EventDef = _story_about(
+		&"bright_feather", "A bright feather", &"character", STORY_DAY[&"feather"],
+		"{subject} found a long blue feather by the river, and has been carrying it about all day.",
+		VillagerState.TRAIT_NATURE_LOVING
+	)
+	event.choices = _choices([
+		_answer(
+			&"wear_the_feather", "Let them keep it, tied in their hair",
+			"{subject} tied the feather into their hair, and walked about as if nobody noticed.",
+			[_set_flag(&"feather_worn")],
+		),
+		_answer(
+			&"share_the_feather", "Pin it up in the cave for everyone",
+			"The feather was pinned above the fire, where everyone could see it.",
+			[_set_flag(&"feather_shared")],
+		),
+	])
+	return event
+
+
+func _bats_in_the_back() -> EventDef:
+	var event: EventDef = _story(
+		&"bats_in_the_back", "Bats in the back", &"nature", STORY_DAY[&"bats"],
+		"Bats have moved into the back of the cave, and hang from the roof all day in a "
+		+ "twitching row."
+	)
+	event.choices = _choices([
+		_answer(
+			&"smoke_them_out", "Smoke them out with a green fire",
+			"A green fire at the back of the cave sent the bats out in a long dark stream.",
+			[_spend(&"wood", 3), _set_flag(&"bats_smoked")],
+			[_has(&"wood", 3)],
+		),
+		_answer(
+			&"keep_the_bats", "Leave them, and be glad of the quiet midges",
+			"The bats stayed, and the cave stopped being full of midges at dusk.",
+			[_set_flag(&"bats_kept")],
+		),
+	])
+	return event
+
+
+func _bee_tree() -> EventDef:
+	var event: EventDef = _story(
+		&"bee_tree", "The bee tree", &"nature", STORY_DAY[&"honey"],
+		"A hollow tree in the western wood hums with bees, and the comb inside is heavy with honey."
+	)
+	event.choices = _choices([
+		_answer(
+			&"take_the_comb", "Take the whole comb, and put up with the stings",
+			"They took the whole comb, and sticky, swollen, everyone ate until they ached.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 6), _set_flag(&"honey_taken")],
+		),
+		_answer(
+			&"take_a_little", "Take a little and leave the hive standing",
+			"They took one small piece of comb and left the tree humming, and the bees stayed.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"honey_shared")],
+		),
+	])
+	return event
+
+
+func _fish_run() -> EventDef:
+	var event: EventDef = _story(
+		&"fish_run", "The run of fish", &"nature", STORY_DAY[&"fish_run"],
+		"The river is full of fish, thick in the shallows, all heading the same way."
+	)
+	event.choices = _choices([
+		_answer(
+			&"wade_in", "Wade in with spears and bare hands",
+			"Half the camp ended up in the river, and came out soaked, laughing, and carrying fish.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 5), _set_flag(&"fish_by_hand")],
+		),
+		_answer(
+			&"weave_a_trap", "Weave a trap across the narrow channel",
+			"A trap of woven willow went across the channel, and by morning it was heavy with fish.",
+			[
+				_spend(&"wood", 4),
+				_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 9),
+				_set_flag(&"fish_trap"),
+			],
+			[_has(&"wood", 4)],
+		),
+	])
+	return event
+
+
+func _hollow_log() -> EventDef:
+	var event: EventDef = _story_about(
+		&"hollow_log", "A hollow log", &"character", STORY_DAY[&"drum"],
+		"{subject} found a hollow log, and found it made a sound when struck.",
+		VillagerState.TRAIT_SOCIAL
+	)
+	event.choices = _choices([
+		_answer(
+			&"beat_a_drum", "Stretch a hide over the end, and beat it",
+			"{subject} stretched a hide across the log, and the whole valley heard the first drum.",
+			[_set_flag(&"log_drum")],
+		),
+		_answer(
+			&"carve_a_flute", "Carve a bone into a pipe instead",
+			"{subject} bored holes in a bird bone, and by dusk it was a small clear voice.",
+			[_set_flag(&"bone_pipe")],
+		),
+	])
+	return event
+
+
+func _first_snow() -> EventDef:
+	var event: EventDef = _story(
+		&"first_snow", "The first snow", &"nature", STORY_DAY[&"first_snow"],
+		"Snow fell in the night, and the whole valley is white and silent."
+	)
+	event.choices = _choices([
+		_answer(
+			&"build_a_snow_figure", "Build something in the snow at the cave mouth",
+			"A snow figure with a stick for an arm stood at the cave mouth, and nobody would "
+			+ "say who had made it.",
+			[_set_flag(&"snow_figure")],
+		),
+		_answer(
+			&"read_the_tracks", "Walk out and read what has crossed the snow",
+			"They followed the tracks of a hare, a fox, and one that nobody could name.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"snow_tracks")],
+		),
+	])
+	return event
+
+
+func _echo_in_the_cave() -> EventDef:
+	var event: EventDef = _story(
+		&"echo_in_the_cave", "The cave answers", &"character", STORY_DAY[&"echo"],
+		"Someone shouted into the deep back of the cave, and it shouted back, a moment later."
+	)
+	event.choices = _choices([
+		_answer(
+			&"shout_questions", "Shout questions into it, all together",
+			"The whole group shouted questions into the dark, and the cave answered every one "
+			+ "with the last word.",
+			[_set_flag(&"echo_games")],
+		),
+		_answer(
+			&"whisper_and_listen", "Whisper, and listen to what comes back",
+			"They whispered into the cave, one at a time, and held their breath for the reply.",
+			[_set_flag(&"echo_whispers")],
+		),
+	])
+	return event
+
+
+func _sky_stone() -> EventDef:
+	var event: EventDef = _story(
+		&"sky_stone", "A stone from the sky", &"nature", STORY_DAY[&"sky_stone"],
+		"A streak of light crossed the sky in the night, and in the morning there is a heavy "
+		+ "black stone in the meadow, still warm."
+	)
+	event.choices = _choices([
+		_answer(
+			&"keep_the_sky_stone", "Carry it back and keep it by the fire",
+			"Four of them carried the black stone to the cave, and it sat by the fire like a guest.",
+			[_set_flag(&"sky_stone_kept")],
+		),
+		_answer(
+			&"mark_the_sky_stone", "Leave it where it fell, and ring it with white stones",
+			"They ringed the black stone with white pebbles, and left it to the sky.",
+			[_set_flag(&"sky_stone_marked")],
+		),
+	])
+	return event
+
+
+func _warm_pool() -> EventDef:
+	var event: EventDef = _story(
+		&"warm_pool", "The warm pool", &"nature", STORY_DAY[&"warm_pool"],
+		"A pool up the valley steams in the cold, and the water is warm to the hand."
+	)
+	event.choices = _choices([
+		_answer(
+			&"bathe_in_it", "Go and bathe in it on the coldest days",
+			"They walked up the valley in the frost and sat in the warm pool up to their chins.",
+			[_set_flag(&"warm_pool_used")],
+		),
+		_answer(
+			&"carry_the_warmth", "Fill hide bags and carry the warmth home",
+			"Hide bags of warm water were carried home, and everyone slept with one at their feet.",
+			[_set_flag(&"warm_bags")],
+		),
+	])
+	return event
+
+
 func _smoke_in_the_cave() -> EventDef:
 	var event: EventDef = _story(
 		&"smoke_in_the_cave", "Smoke in the cave", &"settlement", STORY_DAY[&"smoke"],
@@ -1439,12 +1906,13 @@ func _smoke_in_the_cave() -> EventDef:
 		_answer(
 			&"dig_a_smoke_hole", "Open a gap in the roof above the fire",
 			"A gap in the roof drew the smoke up, and the stars showed through it.",
-			[_spend(&"wood", 8)],
+			[_spend(&"wood", 8), _set_flag(&"smoke_hole")],
 			[_has(&"wood", 8)],
 		),
 		_answer(
 			&"live_with_it", "Live with the smoke",
 			"Everyone coughed a little less each year, or said so.",
+			[_set_flag(&"smoky_cave")],
 		),
 	])
 	return event
@@ -2122,6 +2590,215 @@ func _ambient_lines() -> Array[EventDef]:
 		_remembered(
 			&"baskets_full", &"path_foraging",
 			"The baskets came back heavy with roots and berries from along the river."
+		),
+		_remembered(
+			&"fire_banked", &"embers_waited",
+			"Someone banked the fire for the night with ash, the way you do with something "
+			+ "that was waited for."
+		),
+		_remembered(
+			&"nut_stone_again", &"nut_hammer",
+			"The round river stone was cracking nuts again, and still as good as ever."
+		),
+		_remembered(
+			&"tale_by_the_fire", &"tales_told",
+			"The story was told again by the fire, everyone in their usual place."
+		),
+		_remembered(
+			&"fire_song", &"songs_sung",
+			"Someone started the fire-song, and the whole cave knew the words."
+		),
+		_remembered(
+			&"red_cheek", &"body_paint",
+			"A red handprint dried on someone's cheek, and nobody wiped it off."
+		),
+		_remembered(
+			&"newcomer_laughs", &"strangers_welcomed",
+			"One of the newcomers laughed by the fire, and the others turned round in surprise."
+		),
+		_remembered(
+			&"food_at_dusk", &"strangers_courted",
+			"A bundle of food was set out at dusk again, though the strangers had long since come in."
+		),
+		_remembered(
+			&"scout_boots", &"scouted_alone",
+			"The scout's boots stood by the cave mouth, still muddy from the forest."
+		),
+		_remembered(
+			&"walk_to_the_forest", &"scouted_together",
+			"Someone told the story of the day the whole camp walked to the western forest."
+		),
+		_remembered(
+			&"sunny_seed", &"seed_in_sun",
+			"Someone checked the strange seed in the sun at the cave mouth, for the third time today."
+		),
+		_remembered(
+			&"shady_seed", &"seed_in_shade",
+			"Someone crouched under the overhang to look at the strange seed, and said nothing."
+		),
+		_remembered(
+			&"private_sky", &"stars_private",
+			"Someone lay awake outside, and nobody asked what they were looking at."
+		),
+		_remembered(
+			&"bear_in_ash", &"prints_read",
+			"A bear's paw was drawn in the ash by the fire, to show how big they get."
+		),
+		_remembered(
+			&"feast_song", &"feast_held",
+			"Someone was still humming the feast song while scraping out the bowls."
+		),
+		_remembered(
+			&"dried_food", &"food_dried",
+			"Dried meat hung along the cave wall, and the whole cave smelled of smoke and berries."
+		),
+		_remembered(
+			&"seat_by_the_fire", &"fire_turns",
+			"The best seat by the fire went to someone new tonight, as agreed."
+		),
+		_remembered(
+			&"mammoth_far_edge", &"mammoth_distant",
+			"The mammoth watched the camp from the far edge of the grass, and the camp watched back."
+		),
+		_remembered(
+			&"knee_rhythm", &"work_quiet",
+			"Someone tapped a rhythm on their knee while they worked, and it was nobody's but theirs."
+		),
+		_remembered(
+			&"ridge_in_the_rain", &"ridge_watched",
+			"Someone at the lookout was looking at the ridge again, even in the rain."
+		),
+		_remembered(
+			&"warm_and_crowded", &"shared_cave",
+			"It was crowded in the cave tonight, and warm, and nobody minded."
+		),
+		_remembered(
+			&"bank_held", &"trusted_bank",
+			"The river was high again. Everyone looked at the bank, and the bank held."
+		),
+		_remembered(
+			&"ledge_stores", &"stores_on_ledge",
+			"The stores on the ledge were dry and in easy reach, and everyone was quietly pleased."
+		),
+		_remembered(
+			&"limp_on_the_far_bank", &"deer_left",
+			"A deer was seen on the far bank, favouring one leg, and then it was not."
+		),
+		_remembered(
+			&"traveller_word", &"meal_shared",
+			"Someone used a word the traveller had said, and was understood by nobody."
+		),
+		_remembered(
+			&"red_eyes", &"smoky_cave",
+			"Everyone's eyes were red from the smoke, and everyone laughed about it."
+		),
+		_remembered(
+			&"stars_through_the_roof", &"smoke_hole",
+			"The stars showed through the gap in the roof, and the smoke went up to meet them."
+		),
+		_remembered(
+			&"hide_floor_warm", &"hide_floor",
+			"Bare feet came down warm on the hide floor, and someone said how good it felt."
+		),
+		_remembered(
+			&"reeds_rustle", &"reed_beds",
+			"The reed beds rustled all night, and someone swore they could hear the river in them."
+		),
+		_remembered(
+			&"wrestle_again", &"wrestled",
+			"Two of the group wrestled by the fire again, for nothing at all, and both won."
+		),
+		_remembered(
+			&"lost_things", &"searched_together",
+			"Somebody turned up another thing that had been lost since the big search."
+		),
+		_remembered(
+			&"torch_at_the_mouth", &"torch_at_mouth",
+			"The torch at the cave mouth burned low, and someone got up to trim it."
+		),
+		_remembered(
+			&"back_of_the_cave", &"deep_sleepers",
+			"It was very quiet at the back of the cave, and everyone slept late."
+		),
+		_remembered(
+			&"stones_in_the_river", &"stepping_stones",
+			"Someone crossed the stepping stones with a full basket, not looking down once."
+		),
+		_remembered(
+			&"log_bridge_creaks", &"log_bridge",
+			"The log over the river creaked under three people at once, and held."
+		),
+		_remembered(
+			&"feather_in_hair", &"feather_worn",
+			"The blue feather in someone's hair caught the light, and they stood a little taller."
+		),
+		_remembered(
+			&"feather_over_the_fire", &"feather_shared",
+			"The blue feather above the fire turned in the warm air, and everyone looked up."
+		),
+		_remembered(
+			&"bats_leave_dusk", &"bats_kept",
+			"The bats went out at dusk in a long stream, and the midges did not come."
+		),
+		_remembered(
+			&"smoked_cave", &"bats_smoked",
+			"The back of the cave smelled of green smoke for days, and was quiet."
+		),
+		_remembered(
+			&"honey_again", &"honey_taken",
+			"Someone was still picking wax out of their hair, and refused to regret it."
+		),
+		_remembered(
+			&"bees_still_there", &"honey_shared",
+			"The bee tree hummed on in the western wood, and someone nodded to it passing."
+		),
+		_remembered(
+			&"wet_and_laughing", &"fish_by_hand",
+			"Someone was still telling the story of the day everyone went into the river."
+		),
+		_remembered(
+			&"trap_in_the_channel", &"fish_trap",
+			"The willow trap in the channel was checked at dawn, and was not empty."
+		),
+		_remembered(
+			&"drum_in_the_valley", &"log_drum",
+			"The drum sounded across the valley at dusk, and something answered far off."
+		),
+		_remembered(
+			&"pipe_at_night", &"bone_pipe",
+			"A thin pipe tune drifted over the camp, and everyone pretended not to listen."
+		),
+		_remembered(
+			&"snow_figure_stands", &"snow_figure",
+			"The snow figure at the cave mouth was still standing, a little lopsided."
+		),
+		_remembered(
+			&"unknown_tracks", &"snow_tracks",
+			"Someone drew the unnamed track in the dirt, and nobody could say what made it."
+		),
+		_remembered(
+			&"echo_game", &"echo_games",
+			"Someone shouted a nonsense word into the back of the cave, and the cave shouted it back."
+		),
+		_remembered(
+			&"echo_whisper", &"echo_whispers",
+			"A whisper came out of the back of the cave, and everyone looked round to see whose."
+		),
+		_remembered(
+			&"stone_by_the_fire", &"sky_stone_kept",
+			"The black stone by the fire was warm to the touch long after the fire had burned low."
+		),
+		_remembered(
+			&"ring_of_white", &"sky_stone_marked",
+			"Someone walked out to the ring of white stones in the meadow, and stood a while."
+		),
+		_remembered(
+			&"steam_up_the_valley", &"warm_pool_used",
+			"A column of steam stood over the pool up the valley, and somebody was already walking to it."
+		),
+		_remembered(
+			&"warm_feet", &"warm_bags",
+			"Everyone slept with a bag of warm water at their feet, and not one was cold."
 		),
 	]
 	return lines

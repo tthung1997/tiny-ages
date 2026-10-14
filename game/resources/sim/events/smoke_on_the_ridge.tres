@@ -29,35 +29,40 @@ effects = Array[ExtResource("2_u3q07")]([SubResource("Resource_vywqk"), SubResou
 
 [sub_resource type="Resource" id="Resource_5qqv4"]
 script = ExtResource("2_u3q07")
-text = "The smoke came and went. Someone was always at the lookout that week."
+kind = 1
+key = &"ridge_watched"
 
 [sub_resource type="Resource" id="Resource_vtlv2"]
+script = ExtResource("2_u3q07")
+text = "The smoke came and went. Someone was always at the lookout that week."
+
+[sub_resource type="Resource" id="Resource_qtdk7"]
 script = ExtResource("1_quouc")
 id = &"keep_watching"
 label = "Keep watching from the lookout"
-effects = Array[ExtResource("2_u3q07")]([SubResource("Resource_5qqv4")])
+effects = Array[ExtResource("2_u3q07")]([SubResource("Resource_5qqv4"), SubResource("Resource_vtlv2")])
 
-[sub_resource type="Resource" id="Resource_qtdk7"]
+[sub_resource type="Resource" id="Resource_lvt05"]
 script = ExtResource("3_be4gn")
 key = &"fire_found"
 
-[sub_resource type="Resource" id="Resource_lvt05"]
+[sub_resource type="Resource" id="Resource_1tqqs"]
 script = ExtResource("3_be4gn")
 kind = 5
 amount = 140
 
-[sub_resource type="Resource" id="Resource_1tqqs"]
+[sub_resource type="Resource" id="Resource_d5fqk"]
 script = ExtResource("3_be4gn")
 kind = 0
 key = &"lookout"
 
-[sub_resource type="Resource" id="Resource_d5fqk"]
+[sub_resource type="Resource" id="Resource_f67q4"]
 script = ExtResource("3_be4gn")
 kind = 9
 key = &"bigger_group"
 negate = true
 
-[sub_resource type="Resource" id="Resource_f67q4"]
+[sub_resource type="Resource" id="Resource_1m8lx"]
 script = ExtResource("3_be4gn")
 kind = 7
 
@@ -67,13 +72,12 @@ id = &"smoke_on_the_ridge"
 title = "Smoke on the ridge"
 body = "A thin line of smoke has been rising from the far ridge, where nobody has lived."
 category = &"exploration"
-requires = Array[ExtResource("3_be4gn")]([SubResource("Resource_qtdk7"), SubResource("Resource_lvt05"), SubResource("Resource_1tqqs"), SubResource("Resource_d5fqk")])
+requires = Array[ExtResource("3_be4gn")]([SubResource("Resource_lvt05"), SubResource("Resource_1tqqs"), SubResource("Resource_d5fqk"), SubResource("Resource_f67q4")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_be4gn")]([SubResource("Resource_f67q4")])
+subject_requires = Array[ExtResource("3_be4gn")]([SubResource("Resource_1m8lx")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })
 chance_per_tick = 0.02
 once = true
-choices = Array[ExtResource("1_quouc")]([SubResource("Resource_353pa"), SubResource("Resource_vtlv2")])
-min_choices = 1
+choices = Array[ExtResource("1_quouc")]([SubResource("Resource_353pa"), SubResource("Resource_qtdk7")])
