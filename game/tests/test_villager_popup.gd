@@ -66,6 +66,22 @@ func test_a_villager_with_no_role_or_traits_has_empty_lines() -> void:
 	assert_eq(VillagerPresenter.present(villager, sim.world, sim.config).byline(), "Scout")
 
 
+func test_the_group_lists_everyone_in_order_without_thoughts() -> void:
+	var sim: Simulation = _sim_at(12)
+	sim.world.villagers[1].profession = &"scout"
+	var cards: Array[VillagerPresenter] = VillagerPresenter.group(sim.world)
+	assert_eq(cards.size(), sim.world.villagers.size())
+	for index: int in cards.size():
+		var villager: VillagerState = sim.world.villagers[index]
+		assert_eq(cards[index].id, villager.id)
+		assert_eq(cards[index].display_name, villager.display_name)
+		assert_eq(cards[index].thought, "", "Thoughts are for the single-villager panel")
+	assert_eq(cards[1].role_text, "Scout")
+	assert_eq(cards[0].look, VillagerPresenter.present(
+		sim.world.villagers[0], sim.world, sim.config
+	).look)
+
+
 func test_a_thought_holds_still_within_a_moment_and_changes_over_time() -> void:
 	var sim: Simulation = _sim_at(12)
 	var villager: VillagerState = sim.world.villagers[0]

@@ -80,6 +80,7 @@ const LOW_FOOD: Array[String] = [
 	"Wondering when the next meal will be.",
 ]
 
+var id: StringName = &""
 var display_name: String = ""
 var look: StringName = &""
 ## For example "Curious, social". Empty if they have none.
@@ -101,12 +102,27 @@ func byline() -> String:
 static func present(
 	villager: VillagerState, world: WorldState, config: SimConfig
 ) -> VillagerPresenter:
+	var view: VillagerPresenter = _card(villager)
+	view.thought = thought_for(villager, world, config)
+	return view
+
+
+## Everyone in the group, in the order they joined, for the villager list: no thoughts, which
+## the list leaves to the single-villager panel.
+static func group(world: WorldState) -> Array[VillagerPresenter]:
+	var cards: Array[VillagerPresenter] = []
+	for villager: VillagerState in world.villagers:
+		cards.append(_card(villager))
+	return cards
+
+
+static func _card(villager: VillagerState) -> VillagerPresenter:
 	var view: VillagerPresenter = VillagerPresenter.new()
+	view.id = villager.id
 	view.display_name = villager.display_name
 	view.look = villager.look if villager.look != &"" else villager.id
 	view.traits_text = traits_text_for(villager)
 	view.role_text = String(villager.profession).replace("_", " ").capitalize()
-	view.thought = thought_for(villager, world, config)
 	return view
 
 

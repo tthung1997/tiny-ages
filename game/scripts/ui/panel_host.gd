@@ -119,8 +119,8 @@ func is_open() -> bool:
 	return _open
 
 
-## Which kind of content is showing: &"decision", &"journal", &"away", &"villager", &"menu",
-## &"stores", &"settings" or &"" when closed.
+## Which kind of content is showing: &"decision", &"journal", &"away", &"villager", &"villagers",
+## &"menu", &"stores", &"settings" or &"" when closed.
 func mode() -> StringName:
 	return _mode if _open else &""
 
@@ -196,15 +196,16 @@ func villager_id() -> StringName:
 	return _villager_id if mode() == &"villager" else &""
 
 
-## The menu opened by a right click on the strip: the journal, the stores, settings and quit.
+## The menu opened by a right click on the strip: the journal, the villagers, the stores, settings
+## and quit.
 func show_menu() -> void:
 	_begin(&"menu", "Menu")
 	var grid: GridContainer = GridContainer.new()
-	grid.columns = 2
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 4)
 	grid.add_theme_constant_override("v_separation", 4)
 	for item: Array in MenuPresenter.MENU_ITEMS:
-		grid.add_child(_action_button(item[0], item[1], false, 120.0))
+		grid.add_child(_action_button(item[0], item[1], false, 100.0))
 	_content.add_child(grid)
 	_footer_label.text = ""
 
@@ -219,8 +220,17 @@ func show_stores(sim: Simulation) -> void:
 	for row: MenuPresenter.StockRow in view.stock:
 		stock.add_child(_stock_item(row.key, row.amount))
 	_content.add_child(stock)
-	for line: String in view.group:
-		_content.add_child(_text(line))
+	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
+	_footer_label.text = ""
+
+
+## Everyone in the group: a full-body figure, name, traits and profession. Picking a row opens
+## that villager's own panel (the game reacts to the `villager:<id>` action).
+func show_villagers(sim: Simulation) -> void:
+	_begin(&"villagers", "Villagers")
+	var cloth: bool = WorldLayout.wears_cloth(sim.world)
+	for view: VillagerPresenter in VillagerPresenter.group(sim.world):
+		_content.add_child(_villager_row(view, cloth))
 	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
 	_footer_label.text = ""
 
@@ -436,6 +446,55 @@ func _text(text: String, muted: bool = false, width: float = TEXT_WIDTH) -> Labe
 	if muted:
 		label.add_theme_color_override("font_color", _skin.muted)
 	return label
+
+
+## One row of the villager list: a flat button over the portrait, the name and the byline. It is
+## exactly one portrait tall, so three rows fit in a panel.
+func _villager_row(view: VillagerPresenter, cloth: bool) -> Button:
+	var button: Button = Button.new()
+	button.flat = true
+	var hover: StyleBoxFlat = StyleBoxFlat.new()
+	hover.bg_color = Color(_skin.ink, 0.12)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", hover)
+	button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	button.custom_minimum_size = Vector2(0, PORTRAIT_SIZE.y)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(func() -> void: action_picked.emit(villager_action(view.id)))
+	var row: HBoxContainer = HBoxContainer.new()
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", 8)
+	var picture: TextureRect = _portrait(view.look, cloth)
+	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(picture)
+	var column: VBoxContainer = VBoxContainer.new()
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 0)
+	column.add_child(_line(view.display_name, false))
+	if not view.byline().is_empty():
+		column.add_child(_line(view.byline(), true))
+	row.add_child(column)
+	button.add_child(row)
+	return button
+
+
+## A single line of text that lets clicks through to the button under it.
+func _line(text: String, muted: bool) -> Label:
+	var label: Label = Label.new()
+	label.text = text
+	label.clip_text = true
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if muted:
+		label.add_theme_color_override("font_color", _skin.muted)
+	return label
+
+
+## The action the villager list reports for a row.
+static func villager_action(villager_id: StringName) -> StringName:
+	return StringName("villager:%s" % villager_id)
 
 
 ## The villager's idle frame from their sheet, at the size they are on screen.

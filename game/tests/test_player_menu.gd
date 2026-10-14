@@ -128,11 +128,14 @@ func test_an_unknown_action_changes_nothing() -> void:
 
 # ---- MenuPresenter --------------------------------------------------------------------------
 
-func test_the_menu_offers_the_journal_the_stores_settings_and_quit() -> void:
+func test_the_menu_offers_the_journal_the_villagers_the_stores_settings_and_quit() -> void:
 	var actions: Array[StringName] = []
 	for item: Array in MenuPresenter.MENU_ITEMS:
 		actions.append(item[1])
-	assert_eq(actions, [&"journal", &"stores", &"settings", &"quit"] as Array[StringName])
+	assert_eq(
+		actions,
+		[&"journal", &"villagers", &"stores", &"settings", &"quit"] as Array[StringName],
+	)
 
 
 func test_the_settings_rows_mark_what_is_chosen_now() -> void:
@@ -154,14 +157,11 @@ func test_the_settings_rows_mark_what_is_chosen_now() -> void:
 	assert_eq(MenuPresenter.settings_rows(settings, 2).size(), 4, "A second screen adds a row")
 
 
-func test_the_stores_say_where_the_settlement_is_what_it_holds_and_who_is_in_it() -> void:
+func test_the_stores_say_where_the_settlement_is_and_what_it_holds() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	sim.world.resources[&"wood"] = 12
 	sim.world.resources[&"food"] = 0
 	sim.world.resources[&"flint"] = 5
-	sim.world.villagers[0].display_name = "Mira"
-	sim.world.villagers[0].traits.assign([VillagerState.TRAIT_SOCIAL])
-	sim.world.villagers[0].profession = &"scout"
 	var view: MenuPresenter.Stores = MenuPresenter.stores(sim.world, sim.config, sim.content)
 	assert_eq(view.heading, "Cave Age - day 1")
 	var keys: Array[StringName] = []
@@ -169,8 +169,6 @@ func test_the_stores_say_where_the_settlement_is_what_it_holds_and_who_is_in_it(
 		keys.append(row.key)
 	assert_eq(keys, [&"wood", &"food", &"flint"] as Array[StringName], "The usual two first, empty or not")
 	assert_eq(view.stock[0].amount, 12)
-	assert_eq(view.group.size(), sim.world.villagers.size())
-	assert_eq(view.group[0], "Mira - Social - Scout")
 
 
 func test_other_stock_only_shows_once_there_is_some() -> void:
@@ -190,16 +188,20 @@ func test_the_menu_panel_reports_the_button_picked() -> void:
 	panel.show_menu()
 	assert_eq(panel.mode(), &"menu")
 	assert_eq(panel.current_height(), PanelHost.height_for(&"menu"))
-	for text: String in ["Journal", "Stores", "Settings", "Quit"]:
+	for text: String in ["Journal", "Villagers", "Stores", "Settings", "Quit"]:
 		assert_true(_button(panel, text) != null, "%s button" % text)
 		_button(panel, text).pressed.emit()
-	assert_eq(picked, [&"journal", &"stores", &"settings", &"quit"] as Array[StringName])
+	assert_eq(
+		picked,
+		[&"journal", &"villagers", &"stores", &"settings", &"quit"] as Array[StringName],
+	)
 	panel.free()
 
 
 func test_the_menu_is_a_short_panel_and_the_details_are_full_ones() -> void:
 	assert_true(PanelHost.height_for(&"menu") < PanelHost.HEIGHT)
 	assert_eq(PanelHost.height_for(&"stores"), PanelHost.HEIGHT)
+	assert_eq(PanelHost.height_for(&"villagers"), PanelHost.HEIGHT)
 	assert_eq(PanelHost.height_for(&"settings"), PanelHost.HEIGHT)
 
 
@@ -214,13 +216,36 @@ func test_the_stores_panel_shows_the_numbers_the_strip_never_does() -> void:
 	var texts: PackedStringArray = _texts(panel)
 	assert_true(texts.has("Cave Age - day 1"))
 	assert_true(texts.has("17"), "The wood count")
-	for villager: VillagerState in sim.world.villagers:
-		var found: bool = false
-		for text: String in texts:
-			found = found or text.begins_with(villager.display_name)
-		assert_true(found, "%s is listed" % villager.display_name)
 	_button(panel, "Back").pressed.emit()
 	assert_eq(picked, [&"menu"] as Array[StringName], "Back returns to the menu")
+	panel.free()
+
+
+func test_the_villager_list_shows_everyone_and_opens_the_one_picked() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.villagers[0].display_name = "Mira"
+	sim.world.villagers[0].traits.assign([VillagerState.TRAIT_SOCIAL])
+	sim.world.villagers[0].profession = &"scout"
+	var panel: PanelHost = PanelHost.new()
+	var picked: Array[StringName] = []
+	panel.action_picked.connect(func(action: StringName) -> void: picked.append(action))
+	panel.show_villagers(sim)
+	assert_eq(panel.mode(), &"villagers")
+	assert_eq(panel.current_height(), PanelHost.HEIGHT)
+	var texts: PackedStringArray = _texts(panel)
+	assert_true(texts.has("Mira"))
+	assert_true(texts.has("Social - Scout"), "Traits and profession under the name")
+	var rows: Array[Button] = []
+	for button: Button in _buttons(panel):
+		if button.text.is_empty():
+			rows.append(button)
+	assert_eq(rows.size(), sim.world.villagers.size(), "One row each")
+	for row: Button in rows:
+		assert_eq(row.find_children("*", "TextureRect", true, false).size(), 1, "...with a portrait")
+	rows[0].pressed.emit()
+	assert_eq(picked, [PanelHost.villager_action(sim.world.villagers[0].id)] as Array[StringName])
+	_button(panel, "Back").pressed.emit()
+	assert_eq(picked[1], &"menu", "Back returns to the menu")
 	panel.free()
 
 

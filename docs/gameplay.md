@@ -43,12 +43,14 @@ placeholder and does not yet follow these decisions; see "What this changes".
 - **P10 Content budget.** About 25-30 questions for the five-day Cave Age (the buildings and milestones plus about 20 small story decisions; roughly 4-6 per workday), plus ambient lines and trait-driven variants
   (one authored event plays differently per villager). Visible consequences matter most: choices
   change buildings, props and clothing, so there is a reason to look.
-- **P11 Light interaction.** Clicking a villager shows their name, traits and current thought.
+- **P11 Light interaction.** Clicking a villager shows their name, traits and current thought. The
+  **Villagers** list in the menu shows the whole group at once: one row each with a full-body
+  figure, name, traits and profession; picking a row opens that villager's panel.
 - **P12 The strip shows almost nothing, always.** Permanently on screen there are only the bulb (when
   a decision waits), the journal book (with an unread dot) and a small, quiet **gear**. Everything
   else is on demand: the gear (or a **right click on the strip**, as a shortcut) opens a short
-  menu with the journal, **Stores** (where the
-  settlement is, the exact wood and food, and who is in the group: the numbers P2 keeps off the
+  menu with the journal, **Villagers** (P11), **Stores** (where the
+  settlement is and the exact wood and food: the numbers P2 keeps off the
   strip), **Settings** (window mode, size, always on top, move to the next screen; remembered in
   its own file, separate from the save) and Quit. No counters, clocks or speed controls: time of
   day reads from the light, and time never pauses. The text overlay (day, stock, speed, the last
