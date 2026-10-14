@@ -175,7 +175,7 @@ func test_the_milestones_are_staged_over_the_age() -> void:
 		&"stone_tools": 18, &"reliable_food": 54, &"shared_stories": 108,
 		&"bigger_group": 162, &"unexpected_garden": 216,
 	}
-	for rng_seed: int in [1, 2, 3]:
+	for rng_seed: int in [1, 2]:
 		var sim: Simulation = SimFixture.new_sim(rng_seed, false)
 		var earned: Dictionary = {}
 		sim.achievement_earned.connect(

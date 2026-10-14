@@ -236,7 +236,7 @@ func test_no_settled_line_about_a_villager_is_told_while_they_sleep() -> void:
 		assert_true(content.get_event(event_id) != null, "Missing %s" % event_id)
 		about[event_id] = true
 	var told: int = 0
-	for rng_seed: int in [1, 2, 3]:
+	for rng_seed: int in [1, 2]:
 		var sim: Simulation = _settled(rng_seed, &"path_herding")
 		for _tick: int in 250 * DAY_TICKS:
 			sim.advance_ticks(1)

@@ -33,9 +33,40 @@ extends Resource
 ## decision keeps the default of 2.
 @export_range(1, 8) var min_choices: int = 2
 
+var _gates_built: bool = false
+var _gate_day: int = 0
+var _gate_era: int = 0
+var _gate_era_day: int = 0
+
 
 func is_decision() -> bool:
 	return not choices.is_empty()
+
+
+## A cheap test the event system runs first: false means a day, age or days-into-the-age
+## requirement is certainly not met yet, so the other conditions need not be looked at. These
+## only ever grow with time, which is what makes it safe to skip on them.
+func may_be_open(day: int, era_order: int, era_day: int) -> bool:
+	if not _gates_built:
+		_build_gates()
+	return day >= _gate_day and era_order >= _gate_era and era_day >= _gate_era_day
+
+
+func _build_gates() -> void:
+	_gate_day = 0
+	_gate_era = 0
+	_gate_era_day = 0
+	for condition: SimCondition in requires:
+		if condition.negate:
+			continue
+		match condition.kind:
+			SimCondition.Kind.DAYS_AT_LEAST:
+				_gate_day = maxi(_gate_day, condition.amount)
+			SimCondition.Kind.ERA_AT_LEAST:
+				_gate_era = maxi(_gate_era, condition.amount)
+			SimCondition.Kind.ERA_DAYS_AT_LEAST:
+				_gate_era_day = maxi(_gate_era_day, condition.amount)
+	_gates_built = true
 
 
 func get_choice(choice_id: StringName) -> ChoiceDef:

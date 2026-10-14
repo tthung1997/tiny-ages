@@ -313,8 +313,10 @@ that must be visible has to be inside the passthrough polygon.
 
 Run `pwsh -File game/tools/check.ps1`. It parses every `.gd` file with
 `--check-only`, boots the project, then runs every suite in `game/tests/` headlessly
-(`tools/run_tests.gd`; suites extend `McpTestSuite`; run one with `-- <suite name>`). The
-editor's `test_run` MCP tool cannot run them. **Do not** substitute
+(`tools/run_tests.gd`; suites extend `McpTestSuite`; run one with `-- <suite name>`; set
+`SH_SLOW_TESTS=1` to list the slowest tests). The whole check takes about 4 minutes, mostly the
+tests that play a full age with a bot, so keep new ones short (few seeds, only as many days as needed).
+The editor's `test_run` MCP tool cannot run them. **Do not** substitute
 `--headless --path . --quit`: it only parses scripts reachable from the main scene
 and exits 0 even when it prints a parse error.
 

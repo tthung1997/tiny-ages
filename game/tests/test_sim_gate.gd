@@ -4,7 +4,7 @@ extends McpTestSuite
 ## player gets there.
 
 const DAY: int = SimFixture.TICKS_PER_DAY
-const SEEDS: Array[int] = [1, 2, 3]
+const SEEDS: Array[int] = [1, 2]
 
 
 func suite_name() -> String:

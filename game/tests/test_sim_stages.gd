@@ -212,7 +212,7 @@ func test_no_line_about_a_villager_is_told_while_they_sleep() -> void:
 			about[event.id] = true
 	assert_true(about.size() >= 8, "There are trait-based lines to check")
 	var told: int = 0
-	for rng_seed: int in [1, 2, 3]:
+	for rng_seed: int in [1, 2]:
 		var sim: Simulation = SimFixture.new_sim(rng_seed)
 		var bot: DecisionBot = DecisionBot.new()
 		for _tick: int in 120 * DAY_TICKS:

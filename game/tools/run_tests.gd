@@ -39,4 +39,19 @@ func _init() -> void:
 		results.get("passed", 0), results.get("failed", 0), results.get("skipped", 0),
 		results.get("duration_ms", 0),
 	])
+	if OS.get_environment("SH_SLOW_TESTS") != "":
+		_print_slowest(results.get("results", []), 15)
 	quit(1 if results.get("failed", 0) > 0 or results.get("total", 0) == 0 else 0)
+
+
+## Set SH_SLOW_TESTS=1 to list the slowest tests, to see where the time goes.
+func _print_slowest(entries: Array, count: int) -> void:
+	var sorted: Array = entries.duplicate()
+	sorted.sort_custom(
+		func(a: Dictionary, b: Dictionary) -> bool:
+			return a.get("duration_ms", 0) > b.get("duration_ms", 0)
+	)
+	for entry: Dictionary in sorted.slice(0, count):
+		print("slow %6d ms  %s.%s" % [
+			entry.get("duration_ms", 0), entry.get("suite", "?"), entry.get("test", "?"),
+		])

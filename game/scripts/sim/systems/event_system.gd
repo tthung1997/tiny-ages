@@ -37,19 +37,28 @@ func _roll_new_event(sim: Simulation) -> void:
 	var config: SimConfig = sim.config
 	var decision_slot_free: bool = world.pending.size() < config.max_pending_decisions \
 			and world.tick - world.last_decision_tick >= config.decision_cooldown_ticks
-	var events: Array[EventDef] = sim.content.events
-	for index: int in SimRandom.shuffled_indices(sim.rng, events.size()):
-		var event: EventDef = events[index]
+	# Most events cannot happen at any given tick, so find the ones that can first (no randomness
+	# is used for that) and only shuffle those: the order among them is uniformly random.
+	var eligible: Array[EventDef] = []
+	var day: int = config.day_of(world.tick)
+	var era_day: int = config.day_of(world.tick - world.era_started_tick)
+	for event: EventDef in sim.content.events:
 		if event.chance_per_tick <= 0.0:
 			continue
-		if event.is_decision() and not decision_slot_free:
+		if not event.may_be_open(day, world.era_order, era_day):
 			continue
-		if event.is_decision() and _has_pending(world, event.id):
+		var is_decision: bool = not event.choices.is_empty()
+		if is_decision and (not decision_slot_free or _has_pending(world, event.id)):
 			continue
 		if not _passes_history(world, event):
 			continue
 		if not SimCondition.all_met(event.requires, world, config):
 			continue
+		eligible.append(event)
+	if eligible.is_empty():
+		return
+	for index: int in SimRandom.shuffled_indices(sim.rng, eligible.size()):
+		var event: EventDef = eligible[index]
 		var subject: VillagerState = null
 		if event.needs_subject:
 			subject = _pick_subject(sim, event)

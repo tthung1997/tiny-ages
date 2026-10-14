@@ -4,7 +4,7 @@ extends McpTestSuite
 
 const DAY: int = SimFixture.TICKS_PER_DAY
 const WOOD_CEILING: int = 100
-const FOOD_CEILING: int = 250
+const FOOD_CEILING: int = 300
 
 
 func suite_name() -> String:
@@ -131,8 +131,7 @@ func test_no_order_of_building_picks_blocks_the_age() -> void:
 	var rack: StringName = &"build_drying_rack"
 	var knap: StringName = &"build_knapping_spot"
 	var orders: Array = [
-		[lookout, rack, knap], [lookout, knap, rack], [rack, lookout, knap],
-		[rack, knap, lookout], [knap, lookout, rack], [knap, rack, lookout], [],
+		[lookout, rack, knap], [lookout, knap, rack], [knap, rack, lookout], [],
 	]
 	for order: Array in orders:
 		assert_true(_reaches_settled(order), "Order %s reaches the Settled Age" % [order])

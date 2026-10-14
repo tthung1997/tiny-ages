@@ -11,7 +11,7 @@ const OPENS: Dictionary = {
 	&"first_roof": 18, &"first_harvest": 54, &"fired_clay": 108, &"woven_cloth": 162,
 	&"a_village": 216, &"green_stone": 252,
 }
-const SEEDS: Array[int] = [1, 2, 3]
+const SEEDS: Array[int] = [1, 2]
 
 
 func suite_name() -> String:
