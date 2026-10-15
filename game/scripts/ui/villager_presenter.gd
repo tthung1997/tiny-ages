@@ -79,6 +79,37 @@ const LOW_FOOD: Array[String] = [
 	"The food pile is getting small.",
 	"Wondering when the next meal will be.",
 ]
+## Added to what a villager might think while that weather lasts.
+const BY_WEATHER: Dictionary = {
+	&"rain": [
+		"Rain again. Everything smells of wet hide.",
+		"Listening to the rain on the ground.",
+	],
+	&"storm": [
+		"Counting the seconds between the flash and the thunder.",
+		"The wind is trying to take everything with it.",
+	],
+	&"flood": [
+		"The river is where the path used to be.",
+		"Wondering how long the water will stay.",
+	],
+	&"drought": [
+		"The ground is hard as bone, and the river is thin.",
+		"Everything is thirsty.",
+	],
+	&"snow": [
+		"Snow squeaks underfoot.",
+		"Watching the flakes settle on everything.",
+	],
+	&"tornado": [
+		"Still seeing that black funnel of wind.",
+		"Looking at the sky, in case it comes back.",
+	],
+	&"debris": [
+		"Picking through what the wind left behind.",
+		"Everything needs setting right again.",
+	],
+}
 
 var id: StringName = &""
 var display_name: String = ""
@@ -160,6 +191,7 @@ static func _pool(villager: VillagerState, world: WorldState) -> Array[String]:
 		pool.append_array(_lines(BY_TRAIT.get(trait_name, [])))
 	if world.resource_amount(&"food") < FOOD_LOW:
 		pool.append_array(LOW_FOOD)
+	pool.append_array(_lines(BY_WEATHER.get(world.weather, [])))
 	return pool
 
 

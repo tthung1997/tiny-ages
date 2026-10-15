@@ -20,6 +20,12 @@ enum Kind {
 	ADVANCE_ERA, ## The settlement enters era `key` (must be later than the current one).
 	ADD_VILLAGER, ## `amount` newcomers join the group (random name and traits).
 	REMOVE_VILLAGER, ## `amount` villagers leave to live elsewhere: the newest who are at home.
+	SET_WEATHER, ## Weather `key` begins, for `amount` ticks (0: a span drawn from its WeatherDef).
+	CLEAR_WEATHER, ## The weather ends and the sky clears.
+	DAMAGE_BUILDING, ## Weather breaks one completed building that carries tag `key` (any building
+	## if empty), chosen with the simulation's rng. Journals `text` ({building} is its name) or a
+	## plain line. Does nothing if there is none.
+	REPAIR_BUILDING, ## Every damaged building is mended (or only the one whose id is `key`).
 }
 
 @export var kind: Kind = Kind.JOURNAL

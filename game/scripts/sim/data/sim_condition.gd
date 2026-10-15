@@ -18,6 +18,11 @@ enum Kind {
 	SUBJECT_AWAKE, ## The event's subject villager is not asleep (it is not sleeping hours).
 	ERA_DAYS_AT_LEAST, ## The settlement has been in its current era for at least `amount` days.
 	HAS_ROOM, ## The camp has room for at least `amount` more villagers (negate: it is crowded).
+	SEASON_IS, ## The season is `amount` (a Season constant).
+	WEATHER_IS, ## The weather is `key`; an empty key means clear sky.
+	HAS_BUILDING_TAG, ## A completed building that weather can reach (see BuildingDef.tags): has
+	## tag `key`, or is any building if `key` is empty, and is not already damaged.
+	HAS_DAMAGED_BUILDING, ## Some completed building is damaged (negate: none is).
 }
 
 @export var kind: Kind = Kind.FLAG_SET
@@ -60,6 +65,14 @@ func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null)
 			result = config.day_of(world.tick - world.era_started_tick) >= amount
 		Kind.HAS_ROOM:
 			result = world.room() >= amount
+		Kind.SEASON_IS:
+			result = config.season_at(world.tick) == amount
+		Kind.WEATHER_IS:
+			result = world.weather == key
+		Kind.HAS_BUILDING_TAG:
+			result = not world.damageable_buildings(key).is_empty()
+		Kind.HAS_DAMAGED_BUILDING:
+			result = world.has_damaged_building()
 	return result != negate
 
 

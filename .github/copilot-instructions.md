@@ -153,6 +153,15 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   `SimFixture.new_sim()`, which starts lit (pass `lit = false` for the fire story).
 - Time is ticks (`ticks_per_day`, default 24). `advance_ticks` is exact; offline catch-up
   is `advance_real_time(now)` and must equal ticking the same amount.
+- **Seasons and weather** (P14 in `docs/gameplay.md`): the calendar is `SimConfig`
+  (`season_at(tick)`, 20 days a season); weather is `WorldState.weather` with `WeatherDef`s
+  (`SET_WEATHER`, `WeatherSystem`), and it scales what villagers and buildings bring in. Weather
+  can break a building (`BuildingDef.tags`, `DAMAGE_BUILDING`, `BuildingState.damaged`; half output,
+  mended by hand after `self_repair_days`). Content is `_weather_events` in the builder: a fork is
+  damage plus `_mend_now` (wood) and `_mend_later`, never a pass. A story decision that names a
+  season gets `_season(Season.X)`; `SEASON_IS`, `WEATHER_IS` and `HAS_BUILDING_TAG` are *passing*
+  conditions for `is_decision_stale`, so a decision asked in its season is not withdrawn. Tests that
+  jump the clock must land in the right season.
 - Design rules baked in: decisions wait indefinitely and never penalise waiting; nothing
   fails or kills; open-ended with chapter milestones, no ending.
 - Content seeds come from `tools/build_sim_content.gd` (a bootstrap — after running it,
@@ -212,11 +221,19 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   window (decision A7); strip and corner mode keep near hills, trees and ground. The sun, moon and
   stars (`celestial.png`, `stars.png`) are children of the clip, not of the scrolling world, so they stay
   put as you pan; `DayNight` says where they are, and they too exist only in the opaque window.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp`,
+- Seasons and weather in the view: `SeasonLook` and `WeatherLook` are pure and tested; a shader
+  (`assets/world/season_palette.gdshader`) shifts the green of the existing art per season and
+  `SeasonOverlay` draws snow, blossom and leaves from the backdrop's own edges (rebuilt only when the
+  season turns); `WeatherLayer` animates `assets/world/weather.png` on a slow clock that sleeps unless an
+  animated piece is on screen (`tools/art/weather.js`, rows mirrored in the script); a broken
+  building is darker with wreckage. Pieces that scroll live in the world, the rain, shimmer and
+  clouds in the clip. Window-mode only: the sky clouds. Look at it with `--season=`, `--weather=`
+  and `--damaged`.
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp weather ui_weather`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
-  `--build=hut,field`, `--flag=`, `--earn=`). **`--dev`** turns on the text overlay and the dev
+  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--damaged`). **`--dev`** turns on the text overlay and the dev
   keys (mode, scale, speed, bot...); `--hud` is the overlay alone. Without them the screen has
   only the player's UI (docs/gameplay.md P12). Always use
   `--nosave` (or `--save=`) in automated runs so the player's save and window settings are not
@@ -236,8 +253,8 @@ holds still between ticks).
 `PanelHost` draws them above the strip and only reports the choice picked; `Game` applies it
 with `Simulation.resolve_decision`. While a panel is open `DesktopWindow.set_panel_height`
 grows the window upward by the panel's current height (`PanelHost.current_height()`; a
-villager's panel is shorter, see `PanelHost.HEIGHTS`) and the click region takes in the panel. `StripIcons` is the bulb and
-the journal book, the only things always on screen. A right click on the strip
+villager's panel is shorter, see `PanelHost.HEIGHTS`) and the click region takes in the panel. `StripIcons` is the bulb, the
+journal book and a quiet season and weather glyph (picking it opens Stores), the only things always on screen. A right click on the strip
 (`WorldView.menu_requested`) opens the menu panel (journal, stores, settings, quit);
 `MenuPresenter` builds the stores and settings rows as data, `PanelHost` reports `action_picked`,
 and `Game._on_action` applies it. Window settings live in `UserSettings` (`user://settings.cfg`,

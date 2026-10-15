@@ -137,4 +137,6 @@ static func snapshot(world: WorldState) -> Dictionary:
 		"buildings": world.buildings.size(),
 		"plants": world.plants.size(),
 		"rng_state": world.rng_state,
+		"weather": [world.weather, world.weather_until_tick],
+		"damaged": world.buildings.filter(func(b: BuildingState) -> bool: return b.damaged).size(),
 	}

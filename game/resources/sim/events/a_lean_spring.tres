@@ -69,13 +69,17 @@ key = &"food"
 amount = 24
 negate = true
 
+[sub_resource type="Resource" id="Resource_u7w0s"]
+script = ExtResource("3_unvny")
+kind = 13
+
 [resource]
 script = ExtResource("4_aui83")
 id = &"a_lean_spring"
 title = "A lean spring"
 body = "The stores are low and the new grain is not yet up. The village is bigger than it has ever been, and everyone is counting."
 category = &"settlement"
-requires = Array[ExtResource("3_unvny")]([SubResource("Resource_hr3h4"), SubResource("Resource_mydhw"), SubResource("Resource_s7l3m"), SubResource("Resource_dmrt5")])
+requires = Array[ExtResource("3_unvny")]([SubResource("Resource_hr3h4"), SubResource("Resource_mydhw"), SubResource("Resource_s7l3m"), SubResource("Resource_dmrt5"), SubResource("Resource_u7w0s")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_kvr08")]([SubResource("Resource_yvnfw"), SubResource("Resource_icbbe")])

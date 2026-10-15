@@ -70,7 +70,7 @@ const NO_LOOKOUT_DELAY: int = 30
 
 
 func _init() -> void:
-	for folder: String in ["events", "buildings", "plants", "eras"]:
+	for folder: String in ["events", "buildings", "plants", "eras", "weathers"]:
 		var path: String = ProjectSettings.globalize_path("%s/%s" % [ROOT, folder])
 		DirAccess.make_dir_recursive_absolute(path)
 	var config: SimConfig = SimConfig.new()
@@ -81,6 +81,7 @@ func _init() -> void:
 	library.eras.assign(_eras())
 	library.buildings.assign(_buildings())
 	library.plants.assign(_plants())
+	library.weathers.assign(_weathers())
 	library.events.assign(_events())
 	_set_starting_group(library)
 	library.starting_resources = _ints({&"wood": 2, &"food": 12})
@@ -91,6 +92,8 @@ func _init() -> void:
 		_save(building, "%s/buildings/%s.tres" % [ROOT, building.id])
 	for plant: PlantDef in library.plants:
 		_save(plant, "%s/plants/%s.tres" % [ROOT, plant.id])
+	for weather: WeatherDef in library.weathers:
+		_save(weather, "%s/weathers/%s.tres" % [ROOT, weather.id])
 	for event: EventDef in library.events:
 		_save(event, "%s/events/%s.tres" % [ROOT, event.id])
 	_save(library, "%s/content.tres" % ROOT)
@@ -140,8 +143,10 @@ func _set_starting_group(library: ContentLibrary) -> void:
 
 func _buildings() -> Array[BuildingDef]:
 	var lookout: BuildingDef = _building(&"lookout", "Lookout", {&"wood": 8}, 36)
+	lookout.tags = [&"exposed"]
 	lookout.description = "A high place to watch the valleys for game, weather and what lies ahead."
 	var rack: BuildingDef = _building(&"drying_rack", "Drying Rack", {&"wood": 10}, 30)
+	rack.tags = [&"river", &"dry", &"exposed"]
 	rack.description = "Racks for drying meat and berries so they keep through the cold."
 	rack.daily_output = _floats({&"food": 1.0})
 	rack.completion_achievement = &"reliable_food"
@@ -156,9 +161,11 @@ func _buildings() -> Array[BuildingDef]:
 	hut.completion_achievement = &"first_roof"
 	hut.completion_achievement_title = "A Roof of Your Own"
 	hut.housing = 3
+	hut.tags = [&"exposed"]
 	var field: BuildingDef = _building(&"field", "Field", {&"wood": 12}, 36)
 	field.description = "Ground cleared and sown, feeding the group season after season."
 	field.daily_output = _floats({&"food": 3.0})
+	field.tags = [&"river", &"dry"]
 	field.completion_achievement = &"first_harvest"
 	field.completion_achievement_title = "The First Harvest"
 	return [lookout, rack, knapping, hut, field]
@@ -203,6 +210,7 @@ func _events() -> Array[EventDef]:
 		_cold_night(),
 	]
 	events.append_array(_settled_milestones())
+	events.append_array(_weather_events())
 	events.append_array(_story_decisions())
 	events.append_array(_settled_stories())
 	events.append_array(_growth_decisions())
@@ -667,6 +675,7 @@ func _first_calves() -> EventDef:
 		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", SETTLED_DAY[&"first_harvest"]),
 		_cond(SimCondition.Kind.FLAG_SET, &"path_herding"),
 		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, &"first_harvest", 0, true),
+		_season(Season.SPRING),
 	])
 	event.chance_per_tick = 0.03
 	event.cooldown_ticks = 48
@@ -1151,9 +1160,11 @@ func _rare_butterfly() -> EventDef:
 
 func _heavy_rain() -> EventDef:
 	var event: EventDef = _event(&"heavy_rain", "Heavy rain", &"nature")
+	event.requires = _conds([_season(Season.SPRING), _clear_sky()])
 	event.chance_per_tick = 0.004
 	event.cooldown_ticks = 120
 	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"rain"),
 		_eff(SimEffect.Kind.JOURNAL, &"", 0, "It rained heavily and everyone crowded in the cave."),
 	])
 	return event
@@ -1167,10 +1178,392 @@ func _cold_night() -> EventDef:
 	])
 	event.chance_per_tick = 0.005
 	event.cooldown_ticks = 120
+	event.requires.append(_season(Season.WINTER))
 	event.effects = _effs([
 		_eff(SimEffect.Kind.JOURNAL, &"", 0, "A cold night. Everyone drew close around the fire."),
 	])
 	return event
+
+
+## Spells of weather: how long each lasts and what it slows while it does. Nobody is hurt; the
+## group just brings in less (docs/gameplay.md P14).
+func _weathers() -> Array[WeatherDef]:
+	var rain: WeatherDef = _weather(&"rain", "Rain", 2.0, 4.0)
+	var snow: WeatherDef = _weather(&"snow", "Snow", 2.0, 4.0)
+	var storm: WeatherDef = _weather(&"storm", "Storm", 1.0, 2.0, 0.85, 0.8)
+	var drought: WeatherDef = _weather(&"drought", "Drought", 8.0, 12.0, 0.65)
+	var flood: WeatherDef = _weather(&"flood", "Flood", 3.0, 5.0, 0.7)
+	var tornado: WeatherDef = _weather(&"tornado", "Tornado", 1.0, 1.0, 0.6)
+	tornado.then = &"debris"
+	var debris: WeatherDef = _weather(&"debris", "Wreckage", 4.0, 6.0, 0.6)
+	return [rain, snow, storm, drought, flood, tornado, debris]
+
+
+func _weather(
+	weather_id: StringName, display_name: String, min_days: float, max_days: float,
+	food: float = 1.0, wood: float = 1.0
+) -> WeatherDef:
+	var weather: WeatherDef = WeatherDef.new()
+	weather.id = weather_id
+	weather.display_name = display_name
+	weather.min_days = min_days
+	weather.max_days = max_days
+	weather.food_multiplier = food
+	weather.wood_multiplier = wood
+	return weather
+
+
+func _season(season: int, negate: bool = false) -> SimCondition:
+	return _cond(SimCondition.Kind.SEASON_IS, &"", season, negate)
+
+
+func _clear_sky() -> SimCondition:
+	return _cond(SimCondition.Kind.WEATHER_IS, &"")
+
+
+func _weather_is(weather_id: StringName) -> SimCondition:
+	return _cond(SimCondition.Kind.WEATHER_IS, weather_id)
+
+
+## A completed, undamaged building that weather of that kind can reach (&"": any).
+func _reachable(tag: StringName, negate: bool = false) -> SimCondition:
+	return _cond(SimCondition.Kind.HAS_BUILDING_TAG, tag, 0, negate)
+
+
+## One of the quiet moments that belongs to a season.
+func _seasonal(event_id: StringName, season: int, line: String) -> EventDef:
+	var event: EventDef = _ambient(event_id, line)
+	event.requires.append(_season(season))
+	return event
+
+
+## Chances are per tick while eligible (24 ticks a day, 480 in a season). Every kind is bound to a
+## season or to rain, and cooldowns are half a year, so a kind of weather fork comes about once a
+## year at most and often not at all: roughly two forks a year across all of them. The ambient
+## spells (rain, snow) are more frequent. Tune with tools/sim_timeline.gd.
+const FLOOD_CHANCE: float = 0.012
+const STORM_CHANCE: float = 0.0025
+const DROUGHT_CHANCE: float = 0.002
+const TORNADO_CHANCE: float = 0.0008
+const YEAR_TICKS: int = 1920
+
+
+## Seasons and weather (docs/gameplay.md P14). A fork is damage plus two ways to go on: set the
+## damaged building right now with wood, or go another way and let the villagers mend it by hand
+## in a few days. Without a building to reach, the weather is a quiet spell that only slows the
+## foragers. An earlier answer that guards against it (a bank, a ledge, a well) turns a damaging
+## spell into a calm journal line.
+func _weather_events() -> Array[EventDef]:
+	var events: Array[EventDef] = [
+		_autumn_rain(), _snowfall(),
+		_river_over_its_banks(), _river_over_the_reeds(), _ledge_stays_dry(), _bank_holds(),
+		_thunder_storm(), _storm_passes(),
+		_dry_summer(), _dry_summer_quiet(), _well_keeps_green(),
+		_tornado(),
+	]
+	events.append_array(_seasonal_lines())
+	return events
+
+
+func _autumn_rain() -> EventDef:
+	var event: EventDef = _event(&"autumn_rain", "Autumn rain", &"nature")
+	event.requires = _conds([_season(Season.AUTUMN), _clear_sky()])
+	event.chance_per_tick = 0.004
+	event.cooldown_ticks = 120
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"rain"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"Autumn rain came in off the hills, and the whole camp went quiet under it."
+		),
+	])
+	return event
+
+
+func _snowfall() -> EventDef:
+	var event: EventDef = _event(&"snowfall", "Snowfall", &"nature")
+	event.requires = _conds([_season(Season.WINTER), _clear_sky()])
+	event.chance_per_tick = 0.004
+	event.cooldown_ticks = 120
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"snow"),
+		_eff(SimEffect.Kind.JOURNAL, &"", 0, "Snow came down all day, soft and without wind."),
+	])
+	return event
+
+
+## The fork shared by every damaging spell. `when` is what lets it happen; its effects start the
+## weather and break one building that carries `tag`.
+func _weather_fork(
+	event_id: StringName, title: String, body: String, when: Array[SimCondition],
+	weather: StringName, tag: StringName, damage_line: String, chance: float
+) -> EventDef:
+	var event: EventDef = _event(event_id, title, &"nature")
+	event.body = body
+	event.requires = _conds(when)
+	event.requires.append(_reachable(tag))
+	event.chance_per_tick = chance
+	event.cooldown_ticks = YEAR_TICKS / 2
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, weather),
+		_eff(SimEffect.Kind.DAMAGE_BUILDING, tag, 0, damage_line),
+	])
+	return event
+
+
+## An answer that sets the damage right now, for wood.
+func _mend_now(choice_id: StringName, label: String, line: String, wood: int) -> ChoiceDef:
+	return _answer(
+		choice_id, label, line,
+		[_spend(&"wood", wood), _eff(SimEffect.Kind.REPAIR_BUILDING), _set_flag(choice_id)],
+		[_has(&"wood", wood)],
+	)
+
+
+## An answer that lets the villagers mend it in their own time, and brings in a little meanwhile.
+func _mend_later(
+	choice_id: StringName, label: String, line: String, resource: StringName, amount: int
+) -> ChoiceDef:
+	return _answer(
+		choice_id, label, line,
+		[_eff(SimEffect.Kind.ADD_RESOURCE, resource, amount), _set_flag(choice_id)],
+	)
+
+
+func _river_over_its_banks() -> EventDef:
+	var event: EventDef = _weather_fork(
+		&"river_over_its_banks", "The river is over its banks",
+		"The rain has not let up, and the river has climbed out of its bed and into the low "
+		+ "ground. Whatever stands by the water is standing in it.",
+		[
+			_weather_is(&"rain"),
+			_cond(SimCondition.Kind.FLAG_SET, &"stores_on_ledge", 0, true),
+			_cond(SimCondition.Kind.FLAG_SET, &"river_bank", 0, true),
+		],
+		&"flood", &"river", "The flood reached the {building} and left it battered.", FLOOD_CHANCE,
+	)
+	event.choices = _choices([
+		_mend_now(
+			&"raise_it_again", "Cut wood and set it right now",
+			"Wood was cut and poles reset, and the damage was put right before the water was "
+			+ "fully down.",
+			8,
+		),
+		_mend_later(
+			&"wait_for_the_water", "Wait for the water to drop",
+			"They waited for the river to fall and gathered the fish it left in the grass. The "
+			+ "damage would be mended by hand in time.",
+			&"food", 3,
+		),
+	])
+	return event
+
+
+func _river_over_the_reeds() -> EventDef:
+	var event: EventDef = _event(&"river_over_the_reeds", "The river spreads", &"nature")
+	event.requires = _conds([
+		_weather_is(&"rain"), _reachable(&"river", true),
+		_cond(SimCondition.Kind.FLAG_SET, &"stores_on_ledge", 0, true),
+		_cond(SimCondition.Kind.FLAG_SET, &"river_bank", 0, true),
+	])
+	event.chance_per_tick = FLOOD_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"flood"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The river came over its banks into the reeds, and the foragers went further up "
+			+ "the valley to find dry ground."
+		),
+	])
+	return event
+
+
+func _ledge_stays_dry() -> EventDef:
+	var event: EventDef = _remembered(
+		&"ledge_stays_dry", &"stores_on_ledge",
+		"The river came up the bank again in the rain, and the stores on the ledge never felt it."
+	)
+	event.requires.append(_weather_is(&"rain"))
+	event.chance_per_tick = FLOOD_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	return event
+
+
+func _bank_holds() -> EventDef:
+	var event: EventDef = _remembered(
+		&"bank_holds", &"river_bank",
+		"The river climbed to the foot of the bank in the rain and went no further."
+	)
+	event.requires.append(_weather_is(&"rain"))
+	event.chance_per_tick = FLOOD_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	return event
+
+
+func _thunder_storm() -> EventDef:
+	var event: EventDef = _weather_fork(
+		&"thunder_storm", "A storm breaks",
+		"The sky went the colour of a bruise, the wind got up, and then it all came down at "
+		+ "once. Something has given way.",
+		[_season(Season.SUMMER), _clear_sky()],
+		&"storm", &"exposed", "A gust got under the {building} and tore it half apart.",
+		STORM_CHANCE,
+	)
+	event.choices = _choices([
+		_mend_now(
+			&"cut_new_poles", "Cut new poles and mend it now",
+			"New poles went in before the next squall, and the damage was set right.", 6,
+		),
+		_mend_later(
+			&"gather_the_fallen_wood", "Wait it out, then gather what fell",
+			"Everyone sheltered until it passed, and the fallen branches made a good pile. The "
+			+ "damage would be mended by hand in time.",
+			&"wood", 3,
+		),
+	])
+	return event
+
+
+func _storm_passes() -> EventDef:
+	var event: EventDef = _event(&"storm_passes", "A storm passes", &"nature")
+	event.requires = _conds([_season(Season.SUMMER), _clear_sky(), _reachable(&"exposed", true)])
+	event.chance_per_tick = STORM_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"storm"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"A storm rolled over the valley and went away again. Nobody went far until it had."
+		),
+	])
+	return event
+
+
+func _dry_summer() -> EventDef:
+	var event: EventDef = _weather_fork(
+		&"dry_summer", "No rain for weeks",
+		"The river has shrunk to a trickle and the ground has begun to crack. Everything that "
+		+ "needs water is going without.",
+		[
+			_season(Season.SUMMER), _clear_sky(),
+			_cond(SimCondition.Kind.FLAG_SET, &"well_dug", 0, true),
+		],
+		&"drought", &"dry", "The ground cracked in the heat, and the {building} split and curled.",
+		DROUGHT_CHANCE,
+	)
+	event.choices = _choices([
+		_mend_now(
+			&"carry_water", "Carry water up from the river",
+			"Water came up from the river in yokes and jars all week, and the damage was put right.",
+			6,
+		),
+		_mend_later(
+			&"follow_the_fish", "Follow the river down to the fish pools",
+			"The baskets went down to the pools where the fish were trapped, and came back full. "
+			+ "The damage would be mended by hand in time.",
+			&"food", 4,
+		),
+	])
+	return event
+
+
+func _dry_summer_quiet() -> EventDef:
+	var event: EventDef = _event(&"dry_summer_quiet", "A dry summer", &"nature")
+	event.requires = _conds([
+		_season(Season.SUMMER), _clear_sky(), _reachable(&"dry", true),
+		_cond(SimCondition.Kind.FLAG_SET, &"well_dug", 0, true),
+	])
+	event.chance_per_tick = DROUGHT_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	event.effects = _effs([
+		_eff(SimEffect.Kind.SET_WEATHER, &"drought"),
+		_eff(
+			SimEffect.Kind.JOURNAL, &"", 0,
+			"The rain held off for weeks and the river sank to its stones. Foraging took "
+			+ "everyone further afield."
+		),
+	])
+	return event
+
+
+func _well_keeps_green() -> EventDef:
+	var event: EventDef = _remembered(
+		&"well_keeps_green", &"well_dug",
+		"No rain fell for weeks, but the well never failed and the ground around it stayed green."
+	)
+	event.requires.append(_season(Season.SUMMER))
+	event.chance_per_tick = DROUGHT_CHANCE
+	event.cooldown_ticks = YEAR_TICKS / 2
+	return event
+
+
+## The rarest and the roughest: it can break any building, and the wreckage slows the foragers
+## for days. Settled villages only, since the Cave Age has so little to break.
+func _tornado() -> EventDef:
+	var event: EventDef = _weather_fork(
+		&"tornado", "A wind from the ridge",
+		"A black funnel of wind came down off the ridge, tore across the village and was gone. "
+		+ "It left a trail of wreckage and scattered stores.",
+		[
+			_cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED),
+			_season(Season.AUTUMN), _clear_sky(),
+		],
+		&"tornado", &"", "The wind took hold of the {building} and left it in pieces.",
+		TORNADO_CHANCE,
+	)
+	event.cooldown_ticks = YEAR_TICKS
+	event.choices = _choices([
+		_mend_now(
+			&"rebuild_at_once", "Rebuild it at once",
+			"Every hand turned out to rebuild, and the damage was put right in a day.", 10,
+		),
+		_mend_later(
+			&"salvage_and_mend", "Salvage the wreckage and mend it by hand",
+			"Timber and thatch were sorted out of the wreckage, and a good deal was kept. The "
+			+ "damage would be mended by hand in time.",
+			&"wood", 4,
+		),
+	])
+	return event
+
+
+## Quiet moments that mark the turn of the seasons.
+func _seasonal_lines() -> Array[EventDef]:
+	return [
+		_seasonal(
+			&"spring_green", Season.SPRING,
+			"Green shoots were coming up through last year's dead grass."
+		),
+		_seasonal(
+			&"spring_thaw", Season.SPRING,
+			"The stream ran loud with meltwater, and the children were forbidden from it."
+		),
+		_seasonal(
+			&"summer_haze", Season.SUMMER,
+			"Heat shimmered over the grass by midday, and everyone found a shady place to be useful in."
+		),
+		_seasonal(
+			&"summer_long_light", Season.SUMMER,
+			"The light lasted so long tonight that nobody wanted to go in."
+		),
+		_seasonal(
+			&"autumn_leaves", Season.AUTUMN,
+			"The leaves went red and gold overnight, and the whole valley looked lit from inside."
+		),
+		_seasonal(
+			&"autumn_nights", Season.AUTUMN,
+			"The nights are drawing in, and the fire was fed earlier today."
+		),
+		_seasonal(
+			&"winter_breath", Season.WINTER,
+			"Breath hung in the air this morning, and the ground rang underfoot."
+		),
+		_seasonal(
+			&"winter_quiet", Season.WINTER,
+			"Not a bird sang all day. The valley was very still under its frost."
+		),
+	]
 
 
 ## The decisions that fill the Cave Age between its milestones. Each is a small, one-time question
@@ -1271,6 +1664,7 @@ func _first_hard_frost() -> EventDef:
 		"The first hard frost has come. The river is edged with ice, and the wood pile is "
 		+ "shrinking faster than it grows."
 	)
+	event.requires.append(_season(Season.WINTER))
 	event.choices = _choices([
 		_answer(
 			&"keep_fire_high", "Keep the fire high all night",
@@ -1545,6 +1939,7 @@ func _rising_river() -> EventDef:
 		&"rising_river", "The river is rising", &"nature", STORY_DAY[&"river"],
 		"Snowmelt has the river high, and it is creeping up the bank towards the cave mouth."
 	)
+	event.requires.append(_season(Season.SPRING))
 	event.choices = _choices([
 		_answer(
 			&"move_up", "Carry the stores up to the ledge",
@@ -1878,6 +2273,7 @@ func _first_snow() -> EventDef:
 		&"first_snow", "The first snow", &"nature", STORY_DAY[&"first_snow"],
 		"Snow fell in the night, and the whole valley is white and silent."
 	)
+	event.requires.append(_season(Season.WINTER))
 	event.choices = _choices([
 		_answer(
 			&"build_a_snow_figure", "Build something in the snow at the cave mouth",
@@ -2322,6 +2718,7 @@ func _a_wet_summer() -> EventDef:
 		&"a_wet_summer", "Nine days of rain", &"nature", SETTLED_STORY_DAY[&"wet"],
 		"The rain has not stopped for nine days, and the low ground by the river has become a pond."
 	)
+	event.requires.append(_season(Season.SUMMER))
 	event.choices = _choices([
 		_answer(
 			&"dig_a_ditch", "Dig a ditch to carry the water away",
@@ -2411,6 +2808,7 @@ func _the_flood() -> EventDef:
 		&"the_flood", "The river is rising", &"nature", SETTLED_STORY_DAY[&"flood"],
 		"The river has risen to the edge of the fields, and the low plots are under a finger of water."
 	)
+	event.requires.append(_season(Season.SPRING))
 	event.choices = _choices([
 		_answer(
 			&"build_a_bank", "Raise a bank of earth and stone",
@@ -2476,6 +2874,7 @@ func _winter_count() -> EventDef:
 		&"winter_count", "Before winter", &"settlement", SETTLED_STORY_DAY[&"count"],
 		"The leaves are turning. Somebody has counted the stores twice, and got two different answers."
 	)
+	event.requires.append(_season(Season.AUTUMN))
 	event.choices = _choices([
 		_answer(
 			&"lay_in_more", "Lay in more firewood and set it dry",
@@ -2588,6 +2987,7 @@ func _midsummer() -> EventDef:
 		"The sun has barely set, and someone has pointed out that tomorrow it will rise nearly "
 		+ "where it set."
 	)
+	event.requires.append(_season(Season.SUMMER))
 	event.choices = _choices([
 		_answer(
 			&"fire_on_the_hill", "Light a fire on the hill and watch it from the huts",
@@ -2838,7 +3238,7 @@ func _a_lean_spring() -> EventDef:
 		"The stores are low and the new grain is not yet up. The village is bigger than it "
 		+ "has ever been, and everyone is counting."
 	)
-	event.requires.append_array([_earned(&"a_village"), _food_below(24)])
+	event.requires.append_array([_earned(&"a_village"), _food_below(24), _season(Season.SPRING)])
 	event.choices = _choices([
 		_answer(
 			&"work_the_river_and_fields", "Send everyone out to the river and the fields for a day",
@@ -2863,11 +3263,13 @@ func _ambient_lines() -> Array[EventDef]:
 		_ambient(
 			&"heron", "A heron stood in the shallows all afternoon, as if it had business there."
 		),
-		_ambient(
-			&"frost_glitter",
-			"The grass glittered with frost this morning, and then it was gone.", 20
+		_seasonal(
+			&"frost_glitter", Season.WINTER,
+			"The grass glittered with frost this morning, and then it was gone."
 		),
-		_ambient(&"geese", "A long line of geese went over, calling, bound somewhere warmer.", 30),
+		_seasonal(
+			&"geese", Season.AUTUMN, "A long line of geese went over, calling, bound somewhere warmer."
+		),
 		_ambient(
 			&"far_thunder",
 			"Thunder grumbled far off, and everyone looked up and nobody was afraid."

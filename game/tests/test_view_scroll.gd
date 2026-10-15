@@ -237,7 +237,11 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 	var east: int = 0
 	for node: Node in view.find_children("*", "Sprite2D", true, false):
 		var sprite: Sprite2D = node as Sprite2D
+		if sprite.texture == null and not sprite.visible:
+			continue # a weather piece with nothing to show yet
 		assert_true(sprite.texture != null, "Every piece has art")
+		if sprite.texture is AtlasTexture or sprite.texture is ImageTexture:
+			continue # weather, wreckage and season pieces are not page art
 		if sprite.position.x == float(WorldLayout.SIDE_PAGES["west_"]):
 			assert_true(sprite.texture.resource_path.contains("west_"), "West page art on the west")
 			west += 1

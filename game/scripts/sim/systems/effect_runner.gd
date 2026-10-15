@@ -56,6 +56,14 @@ func apply(
 		SimEffect.Kind.REMOVE_VILLAGER:
 			for _leaver: int in effect.amount:
 				sim.remove_villager()
+		SimEffect.Kind.SET_WEATHER:
+			sim.set_weather(effect.key, effect.amount)
+		SimEffect.Kind.CLEAR_WEATHER:
+			sim.clear_weather()
+		SimEffect.Kind.DAMAGE_BUILDING:
+			sim.damage_building(effect.key, effect.text, kind, event_id)
+		SimEffect.Kind.REPAIR_BUILDING:
+			sim.repair_buildings(effect.key)
 
 
 func _format(text: String, subject: VillagerState) -> String:

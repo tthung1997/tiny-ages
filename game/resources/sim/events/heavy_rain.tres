@@ -7,13 +7,27 @@
 
 [sub_resource type="Resource" id="Resource_42qki"]
 script = ExtResource("2_sxasc")
+kind = 15
+key = &"rain"
+
+[sub_resource type="Resource" id="Resource_1yiks"]
+script = ExtResource("2_sxasc")
 text = "It rained heavily and everyone crowded in the cave."
+
+[sub_resource type="Resource" id="Resource_e1uaf"]
+script = ExtResource("3_ug48n")
+kind = 13
+
+[sub_resource type="Resource" id="Resource_5bqcq"]
+script = ExtResource("3_ug48n")
+kind = 14
 
 [resource]
 script = ExtResource("4_bsf38")
 id = &"heavy_rain"
 title = "Heavy rain"
 category = &"nature"
+requires = Array[ExtResource("3_ug48n")]([SubResource("Resource_e1uaf"), SubResource("Resource_5bqcq")])
 chance_per_tick = 0.004
 cooldown_ticks = 120
-effects = Array[ExtResource("2_sxasc")]([SubResource("Resource_42qki")])
+effects = Array[ExtResource("2_sxasc")]([SubResource("Resource_42qki"), SubResource("Resource_1yiks")])

@@ -36,6 +36,8 @@ class Stores:
 	extends RefCounted
 	## For example "Cave Age - day 12".
 	var heading: String = ""
+	## For example "Late spring, rain".
+	var season_line: String = ""
 	var stock: Array[StockRow] = []
 
 
@@ -83,6 +85,7 @@ static func stores(world: WorldState, config: SimConfig, content: ContentLibrary
 	view.heading = "%s - day %d" % [
 		era.display_name if era != null else "?", config.day_of(world.tick) + 1
 	]
+	view.season_line = WeatherLook.describe(world, config)
 	var keys: Array[StringName] = []
 	keys.append_array(STOCK_ORDER)
 	for key: StringName in world.resources:

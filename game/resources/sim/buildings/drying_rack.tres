@@ -13,5 +13,6 @@ cost = Dictionary[StringName, int]({
 daily_output = Dictionary[StringName, float]({
 &"food": 1.0
 })
+tags = Array[StringName]([&"river", &"dry", &"exposed"])
 completion_achievement = &"reliable_food"
 completion_achievement_title = "Enough to Eat"

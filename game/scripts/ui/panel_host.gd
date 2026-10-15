@@ -215,6 +215,7 @@ func show_stores(sim: Simulation) -> void:
 	var view: MenuPresenter.Stores = MenuPresenter.stores(sim.world, sim.config, sim.content)
 	_begin(&"stores", "Stores")
 	_content.add_child(_text(view.heading, true))
+	_content.add_child(_text(view.season_line, true))
 	var stock: HBoxContainer = HBoxContainer.new()
 	stock.add_theme_constant_override("separation", 14)
 	for row: MenuPresenter.StockRow in view.stock:

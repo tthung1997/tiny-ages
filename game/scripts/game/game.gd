@@ -22,7 +22,8 @@ extends Node2D
 ##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
 ##   camp is 0) --panel=decision|journal|away|villager|villagers|achievements|menu|stores|settings
 ##   (open that panel at
-##   start) --shot=<png> (save
+##   start) --season=spring|summer|autumn|winter --weather=rain|storm|drought|flood|snow|
+##   tornado|debris --damaged (look at a season, the weather, broken buildings) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
@@ -98,6 +99,7 @@ func _ready() -> void:
 		_world_view.jump_camera(options["cam"])
 	_icons.update_pending(0)
 	_icons.update_stock(sim.world, sim.config)
+	_icons.update_weather(sim.world, sim.config)
 	_hud_layer.add_child(_icons)
 	_hud_layer.add_child(_panel)
 	_panel.animated = true
@@ -228,6 +230,7 @@ func _advance_clock(delta: float) -> void:
 		_bot.answer_all(sim)
 	if sim.world.tick != ticks_before:
 		_world_view.on_world_changed()
+		_icons.update_weather(sim.world, sim.config)
 		if _panel.mode() == &"villager":
 			_panel.show_villager(sim, _panel.villager_id())
 
@@ -360,8 +363,10 @@ func _change_setting(action: StringName) -> void:
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --era=settled enters that age; --build=hut,field completes buildings
 ## (their milestones too); --flag=path_hunting,cave_art sets world flags; --earn=a_village,
-## fired_clay earns achievements; --give=wood:20,food:5 adds stock. For looking at things, not
-## playing.
+## fired_clay earns achievements; --give=wood:20,food:5 adds stock; --season=spring|summer|
+## autumn|winter moves the clock to the middle of that season; --weather=rain|storm|drought|
+## flood|snow|tornado|debris starts that weather for ten days; --damaged breaks every building
+## built. For looking at things, not playing.
 func _apply_dev_world(options: Dictionary) -> void:
 	if options.get("fire", false) and not sim.world.has_fire():
 		sim.world.flags[&"fire_found"] = true
@@ -373,6 +378,14 @@ func _apply_dev_world(options: Dictionary) -> void:
 		site.def_id = StringName(building_id)
 		sim.world.buildings.append(site)
 		sim.complete_building(site)
+	if options.has("season"):
+		_dev_season(String(options["season"]))
+	if options.has("weather"):
+		sim.set_weather(StringName(options["weather"]), sim.config.ticks_per_day * 10)
+	if options.get("damaged", false):
+		sim.refresh_housing()
+		while sim.damage_building(&"", "") != null:
+			pass
 	for flag: String in String(options.get("flags", "")).split(",", false):
 		sim.world.flags[StringName(flag)] = true
 	for earned: String in String(options.get("earn", "")).split(",", false):
@@ -382,6 +395,18 @@ func _apply_dev_world(options: Dictionary) -> void:
 		var pair: PackedStringArray = part.split(":")
 		if pair.size() == 2:
 			sim.world.add_resource(StringName(pair[0]), pair[1].to_int())
+
+
+## Moves the clock to the middle of a season (keeping the hour), for looking at it.
+func _dev_season(season_name: String) -> void:
+	var season: int = Season.NAMES.find(season_name.capitalize())
+	if season < 0:
+		push_warning("--season=%s is not a season" % season_name)
+		return
+	var config: SimConfig = sim.config
+	var seasons_on: int = posmod(season - config.first_season, Season.COUNT)
+	var day: int = seasons_on * config.days_per_season + config.days_per_season / 2
+	sim.world.tick = day * config.ticks_per_day + posmod(sim.world.tick, config.ticks_per_day)
 
 
 func _fit_window() -> void:
@@ -536,6 +561,12 @@ func _apply_cmdline() -> Dictionary:
 			options["fire"] = true
 		elif arg.begins_with("--flag="):
 			options["flags"] = arg.trim_prefix("--flag=")
+		elif arg.begins_with("--season="):
+			options["season"] = arg.trim_prefix("--season=")
+		elif arg.begins_with("--weather="):
+			options["weather"] = arg.trim_prefix("--weather=")
+		elif arg == "--damaged":
+			options["damaged"] = true
 		elif arg.begins_with("--era="):
 			options["era"] = arg.trim_prefix("--era=")
 		elif arg.begins_with("--build="):

@@ -13,6 +13,9 @@ extends Resource
 @export var daily_output: Dictionary[StringName, float] = {}
 ## How many more villagers the camp holds once this is built.
 @export var housing: int = 0
+## What weather can reach it: `river` (floods), `dry` (droughts), `exposed` (storms). A tornado
+## can reach any building.
+@export var tags: Array[StringName] = []
 @export_group("When completed")
 @export var completion_flag: StringName = &""
 @export var completion_achievement: StringName = &""

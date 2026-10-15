@@ -12,6 +12,18 @@ extends Resource
 ## months-long absence cannot stall start-up. 8760 is 365 game days at 24 ticks per day.
 @export var max_catch_up_ticks: int = 8760
 
+@export_group("Seasons")
+## Game days in one season; a year is four of them (20 days is about 6.7 real hours at the
+## default pace).
+@export_range(1, 200) var days_per_season: int = 20
+## The season the first day falls in (see Season).
+@export_range(0, 3) var first_season: int = Season.SPRING
+## Game days a damaged building takes to be mended by the villagers' own hands, if nobody has
+## repaired it sooner. Damage never waits for ever.
+@export_range(1, 60) var self_repair_days: int = 6
+## A damaged building produces this share of its output until it is mended.
+@export_range(0.0, 1.0, 0.05) var damaged_output: float = 0.5
+
 @export_group("Daily rhythm")
 @export_range(0, 23) var wake_hour: int = 6
 @export_range(0, 23) var sleep_hour: int = 22
@@ -61,6 +73,17 @@ func seconds_per_tick() -> float:
 
 func day_of(tick: int) -> int:
 	return floori(float(tick) / float(ticks_per_day))
+
+
+## The season (a Season constant) a tick falls in.
+func season_at(tick: int) -> int:
+	var elapsed: int = floori(float(day_of(tick)) / float(days_per_season))
+	return posmod(elapsed + first_season, Season.COUNT)
+
+
+## Which day of its season a tick falls in, from 0.
+func day_of_season(tick: int) -> int:
+	return posmod(day_of(tick), days_per_season)
 
 
 ## Hour of day, 0-23, whatever the tick resolution.
