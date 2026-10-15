@@ -35,6 +35,19 @@ extends Resource
 ## Construction progress added per builder per tick.
 @export_range(0.1, 5.0, 0.1) var build_rate_per_builder: float = 1.0
 
+@export_group("Food and room")
+## Food one villager eats per game day. Everyone eats the same, and nobody starves when it runs
+## out (docs/gameplay.md P13): the group just spends more of its time foraging and less on
+## everything else.
+@export_range(0.0, 5.0, 0.01) var food_per_villager_per_day: float = 0.35
+## The foraging ground is shared: with this many more foragers out at the same time, each brings
+## back this much less (0.6 means two foragers bring back 1/1.6 of one's catch each, three 1/2.2).
+## Hunters share their ground the same way. Those building or cutting wood are not affected.
+@export_range(0.0, 2.0, 0.01) var forage_crowding: float = 0.6
+## Most villagers the group can ever have, whatever the content says: a safety net for the cost
+## of the simulation and the view. Room for newcomers normally runs out long before (Simulation.room).
+@export_range(3, 100) var max_villagers: int = 14
+
 @export_group("Strip")
 ## How the wood and food icons on the strip read a stock (StockGauge), as fractions of
 ## `comfortable_stock`: below the first is "low", from the second up is "plenty".

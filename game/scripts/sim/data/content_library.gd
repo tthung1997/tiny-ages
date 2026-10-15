@@ -19,6 +19,9 @@ extends Resource
 ## At least one starting villager has each of these, so the first story chain can always begin.
 @export var guaranteed_traits: Array[StringName] = []
 @export var starting_resources: Dictionary[StringName, int] = {}
+@export_group("Room")
+## World flags that add room for villagers once set, for example a lean-to the group built.
+@export var flag_housing: Dictionary[StringName, int] = {}
 
 var _event_index: Dictionary = {}
 var _building_index: Dictionary = {}

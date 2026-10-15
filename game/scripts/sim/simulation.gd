@@ -14,6 +14,7 @@ signal building_started(building: BuildingState)
 signal building_completed(building: BuildingState)
 signal era_advanced(era: EraDef)
 signal villager_joined(villager: VillagerState)
+signal villager_left(villager: VillagerState)
 signal achievement_earned(key: StringName, title: String)
 
 var world: WorldState
@@ -22,6 +23,7 @@ var content: ContentLibrary
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 var _villager_system: VillagerSystem = VillagerSystem.new()
+var _food_system: FoodSystem = FoodSystem.new()
 var _construction_system: ConstructionSystem = ConstructionSystem.new()
 var _plant_system: PlantSystem = PlantSystem.new()
 var _event_system: EventSystem = EventSystem.new()
@@ -36,6 +38,7 @@ func _init(p_world: WorldState, p_config: SimConfig, p_content: ContentLibrary) 
 	rng.seed = world.rng_seed
 	if world.rng_state != 0:
 		rng.state = world.rng_state
+	refresh_housing()
 
 
 ## Advances the world by exactly `count` ticks.
@@ -109,6 +112,7 @@ func resolve_decision(decision_id: StringName, choice_id: StringName) -> bool:
 	world.pending.erase(decision)
 	for effect: SimEffect in choice.effects:
 		_effects.apply(effect, self, subject, event)
+	refresh_housing()
 	withdraw_stale_decisions()
 	decision_resolved.emit(decision, choice)
 	return true
@@ -130,6 +134,7 @@ func is_decision_stale(decision: PendingDecision) -> bool:
 		var transient: bool = not_yet \
 				or condition.kind == SimCondition.Kind.RESOURCE_AT_LEAST \
 				or condition.kind == SimCondition.Kind.ITEM_AT_LEAST \
+				or condition.kind == SimCondition.Kind.HAS_ROOM \
 				or condition.kind == SimCondition.Kind.CONSTRUCTION_IDLE
 		if not transient and not condition.is_met(world, config):
 			return true
@@ -172,6 +177,7 @@ func complete_building(site: BuildingState) -> void:
 		world.flags[def.completion_flag] = true
 	if def.completion_achievement != &"":
 		grant_achievement(def.completion_achievement, def.completion_achievement_title)
+	refresh_housing()
 	building_completed.emit(site)
 
 
@@ -202,6 +208,7 @@ func advance_era(era_id: StringName) -> bool:
 	if line.is_empty():
 		line = "A new age began: %s." % next.display_name
 	add_journal(line, &"settlement", &"", &"")
+	refresh_housing()
 	era_advanced.emit(next)
 	return true
 
@@ -220,8 +227,12 @@ func era_gate_open(era: EraDef) -> bool:
 
 
 ## A newcomer joins the group: an unused name from the content pool, random traits, and a look
-## reused in turn. Uses the simulation's rng, so it stays reproducible.
+## reused in turn. Uses the simulation's rng, so it stays reproducible. Null, with a warning, if
+## the group is already at `SimConfig.max_villagers`.
 func add_villager() -> VillagerState:
+	if world.villagers.size() >= config.max_villagers:
+		push_warning("The group is at its limit of %d villagers" % config.max_villagers)
+		return null
 	var used: Dictionary = {}
 	for existing: VillagerState in world.villagers:
 		used[existing.id] = true
@@ -245,6 +256,47 @@ func add_villager() -> VillagerState:
 	add_journal("%s joined the group." % villager.display_name, &"settlement", &"", villager.id)
 	villager_joined.emit(villager)
 	return villager
+
+
+## One villager leaves to live elsewhere: the newest who is at home (someone away is not pulled
+## back), never a death. Whatever was waiting on them is dropped. Null if nobody can go.
+func remove_villager() -> VillagerState:
+	var leaver: VillagerState = null
+	for index: int in range(world.villagers.size() - 1, -1, -1):
+		if not world.villagers[index].is_away():
+			leaver = world.villagers[index]
+			break
+	if leaver == null:
+		return null
+	world.villagers.erase(leaver)
+	add_journal(
+		"%s left the group to live elsewhere." % leaver.display_name,
+		&"settlement", &"", leaver.id,
+	)
+	for decision: PendingDecision in world.pending.duplicate():
+		if decision.subject_id == leaver.id:
+			world.pending.erase(decision)
+	for queued: ScheduledEvent in world.scheduled.duplicate():
+		if queued.subject_id == leaver.id:
+			world.scheduled.erase(queued)
+	villager_left.emit(leaver)
+	return leaver
+
+
+## Recomputes how many villagers the camp holds: the age's housing, plus every completed
+## building's, plus any answer's (`ContentLibrary.flag_housing`). Cheap; called whenever one of
+## those can have changed.
+func refresh_housing() -> void:
+	var era: EraDef = content.get_era(world.era)
+	var total: int = era.housing if era != null else 0
+	for building: BuildingState in world.buildings:
+		var def: BuildingDef = content.get_building(building.def_id)
+		if building.complete and def != null:
+			total += def.housing
+	for flag: StringName in content.flag_housing:
+		if world.has_flag(flag):
+			total += content.flag_housing[flag]
+	world.housing = total
 
 
 func grant_achievement(key: StringName, title: String) -> void:
@@ -274,7 +326,9 @@ func _step() -> void:
 	world.tick += 1
 	_villager_system.step(self)
 	_construction_system.step(self)
+	_food_system.step(self)
 	_plant_system.step(self)
+	refresh_housing()
 	_event_system.step(self)
 	_era_system.step(self)
 	withdraw_stale_decisions()

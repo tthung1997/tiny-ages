@@ -53,6 +53,9 @@ func apply(
 		SimEffect.Kind.ADD_VILLAGER:
 			for _newcomer: int in effect.amount:
 				sim.add_villager()
+		SimEffect.Kind.REMOVE_VILLAGER:
+			for _leaver: int in effect.amount:
+				sim.remove_villager()
 
 
 func _format(text: String, subject: VillagerState) -> String:

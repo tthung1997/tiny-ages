@@ -83,7 +83,8 @@ func _init() -> void:
 	library.plants.assign(_plants())
 	library.events.assign(_events())
 	_set_starting_group(library)
-	library.starting_resources = _ints({&"wood": 2, &"food": 4})
+	library.starting_resources = _ints({&"wood": 2, &"food": 12})
+	library.flag_housing = _ints({&"lean_to": 2, &"extra_roofs": 3})
 	for era: EraDef in library.eras:
 		_save(era, "%s/eras/%s.tres" % [ROOT, era.id])
 	for building: BuildingDef in library.buildings:
@@ -104,8 +105,10 @@ func _init() -> void:
 func _eras() -> Array[EraDef]:
 	var cave: EraDef = _era(&"cave", "Cave Age", CAVE)
 	cave.description = "Hunter-gatherers sheltering in a cave, living by fire and flint."
+	cave.housing = 6
 	var settled: EraDef = _era(&"settled", "Settled Age", SETTLED)
 	settled.description = "Farming and herding: people stay in one place and shape the land."
+	settled.housing = 8
 	settled.intro_text = "The group stayed by the field, and a new way of living began."
 	# The hidden gate (docs/ages.md): every milestone, then a minimum of about five real days
 	# (8640 ticks at 50 real seconds each). The player is never shown any of this.
@@ -152,6 +155,7 @@ func _buildings() -> Array[BuildingDef]:
 	hut.description = "A proper shelter, built where the group means to stay."
 	hut.completion_achievement = &"first_roof"
 	hut.completion_achievement_title = "A Roof of Your Own"
+	hut.housing = 3
 	var field: BuildingDef = _building(&"field", "Field", {&"wood": 12}, 36)
 	field.description = "Ground cleared and sown, feeding the group season after season."
 	field.daily_output = _floats({&"food": 3.0})
@@ -201,6 +205,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_settled_milestones())
 	events.append_array(_story_decisions())
 	events.append_array(_settled_stories())
+	events.append_array(_growth_decisions())
 	events.append_array(_ambient_lines())
 	events.append_array(_settled_ambient_lines())
 	return events
@@ -2657,6 +2662,194 @@ func _long_evenings() -> EventDef:
 			&"work_by_the_fire", "Bring the mending to the fire and work together",
 			"Everyone brought their mending to the fire, and the talk went along with the needles.",
 			[_set_flag(&"evening_work")],
+		),
+	])
+	return event
+
+
+## ---- Growth and food (docs/gameplay.md P5, P13): arrivals while there is room and food, and the
+## forks that ease a crowded or hungry camp. Nobody dies or starves: a family may leave to live
+## elsewhere, and a shortage only moves what the group does with its days.
+
+## Days (Cave: since the start; Settled: into the age) from which each can be asked.
+const GROWTH_DAY: Dictionary = {&"traveller": 200, &"crowded": 196, &"foraging": 204}
+const SETTLED_GROWTH_DAY: Dictionary = {&"door": 232, &"crowded": 236, &"lean": 224}
+
+
+func _growth_decisions() -> Array[EventDef]:
+	return [
+		_traveller_at_dusk(), _too_many_for_the_cave(), _who_leads_the_foraging(),
+		_family_at_the_door(), _too_many_for_the_village(), _a_lean_spring(),
+	]
+
+
+## Only while the cave is not the Settled Age's.
+func _cave_only() -> SimCondition:
+	return _cond(SimCondition.Kind.ERA_AT_LEAST, &"", SETTLED, true)
+
+
+func _room_for(villagers: int) -> SimCondition:
+	return _cond(SimCondition.Kind.HAS_ROOM, &"", villagers)
+
+
+func _no_room() -> SimCondition:
+	return _cond(SimCondition.Kind.HAS_ROOM, &"", 1, true)
+
+
+func _food_below(amount: int) -> SimCondition:
+	return _cond(SimCondition.Kind.RESOURCE_AT_LEAST, &"food", amount, true)
+
+
+func _traveller_at_dusk() -> EventDef:
+	var event: EventDef = _story(
+		&"traveller_at_dusk", "A traveller at dusk", &"exploration", GROWTH_DAY[&"traveller"],
+		"Someone walking alone has stopped at the edge of the firelight, with the look of a "
+		+ "person who has come a long way and would like to be asked in."
+	)
+	event.requires.append_array([
+		_cave_only(), _earned(&"bigger_group"), _room_for(1), _has(&"food", 12),
+	])
+	event.choices = _choices([
+		_answer(
+			&"offer_a_place", "Offer them a place by the fire",
+			"The traveller sat down by the fire, ate, and stayed, and the group grew.",
+			[_eff(SimEffect.Kind.ADD_VILLAGER, &"", 1), _set_flag(&"traveller_stayed")],
+		),
+		_answer(
+			&"feed_and_send_on", "Feed them and send them on with a story to tell",
+			"The traveller ate what was offered, told a long story of the valleys beyond, and "
+			+ "went on in the morning.",
+			[_spend(&"food", 4), _set_flag(&"traveller_fed")],
+			[_has(&"food", 4)],
+		),
+	])
+	return event
+
+
+func _too_many_for_the_cave() -> EventDef:
+	var event: EventDef = _story(
+		&"too_many_for_the_cave", "Too many for the cave", &"settlement", GROWTH_DAY[&"crowded"],
+		"There is no more room by the fire. People sleep with their feet in each other's "
+		+ "hair, and the mornings are loud."
+	)
+	event.requires.append_array([
+		_cave_only(), _earned(&"bigger_group"), _no_room(), _has(&"wood", 8),
+	])
+	event.choices = _choices([
+		_answer(
+			&"raise_a_lean_to", "Raise a lean-to against the cave mouth",
+			"A lean-to of poles and hides went up against the cave mouth, and there was room again.",
+			[_spend(&"wood", 8), _set_flag(&"lean_to")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"a_family_goes", "Let a family go and make their own camp by the river",
+			"A family took what was theirs and went down to the river to make their own camp. "
+			+ "Their smoke could be seen from the cave mouth on still evenings.",
+			[_eff(SimEffect.Kind.REMOVE_VILLAGER, &"", 2), _set_flag(&"kin_by_the_river")],
+		),
+	])
+	return event
+
+
+func _who_leads_the_foraging() -> EventDef:
+	var event: EventDef = _story_about(
+		&"who_leads_the_foraging", "Who leads the foraging", &"character",
+		GROWTH_DAY[&"foraging"],
+		"The food pile is thinner than it was, and the baskets come back later. {subject} "
+		+ "knows where the best of the river bank is.",
+		VillagerState.TRAIT_NATURE_LOVING
+	)
+	event.requires.append_array([_cave_only(), _earned(&"bigger_group"), _food_below(30)])
+	event.choices = _choices([
+		_answer(
+			&"lead_the_baskets", "Let {subject} lead the foraging parties",
+			"{subject} took the baskets down the river bank, and everyone came back with more.",
+			[
+				_eff(SimEffect.Kind.SET_PROFESSION, &"forager"), _set_flag(&"forager_chosen"),
+				_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 6),
+			],
+		),
+		_answer(
+			&"share_the_baskets", "Share the foraging out evenly",
+			"Everyone took a turn with the baskets, and the work went round the fire like a story.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 4), _set_flag(&"foraging_shared")],
+		),
+	])
+	return event
+
+
+func _family_at_the_door() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"family_at_the_door", "Another family at the door", &"exploration",
+		SETTLED_GROWTH_DAY[&"door"],
+		"A family has come up the road with everything they own on their backs. They have "
+		+ "heard there is bread here."
+	)
+	event.requires.append_array([
+		_earned(&"a_village"), _room_for(2), _has(&"food", 16), _has(&"wood", 10),
+	])
+	event.choices = _choices([
+		_answer(
+			&"take_them_in", "Take them in",
+			"The family was taken in, and the village grew by two more mouths and two more pairs "
+			+ "of hands.",
+			[_eff(SimEffect.Kind.ADD_VILLAGER, &"", 2), _set_flag(&"door_open")],
+		),
+		_answer(
+			&"raise_them_a_roof", "Help them raise a roof of their own by the river",
+			"The whole village turned out for a day to raise a roof by the river, and the family "
+			+ "moved in before dark.",
+			[_spend(&"wood", 10), _set_flag(&"roof_by_the_river")],
+			[_has(&"wood", 10)],
+		),
+	])
+	return event
+
+
+func _too_many_for_the_village() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"too_many_for_the_village", "Too many for the village", &"settlement",
+		SETTLED_GROWTH_DAY[&"crowded"],
+		"The huts are full, and the paths between them are never quiet. Everyone agrees "
+		+ "something has to give."
+	)
+	event.requires.append_array([_earned(&"a_village"), _no_room(), _has(&"wood", 12)])
+	event.choices = _choices([
+		_answer(
+			&"raise_another_roof", "Raise another roof",
+			"Another roof went up at the end of the row, and the village had room again.",
+			[_spend(&"wood", 12), _set_flag(&"extra_roofs")],
+			[_has(&"wood", 12)],
+		),
+		_answer(
+			&"a_family_moves_on", "Let a family go and start a village of their own",
+			"A family loaded a cart and went to start a village of their own, a good day's walk "
+			+ "down the river. They promised to send word.",
+			[_eff(SimEffect.Kind.REMOVE_VILLAGER, &"", 2), _set_flag(&"kin_moved_on")],
+		),
+	])
+	return event
+
+
+func _a_lean_spring() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"a_lean_spring", "A lean spring", &"settlement", SETTLED_GROWTH_DAY[&"lean"],
+		"The stores are low and the new grain is not yet up. The village is bigger than it "
+		+ "has ever been, and everyone is counting."
+	)
+	event.requires.append_array([_earned(&"a_village"), _food_below(24)])
+	event.choices = _choices([
+		_answer(
+			&"work_the_river_and_fields", "Send everyone out to the river and the fields for a day",
+			"Everyone went out to the river and the fields, and the baskets came home heavy.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 8), _set_flag(&"lean_spring_worked")],
+		),
+		_answer(
+			&"open_the_winter_store", "Open the winter store and ration it",
+			"The winter store was opened and every portion was counted out, and nobody went to "
+			+ "bed hungry.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 6), _set_flag(&"lean_spring_rationed")],
 		),
 	])
 	return event
