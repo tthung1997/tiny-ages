@@ -254,7 +254,7 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 		if SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["west_"]):
 			west_props += 1
 	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size() + west_props)
-	assert_eq(east, backdrop + WorldLayout.SIDE_STATIC["east_"].size())
+	assert_eq(east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + 1, "Plus the sea")
 	assert_eq(view.camera_x(), 0, "Starts on the camp")
 	assert_eq(view.clickable_regions().size(), 2, "An arrow region on each edge")
 	view.pan_by(-100000.0)
@@ -318,6 +318,56 @@ func test_the_fire_flickers_only_while_it_is_lit_and_in_view() -> void:
 	assert_eq(view._fire_frame, 1, "Looking at the forest, the fire sleeps")
 	view.free()
 	window.free()
+
+
+func test_the_sea_swells_only_while_it_is_in_view_and_drawn() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	var step: float = WorldLayout.SEA_FRAME_SECONDS + 0.01
+	view._process(step)
+	assert_eq(view._sea_frame, 0, "The camp cannot see the sea, so it sleeps")
+	view.jump_camera(float(WorldLayout.WORLD_RIGHT - WorldLayout.VIEW_SIZE.x))
+	view._process(step)
+	assert_eq(view._sea_frame, 1, "A phase passes each interval")
+	assert_true(view._sea.texture == view._sea_frames[1])
+	view._process(WorldLayout.SEA_FRAME_SECONDS * 0.4)
+	assert_eq(view._sea_frame, 1, "Not before the interval")
+	for _pass: int in WorldLayout.SEA_FRAMES:
+		view._process(step)
+	assert_eq(view._sea_frame, 1, "The phases loop")
+	view.visible = false
+	view._process(step)
+	assert_eq(view._sea_frame, 1, "Nothing drawn, nothing animated")
+	view.visible = true
+	view.jump_camera(-384.0)
+	view._process(step)
+	assert_eq(view._sea_frame, 1, "Looking at the forest, the sea sleeps")
+	view.free()
+	window.free()
+
+
+func test_the_sea_phases_cover_the_same_water() -> void:
+	var ground: Image = (load(WorldLayout.ASSET_DIR + "east_ground.png") as Texture2D).get_image()
+	var first: Image = null
+	for frame: int in WorldLayout.SEA_FRAMES:
+		var path: String = "%s%s.png" % [WorldLayout.ASSET_DIR, WorldLayout.sea_frame_name(frame)]
+		assert_true(ResourceLoader.exists(path), "Sea phase %d exists" % frame)
+		var image: Image = (load(path) as Texture2D).get_image()
+		assert_eq(image.get_size(), ground.get_size(), "A sea phase is a whole east page")
+		if first == null:
+			first = image
+			continue
+		var mismatched: int = 0
+		for y: int in image.get_height():
+			for x: int in image.get_width():
+				if (image.get_pixel(x, y).a > 0.0) != (first.get_pixel(x, y).a > 0.0):
+					mismatched += 1
+		assert_eq(mismatched, 0, "Phase %d paints the same pixels as phase 0" % frame)
+	var water_x: int = int(WorldLayout.SEA_X.x) - WorldLayout.SIDE_PAGES["east_"]
+	assert_true(first.get_pixel(water_x + 40, 70).a > 0.0, "Open sea is in the overlay")
+	assert_eq(first.get_pixel(40, 70).a, 0.0, "The river and the land are not")
 
 
 func _sky_view(hour: int, lit: bool = true) -> Array:
