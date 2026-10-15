@@ -12,14 +12,18 @@ text = "The grass glittered with frost this morning, and then it was gone."
 [sub_resource type="Resource" id="Resource_clh3w"]
 script = ExtResource("3_781kj")
 kind = 5
-amount = 20
+
+[sub_resource type="Resource" id="Resource_6e1o8"]
+script = ExtResource("3_781kj")
+kind = 13
+amount = 3
 
 [resource]
 script = ExtResource("4_b8hjk")
 id = &"frost_glitter"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_781kj")]([SubResource("Resource_clh3w")])
+requires = Array[ExtResource("3_781kj")]([SubResource("Resource_clh3w"), SubResource("Resource_6e1o8")])
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("2_0n617")]([SubResource("Resource_fk0u6")])

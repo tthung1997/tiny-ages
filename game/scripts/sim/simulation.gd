@@ -16,6 +16,10 @@ signal era_advanced(era: EraDef)
 signal villager_joined(villager: VillagerState)
 signal villager_left(villager: VillagerState)
 signal achievement_earned(key: StringName, title: String)
+## The weather changed: `weather_id` is the new weather, or &"" when the sky cleared.
+signal weather_changed(weather_id: StringName)
+signal building_damaged(building: BuildingState)
+signal building_repaired(building: BuildingState)
 
 var world: WorldState
 var config: SimConfig
@@ -26,6 +30,7 @@ var _villager_system: VillagerSystem = VillagerSystem.new()
 var _food_system: FoodSystem = FoodSystem.new()
 var _construction_system: ConstructionSystem = ConstructionSystem.new()
 var _plant_system: PlantSystem = PlantSystem.new()
+var _weather_system: WeatherSystem = WeatherSystem.new()
 var _event_system: EventSystem = EventSystem.new()
 var _era_system: EraSystem = EraSystem.new()
 var _effects: EffectRunner = EffectRunner.new()
@@ -135,6 +140,10 @@ func is_decision_stale(decision: PendingDecision) -> bool:
 				or condition.kind == SimCondition.Kind.RESOURCE_AT_LEAST \
 				or condition.kind == SimCondition.Kind.ITEM_AT_LEAST \
 				or condition.kind == SimCondition.Kind.HAS_ROOM \
+				or condition.kind == SimCondition.Kind.SEASON_IS \
+				or condition.kind == SimCondition.Kind.WEATHER_IS \
+				or condition.kind == SimCondition.Kind.HAS_BUILDING_TAG \
+				or condition.kind == SimCondition.Kind.HAS_DAMAGED_BUILDING \
 				or condition.kind == SimCondition.Kind.CONSTRUCTION_IDLE
 		if not transient and not condition.is_met(world, config):
 			return true
@@ -297,6 +306,88 @@ func refresh_housing() -> void:
 		if world.has_flag(flag):
 			total += content.flag_housing[flag]
 	world.housing = total
+	if world.building_tags.size() != content.buildings.size():
+		world.building_tags.clear()
+		for def: BuildingDef in content.buildings:
+			world.building_tags[def.id] = def.tags
+
+
+## Starts `weather_id` for `ticks` ticks (0 draws the span from its WeatherDef) in place of any
+## weather there is. Unknown weather is an error and changes nothing.
+func set_weather(weather_id: StringName, ticks: int = 0) -> void:
+	var def: WeatherDef = content.get_weather(weather_id)
+	if def == null:
+		push_error("Unknown weather '%s'" % weather_id)
+		return
+	var span: int = ticks
+	if span <= 0:
+		span = roundi(rng.randf_range(def.min_days, def.max_days) * float(config.ticks_per_day))
+	world.weather = weather_id
+	world.weather_started_tick = world.tick
+	world.weather_until_tick = world.tick + maxi(span, 1)
+	weather_changed.emit(weather_id)
+
+
+func clear_weather() -> void:
+	if world.weather == &"":
+		return
+	world.weather = &""
+	world.weather_started_tick = world.tick
+	world.weather_until_tick = 0
+	weather_changed.emit(&"")
+
+
+## The current weather's definition, or null under a clear sky.
+func current_weather() -> WeatherDef:
+	return content.get_weather(world.weather)
+
+
+## How much of the usual the group brings in while the weather lasts (1.0 under a clear sky).
+func food_multiplier() -> float:
+	var def: WeatherDef = current_weather()
+	return def.food_multiplier if def != null else 1.0
+
+
+func wood_multiplier() -> float:
+	var def: WeatherDef = current_weather()
+	return def.wood_multiplier if def != null else 1.0
+
+
+## Weather breaks one completed building that carries `tag` (any if empty), picked with the
+## simulation's rng. Returns it, or null when nothing can be damaged.
+func damage_building(
+	tag: StringName, text: String, kind: StringName = &"nature", event_id: StringName = &""
+) -> BuildingState:
+	var candidates: Array[BuildingState] = world.damageable_buildings(tag)
+	if candidates.is_empty():
+		return null
+	var hit: BuildingState = candidates[rng.randi_range(0, candidates.size() - 1)]
+	hit.damaged = true
+	hit.damaged_tick = world.tick
+	var def: BuildingDef = content.get_building(hit.def_id)
+	var building_name: String = def.display_name if def != null else String(hit.def_id)
+	var line: String = text.replace("{building}", building_name) if not text.is_empty() \
+			else "The %s was damaged." % building_name
+	add_journal(line, kind, event_id, &"")
+	building_damaged.emit(hit)
+	return hit
+
+
+## Mends every damaged building, or only those built from `def_id`. Returns how many.
+func repair_buildings(def_id: StringName = &"") -> int:
+	var mended: int = 0
+	for building: BuildingState in world.buildings:
+		if building.complete and building.damaged and (def_id == &"" or building.def_id == def_id):
+			repair_building(building)
+			mended += 1
+	return mended
+
+
+func repair_building(building: BuildingState) -> void:
+	if not building.damaged:
+		return
+	building.damaged = false
+	building_repaired.emit(building)
 
 
 func grant_achievement(key: StringName, title: String) -> void:
@@ -328,6 +419,7 @@ func _step() -> void:
 	_construction_system.step(self)
 	_food_system.step(self)
 	_plant_system.step(self)
+	_weather_system.step(self)
 	refresh_housing()
 	_event_system.step(self)
 	_era_system.step(self)

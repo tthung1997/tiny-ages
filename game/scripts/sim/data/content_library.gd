@@ -7,6 +7,8 @@ extends Resource
 @export var plants: Array[PlantDef] = []
 ## The ages of the arc. The lowest `order` is where a new world starts.
 @export var eras: Array[EraDef] = []
+## The kinds of weather events can start (see WeatherDef).
+@export var weathers: Array[WeatherDef] = []
 @export_group("Starting world")
 ## Each new world draws its starting group from these pools, using the world's seed, so every
 ## run begins with different people.
@@ -27,6 +29,13 @@ var _event_index: Dictionary = {}
 var _building_index: Dictionary = {}
 var _plant_index: Dictionary = {}
 var _era_index: Dictionary = {}
+var _weather_index: Dictionary = {}
+
+
+func get_weather(weather_id: StringName) -> WeatherDef:
+	if _weather_index.size() != weathers.size():
+		_weather_index = _index_by_id(weathers)
+	return _weather_index.get(weather_id)
 
 
 func get_era(era_id: StringName) -> EraDef:
@@ -85,6 +94,12 @@ func validate() -> PackedStringArray:
 	_check_unique_ids(buildings, "building", problems)
 	_check_unique_ids(plants, "plant", problems)
 	_check_unique_ids(eras, "era", problems)
+	_check_unique_ids(weathers, "weather", problems)
+	for weather: WeatherDef in weathers:
+		if weather.max_days < weather.min_days:
+			problems.append("weather '%s' lasts at most less than its least" % weather.id)
+		if weather.then != &"" and get_weather(weather.then) == null:
+			problems.append("weather '%s' is followed by unknown '%s'" % [weather.id, weather.then])
 	var orders: Dictionary = {}
 	for era: EraDef in eras:
 		if orders.has(era.order):
@@ -244,6 +259,22 @@ func _check_conditions(
 		var era_kind: bool = condition.kind == SimCondition.Kind.ERA_AT_LEAST
 		if era_kind and not _has_era_order(condition.amount):
 			problems.append("%s requires era order %d, which no era has" % [where, condition.amount])
+		if condition.kind == SimCondition.Kind.SEASON_IS \
+				and (condition.amount < 0 or condition.amount >= Season.COUNT):
+			problems.append("%s requires season %d, which does not exist" % [where, condition.amount])
+		if condition.kind == SimCondition.Kind.WEATHER_IS \
+				and condition.key != &"" and get_weather(condition.key) == null:
+			problems.append("%s requires unknown weather '%s'" % [where, condition.key])
+		if condition.kind == SimCondition.Kind.HAS_BUILDING_TAG \
+				and condition.key != &"" and not _has_tag(condition.key):
+			problems.append("%s requires tag '%s', which no building has" % [where, condition.key])
+
+
+func _has_tag(tag: StringName) -> bool:
+	for building: BuildingDef in buildings:
+		if building.tags.has(tag):
+			return true
+	return false
 
 
 func _has_era_order(order: int) -> bool:
@@ -278,6 +309,12 @@ func _check_effects(
 			SimEffect.Kind.SEND_AWAY:
 				if effect.amount <= 0 or effect.key == &"":
 					problems.append("%s sends a villager away without a place or duration" % where)
+			SimEffect.Kind.SET_WEATHER:
+				if get_weather(effect.key) == null:
+					problems.append("%s starts unknown weather '%s'" % [where, effect.key])
+			SimEffect.Kind.DAMAGE_BUILDING:
+				if effect.key != &"" and not _has_tag(effect.key):
+					problems.append("%s damages tag '%s', which no building has" % [where, effect.key])
 
 
 func _check_unique_ids(items: Array, label: String, problems: PackedStringArray) -> void:

@@ -57,13 +57,17 @@ script = ExtResource("3_pqxmy")
 kind = 5
 amount = 192
 
+[sub_resource type="Resource" id="Resource_ug8px"]
+script = ExtResource("3_pqxmy")
+kind = 13
+
 [resource]
 script = ExtResource("4_5jebl")
 id = &"rising_river"
 title = "The river is rising"
 body = "Snowmelt has the river high, and it is creeping up the bank towards the cave mouth."
 category = &"nature"
-requires = Array[ExtResource("3_pqxmy")]([SubResource("Resource_alfwo"), SubResource("Resource_rw5c0")])
+requires = Array[ExtResource("3_pqxmy")]([SubResource("Resource_alfwo"), SubResource("Resource_rw5c0"), SubResource("Resource_ug8px")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_d6hwr")]([SubResource("Resource_jgs54"), SubResource("Resource_nrqgl")])

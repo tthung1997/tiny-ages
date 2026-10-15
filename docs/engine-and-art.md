@@ -15,7 +15,7 @@ Context: [MVP concept](mvp-concept.md) — a tiny world that lives at the edge o
 | A3 | **Style: chibi, chunky, rounded, 1px outline** | Cute, readable at glance size, cheap to animate, villagers recognisable by hair/colour. | — |
 | A4 | **Villager = "style A" mini chibi, 16 px tall**, professions via overlays | Smallest and cutest; keeps the settlement looking like a settlement; hair/colour carry identity. Chosen over larger/more detailed options (see [rejected](#6-options-considered-and-rejected)). | Faces prove too expressionless at 1×. |
 | A5 | **Native strip height ≈ 80 px** (384 px wide test) | At 2× that is 160 px on screen. Test 64–80 px native too. | — |
-| A6 | **Day/night and seasons as palette transforms**, not separate art | Night variant produced by a script from the day PNG and reads well. | A shader-based approach in Godot is cheaper (likely: do it there). |
+| A6 | **Day/night and seasons as palette transforms**, not separate art | Night variant produced by a script from the day PNG and reads well. Resolved for seasons: a small canvas shader shifts the green in the existing art (`assets/world/season_palette.gdshader`, `SeasonLook`) and a few pieces are drawn from the backdrop's own edges (`SeasonOverlay`: snow, blossom, leaves), so no per-season art. | Seasons that need real art for the tree line (a true bare tree) rather than a palette. |
 | A7 | **Background is layered** (sky, far hills, near hills, tree line, ground+props), and each display mode chooses layers: normal window shows all; strip/corner drop the sky and far hills and keep near hills + tree line | Keeps depth and "place" on the desktop without covering apps behind. The strip's visible/clickable region is the union of the kept layers, so hills and trees are clickable. | Hills in the strip feel intrusive (drop to tree line only) or too empty (add a taller range). |
 | A8 | **The world is wider than the strip**: the viewport shows one 384 px "page" (the camp) of a 3-page, 1152 px world (west forest and ridge, camp, east river and sea), and the player pans with edge arrows, click-drag, the wheel or A/D | The camp page cannot hold more villagers and places; the strip window already spans the screen, so more can be shown without taking space. The camp art stays as is; new pages are added at the sides. | The viewport should be wider on big monitors (make its width a setting), or panning gets in the way of glancing. |
 
@@ -125,7 +125,7 @@ Night = tint (`r·0.36+10, g·0.44+16, b·0.74+52`) with exceptions for self-lit
 - Bulb floats too high above the workshop; wheat rows are busy; sheep/rabbit generic.
 - Night: window glow too busy ("sunflower"), sheep go bluish.
 - `bun` hair reads as a blob; `tuft` is minimal. Faces are 1–2 px — hand-polish after the style is frozen.
-- Missing: campfire/bulb/sheep animation, sleep/carry poses, seasons, weather, wildlife, more buildings, UI icons, achievements art.
+- Missing: campfire/bulb/sheep animation, sleep/carry poses, wildlife, more buildings, achievements art. (Seasons, rain and snow are in: see ages.md V12.)
 - Chop wind-up/strike and hammer frames have no motion smear.
 
 ## 4. LibreSprite scripting notes (hard-won)
@@ -172,7 +172,7 @@ Regeneration was verified pixel-identical to the originals produced during the d
 
 - Final strip height (64 / 80 / 96 px native) and default scale (2× vs 3×).
 - Is a taller "corner" mode a re-layout of the same assets or a separate scene?
-- Seasons: palette-only, or extra tree/ground variants?
+- Seasons: a palette shift plus snow, blossom and leaves is in; does the tree line need real bare-tree art (a winter variant) once someone looks closely?
 - Do villagers get faces beyond dot eyes (expressions for events)?
 - Importer design for Godot (per-sprite JSON vs atlas + naming convention).
 

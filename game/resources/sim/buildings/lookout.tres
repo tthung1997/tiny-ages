@@ -11,3 +11,4 @@ cost = Dictionary[StringName, int]({
 &"wood": 8
 })
 work_required = 36
+tags = Array[StringName]([&"exposed"])

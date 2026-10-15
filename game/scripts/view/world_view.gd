@@ -42,6 +42,8 @@ var _fire_frame: int = 0
 var _fire_clock: float = 0.0
 var _sea: Sprite2D
 var _sea_frames: Array[Texture2D] = []
+var _sea_sets: Array = []
+var _sea_state: int = WeatherLook.SEA_CALM
 var _sea_frame: int = 0
 var _sea_clock: float = 0.0
 var _stars: Sprite2D
@@ -55,6 +57,13 @@ var _drag_mouse_x: float = 0.0
 var _press_position: Vector2 = Vector2.ZERO
 var _drag_camera_x: float = 0.0
 var _applied_pixel: int = -999999
+var _season_ground: ShaderMaterial = ShaderMaterial.new()
+var _season_trees: ShaderMaterial = ShaderMaterial.new()
+var _applied_season: int = -1
+var _season_overlays: Array[Sprite2D] = []
+var _weather: WeatherLayer = WeatherLayer.new()
+
+const SEASON_SHADER: String = "res://assets/world/season_palette.gdshader"
 
 
 func setup(sim: Simulation, window: DesktopWindow) -> void:
@@ -65,18 +74,34 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_clip)
 	_clip.add_child(_world)
+	var shader: Shader = load(SEASON_SHADER) as Shader
+	if shader == null:
+		push_error("Missing season shader: %s" % SEASON_SHADER)
+	_season_ground.shader = shader
+	_season_trees.shader = shader
+	_world.material = _season_ground
 	_stars = _make_sky_sprite(_load_art(WorldLayout.STARS))
 	_sun = _make_sky_sprite(_celestial(0))
 	_moon = _make_sky_sprite(_celestial(1))
+	add_child(_weather)
+	_weather.setup(_clip)
 	add_child(_tint)
 	for index: int in WorldLayout.BACKDROP.size():
 		var layer: StringName = WorldLayout.BACKDROP[index]
 		_backdrop[layer] = _make_backdrop_pages(layer, -100 + index)
+		if layer == &"trees":
+			for trees: Sprite2D in _backdrop[layer]:
+				trees.use_parent_material = false
+				trees.material = _season_trees
 	_sea = _make_sprite(
 		WorldLayout.sea_frame_name(0), WorldLayout.SEA_Z, float(WorldLayout.SIDE_PAGES["east_"])
 	)
-	for frame: int in WorldLayout.SEA_FRAMES:
-		_sea_frames.append(_load_art(WorldLayout.sea_frame_name(frame)))
+	for state: int in WorldLayout.SEA_STATE_PREFIX.size():
+		var frames: Array[Texture2D] = []
+		for frame: int in WorldLayout.SEA_FRAMES:
+			frames.append(_load_art(WorldLayout.sea_frame_name(frame, state)))
+		_sea_sets.append(frames)
+	_sea_frames = _sea_sets[WeatherLook.SEA_CALM]
 	for layer: StringName in WorldLayout.STATIC_Z:
 		_static_layers.append(_make_sprite(layer, WorldLayout.STATIC_Z[layer]))
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -101,6 +126,7 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	var additive: CanvasItemMaterial = CanvasItemMaterial.new()
 	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	_fire_glow.material = additive
+	_fire_glow.use_parent_material = false
 	_ui.layout(float(WorldLayout.VIEW_SIZE.x))
 	_ui.z_index = 1000
 	_ui.pan_requested.connect(func(direction: int) -> void: pan_by(direction * WorldLayout.PAN_STEP))
@@ -118,6 +144,7 @@ func set_full_scene(full: bool) -> void:
 		for sprite: Sprite2D in _backdrop[layer]:
 			sprite.visible = shown
 	if _sim != null:
+		_weather.apply(_sim.world, _full_scene)
 		update_light()
 
 
@@ -145,21 +172,37 @@ func camera_x() -> int:
 
 ## Areas that must stay clickable in strip mode (the pan arrows), in viewport art pixels.
 func clickable_regions() -> Array[Rect2i]:
-	return _ui.clickable_regions()
+	var regions: Array[Rect2i] = _ui.clickable_regions()
+	if covers_sky():
+		regions.append(Rect2i(Vector2i.ZERO, WorldLayout.VIEW_SIZE))
+	return regions
+
+
+## Whether rain or snow is falling across the whole viewport with no sky drawn behind it (strip and
+## corner mode), so the viewport is drawn, and therefore clickable, while it lasts.
+func covers_sky() -> bool:
+	return _weather.covers_sky()
 
 
 func on_world_changed() -> void:
+	_refresh_season()
 	_refresh_props()
 	_refresh_actors()
+	_weather.apply(_sim.world, _full_scene)
 	update_light()
 
 
-## Re-tints the scene for the current time of day. Cheap enough to call every frame.
+## Re-tints the scene for the current time of day, season and weather. Cheap enough to call every
+## frame.
 func update_light() -> void:
 	var hour: float = DayNight.hour_of_world(_sim.world, _sim.config)
 	var lit: bool = _sim.world.has_fire()
-	var tint: Color = DayNight.tint(hour, lit)
+	var season: int = _sim.config.season_at(_sim.world.tick)
+	var tint: Color = DayNight.tint(hour, lit) * SeasonLook.tint(season) \
+			* WeatherLook.tint(_sim.world.weather)
 	_tint.color = tint
+	_sea.modulate = SeasonLook.sea_tint(season) * WeatherLook.sea_tint(_sim.world.weather)
+	_set_sea_state(WeatherLook.sea_state(_sim.world.weather))
 	# The tint dims every piece, so the glow is boosted back to its own colour and only fades
 	# in with the dark.
 	var strength: float = DayNight.night_amount(hour) if lit else 0.0
@@ -214,6 +257,15 @@ func set_fire_frame(frame: int) -> void:
 	update_light()
 
 
+## Swaps to the frames of a calmer or rougher sea, keeping the phase so the swell does not jump.
+func _set_sea_state(state: int) -> void:
+	if state == _sea_state:
+		return
+	_sea_state = state
+	_sea_frames = _sea_sets[state]
+	_sea.texture = _sea_frames[_sea_frame]
+
+
 ## The sea swaps its surf and swell phase on a slow clock. It does nothing while the view is
 ## hidden or none of the sea is on screen.
 func _animate_sea(delta: float) -> void:
@@ -222,7 +274,7 @@ func _animate_sea(delta: float) -> void:
 	if float(_camera.pixel_x()) + float(WorldLayout.VIEW_SIZE.x) <= WorldLayout.SEA_X.x:
 		return
 	_sea_clock += delta
-	if _sea_clock < WorldLayout.SEA_FRAME_SECONDS:
+	if _sea_clock < WorldLayout.SEA_FRAME_SECONDS * WeatherLook.swell_scale(_sim.world.weather):
 		return
 	_sea_clock = 0.0
 	_sea_frame = posmod(_sea_frame + 1, WorldLayout.SEA_FRAMES)
@@ -328,6 +380,42 @@ func _refresh_props() -> void:
 		_rebuild_skyline()
 
 
+## The season's palette on the scrolling world, and the few pieces it adds (snow, blossom,
+## leaves). Only does anything when the season turns.
+func _refresh_season() -> void:
+	var season: int = _sim.config.season_at(_sim.world.tick)
+	if season == _applied_season:
+		return
+	_applied_season = season
+	for key: StringName in SeasonLook.params(season):
+		_season_ground.set_shader_parameter(key, SeasonLook.params(season)[key])
+	for key: StringName in SeasonLook.tree_params(season):
+		_season_trees.set_shader_parameter(key, SeasonLook.tree_params(season)[key])
+	_rebuild_season_overlays(season)
+
+
+func _rebuild_season_overlays(season: int) -> void:
+	for old: Sprite2D in _season_overlays:
+		old.queue_free()
+	_season_overlays.clear()
+	for layer: StringName in SeasonOverlay.LAYERS:
+		for sprite: Sprite2D in _backdrop.get(layer, []):
+			var source: Image = sprite.texture.get_image() if sprite.texture != null else null
+			if source == null or source.is_empty():
+				continue
+			var overlay: Image = SeasonOverlay.build(source, layer, season)
+			if overlay == null:
+				continue
+			var piece: Sprite2D = Sprite2D.new()
+			piece.centered = false
+			piece.use_parent_material = true
+			piece.position = sprite.position
+			piece.z_index = sprite.z_index
+			piece.texture = ImageTexture.create_from_image(overlay)
+			_world.add_child(piece)
+			_season_overlays.append(piece)
+
+
 func _refresh_actors() -> void:
 	var world: WorldState = _sim.world
 	var cloth: bool = WorldLayout.wears_cloth(world)
@@ -379,6 +467,7 @@ func _make_backdrop_pages(layer: StringName, z: int) -> Array[Sprite2D]:
 func _make_sprite(layer: StringName, z: int, at_x: float = 0.0) -> Sprite2D:
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.centered = false
+	sprite.use_parent_material = true
 	sprite.z_index = z
 	sprite.position.x = at_x
 	sprite.texture = _load_art(layer)
@@ -399,6 +488,7 @@ func _load_art(layer: StringName) -> Texture2D:
 func _make_piece(layer: StringName, z: int, at_x: float = 0.0) -> Sprite2D:
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.centered = false
+	sprite.use_parent_material = true
 	sprite.z_index = z
 	sprite.position.x = at_x
 	sprite.visible = false

@@ -27,6 +27,13 @@ const FRACTION_SCALE: float = 1000000.0
 ## Tick the current era began; the entry gate of the next era measures from here.
 @export var era_started_tick: int = 0
 
+@export_group("Weather")
+## The weather now (a WeatherDef id), or &"" for clear sky, and the tick its spell ends. The tick
+## it began is kept for the view (a tornado shows only on its first day).
+@export var weather: StringName = &""
+@export var weather_started_tick: int = 0
+@export var weather_until_tick: int = 0
+
 @export_group("Stocks")
 @export var resources: Dictionary[StringName, int] = {}
 ## Sub-unit production not yet converted into whole resources.
@@ -57,6 +64,9 @@ const FRACTION_SCALE: float = 1000000.0
 ## How many villagers the camp holds. Derived from the age, the buildings and the answers the
 ## group gave, and kept up to date by Simulation.refresh_housing; it is never saved.
 var housing: int = 0
+## What weather can reach, by building definition: def id to its tags (BuildingDef.tags). Derived
+## from the content like `housing`, kept up to date by Simulation.refresh_housing, never saved.
+var building_tags: Dictionary = {}
 
 
 func find_villager(villager_id: StringName) -> VillagerState:
@@ -122,6 +132,26 @@ func constructing() -> BuildingState:
 		if not building.complete:
 			return building
 	return null
+
+
+## Completed buildings weather could damage now: not already damaged, and carrying `tag`
+## (any building if `tag` is empty).
+func damageable_buildings(tag: StringName) -> Array[BuildingState]:
+	var found: Array[BuildingState] = []
+	for building: BuildingState in buildings:
+		if not building.complete or building.damaged:
+			continue
+		var tags: Array = building_tags.get(building.def_id, [])
+		if tag == &"" or tags.has(tag):
+			found.append(building)
+	return found
+
+
+func has_damaged_building() -> bool:
+	for building: BuildingState in buildings:
+		if building.complete and building.damaged:
+			return true
+	return false
 
 
 func has_achievement(key: StringName) -> bool:

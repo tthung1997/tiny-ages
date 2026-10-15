@@ -26,6 +26,11 @@ const PIPS_REGIONS: Array[Rect2i] = [
 ]
 const WOOD_POSITION: Vector2 = Vector2(285.0, 3.0)
 const FOOD_POSITION: Vector2 = Vector2(307.0, 3.0)
+## The season glyph sits left of the gauges: one 12x12 cell of its own sheet.
+const GLYPH_SHEET_PATH: String = "res://assets/ui/season_glyphs.png"
+const GLYPH_SIZE: Vector2i = Vector2i(12, 12)
+const GLYPH_POSITION: Vector2 = Vector2(264.0, 3.0)
+const GLYPH_QUIET: Color = Color(1.0, 1.0, 1.0, 0.85)
 const BULB_POSITION: Vector2 = Vector2(331.0, 3.0)
 const JOURNAL_POSITION: Vector2 = Vector2(349.0, 3.0)
 const GEAR_POSITION: Vector2 = Vector2(366.0, 3.0)
@@ -39,6 +44,9 @@ var _gear: TextureButton = TextureButton.new()
 var _wood: StockIcon
 var _food: StockIcon
 var _badge: Label = Label.new()
+var _glyph: TextureButton = TextureButton.new()
+var _glyph_cell: int = -1
+var _glyph_frames: Array[AtlasTexture] = []
 var _time: float = 0.0
 var _frames: Array[AtlasTexture] = []
 
@@ -49,6 +57,16 @@ func _init() -> void:
 	_sheet = load(SHEET_PATH) as Texture2D
 	_wood = _stock_icon(&"wood", WOOD_REGION, WOOD_POSITION)
 	_food = _stock_icon(&"food", FOOD_REGION, FOOD_POSITION)
+	var glyph_sheet: Texture2D = load(GLYPH_SHEET_PATH) as Texture2D
+	for cell: int in WeatherLook.GLYPH_COUNT:
+		var frame: AtlasTexture = AtlasTexture.new()
+		frame.atlas = glyph_sheet
+		frame.region = Rect2(Vector2(cell * GLYPH_SIZE.x, 0), Vector2(GLYPH_SIZE))
+		_glyph_frames.append(frame)
+	_glyph.position = GLYPH_POSITION
+	_glyph.self_modulate = GLYPH_QUIET
+	_glyph.pressed.connect(func() -> void: stores_pressed.emit())
+	add_child(_glyph)
 	for frame: int in 2:
 		_frames.append(_atlas(Rect2i(Vector2i(frame * BULB_FRAME.x, 0), BULB_FRAME)))
 	_bulb.texture_normal = _frames[0]
@@ -91,6 +109,22 @@ func food_gauge() -> StockIcon:
 	return _food
 
 
+## The glyph for the season (the tooltip also names rain or snow). Cheap to call every frame.
+func update_season(world: WorldState, config: SimConfig) -> void:
+	var cell: int = WeatherLook.glyph_cell(world, config)
+	if cell != _glyph_cell:
+		_glyph_cell = cell
+		_glyph.texture_normal = _glyph_frames[cell]
+	var text: String = WeatherLook.describe(world, config)
+	if _glyph.tooltip_text != text:
+		_glyph.tooltip_text = text
+
+
+## Which glyph cell is showing, for looking at what the strip says.
+func glyph_cell() -> int:
+	return _glyph_cell
+
+
 ## `waiting` is how many decisions are pending.
 func update_pending(waiting: int) -> void:
 	_bulb.visible = waiting > 0
@@ -109,6 +143,7 @@ func badge_text() -> String:
 ## The areas that must stay clickable in strip mode, in viewport art pixels.
 func clickable_regions() -> Array[Rect2i]:
 	var regions: Array[Rect2i] = [
+		Rect2i(Vector2i(_glyph.position), GLYPH_SIZE),
 		Rect2i(Vector2i(_wood.position), Vector2i(StockIcon.SIZE)),
 		Rect2i(Vector2i(_food.position), Vector2i(StockIcon.SIZE)),
 		Rect2i(Vector2i(_journal.position), JOURNAL_REGION.size),

@@ -123,10 +123,21 @@ func test_stories_open_on_their_day_and_only_in_the_settled_age() -> void:
 			"%s should wait for its day" % event_id
 		)
 		settled.world.era_started_tick -= DAY_TICKS * 330
+		_enter_the_season_of(settled, event)
 		assert_true(
 			SimCondition.all_met(event.requires, settled.world, settled.config, subject),
 			"%s should be open late in the age" % event_id
 		)
+
+
+## A story that names a season waits for it: move the clock to the middle of that season.
+func _enter_the_season_of(sim: Simulation, event: EventDef) -> void:
+	for condition: SimCondition in event.requires:
+		if condition.kind == SimCondition.Kind.SEASON_IS and not condition.negate:
+			var seasons_on: int = posmod(condition.amount - sim.config.first_season, Season.COUNT)
+			var day: int = seasons_on * sim.config.days_per_season \
+					+ sim.config.days_per_season / 2
+			sim.world.tick = day * DAY_TICKS
 
 
 func test_the_farmers_and_the_herders_get_their_own_versions() -> void:

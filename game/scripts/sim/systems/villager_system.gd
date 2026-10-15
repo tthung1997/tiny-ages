@@ -49,8 +49,10 @@ func step(sim: Simulation) -> void:
 		working.append(villager)
 	var foragers: int = _count(working, VillagerState.ACTIVITY_FORAGE)
 	var hunters: int = _count(working, VillagerState.ACTIVITY_HUNT)
+	var food_rate: float = sim.food_multiplier()
+	var wood_rate: float = sim.wood_multiplier()
 	for villager: VillagerState in working:
-		_work(sim, villager, foragers, hunters)
+		_work(sim, villager, foragers, hunters, food_rate, wood_rate)
 
 
 func _count(villagers: Array[VillagerState], activity: StringName) -> int:
@@ -130,17 +132,22 @@ func _plenty(sim: Simulation, resource: StringName) -> float:
 	return 1.0
 
 
-func _work(sim: Simulation, villager: VillagerState, foragers: int, hunters: int) -> void:
+func _work(
+	sim: Simulation, villager: VillagerState, foragers: int, hunters: int,
+	food_rate: float = 1.0, wood_rate: float = 1.0
+) -> void:
 	var config: SimConfig = sim.config
 	var rate: float = config.gather_rate
 	if villager.has_trait(VillagerState.TRAIT_INDUSTRIOUS):
 		rate *= config.industrious_multiplier
 	match villager.activity:
 		VillagerState.ACTIVITY_GATHER_WOOD:
-			sim.world.add_resource_fraction(&"wood", rate)
+			sim.world.add_resource_fraction(&"wood", rate * wood_rate)
 		VillagerState.ACTIVITY_FORAGE:
-			sim.world.add_resource_fraction(&"food", rate * shared_ground(foragers, config))
+			sim.world.add_resource_fraction(
+				&"food", rate * food_rate * shared_ground(foragers, config)
+			)
 		VillagerState.ACTIVITY_HUNT:
 			sim.world.add_resource_fraction(
-				&"food", rate * HUNT_YIELD * shared_ground(hunters, config)
+				&"food", rate * food_rate * HUNT_YIELD * shared_ground(hunters, config)
 			)
