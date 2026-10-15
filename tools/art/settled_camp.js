@@ -244,12 +244,14 @@ function flaxsoak(b) {
   b.rect(2, 2, 2, 2, ROCK); b.px(2, 2, ROCKL); b.rect(14, 3, 3, 2, ROCK); b.px(14, 3, ROCKL); b.px(8, 3, ROCKD);
 }
 
-// Flax beaten out on the bank, 20x9: a flat stone, a heap of pale fibre and a wooden mallet.
+// Flax beaten out on the bank, 20x9: a golden sheaf laid flat on a stone, tied with cord, with a
+// pale heap of loosened fibre beside it and a wooden mallet.
 function flaxbeaten(b) {
-  b.ell(9, 6, 8, 2.6, ROCK); b.rect(2, 4, 14, 1, ROCKL);
-  b.ell(8, 3, 6, 2.4, '#efe6cf'); b.ell(7, 2, 4, 1.6, '#f7f1e0'); b.px(11, 4, CLOTHD); b.px(5, 3, CLOTHD);
-  b.line(14, 0, 18, 5, WOOD, 1); b.rect(13, 0, 4, 2, WOODL);
-  b.px(0, 7, '#c9b24a'); b.px(1, 8, '#a8923a'); b.px(18, 7, '#c9b24a');
+  b.rect(1, 6, 12, 2, ROCK); b.rect(1, 6, 12, 1, ROCKL);
+  b.rect(0, 3, 14, 3, '#d9c050'); b.rect(0, 3, 14, 1, '#ecd878'); b.rect(0, 5, 14, 1, '#a8923a');
+  b.rect(4, 3, 1, 3, '#8a5a36'); b.rect(10, 3, 1, 3, '#8a5a36');
+  b.ell(16, 6, 3, 1.8, '#efe6cf'); b.px(15, 5, CLOTHD); b.px(17, 7, CLOTHD);
+  b.line(7, 0, 11, 3, WOOD, 1); b.rect(5, 0, 3, 2, WOODL);
 }
 
 // The raised bank along the near edge of the river, 30x18, built up with earth and faced with
@@ -284,16 +286,16 @@ function reedraft(b) {
   b.rect(1, 6, 22, 1, WATERL);
 }
 
-// A fish weir of stones on the flats, 20x8: two curved arms of piled stones meeting in a point,
-// with a few fish held in the pool between.
+// A fish weir of stones on the flats, 20x8: a ring of piled stones with a gap on the sea side, and a
+// few fish held in the pool inside.
 function weir(b) {
-  var i, y, x;
-  for (i = 0; i < 8; i++) {
-    y = i; x = Math.round(i * i / 5);
-    b.rect(x, y, 3, 1, i % 2 ? ROCK : ROCKD); b.px(x, y, ROCKL);
-    b.rect(19 - x - 2, y, 3, 1, i % 2 ? ROCKD : ROCK); b.px(19 - x, y, ROCKL);
+  var i, a, x, y;
+  b.ell(10, 4, 8, 2.4, '#7cc0d8'); b.px(7, 4, '#cfd8e0'); b.px(8, 4, '#cfd8e0'); b.px(12, 3, '#cfd8e0'); b.px(13, 5, '#cfd8e0');
+  for (i = 0; i < 16; i++) {
+    a = i / 16 * Math.PI * 2; x = Math.round(10 + Math.cos(a) * 9); y = Math.round(4 + Math.sin(a) * 3);
+    if (i == 7 || i == 8) continue; // the gap the fish come in by
+    b.rect(x - 1, y - 1, 3, 2, i % 2 ? ROCK : ROCKD); b.px(x - 1, y - 1, ROCKL);
   }
-  b.rect(6, 5, 8, 2, '#7cc0d8'); b.px(8, 5, '#cfd8e0'); b.px(11, 6, '#cfd8e0'); b.px(10, 4, '#cfd8e0');
 }
 
 var layers = {};
@@ -322,9 +324,9 @@ layers.west_scarecrow = layerOf([obj(12, 18, 234, 76, scarecrow, { sh: 4 })]);
 layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
 layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
 // the river (camp page; the weir is on the east page, page-local x)
-layers.clay_pits = layerOf([obj(24, 9, 262, 79, claypits, { sh: 9 })]);
+layers.clay_pits = layerOf([obj(24, 9, 258, 79, claypits, { sh: 9 })]);
 layers.flax_thread = layerOf([obj(20, 9, 312, 72, flaxsoak, { sh: 0 })]);
-layers.flax_beaten = layerOf([obj(20, 9, 296, 74, flaxbeaten, { sh: 8 })]);
+layers.flax_beaten = layerOf([obj(20, 9, 298, 74, flaxbeaten, { sh: 8 })]);
 layers.river_bank = layerOf([obj(30, 18, 306, 80, riverbank, { sh: 0 })]);
 layers.boat_dugout = layerOf([obj(26, 8, 352, 70, dugout, { sh: 0 })]);
 layers.boat_raft = layerOf([obj(24, 7, 352, 70, reedraft, { sh: 0 })]);

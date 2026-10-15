@@ -199,7 +199,7 @@ function eastPage() {
   for (y = G; y < H; y++) {
     var re = riverEdge(y);
     for (x = 0; x < re; x++) {
-      var wc = y == G ? '#9fd0ea' : (y < G + 5 ? '#62a8d6' : '#4f93c4');
+      var wc = '#4f93c4'; // the same water as the camp's river, so there is no seam at x = 384
       L.ground.px(x, y, x < re - 2 ? wc : SAND_MID);
     }
     for (x = re; x < shoreEdge(y); x++) L.ground.px(x, y, landColor(x, y));
@@ -260,11 +260,12 @@ function ripple(B, x, y, phase) {
   else if (phase == 1) { B.rect(x - 2, y, 5, 1, '#d7eefa'); B.px(x, y - 1, '#d7eefa'); }
   else { B.rect(x - 4, y, 9, 1, '#a9d6ee'); B.rect(x - 2, y + 1, 5, 1, '#8cc8e8'); }
 }
-function bird(b, f) { // 8x7 wading bird on a reed top, facing right; the head dips on frame 1
+function bird(b, f) { // 8x9 white egret on a reed top, facing right; the head dips on frame 1
   var d = f == 1 ? 1 : 0;
-  b.rect(1, 3, 5, 3, '#7a6a58'); b.rect(1, 5, 5, 1, '#d8cdb8'); b.rect(0, 3 - (f == 2 ? 1 : 0), 1, 2, '#5a4a3a');
-  b.rect(5, 1 + d, 2, 3, '#4a4150'); b.px(7, 2 + d, '#e8b53a'); b.px(6, 1 + d, '#f7fbf7');
-  b.px(2, 6, '#e8b53a'); b.px(4, 6, '#e8b53a');
+  b.rect(1, 4, 5, 3, '#f7fbf7'); b.rect(1, 6, 5, 1, '#c9d3dc'); b.rect(0, 4 - (f == 2 ? 1 : 0), 1, 2, '#e4ebf0');
+  b.rect(5, 1 + d, 1, 4 - d, '#f7fbf7'); b.rect(6, 0 + d, 2, 2, '#f7fbf7'); b.px(7, 1 + d, '#2a2433');
+  b.px(8, 1 + d, '#f0a030'); b.px(8, 2 + d, '#f0a030');
+  b.px(2, 7, '#3a3a40'); b.px(4, 7, '#3a3a40'); b.px(2, 8, '#3a3a40'); b.px(4, 8, '#3a3a40');
 }
 function deer(b, up) { // 22x17 doe, facing left; the head is raised or lowered towards the water
   var C = '#a8703f', CD = '#7a4c28', CL = '#d9a566';
@@ -285,8 +286,8 @@ function riverLife(L, reedTops) {
     b = new Buf(W, H);
     for (k = 0; k < RINGS.length; k++) ripple(b, RINGS[k][0], RINGS[k][1], (f + k) % 3);
     for (i = 0; i < Math.min(2, n); i++) { // the two tallest clumps each have a bird on top
-      var tb = new Buf(8, 7); bird(tb, (f + i) % 3); if (i == 1) tb = mirror(tb);
-      blit(b, outlined(tb, OUT), reedTops[i].x + 3 - 1 - 4, reedTops[i].top - 7);
+      var tb = new Buf(9, 9); bird(tb, (f + i) % 3); if (i == 1) tb = mirror(tb);
+      blit(b, outlined(tb, OUT), reedTops[i].x + 3 - 1 - 4, reedTops[i].top - 9);
     }
     L['life_' + f] = b;
   }
