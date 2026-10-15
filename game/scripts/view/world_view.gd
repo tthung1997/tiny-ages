@@ -40,6 +40,10 @@ var _fire_glow: Sprite2D
 var _fire_frames: Array[Texture2D] = []
 var _fire_frame: int = 0
 var _fire_clock: float = 0.0
+var _sea: Sprite2D
+var _sea_frames: Array[Texture2D] = []
+var _sea_frame: int = 0
+var _sea_clock: float = 0.0
 var _stars: Sprite2D
 var _sun: Sprite2D
 var _moon: Sprite2D
@@ -68,6 +72,11 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	for index: int in WorldLayout.BACKDROP.size():
 		var layer: StringName = WorldLayout.BACKDROP[index]
 		_backdrop[layer] = _make_backdrop_pages(layer, -100 + index)
+	_sea = _make_sprite(
+		WorldLayout.sea_frame_name(0), WorldLayout.SEA_Z, float(WorldLayout.SIDE_PAGES["east_"])
+	)
+	for frame: int in WorldLayout.SEA_FRAMES:
+		_sea_frames.append(_load_art(WorldLayout.sea_frame_name(frame)))
 	for layer: StringName in WorldLayout.STATIC_Z:
 		_static_layers.append(_make_sprite(layer, WorldLayout.STATIC_Z[layer]))
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -205,10 +214,26 @@ func set_fire_frame(frame: int) -> void:
 	update_light()
 
 
+## The sea swaps its surf and swell phase on a slow clock. It does nothing while the view is
+## hidden or none of the sea is on screen.
+func _animate_sea(delta: float) -> void:
+	if not visible or not _sea.visible:
+		return
+	if float(_camera.pixel_x()) + float(WorldLayout.VIEW_SIZE.x) <= WorldLayout.SEA_X.x:
+		return
+	_sea_clock += delta
+	if _sea_clock < WorldLayout.SEA_FRAME_SECONDS:
+		return
+	_sea_clock = 0.0
+	_sea_frame = posmod(_sea_frame + 1, WorldLayout.SEA_FRAMES)
+	_sea.texture = _sea_frames[_sea_frame]
+
+
 func _process(delta: float) -> void:
 	if _camera.step(delta):
 		_apply_camera()
 	_animate_fire(delta)
+	_animate_sea(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
