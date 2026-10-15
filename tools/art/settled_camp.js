@@ -324,9 +324,9 @@ layers.west_scarecrow = layerOf([obj(12, 18, 234, 76, scarecrow, { sh: 4 })]);
 layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
 layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
 // the river (camp page; the weir is on the east page, page-local x)
-layers.clay_pits = layerOf([obj(24, 9, 258, 79, claypits, { sh: 9 })]);
+layers.clay_pits = layerOf([obj(24, 9, 308, 66, claypits, { sh: 9 })]);
 layers.flax_thread = layerOf([obj(20, 9, 312, 72, flaxsoak, { sh: 0 })]);
-layers.flax_beaten = layerOf([obj(20, 9, 298, 74, flaxbeaten, { sh: 8 })]);
+layers.flax_beaten = layerOf([obj(20, 9, 296, 79, flaxbeaten, { sh: 8 })]);
 layers.river_bank = layerOf([obj(30, 18, 306, 80, riverbank, { sh: 0 })]);
 layers.boat_dugout = layerOf([obj(26, 8, 352, 70, dugout, { sh: 0 })]);
 layers.boat_raft = layerOf([obj(24, 7, 352, 70, reedraft, { sh: 0 })]);
