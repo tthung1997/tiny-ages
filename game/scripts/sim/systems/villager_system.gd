@@ -27,6 +27,7 @@ func step(sim: Simulation) -> void:
 	var config: SimConfig = sim.config
 	var sleeping: bool = config.is_sleeping_hour(config.hour_of(world.tick))
 	var building_underway: bool = world.constructing() != null
+	var working: Array[VillagerState] = []
 	for villager: VillagerState in world.villagers:
 		if villager.is_away():
 			if world.tick < villager.away_until_tick:
@@ -45,7 +46,25 @@ func step(sim: Simulation) -> void:
 		if villager.activity_ticks_left <= 0 or villager.activity == VillagerState.ACTIVITY_REST \
 				or building_unwanted or drifts_to_build:
 			_choose_activity(sim, villager, building_underway)
-		_work(sim, villager)
+		working.append(villager)
+	var foragers: int = _count(working, VillagerState.ACTIVITY_FORAGE)
+	var hunters: int = _count(working, VillagerState.ACTIVITY_HUNT)
+	for villager: VillagerState in working:
+		_work(sim, villager, foragers, hunters)
+
+
+func _count(villagers: Array[VillagerState], activity: StringName) -> int:
+	var count: int = 0
+	for villager: VillagerState in villagers:
+		if villager.activity == activity:
+			count += 1
+	return count
+
+
+## What each of `crowd` villagers working the same ground brings back, as a share of a lone
+## worker's: the ground is shared, so more at once means less each.
+static func shared_ground(crowd: int, config: SimConfig) -> float:
+	return 1.0 / (1.0 + config.forage_crowding * float(maxi(crowd - 1, 0)))
 
 
 func _return_home(villager: VillagerState) -> void:
@@ -111,7 +130,7 @@ func _plenty(sim: Simulation, resource: StringName) -> float:
 	return 1.0
 
 
-func _work(sim: Simulation, villager: VillagerState) -> void:
+func _work(sim: Simulation, villager: VillagerState, foragers: int, hunters: int) -> void:
 	var config: SimConfig = sim.config
 	var rate: float = config.gather_rate
 	if villager.has_trait(VillagerState.TRAIT_INDUSTRIOUS):
@@ -120,6 +139,8 @@ func _work(sim: Simulation, villager: VillagerState) -> void:
 		VillagerState.ACTIVITY_GATHER_WOOD:
 			sim.world.add_resource_fraction(&"wood", rate)
 		VillagerState.ACTIVITY_FORAGE:
-			sim.world.add_resource_fraction(&"food", rate)
+			sim.world.add_resource_fraction(&"food", rate * shared_ground(foragers, config))
 		VillagerState.ACTIVITY_HUNT:
-			sim.world.add_resource_fraction(&"food", rate * HUNT_YIELD)
+			sim.world.add_resource_fraction(
+				&"food", rate * HUNT_YIELD * shared_ground(hunters, config)
+			)

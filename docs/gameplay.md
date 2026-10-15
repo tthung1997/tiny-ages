@@ -23,8 +23,8 @@ placeholder and does not yet follow these decisions; see "What this changes".
   names are not fixed; their traits shape which events they take part in and how those play out.
 - **P5 The settlement can grow, and has limits that give, never break.** Villagers arrive through
   decisions while the camp has room (the age, its buildings and the group's answers set it) and the
-  food to share. A group eats a little more per head as it grows, so a big one is hungrier than its
-  numbers; running short only moves what villagers do (more foraging, less wood and building), never
+  food to share. Everyone eats the same, but only foragers and hunters make food and they share the
+  ground, so a bigger group has to spend more of its days on food; running short only moves what villagers do (more foraging, less wood and building), never
   hurts anyone. When the camp is full, a fork eases it: build out, or a family leaves to live
   elsewhere (nobody dies). Population is the clearest progress signal on a tiny strip.
 - **P6 Fire is found, not given.** The first age starts without fire: the cave is cold and dark at

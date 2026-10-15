@@ -23,14 +23,24 @@ func _away(villager: VillagerState) -> void:
 
 # ---- eating ---------------------------------------------------------------------------------
 
-func test_a_group_eats_more_per_head_as_it_grows() -> void:
+func test_everyone_eats_the_same_whatever_the_size_of_the_group() -> void:
 	var config: SimConfig = SimFixture.load_config()
 	assert_eq(FoodSystem.ration_per_tick(0, config), 0.0)
 	var per_tick: float = config.food_per_villager_per_day / float(config.ticks_per_day)
-	assert_true(absf(FoodSystem.ration_per_tick(3, config) - per_tick * 3.0) < 0.00001)
-	var small: float = FoodSystem.ration_per_tick(4, config) / 4.0
-	var big: float = FoodSystem.ration_per_tick(8, config) / 8.0
-	assert_true(big > small, "A bigger group eats more per head")
+	for size: int in [1, 3, 8, 12]:
+		var share: float = FoodSystem.ration_per_tick(size, config) / float(size)
+		assert_true(absf(share - per_tick) < 0.00001, "%d villagers eat %f each" % [size, share])
+
+
+func test_foragers_share_the_ground_and_only_foragers() -> void:
+	var config: SimConfig = SimFixture.load_config()
+	assert_eq(VillagerSystem.shared_ground(0, config), 1.0)
+	assert_eq(VillagerSystem.shared_ground(1, config), 1.0, "A lone forager has it to themself")
+	var two: float = VillagerSystem.shared_ground(2, config)
+	var four: float = VillagerSystem.shared_ground(4, config)
+	assert_true(two < 1.0 and four < two, "More at once, less each")
+	# The group's catch still grows with every forager added, only more slowly.
+	assert_true(4.0 * four > 2.0 * two)
 
 
 func test_eating_takes_food_and_never_goes_below_zero_or_hurts_anyone() -> void:

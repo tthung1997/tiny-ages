@@ -83,7 +83,7 @@ func _init() -> void:
 	library.plants.assign(_plants())
 	library.events.assign(_events())
 	_set_starting_group(library)
-	library.starting_resources = _ints({&"wood": 2, &"food": 4})
+	library.starting_resources = _ints({&"wood": 2, &"food": 12})
 	library.flag_housing = _ints({&"lean_to": 2, &"extra_roofs": 3})
 	for era: EraDef in library.eras:
 		_save(era, "%s/eras/%s.tres" % [ROOT, era.id])

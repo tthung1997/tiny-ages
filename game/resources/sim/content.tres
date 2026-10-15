@@ -10342,7 +10342,7 @@ villager_traits = Array[StringName]([&"curious", &"social", &"industrious", &"na
 villager_looks = Array[StringName]([&"mira", &"theo", &"wren"])
 guaranteed_traits = Array[StringName]([&"curious"])
 starting_resources = Dictionary[StringName, int]({
-&"food": 4,
+&"food": 12,
 &"wood": 2
 })
 flag_housing = Dictionary[StringName, int]({

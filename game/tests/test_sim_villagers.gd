@@ -106,7 +106,7 @@ func test_a_hunt_brings_back_more_food_than_foraging() -> void:
 		villager.traits.clear()
 		villager.activity = activity
 		for _tick: int in 48:
-			system._work(sim, villager)
+			system._work(sim, villager, 1, 1)
 		gains[activity] = sim.world.resource_amount(&"food")
 	assert_gt(gains[VillagerState.ACTIVITY_HUNT], gains[VillagerState.ACTIVITY_FORAGE])
 
