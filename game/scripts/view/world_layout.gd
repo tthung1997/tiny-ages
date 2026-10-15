@@ -71,6 +71,13 @@ const FIRE_FRAME_SECONDS: float = 0.2
 const FIRE_GLOW_FLICKER: Array[float] = [1.0, 0.9, 0.96, 0.84]
 ## The camp x range the fire lights; the animation sleeps while none of it is on screen.
 const FIRE_LIGHT_X: Vector2 = Vector2(20.0, 120.0)
+## The sea off the east page (tools/art/cave_pages.js): east_sea_0.. are the sea alone in
+## SEA_FRAMES surf and swell phases, laid over the east ground (which carries phase 0) and swapped
+## every SEA_FRAME_SECONDS while any of it is on screen. SEA_X is the camp x range it covers.
+const SEA_FRAMES: int = 3
+const SEA_FRAME_SECONDS: float = 0.8
+const SEA_X: Vector2 = Vector2(587.0, 768.0)
+const SEA_Z: int = -95
 ## The fire's glow is drawn over everything in the world (villagers included) but under the HUD.
 const FIRE_GLOW: StringName = &"fire_glow"
 const FIRE_GLOW_Z: int = 90
@@ -117,6 +124,10 @@ static func villager_sheet_path(look: StringName, cloth: bool) -> String:
 
 static func fire_frame_name(frame: int) -> StringName:
 	return StringName("%s_%d" % [FIRE_PIT, posmod(frame, FIRE_FRAMES)])
+
+
+static func sea_frame_name(frame: int) -> StringName:
+	return StringName("east_sea_%d" % posmod(frame, SEA_FRAMES))
 
 
 ## The newest art for a piece at `era_order`: the latest age's folder that has it, or "" if none.
