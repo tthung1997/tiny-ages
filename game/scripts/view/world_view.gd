@@ -46,6 +46,13 @@ var _sea_sets: Array = []
 var _sea_state: int = WeatherLook.SEA_CALM
 var _sea_frame: int = 0
 var _sea_clock: float = 0.0
+var _flats: Sprite2D
+var _life: Sprite2D
+var _life_frames: Array[Texture2D] = []
+var _life_frame: int = 0
+var _life_clock: float = 0.0
+var _deer: Sprite2D
+var _deer_frames: Array[Texture2D] = []
 var _stars: Sprite2D
 var _sun: Sprite2D
 var _moon: Sprite2D
@@ -102,6 +109,14 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 			frames.append(_load_art(WorldLayout.sea_frame_name(frame, state)))
 		_sea_sets.append(frames)
 	_sea_frames = _sea_sets[WeatherLook.SEA_CALM]
+	var east_x: float = float(WorldLayout.SIDE_PAGES["east_"])
+	_flats = _make_sprite(WorldLayout.FLATS, WorldLayout.FLATS_Z, east_x)
+	_life = _make_sprite(WorldLayout.life_frame_name(0), WorldLayout.LIFE_Z, east_x)
+	_deer = _make_sprite(WorldLayout.deer_frame_name(0), WorldLayout.LIFE_Z + 1, east_x)
+	for frame: int in WorldLayout.LIFE_FRAMES:
+		_life_frames.append(_load_art(WorldLayout.life_frame_name(frame)))
+	for frame: int in WorldLayout.DEER_FRAMES:
+		_deer_frames.append(_load_art(WorldLayout.deer_frame_name(frame)))
 	for layer: StringName in WorldLayout.STATIC_Z:
 		_static_layers.append(_make_sprite(layer, WorldLayout.STATIC_Z[layer]))
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -186,6 +201,7 @@ func covers_sky() -> bool:
 
 func on_world_changed() -> void:
 	_refresh_season()
+	_refresh_life()
 	_refresh_props()
 	_refresh_actors()
 	_weather.apply(_sim.world, _full_scene)
@@ -281,11 +297,40 @@ func _animate_sea(delta: float) -> void:
 	_sea.texture = _sea_frames[_sea_frame]
 
 
+## The fish and birds swap frames on a slow clock, and do nothing while none of the river's far
+## side is on screen.
+func _animate_life(delta: float) -> void:
+	if not visible:
+		return
+	var left: float = float(_camera.pixel_x())
+	var right: float = left + float(WorldLayout.VIEW_SIZE.x)
+	if right <= WorldLayout.LIFE_X.x or left >= WorldLayout.LIFE_X.y:
+		return
+	_life_clock += delta
+	if _life_clock < WorldLayout.LIFE_FRAME_SECONDS:
+		return
+	_life_clock = 0.0
+	_life_frame += 1
+	_life.texture = _life_frames[posmod(_life_frame, WorldLayout.LIFE_FRAMES)]
+	_deer.texture = _deer_frames[posmod(floori(float(_life_frame) / 2.0), WorldLayout.DEER_FRAMES)]
+
+
+## The deer comes down to drink at dawn and dusk; the tide bares the flats and covers them again.
+## Both are decided by the world's clock, so there is nothing to animate.
+func _refresh_life() -> void:
+	var hour: float = DayNight.hour_of_world(_sim.world, _sim.config)
+	_deer.visible = RiverLife.deer_visible(hour)
+	var alpha: float = TideLook.flats_alpha(_sim.config.tide_at(_sim.world.tick))
+	_flats.visible = alpha > 0.0
+	_flats.modulate.a = alpha
+
+
 func _process(delta: float) -> void:
 	if _camera.step(delta):
 		_apply_camera()
 	_animate_fire(delta)
 	_animate_sea(delta)
+	_animate_life(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -553,6 +598,7 @@ func _shape_signature() -> String:
 	parts.append("f" if _flower_sprout.visible else "-")
 	parts.append("F" if _flower_bloom.visible else "-")
 	parts.append("p" if _fire_pit.visible else "-")
+	parts.append("d" if _deer.visible else "-")
 	return "".join(parts)
 
 
@@ -572,7 +618,7 @@ func _rebuild_skyline() -> void:
 	for sprite: Sprite2D in _props.values():
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
-	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit]:
+	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit, _life, _deer]:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
 	_window.set_skyline(skyline.tops)

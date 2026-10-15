@@ -250,11 +250,19 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 			east += 1
 	var backdrop: int = WorldLayout.BACKDROP.size()
 	var west_props: int = 0
+	var east_props: int = 0
 	for prop_id: StringName in SceneProps.ids():
 		if SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["west_"]):
 			west_props += 1
+		elif SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["east_"]):
+			east_props += 1
 	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size() + west_props)
-	assert_eq(east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + 1, "Plus the sea")
+	# the sea, the tide's flats, the river's life and its deer, and the east page's props
+	var east_extras: int = 4 + east_props
+	assert_eq(
+		east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + east_extras,
+		"Plus the sea, flats, life, deer and props"
+	)
 	assert_eq(view.camera_x(), 0, "Starts on the camp")
 	assert_eq(view.clickable_regions().size(), 2, "An arrow region on each edge")
 	view.pan_by(-100000.0)

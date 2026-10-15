@@ -220,6 +220,82 @@ function hen(b, x0, y0, col, shade) {
 }
 function hens(b) { hen(b, 0, 2, CLOTH, CLOTHD); hen(b, 8, 1, '#c9803a', '#a05830'); hen(b, 13, 3, '#8a5a36', '#6a4326'); }
 
+// ---- the river and the flats (docs/ages.md V13, issue #9) ----------------------------------------
+var CLAY = '#c27a52', CLAYD = '#9a5a3a', CLAYL = '#d99466', WATER = '#4f93c4', WATERL = '#8cc8e8';
+
+// Clay pits, 24x9: two shallow diggings of wet red clay, a heap beside them and a digging stick.
+function claypits(b) {
+  b.ell(6, 6, 6, 2.6, CLAYD); b.ell(6, 6, 4.8, 1.8, '#7a3f28'); b.rect(3, 5, 5, 1, CLAY);
+  b.ell(16, 7, 5, 2.2, CLAYD); b.ell(16, 7, 3.8, 1.4, '#7a3f28'); b.rect(14, 6, 4, 1, CLAY);
+  b.ell(21, 4, 3, 2.6, CLAY); b.ell(20, 3, 2, 1.6, CLAYL); b.px(22, 5, CLAYD);
+  b.rect(11, 0, 1, 7, WOOD); b.px(11, 0, WOODL); b.rect(10, 6, 3, 1, CLAYD);
+}
+
+// Flax soaking in the shallows, 20x9: sheaves weighted with stones, half under the water.
+function flaxsoak(b) {
+  var i, x;
+  b.rect(0, 5, 20, 4, WATER); b.rect(1, 6, 5, 1, WATERL); b.rect(11, 7, 6, 1, WATERL);
+  for (i = 0; i < 3; i++) {
+    x = 1 + i * 6;
+    b.rect(x, 1 + (i % 2), 5, 5, '#c9b24a'); b.rect(x, 1 + (i % 2), 5, 1, '#e6d479'); b.px(x + 2, 6, '#7f9a3f');
+    b.rect(x + 1, 6 + (i % 2), 3, 1, '#a8923a');
+    b.rect(x + 1, 0 + (i % 2), 3, 1, '#9fb04a');
+  }
+  b.rect(2, 2, 2, 2, ROCK); b.px(2, 2, ROCKL); b.rect(14, 3, 3, 2, ROCK); b.px(14, 3, ROCKL); b.px(8, 3, ROCKD);
+}
+
+// Flax beaten out on the bank, 20x9: a flat stone, a heap of pale fibre and a wooden mallet.
+function flaxbeaten(b) {
+  b.ell(9, 6, 8, 2.6, ROCK); b.rect(2, 4, 14, 1, ROCKL);
+  b.ell(8, 3, 6, 2.4, '#efe6cf'); b.ell(7, 2, 4, 1.6, '#f7f1e0'); b.px(11, 4, CLOTHD); b.px(5, 3, CLOTHD);
+  b.line(14, 0, 18, 5, WOOD, 1); b.rect(13, 0, 4, 2, WOODL);
+  b.px(0, 7, '#c9b24a'); b.px(1, 8, '#a8923a'); b.px(18, 7, '#c9b24a');
+}
+
+// The raised bank along the near edge of the river, 30x18, built up with earth and faced with
+// stones. It follows the bank's slant: the river's left edge is x = 327 - 1.217 (y - 56).
+function riverbank(b) {
+  var y, x, ex;
+  for (y = 0; y < 18; y++) {
+    ex = Math.round(327 - (y + 62 - 56) * 1.217) - 291;   // the water's edge in this sprite's x
+    for (x = ex - 10; x < ex - 1; x++) b.px(x, y, y == 0 ? '#8c5f31' : (x < ex - 8 ? EARTHD : EARTH));
+    b.px(ex - 1, y, y % 2 ? ROCK : ROCKD); b.px(ex - 2, y, y % 2 ? ROCKL : ROCK);
+    if (y % 3 == 1) b.px(ex - 5, y, EARTHD);
+  }
+}
+
+// A dugout canoe, 26x8, resting on the water: a hollowed log, pointed at both ends, with a paddle.
+function dugout(b) {
+  b.ell(13, 4, 12.5, 3, WOOD); b.rect(1, 1, 24, 1, WOODL);
+  b.ell(13, 3, 10, 1.4, '#3a2a1f'); b.rect(0, 4, 2, 1, WOODL); b.rect(24, 4, 2, 1, WOODL);
+  b.px(6, 5, '#6a4326'); b.px(17, 5, '#6a4326');
+  b.line(9, 0, 13, 4, WOODL, 1); b.rect(8, 0, 2, 2, WOODL);
+  b.rect(0, 7, 26, 1, WATERL); b.rect(3, 6, 20, 1, WATER);
+}
+
+// A reed raft, 24x7: three fat bundles lashed together with cord, low in the water.
+function reedraft(b) {
+  var i;
+  for (i = 0; i < 3; i++) {
+    b.rect(0 + i, 1 + i, 22, 2, i == 1 ? '#b8a84a' : '#a8923a'); b.rect(0 + i, 1 + i, 22, 1, '#d9c868');
+  }
+  b.rect(4, 0, 1, 6, '#8a5a36'); b.rect(11, 0, 1, 6, '#8a5a36'); b.rect(18, 0, 1, 6, '#8a5a36');
+  b.line(22, 1, 23, 5, '#8a5a36', 1);
+  b.rect(1, 6, 22, 1, WATERL);
+}
+
+// A fish weir of stones on the flats, 20x8: two curved arms of piled stones meeting in a point,
+// with a few fish held in the pool between.
+function weir(b) {
+  var i, y, x;
+  for (i = 0; i < 8; i++) {
+    y = i; x = Math.round(i * i / 5);
+    b.rect(x, y, 3, 1, i % 2 ? ROCK : ROCKD); b.px(x, y, ROCKL);
+    b.rect(19 - x - 2, y, 3, 1, i % 2 ? ROCKD : ROCK); b.px(19 - x, y, ROCKL);
+  }
+  b.rect(6, 5, 8, 2, '#7cc0d8'); b.px(8, 5, '#cfd8e0'); b.px(11, 6, '#cfd8e0'); b.px(10, 4, '#cfd8e0');
+}
+
 var layers = {};
 // camp slots: [w, h, cx, foot, draw, shadow]
 var HUT = [34, 24, 268, 71, roundhouse, 14], HUTSITE = [24, 12, 268, 71, hutsite, 9];
@@ -245,6 +321,14 @@ layers.west_well = layerOf([obj(16, 17, 268, 77, well, { sh: 8 })]);
 layers.west_scarecrow = layerOf([obj(12, 18, 234, 76, scarecrow, { sh: 4 })]);
 layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
 layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
+// the river (camp page; the weir is on the east page, page-local x)
+layers.clay_pits = layerOf([obj(24, 9, 262, 79, claypits, { sh: 9 })]);
+layers.flax_thread = layerOf([obj(20, 9, 312, 72, flaxsoak, { sh: 0 })]);
+layers.flax_beaten = layerOf([obj(20, 9, 296, 74, flaxbeaten, { sh: 8 })]);
+layers.river_bank = layerOf([obj(30, 18, 306, 80, riverbank, { sh: 0 })]);
+layers.boat_dugout = layerOf([obj(26, 8, 352, 70, dugout, { sh: 0 })]);
+layers.boat_raft = layerOf([obj(24, 7, 352, 70, reedraft, { sh: 0 })]);
+layers.east_tide_weir = layerOf([obj(20, 8, 258, 78, weir, { sh: 0 })]);
 
 // preview: every piece on a plain meadow (the camp slots at their camp x, the west props shown at
 // the page-local x they have in the file)

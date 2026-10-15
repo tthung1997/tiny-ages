@@ -228,11 +228,12 @@ function eastPage() {
     for (i = 0; i < SEA_FRAMES; i++) { L['sea_' + SEA_STATES[st] + i] = new Buf(W, H); paintSea(L['sea_' + SEA_STATES[st] + i], i, swells, st); }
   }
   // props: reeds on the river bank, a pine and bush on the grass, palms and driftwood on the sand
-  var midP = [], onSand = { sh: 4, shc: '#bfae83' };
+  var midP = [], onSand = { sh: 4, shc: '#bfae83' }, reedTops = [];
   for (i = 0; i < 8; i++) {
     y = 58 + Math.floor(rnd() * 20);
     var rx = riverEdge(y) + 3 + Math.floor(rnd() * 8);
     midP.push(obj(8, 13, rx, y + 2, reeds, { sh: 3 }));
+    reedTops.push({ x: rx - 4, top: y + 2 - 13 }); // the clump's top-left, for the birds
   }
   midP.push(obj(10, 6, 96, 72, rocks, { sh: 4 }), obj(10, 6, 134, 76, rocks, { sh: 4 }),
     obj(16, 26, 104, 66, pine, { sh: 5 }), obj(16, 26, 128, 77, pine, { sh: 5 }),
@@ -243,7 +244,81 @@ function eastPage() {
     obj(11, 4, shoreEdge(75) - 7, 75, driftwood, { sh: 3, shc: '#bfae83', flip: true }),
     obj(10, 6, shoreEdge(77) - 18, 77, rocks, onSand));
   L.static_mid = layerOf(midP);
+  riverLife(L, reedTops);
+  tideFlats(L);
   return L;
+}
+
+// ---- river life (issue #9): fish rising, birds on the reeds, a deer at the water, the flats ------
+// Every frame of a set covers the same pixels but for the small moving parts, so the click region
+// built from the first does not change as they swap. No random numbers here: nothing drawn above
+// moves if this changes.
+function hash(x, y) { return ((x * 73856093) ^ (y * 19349663)) & 255; }
+var RINGS = [[20, 64], [47, 71], [33, 77], [60, 67], [14, 74]]; // fish rise here (page-local x, y)
+function ripple(B, x, y, phase) {
+  if (phase == 0) { B.px(x, y - 2, '#e8f4f8'); B.px(x - 1, y - 1, '#cfd8e0'); B.px(x + 1, y - 1, '#cfd8e0'); B.px(x, y, '#d7eefa'); }
+  else if (phase == 1) { B.rect(x - 2, y, 5, 1, '#d7eefa'); B.px(x, y - 1, '#d7eefa'); }
+  else { B.rect(x - 4, y, 9, 1, '#a9d6ee'); B.rect(x - 2, y + 1, 5, 1, '#8cc8e8'); }
+}
+function bird(b, f) { // 8x7 wading bird on a reed top, facing right; the head dips on frame 1
+  var d = f == 1 ? 1 : 0;
+  b.rect(1, 3, 5, 3, '#7a6a58'); b.rect(1, 5, 5, 1, '#d8cdb8'); b.rect(0, 3 - (f == 2 ? 1 : 0), 1, 2, '#5a4a3a');
+  b.rect(5, 1 + d, 2, 3, '#4a4150'); b.px(7, 2 + d, '#e8b53a'); b.px(6, 1 + d, '#f7fbf7');
+  b.px(2, 6, '#e8b53a'); b.px(4, 6, '#e8b53a');
+}
+function deer(b, up) { // 22x17 doe, facing left; the head is raised or lowered towards the water
+  var C = '#a8703f', CD = '#7a4c28', CL = '#d9a566';
+  b.ell(14, 7, 6.5, 3.2, C); b.rect(8, 9, 13, 1, CD); b.rect(9, 6, 11, 1, CL);
+  b.rect(8, 10, 1, 6, CD); b.rect(10, 10, 1, 6, CD); b.rect(17, 10, 1, 6, CD); b.rect(19, 10, 1, 6, CD);
+  b.px(8, 15, '#2a2433'); b.px(10, 15, '#2a2433'); b.px(17, 15, '#2a2433'); b.px(19, 15, '#2a2433');
+  b.px(20, 4, '#f7fbf7'); b.px(21, 5, '#f7fbf7');
+  if (up) {
+    b.line(8, 5, 5, 1, C, 2); b.rect(2, 0, 4, 3, C); b.px(1, 2, '#2a2433'); b.px(5, 0, CD); b.px(3, 0, CD); b.px(3, 1, '#1c1917');
+  } else {
+    b.line(8, 6, 4, 11, C, 2); b.rect(0, 11, 5, 3, C); b.px(0, 13, '#2a2433'); b.px(4, 11, CD); b.px(2, 11, CD); b.px(3, 12, '#1c1917');
+  }
+}
+function riverLife(L, reedTops) {
+  var f, k, b, n = reedTops.length, i;
+  reedTops.sort(function (p, q) { return p.top - q.top; });
+  for (f = 0; f < 3; f++) {
+    b = new Buf(W, H);
+    for (k = 0; k < RINGS.length; k++) ripple(b, RINGS[k][0], RINGS[k][1], (f + k) % 3);
+    for (i = 0; i < Math.min(2, n); i++) { // the two tallest clumps each have a bird on top
+      var tb = new Buf(8, 7); bird(tb, (f + i) % 3); if (i == 1) tb = mirror(tb);
+      blit(b, outlined(tb, OUT), reedTops[i].x + 3 - 1 - 4, reedTops[i].top - 7);
+    }
+    L['life_' + f] = b;
+  }
+  for (f = 0; f < 2; f++) {
+    var db = new Buf(22, 17); deer(db, f == 1);
+    b = new Buf(W, H);
+    b.ell(100, 79, 9, 1.5, '#5f8236');
+    blit(b, outlined(db, OUT), 100 - 11 - 1, 79 - 17);
+    L['deer_' + f] = b;
+  }
+}
+// Low tide leaves the shore bare: a band of wet sand, pools, shells and a pale line of foam where the
+// sea now ends. Drawn over the sea and faded in and out with the tide (TideLook).
+function tideFlats(L) {
+  var B = new Buf(W, H), x, y, s, w, d, r, c;
+  for (y = G; y < H; y++) {
+    s = shoreEdge(y); w = 9 + Math.floor((y - G) / 3);
+    for (x = s; x < s + w; x++) {
+      d = x - s; r = hash(x, y);
+      c = d < 2 ? '#b3a47e' : (d < w - 3 ? (r < 40 ? '#a69773' : '#cdbd92') : '#bfae83');
+      if (d >= w - 2) c = (x + y) % 2 == 0 ? '#f2fafc' : '#bfe4ee';
+      B.px(x, y, c);
+    }
+    for (x = s + 2; x < s + w - 3; x++) { // small pools and shells
+      r = hash(x * 3, y * 7);
+      if (r < 5) { B.px(x, y, '#7cc0d8'); B.px(x + 1, y, '#9fd6e6'); }
+      else if (r < 9) B.px(x, y, '#f7fbf7');
+      else if (r < 12) B.px(x, y, '#e8b8a8');
+    }
+  }
+  B.rect(shoreEdge(72) + 3, 72, 6, 2, '#b9a88a'); B.rect(shoreEdge(72) + 3, 72, 6, 1, '#d8cbb0');
+  L.tide_flats = B;
 }
 
 // ---- render ---------------------------------------------------------------------------------

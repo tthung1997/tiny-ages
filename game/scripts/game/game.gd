@@ -19,7 +19,8 @@ extends Node2D
 ##   that age, for looking at it) --days=<n> (play n game
 ##   days before showing; the bot answers decisions unless --manual) --bot (auto-answer
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
-##   light) --cam=<camp x> (start with the viewport's left edge there: -384..384,
+##   light) --tide=low|high (then run on to that tide, for the beach) --cam=<camp x> (start with
+##   the viewport's left edge there: -384..384,
 ##   camp is 0) --panel=decision|journal|away|villager|villagers|achievements|menu|stores|settings
 ##   (open that panel at
 ##   start) --season=spring|summer|autumn|winter --weather=rain|storm|drought|flood|snow|
@@ -94,6 +95,14 @@ func _ready() -> void:
 	if options.has("hour"):
 		for _tick: int in config.ticks_per_day:
 			if config.hour_of(sim.world.tick) == options["hour"]:
+				break
+			sim.advance_ticks(1)
+	if options.has("tide"):
+		var tide_limit: int = ceili(config.tide_period_ticks) + 1
+		for _tick: int in tide_limit:
+			var level: float = config.tide_at(sim.world.tick)
+			if (options["tide"] == "low" and level < config.low_tide_level * 0.5) \
+					or (options["tide"] == "high" and level > 0.95):
 				break
 			sim.advance_ticks(1)
 	_world_view.setup(sim, _window)
@@ -559,6 +568,8 @@ func _apply_cmdline() -> Dictionary:
 			options["days"] = maxi(arg.trim_prefix("--days=").to_int(), 0)
 		elif arg.begins_with("--hour="):
 			options["hour"] = clampi(arg.trim_prefix("--hour=").to_int(), 0, 23)
+		elif arg.begins_with("--tide="):
+			options["tide"] = arg.trim_prefix("--tide=")
 		elif arg == "--bot":
 			_bot_auto = true
 		elif arg == "--manual":
