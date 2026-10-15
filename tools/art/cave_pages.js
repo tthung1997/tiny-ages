@@ -14,6 +14,8 @@
 //   west_static_back/_mid, east_static_mid   always-present props (back is behind villagers)
 //   east_sea_0.._2   the sea alone (transparent elsewhere) in three surf and swell phases; the
 //                    game swaps them over east_ground, which carries phase 0 itself
+//   east_sea_choppy_0.._2, east_sea_rough_0.._2   the same water in rougher sea states (rain and
+//                    flood, storm): wider surf and white caps; same pixels as the calm phases
 // Layout notes are mirrored in game/scripts/view/world_layout.gd.
 seed = 31;
 var W = 384, H = 80, G = 56;
@@ -135,24 +137,35 @@ function swellList() { // long, low swell marks (never a vertical or a triangle:
   return list;
 }
 // Draws the sea (x >= shoreEdge) in surf and swell phase `f` into `B`. Every phase covers the same
-// pixels, so the animation never changes what is land.
-function paintSea(B, f, swells) {
-  var y, x, k;
+// pixels, so the animation never changes what is land. `state` is the sea state: 0 calm, 1 choppy
+// (rain, a flood), 2 rough (a storm): wider surf, bigger travel and white caps on some swells. The
+// caps are picked by `i`, not by rnd(), so the other states never move anything drawn after them.
+var SEA_STATES = ['', 'choppy_', 'rough_'];
+var SEA_TRAVEL = [2, 3, 4];
+function paintSea(B, f, swells, state) {
+  var y, x, k, st = state || 0;
+  var foam = [1 + f, 2 + f, 3 + f * 2][st], wash = [6 + f * 2, 7 + f * 2, 10 + f * 3][st];
   for (y = G; y < H; y++) {
     var s = shoreEdge(y);
     for (x = s; x < W; x++) {
       var d = x - s, c = y == G ? '#6da9d2' : (d < 3 ? '#7cc0d8' : (d < 9 ? '#4f9fc9' : (y < G + 5 ? '#3a80b7' : (y < G + 15 ? '#2f6fa8' : '#2a639b'))));
       if (d >= 3 && d < 9 && ((x + y) & 1) == 0) c = '#3f8fbf';
-      if (d < 1 + f) c = '#f2fafc';
-      else if (d == 1 + f && ((x + y) & 1) == 0) c = '#bfe4ee';
-      else if (d == 6 + f * 2 && (x + y) % 3 != 0 && y > G) c = '#cfe9f2';
+      if (d < foam) c = '#f2fafc';
+      else if (d == foam && ((x + y) & 1) == 0) c = '#bfe4ee';
+      else if (d == wash && (x + y) % 3 != 0 && y > G) c = '#cfe9f2';
       B.px(x, y, c);
     }
   }
   for (k = 0; k < swells.length; k++) {
-    var w = swells[k], ox = w.x + ((f + w.i) % SEA_FRAMES) * 2;
+    var w = swells[k], ox = w.x + ((f + w.i) % SEA_FRAMES) * SEA_TRAVEL[st];
+    var cap = st == 2 ? w.i % 2 == 0 : (st == 1 && w.i % 5 == 0);
+    ox = Math.min(ox, W - 1 - w.len);
     B.rect(ox, w.y, w.len, 1, '#5a9fd0');
     if (w.y + 1 < H) B.rect(ox + 1, w.y + 1, w.len - 2, 1, '#25608f');
+    if (cap && w.y > G) { // a white cap on the crest, broken at the ends
+      B.rect(ox + 1, w.y - 1, Math.max(2, w.len - 3), 1, '#eef8fb');
+      if (st == 2) B.rect(ox + 2, w.y, Math.max(1, w.len - 5), 1, '#bfe4ee');
+    }
   }
 }
 function palm(b) { // 22x24: a leaning trunk and drooping fronds
@@ -211,7 +224,9 @@ function eastPage() {
     y = G + 4 + Math.floor(rnd() * (H - G - 6)); x = riverEdge(y) + 4 + Math.floor(rnd() * 40);
     if (x < shoreEdge(y) - 48) { L.ground.px(x, y, ['#ffffff', '#ffe27a', '#c9a0ff'][Math.floor(rnd() * 3)]); L.ground.px(x, y + 1, '#3a7a3a'); }
   }
-  for (i = 0; i < SEA_FRAMES; i++) { L['sea_' + i] = new Buf(W, H); paintSea(L['sea_' + i], i, swells); }
+  for (var st = 0; st < SEA_STATES.length; st++) {
+    for (i = 0; i < SEA_FRAMES; i++) { L['sea_' + SEA_STATES[st] + i] = new Buf(W, H); paintSea(L['sea_' + SEA_STATES[st] + i], i, swells, st); }
+  }
   // props: reeds on the river bank, a pine and bush on the grass, palms and driftwood on the sand
   var midP = [], onSand = { sh: 4, shc: '#bfae83' };
   for (i = 0; i < 8; i++) {

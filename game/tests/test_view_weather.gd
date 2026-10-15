@@ -255,7 +255,7 @@ func test_the_sea_is_livelier_and_darker_in_a_storm_and_cooler_in_winter() -> vo
 	sim.world.weather = &"storm"
 	view.update_light()
 	assert_eq(view._sea.modulate, WeatherLook.sea_tint(&"storm"))
-	var step: float = WorldLayout.SEA_FRAME_SECONDS * 0.6
+	var step: float = WorldLayout.SEA_FRAME_SECONDS * 0.75
 	view.jump_camera(float(WorldLayout.WORLD_RIGHT - WorldLayout.VIEW_SIZE.x))
 	view._process(step)
 	assert_eq(view._sea_frame, 1, "A storm turns the swell sooner")
@@ -265,4 +265,28 @@ func test_the_sea_is_livelier_and_darker_in_a_storm_and_cooler_in_winter() -> vo
 	assert_eq(view._sea.modulate, SeasonLook.sea_tint(Season.WINTER))
 	view._process(step)
 	assert_eq(view._sea_frame, 1, "Calm water waits out the full interval")
+	view.free()
+
+
+func test_the_sea_state_follows_the_weather_and_keeps_its_phase() -> void:
+	assert_eq(WeatherLook.sea_state(&""), WeatherLook.SEA_CALM)
+	assert_eq(WeatherLook.sea_state(&"snow"), WeatherLook.SEA_CALM)
+	assert_eq(WeatherLook.sea_state(&"drought"), WeatherLook.SEA_CALM)
+	assert_eq(WeatherLook.sea_state(&"rain"), WeatherLook.SEA_CHOPPY)
+	assert_eq(WeatherLook.sea_state(&"flood"), WeatherLook.SEA_CHOPPY)
+	assert_eq(WeatherLook.sea_state(&"storm"), WeatherLook.SEA_ROUGH)
+	var sim: Simulation = SimFixture.new_sim()
+	var view: WorldView = _view_for(sim)
+	view.jump_camera(float(WorldLayout.WORLD_RIGHT - WorldLayout.VIEW_SIZE.x))
+	view._process(WorldLayout.SEA_FRAME_SECONDS + 0.01)
+	assert_eq(view._sea_frame, 1)
+	sim.world.weather = &"storm"
+	view.update_light()
+	assert_true(view._sea.texture == view._sea_sets[WeatherLook.SEA_ROUGH][1], "Same phase, rougher sea")
+	sim.world.weather = &"rain"
+	view.update_light()
+	assert_true(view._sea.texture == view._sea_sets[WeatherLook.SEA_CHOPPY][1])
+	sim.world.weather = &""
+	view.update_light()
+	assert_true(view._sea.texture == view._sea_sets[WeatherLook.SEA_CALM][1])
 	view.free()

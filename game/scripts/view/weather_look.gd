@@ -11,12 +11,16 @@ extends RefCounted
 const RAIN: StringName = &"rain"
 const SNOW: StringName = &"snow"
 
-## `swell` scales how long the sea holds a phase (smaller is livelier) and `sea_dim` darkens the
-## sea alone, on top of `dim`; both are optional and mean "unchanged" when absent.
+## `swell` scales how long the sea holds a phase (smaller is livelier), `sea_dim` darkens the sea
+## alone on top of `dim`, and `sea` is the sea state (SEA_CALM, SEA_CHOPPY, SEA_ROUGH); all are
+## optional and mean "unchanged" when absent.
+const SEA_CALM: int = 0
+const SEA_CHOPPY: int = 1
+const SEA_ROUGH: int = 2
 const LOOKS: Dictionary = {
-	&"rain": {"fall": &"rain", "dim": 0.9, "swell": 0.75},
-	&"storm": {"fall": &"rain", "dim": 0.8, "swell": 0.5, "sea_dim": 0.82},
-	&"flood": {"fall": &"rain", "dim": 0.88, "swell": 0.6, "sea_dim": 0.9},
+	&"rain": {"fall": &"rain", "dim": 0.9, "swell": 0.8, "sea": SEA_CHOPPY},
+	&"storm": {"fall": &"rain", "dim": 0.8, "swell": 0.7, "sea_dim": 0.82, "sea": SEA_ROUGH},
+	&"flood": {"fall": &"rain", "dim": 0.88, "swell": 0.8, "sea_dim": 0.9, "sea": SEA_CHOPPY},
 	&"snow": {"fall": &"snow", "dim": 0.94},
 }
 ## Cells of the strip glyph sheet (tools/art/ui_seasons.js): the four seasons.
@@ -36,6 +40,11 @@ static func fall(weather: StringName) -> StringName:
 static func tint(weather: StringName) -> Color:
 	var dim: float = LOOKS.get(weather, {}).get("dim", 1.0)
 	return Color(dim, dim, dim)
+
+
+## The sea state under `weather`: SEA_CALM unless it rains, floods or storms.
+static func sea_state(weather: StringName) -> int:
+	return LOOKS.get(weather, {}).get("sea", SEA_CALM)
 
 
 ## The fraction of the sea's usual phase time under `weather`: 1.0 when calm.

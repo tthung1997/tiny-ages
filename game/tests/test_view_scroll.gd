@@ -351,20 +351,25 @@ func test_the_sea_swells_only_while_it_is_in_view_and_drawn() -> void:
 func test_the_sea_phases_cover_the_same_water() -> void:
 	var ground: Image = (load(WorldLayout.ASSET_DIR + "east_ground.png") as Texture2D).get_image()
 	var first: Image = null
-	for frame: int in WorldLayout.SEA_FRAMES:
-		var path: String = "%s%s.png" % [WorldLayout.ASSET_DIR, WorldLayout.sea_frame_name(frame)]
-		assert_true(ResourceLoader.exists(path), "Sea phase %d exists" % frame)
-		var image: Image = (load(path) as Texture2D).get_image()
-		assert_eq(image.get_size(), ground.get_size(), "A sea phase is a whole east page")
-		if first == null:
-			first = image
-			continue
-		var mismatched: int = 0
-		for y: int in image.get_height():
-			for x: int in image.get_width():
-				if (image.get_pixel(x, y).a > 0.0) != (first.get_pixel(x, y).a > 0.0):
-					mismatched += 1
-		assert_eq(mismatched, 0, "Phase %d paints the same pixels as phase 0" % frame)
+	for state: int in WorldLayout.SEA_STATE_PREFIX.size():
+		for frame: int in WorldLayout.SEA_FRAMES:
+			var path: String = "%s%s.png" % [
+				WorldLayout.ASSET_DIR, WorldLayout.sea_frame_name(frame, state)
+			]
+			assert_true(ResourceLoader.exists(path), "Sea state %d phase %d exists" % [state, frame])
+			var image: Image = (load(path) as Texture2D).get_image()
+			assert_eq(image.get_size(), ground.get_size(), "A sea phase is a whole east page")
+			if first == null:
+				first = image
+				continue
+			var mismatched: int = 0
+			for y: int in image.get_height():
+				for x: int in image.get_width():
+					if (image.get_pixel(x, y).a > 0.0) != (first.get_pixel(x, y).a > 0.0):
+						mismatched += 1
+			assert_eq(
+				mismatched, 0, "State %d phase %d paints the same pixels as the first" % [state, frame]
+			)
 	var water_x: int = int(WorldLayout.SEA_X.x) - WorldLayout.SIDE_PAGES["east_"]
 	assert_true(first.get_pixel(water_x + 40, 70).a > 0.0, "Open sea is in the overlay")
 	assert_eq(first.get_pixel(40, 70).a, 0.0, "The river and the land are not")

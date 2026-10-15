@@ -42,6 +42,8 @@ var _fire_frame: int = 0
 var _fire_clock: float = 0.0
 var _sea: Sprite2D
 var _sea_frames: Array[Texture2D] = []
+var _sea_sets: Array = []
+var _sea_state: int = WeatherLook.SEA_CALM
 var _sea_frame: int = 0
 var _sea_clock: float = 0.0
 var _stars: Sprite2D
@@ -94,8 +96,12 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	_sea = _make_sprite(
 		WorldLayout.sea_frame_name(0), WorldLayout.SEA_Z, float(WorldLayout.SIDE_PAGES["east_"])
 	)
-	for frame: int in WorldLayout.SEA_FRAMES:
-		_sea_frames.append(_load_art(WorldLayout.sea_frame_name(frame)))
+	for state: int in WorldLayout.SEA_STATE_PREFIX.size():
+		var frames: Array[Texture2D] = []
+		for frame: int in WorldLayout.SEA_FRAMES:
+			frames.append(_load_art(WorldLayout.sea_frame_name(frame, state)))
+		_sea_sets.append(frames)
+	_sea_frames = _sea_sets[WeatherLook.SEA_CALM]
 	for layer: StringName in WorldLayout.STATIC_Z:
 		_static_layers.append(_make_sprite(layer, WorldLayout.STATIC_Z[layer]))
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -196,6 +202,7 @@ func update_light() -> void:
 			* WeatherLook.tint(_sim.world.weather)
 	_tint.color = tint
 	_sea.modulate = SeasonLook.sea_tint(season) * WeatherLook.sea_tint(_sim.world.weather)
+	_set_sea_state(WeatherLook.sea_state(_sim.world.weather))
 	# The tint dims every piece, so the glow is boosted back to its own colour and only fades
 	# in with the dark.
 	var strength: float = DayNight.night_amount(hour) if lit else 0.0
@@ -248,6 +255,15 @@ func set_fire_frame(frame: int) -> void:
 	_fire_frame = posmod(frame, WorldLayout.FIRE_FRAMES)
 	_fire_pit.texture = _fire_frames[_fire_frame]
 	update_light()
+
+
+## Swaps to the frames of a calmer or rougher sea, keeping the phase so the swell does not jump.
+func _set_sea_state(state: int) -> void:
+	if state == _sea_state:
+		return
+	_sea_state = state
+	_sea_frames = _sea_sets[state]
+	_sea.texture = _sea_frames[_sea_frame]
 
 
 ## The sea swaps its surf and swell phase on a slow clock. It does nothing while the view is

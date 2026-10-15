@@ -78,6 +78,9 @@ const SEA_FRAMES: int = 3
 const SEA_FRAME_SECONDS: float = 0.8
 const SEA_X: Vector2 = Vector2(587.0, 768.0)
 const SEA_Z: int = -95
+## The sea states: each has its own set of SEA_FRAMES phases (east_sea_choppy_0.., east_sea_rough_0..)
+## with wider surf and white caps; the weather picks one (`WeatherLook.sea_state`).
+const SEA_STATE_PREFIX: Array[String] = ["", "choppy_", "rough_"]
 ## The fire's glow is drawn over everything in the world (villagers included) but under the HUD.
 const FIRE_GLOW: StringName = &"fire_glow"
 const FIRE_GLOW_Z: int = 90
@@ -126,8 +129,10 @@ static func fire_frame_name(frame: int) -> StringName:
 	return StringName("%s_%d" % [FIRE_PIT, posmod(frame, FIRE_FRAMES)])
 
 
-static func sea_frame_name(frame: int) -> StringName:
-	return StringName("east_sea_%d" % posmod(frame, SEA_FRAMES))
+static func sea_frame_name(frame: int, state: int = 0) -> StringName:
+	return StringName("east_sea_%s%d" % [
+		SEA_STATE_PREFIX[clampi(state, 0, SEA_STATE_PREFIX.size() - 1)], posmod(frame, SEA_FRAMES)
+	])
 
 
 ## The newest art for a piece at `era_order`: the latest age's folder that has it, or "" if none.
