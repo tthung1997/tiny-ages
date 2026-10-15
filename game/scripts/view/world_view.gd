@@ -195,6 +195,7 @@ func update_light() -> void:
 	var tint: Color = DayNight.tint(hour, lit) * SeasonLook.tint(season) \
 			* WeatherLook.tint(_sim.world.weather)
 	_tint.color = tint
+	_sea.modulate = SeasonLook.sea_tint(season) * WeatherLook.sea_tint(_sim.world.weather)
 	# The tint dims every piece, so the glow is boosted back to its own colour and only fades
 	# in with the dark.
 	var strength: float = DayNight.night_amount(hour) if lit else 0.0
@@ -257,7 +258,7 @@ func _animate_sea(delta: float) -> void:
 	if float(_camera.pixel_x()) + float(WorldLayout.VIEW_SIZE.x) <= WorldLayout.SEA_X.x:
 		return
 	_sea_clock += delta
-	if _sea_clock < WorldLayout.SEA_FRAME_SECONDS:
+	if _sea_clock < WorldLayout.SEA_FRAME_SECONDS * WeatherLook.swell_scale(_sim.world.weather):
 		return
 	_sea_clock = 0.0
 	_sea_frame = posmod(_sea_frame + 1, WorldLayout.SEA_FRAMES)

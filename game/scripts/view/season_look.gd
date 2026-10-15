@@ -11,12 +11,20 @@ const TINTS: Array[Color] = [
 const LEAF: Array[Color] = [
 	Color(0.5, 0.95, 0.4), Color(0.3, 0.6, 0.25), Color(0.95, 0.5, 0.15), Color(0.9, 0.95, 1.0),
 ]
+## The sea's own cast: only winter cools and dulls the water, which the palette shader leaves alone.
+const SEA_TINTS: Array[Color] = [
+	Color.WHITE, Color.WHITE, Color.WHITE, Color(0.86, 0.93, 1.0),
+]
 const STRENGTH: Array[float] = [0.4, 0.0, 0.65, 0.7]
 const BARE: Array[float] = [0.0, 0.0, 0.0, 0.8]
 
 
 static func tint(season: int) -> Color:
 	return TINTS[clampi(season, 0, Season.COUNT - 1)]
+
+
+static func sea_tint(season: int) -> Color:
+	return SEA_TINTS[clampi(season, 0, Season.COUNT - 1)]
 
 
 ## The shader parameters for the ground, hills and everything else that is green.

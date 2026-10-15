@@ -237,3 +237,32 @@ func test_the_season_is_applied_to_the_world_when_it_turns() -> void:
 	assert_eq(view._season_trees.get_shader_parameter("bare"), SeasonLook.BARE[Season.WINTER])
 	assert_eq(view._season_ground.get_shader_parameter("bare"), 0.0)
 	view.free()
+
+
+func test_the_sea_is_livelier_and_darker_in_a_storm_and_cooler_in_winter() -> void:
+	assert_eq(WeatherLook.swell_scale(&""), 1.0)
+	assert_eq(WeatherLook.sea_tint(&""), Color.WHITE)
+	assert_true(WeatherLook.swell_scale(&"storm") < WeatherLook.swell_scale(&"rain"))
+	assert_true(WeatherLook.swell_scale(&"rain") < 1.0)
+	assert_true(WeatherLook.sea_tint(&"storm").r < WeatherLook.sea_tint(&"flood").r)
+	assert_eq(WeatherLook.swell_scale(&"snow"), 1.0)
+	assert_eq(SeasonLook.sea_tint(Season.SUMMER), Color.WHITE)
+	assert_true(SeasonLook.sea_tint(Season.WINTER).r < 1.0)
+	var sim: Simulation = SimFixture.new_sim()
+	var view: WorldView = _view_for(sim)
+	view.update_light()
+	assert_eq(view._sea.modulate, Color.WHITE, "A calm spring sea is untouched")
+	sim.world.weather = &"storm"
+	view.update_light()
+	assert_eq(view._sea.modulate, WeatherLook.sea_tint(&"storm"))
+	var step: float = WorldLayout.SEA_FRAME_SECONDS * 0.6
+	view.jump_camera(float(WorldLayout.WORLD_RIGHT - WorldLayout.VIEW_SIZE.x))
+	view._process(step)
+	assert_eq(view._sea_frame, 1, "A storm turns the swell sooner")
+	sim.world.weather = &""
+	sim.world.tick = 65 * DAY
+	view.update_light()
+	assert_eq(view._sea.modulate, SeasonLook.sea_tint(Season.WINTER))
+	view._process(step)
+	assert_eq(view._sea_frame, 1, "Calm water waits out the full interval")
+	view.free()

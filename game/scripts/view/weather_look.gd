@@ -11,10 +11,12 @@ extends RefCounted
 const RAIN: StringName = &"rain"
 const SNOW: StringName = &"snow"
 
+## `swell` scales how long the sea holds a phase (smaller is livelier) and `sea_dim` darkens the
+## sea alone, on top of `dim`; both are optional and mean "unchanged" when absent.
 const LOOKS: Dictionary = {
-	&"rain": {"fall": &"rain", "dim": 0.9},
-	&"storm": {"fall": &"rain", "dim": 0.8},
-	&"flood": {"fall": &"rain", "dim": 0.88},
+	&"rain": {"fall": &"rain", "dim": 0.9, "swell": 0.75},
+	&"storm": {"fall": &"rain", "dim": 0.8, "swell": 0.5, "sea_dim": 0.82},
+	&"flood": {"fall": &"rain", "dim": 0.88, "swell": 0.6, "sea_dim": 0.9},
 	&"snow": {"fall": &"snow", "dim": 0.94},
 }
 ## Cells of the strip glyph sheet (tools/art/ui_seasons.js): the four seasons.
@@ -33,6 +35,17 @@ static func fall(weather: StringName) -> StringName:
 ## The colour the light is multiplied by under `weather`: white for any that is not drawn.
 static func tint(weather: StringName) -> Color:
 	var dim: float = LOOKS.get(weather, {}).get("dim", 1.0)
+	return Color(dim, dim, dim)
+
+
+## The fraction of the sea's usual phase time under `weather`: 1.0 when calm.
+static func swell_scale(weather: StringName) -> float:
+	return LOOKS.get(weather, {}).get("swell", 1.0)
+
+
+## The colour the sea alone is multiplied by under `weather`: white unless a storm darkens it.
+static func sea_tint(weather: StringName) -> Color:
+	var dim: float = LOOKS.get(weather, {}).get("sea_dim", 1.0)
 	return Color(dim, dim, dim)
 
 
