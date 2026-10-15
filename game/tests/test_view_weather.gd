@@ -227,6 +227,26 @@ func test_the_sky_clouds_only_exist_in_the_opaque_window() -> void:
 	view.free()
 
 
+func test_on_the_desktop_rain_only_falls_over_the_land() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var view: WorldView = _view_for(sim)
+	sim.world.weather = &"rain"
+	view.set_full_scene(false)
+	view.on_world_changed()
+	assert_true(view._weather._mask.get_shader_parameter("masked"), "No sky to fall from")
+	var lowest: int = 255
+	var highest: int = 0
+	for x: int in WorldLayout.VIEW_SIZE.x:
+		var top: int = roundi(view._weather._tops_image.get_pixel(x, 0).r * 255.0)
+		lowest = mini(lowest, top)
+		highest = maxi(highest, top)
+	assert_true(lowest < WorldLayout.VIEW_SIZE.y, "There is land in view")
+	assert_true(lowest > 0, "It does not start at the very top of the strip")
+	view.set_full_scene(true)
+	assert_false(view._weather._mask.get_shader_parameter("masked"), "The sky is drawn there")
+	view.free()
+
+
 func test_flood_water_and_cracked_ground_show_with_their_weather() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = _view_for(sim)

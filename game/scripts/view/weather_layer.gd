@@ -41,8 +41,14 @@ const GROUND_Z: int = -90
 const FUNNEL_Z: int = 85
 const SHIMMER_ALPHA: float = 0.5
 const FALL_ALPHA: float = 0.85
+const MASK_SHADER: String = "res://assets/world/precipitation_mask.gdshader"
 
 var _sheet: Texture2D
+var _mask: ShaderMaterial = ShaderMaterial.new()
+var _tops_image: Image = Image.create_empty(
+	WorldLayout.VIEW_SIZE.x, 1, false, Image.FORMAT_R8
+)
+var _tops_texture: ImageTexture
 var _fall: Sprite2D = Sprite2D.new()
 var _shimmer: Sprite2D = Sprite2D.new()
 var _clouds: Sprite2D = Sprite2D.new()
@@ -67,6 +73,11 @@ func setup(world_root: Node2D, screen_root: Control) -> void:
 		push_error("Missing weather art: %s" % SHEET)
 		return
 	_place(_fall, screen_root, FALL_Z, Vector2.ZERO)
+	_mask.shader = load(MASK_SHADER) as Shader
+	_tops_image.fill(Color(1.0, 0.0, 0.0))
+	_tops_texture = ImageTexture.create_from_image(_tops_image)
+	_mask.set_shader_parameter("tops", _tops_texture)
+	_fall.material = _mask
 	_place(_shimmer, screen_root, SHIMMER_Z, Vector2.ZERO)
 	_place(_clouds, screen_root, CLOUDS_Z, Vector2.ZERO)
 	_place(_cracks_camp, world_root, GROUND_Z, Vector2(CAMP_PAGE.x, 0.0))
@@ -97,6 +108,7 @@ func apply(world: WorldState, full_scene: bool) -> void:
 		return
 	_weather = world.weather
 	_full_scene = full_scene
+	_mask.set_shader_parameter("masked", not full_scene)
 	var fall: StringName = WeatherLook.fall(_weather)
 	_shown[&"fall"] = fall != &""
 	_shown[&"shimmer"] = WeatherLook.shows(_weather, &"shimmer")
@@ -115,6 +127,17 @@ func apply(world: WorldState, full_scene: bool) -> void:
 	_frames.clear()
 	_show_frames()
 	_update_sleep()
+
+
+## Tells the layer where the land is for each column of the viewport (the y of its highest
+## pixel), so that on the desktop, with no sky, rain and snow fall over the land and not in the
+## empty air above it.
+func set_land(tops: PackedInt32Array) -> void:
+	if _tops_texture == null:
+		return
+	for x: int in mini(tops.size(), _tops_image.get_width()):
+		_tops_image.set_pixel(x, 0, Color(float(clampi(tops[x], 0, 255)) / 255.0, 0.0, 0.0))
+	_tops_texture.update(_tops_image)
 
 
 ## Tells the layer where the camera is (its left edge in camp pixels), so pieces off screen sleep.

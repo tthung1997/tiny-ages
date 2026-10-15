@@ -13,23 +13,27 @@ var IMG = SPR.layer(0).cel(0).image;
 var S = new Buf(384, 1600), i, j, k, x, y;
 function row(r) { return r * 80; }
 
-// ---- rain: streaks that fall 9 pixels a frame and repeat every 27, so three frames loop ----
+// ---- rain: streaks that fall 9 pixels a frame and repeat every 27, so three frames loop. Each is
+// four pixels, dark at the tail and white at the head, so it reads over green, stone and snow ----
 var streaks = [];
-for (i = 0; i < 74; i++) streaks.push([Math.floor(rnd() * 384), Math.floor(rnd() * 27)]);
+for (i = 0; i < 110; i++) streaks.push([Math.floor(rnd() * 384), Math.floor(rnd() * 27)]);
 for (k = 0; k < 3; k++) for (i = 0; i < streaks.length; i++) for (j = 0; j < 3; j++) {
   x = streaks[i][0]; y = (streaks[i][1] + 9 * k) % 27 + 27 * j;
-  if (y > 76) continue;
-  S.px(x, row(k) + y, '#e4f2ff'); S.px(x, row(k) + y + 1, '#bcd8f2'); S.px(x - 1, row(k) + y + 2, '#bcd8f2');
+  if (y > 75) continue;
+  S.px(x - 1, row(k) + y, '#4a6a9c'); S.px(x - 1, row(k) + y + 1, '#5f86bf');
+  S.px(x, row(k) + y + 2, '#a9c9ee'); S.px(x, row(k) + y + 3, '#f4faff');
 }
 
-// ---- snow: flakes that fall 6 pixels a frame (period 18) and sway ----
+// ---- snow: flakes that fall 6 pixels a frame (period 18) and sway; each has a cool shadow pixel
+// so it shows on pale ground ----
 var flakes = [];
-for (i = 0; i < 90; i++) flakes.push([Math.floor(rnd() * 384), Math.floor(rnd() * 18), rnd() < 0.18]);
+for (i = 0; i < 110; i++) flakes.push([Math.floor(rnd() * 384), Math.floor(rnd() * 18), rnd() < 0.3]);
 for (k = 0; k < 3; k++) for (i = 0; i < flakes.length; i++) for (j = 0; j < 5; j++) {
   x = flakes[i][0] + (k == 1 ? 1 : (k == 2 ? -1 : 0)); y = (flakes[i][1] + 6 * k) % 18 + 18 * j;
-  if (y > 78) continue;
+  if (y > 77) continue;
+  S.px(x + 1, row(3 + k) + y + 1, '#7f95b8');
   S.px(x, row(3 + k) + y, '#ffffff');
-  if (flakes[i][2]) { S.px(x + 1, row(3 + k) + y, '#e6eefa'); S.px(x, row(3 + k) + y + 1, '#e6eefa'); }
+  if (flakes[i][2]) { S.px(x + 1, row(3 + k) + y, '#ffffff'); S.px(x, row(3 + k) + y + 1, '#ffffff'); S.px(x + 2, row(3 + k) + y + 1, '#7f95b8'); S.px(x + 1, row(3 + k) + y + 2, '#7f95b8'); }
 }
 
 // ---- heat shimmer: pale wavering dashes just above the ground ----
