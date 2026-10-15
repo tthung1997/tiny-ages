@@ -310,6 +310,13 @@ func _refresh_actors() -> void:
 		_cloth = cloth
 		for existing: VillagerActor in _actors.values():
 			existing.set_sheet(_sheet_for(existing.get_meta(&"look")))
+	var present: Dictionary = {}
+	for villager: VillagerState in world.villagers:
+		present[villager.id] = true
+	for id: StringName in _actors.keys():
+		if not present.has(id):
+			(_actors[id] as VillagerActor).queue_free()
+			_actors.erase(id)
 	for slot: int in world.villagers.size():
 		var villager: VillagerState = world.villagers[slot]
 		var actor: VillagerActor = _actors.get(villager.id)

@@ -14,6 +14,10 @@ const HUNT_YIELD: float = 2.0
 const TRAIT_BIAS: float = 2.0
 ## Multiplies the wish to gather a resource the group already has plenty of.
 const PLENTY_WEIGHT: float = 0.02
+## While food is short the group shifts its effort: it forages and hunts more, and cuts wood and
+## builds less. Nobody is hurt; the cost is only what does not get done meanwhile.
+const HUNGRY_FOOD_WEIGHT: float = 3.0
+const HUNGRY_OTHER_WEIGHT: float = 0.5
 ## Chance per tick that an idle villager joins a building site that appears.
 const BUILD_DRIFT_CHANCE: float = 0.5
 
@@ -54,13 +58,18 @@ func _return_home(villager: VillagerState) -> void:
 func _choose_activity(sim: Simulation, villager: VillagerState, building_underway: bool) -> void:
 	var activities: Array[StringName] = []
 	var weights: Array[float] = []
+	var hungry: bool = is_hungry(sim)
+	var food_push: float = HUNGRY_FOOD_WEIGHT if hungry else 1.0
+	var other_push: float = HUNGRY_OTHER_WEIGHT if hungry else 1.0
 	activities.append(VillagerState.ACTIVITY_GATHER_WOOD)
 	weights.append(
-		WEIGHT_GATHER * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS) * _plenty(sim, &"wood")
+		WEIGHT_GATHER * other_push
+		* _bias(villager, VillagerState.TRAIT_INDUSTRIOUS) * _plenty(sim, &"wood")
 	)
 	activities.append(VillagerState.ACTIVITY_FORAGE)
 	weights.append(
-		WEIGHT_FORAGE * _bias(villager, VillagerState.TRAIT_NATURE_LOVING) * _plenty(sim, &"food")
+		WEIGHT_FORAGE * food_push
+		* _bias(villager, VillagerState.TRAIT_NATURE_LOVING) * _plenty(sim, &"food")
 	)
 	activities.append(VillagerState.ACTIVITY_SOCIALIZE)
 	weights.append(WEIGHT_SOCIALIZE * _bias(villager, VillagerState.TRAIT_SOCIAL))
@@ -69,11 +78,14 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 	if sim.world.has_flag(&"path_hunting"):
 		activities.append(VillagerState.ACTIVITY_HUNT)
 		weights.append(
-			WEIGHT_HUNT * _bias(villager, VillagerState.TRAIT_CURIOUS) * _plenty(sim, &"food")
+			WEIGHT_HUNT * food_push
+			* _bias(villager, VillagerState.TRAIT_CURIOUS) * _plenty(sim, &"food")
 		)
 	if building_underway:
 		activities.append(VillagerState.ACTIVITY_BUILD)
-		weights.append(WEIGHT_BUILD * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS))
+		weights.append(
+			WEIGHT_BUILD * other_push * _bias(villager, VillagerState.TRAIT_INDUSTRIOUS)
+		)
 	var picked: int = SimRandom.pick_weighted(sim.rng, weights)
 	villager.activity = activities[maxi(picked, 0)]
 	villager.activity_ticks_left = sim.rng.randi_range(
@@ -83,6 +95,12 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 
 func _bias(villager: VillagerState, trait_name: StringName) -> float:
 	return TRAIT_BIAS if villager.has_trait(trait_name) else 1.0
+
+
+## Whether food is low: below the same line the strip gauge reads as low.
+static func is_hungry(sim: Simulation) -> bool:
+	var line: float = float(sim.config.comfortable_stock) * sim.config.low_stock_fraction
+	return float(sim.world.resource_amount(&"food")) < line
 
 
 ## How keen the group is to gather a resource: full while it is short, much less once the stores

@@ -54,6 +54,10 @@ const FRACTION_SCALE: float = 1000000.0
 
 @export var next_id: int = 1
 
+## How many villagers the camp holds. Derived from the age, the buildings and the answers the
+## group gave, and kept up to date by Simulation.refresh_housing; it is never saved.
+var housing: int = 0
+
 
 func find_villager(villager_id: StringName) -> VillagerState:
 	for villager: VillagerState in villagers:
@@ -122,6 +126,11 @@ func constructing() -> BuildingState:
 
 func has_achievement(key: StringName) -> bool:
 	return achievements.has(key)
+
+
+## How many more villagers the camp has room for; negative when over.
+func room() -> int:
+	return housing - villagers.size()
 
 
 func new_id(prefix: String) -> StringName:

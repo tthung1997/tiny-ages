@@ -35,6 +35,18 @@ extends Resource
 ## Construction progress added per builder per tick.
 @export_range(0.1, 5.0, 0.1) var build_rate_per_builder: float = 1.0
 
+@export_group("Food and room")
+## Food one villager eats per game day. Nobody starves when it runs out (docs/gameplay.md P13):
+## the group just spends more of its time foraging and less on everything else.
+@export_range(0.0, 5.0, 0.01) var food_per_villager_per_day: float = 0.25
+## Each villager beyond `crowding_from` eats this much more than the share before (0.5 = 50%), so
+## a big group is harder to feed than its numbers alone: a soft carrying capacity, not a cap.
+@export_range(0.0, 1.0, 0.01) var crowding_per_villager: float = 0.5
+@export_range(1, 50) var crowding_from: int = 3
+## Most villagers the group can ever have, whatever the content says: a safety net for the cost
+## of the simulation and the view. Room for newcomers normally runs out long before (Simulation.room).
+@export_range(3, 100) var max_villagers: int = 14
+
 @export_group("Strip")
 ## How the wood and food icons on the strip read a stock (StockGauge), as fractions of
 ## `comfortable_stock`: below the first is "low", from the second up is "plenty".

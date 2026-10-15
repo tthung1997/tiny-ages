@@ -10,6 +10,9 @@ extends Resource
 @export_multiline var description: String = ""
 ## Journal line written when the settlement enters this age.
 @export_multiline var intro_text: String = ""
+## How many villagers the age's camp holds before buildings and answers add room (see
+## Simulation.refresh_housing). Arrival decisions are only asked while there is room.
+@export_range(1, 50) var housing: int = 6
 @export_group("Entry gate (never shown to the player)")
 ## Achievements the settlement must have earned before it can enter this age.
 @export var required_achievements: Array[StringName] = []

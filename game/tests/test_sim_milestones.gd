@@ -151,6 +151,8 @@ func test_leaving_food_brings_the_strangers_in_a_little_later() -> void:
 
 func test_newcomers_are_unique_even_past_the_name_pool() -> void:
 	var sim: Simulation = SimFixture.new_sim(9)
+	sim.config = sim.config.duplicate() as SimConfig
+	sim.config.max_villagers = 100
 	for _newcomer: int in 40:
 		sim.add_villager()
 	var ids: Dictionary = {}

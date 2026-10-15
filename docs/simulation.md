@@ -11,12 +11,12 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 | Villager autonomy | **Coarse**: each villager has an activity (rest, gather, forage, build, socialize, wander, away, and hunt once the group has chosen to hunt); the sim does no path-finding, the view animates it | Traits only bias choices. |
 | Persistence | The whole world is one `Resource` saved to `user://`, with a last-seen timestamp | Loading runs script references in the file; only load saves this game wrote. |
 | Events | Authored data (`EventDef` + conditions + effects), never code | Anything that can happen is an event template; the sim only decides when. |
-| Failure | **Nothing can go wrong.** Decisions wait forever; being away is never punished; there is no hunger, death or timer | Directly from the MVP concept. |
+| Failure | **Nothing can go wrong.** Decisions wait forever; being away is never punished; nobody starves, dies or leaves unasked, and there is no timer (the group does eat, but running out of food only changes what villagers do) | Directly from the MVP concept. |
 
 ## How it works
 
 - `Simulation.advance_ticks(n)` steps the world exactly; `advance_real_time(now)` turns wall-clock time into ticks, which is also offline catch-up. Catching up for N ticks is guaranteed identical to ticking N times (tested). Catch-up is capped (`max_catch_up_ticks`, default one game year) so a months-long absence cannot stall start-up.
-- Each tick: villagers work or sleep → construction progresses → plants grow → scheduled events fire (dropped if their `requires` no longer hold) → at most one new event is rolled from the eligible templates → the era gate is checked.
+- Each tick: villagers work or sleep → construction progresses → the group eats → plants grow → the camp's room is recounted → scheduled events fire (dropped if their `requires` no longer hold) → at most one new event is rolled from the eligible templates → the era gate is checked.
 - An event with choices opens a **pending decision**; it waits until the player resolves it. Choices can require resources, buildings or flags, and a decision never opens if none of its choices are available. The same decision never stacks up, and there is a cap (`max_pending_decisions`) and a cooldown between openings. If the world moves past a pending decision (the fire was lit another way), the sim **withdraws** it; waiting for resources or a later day never does.
 - **Consequences** are scheduled events (`SCHEDULE_EVENT`) or flags that later events require, so choices ripple forward ("Theo found a seed → you planted it → it flowered → a rare butterfly came").
 - All randomness uses one seeded RNG saved with the world, so a seed plus actions reproduces a world exactly.
@@ -25,7 +25,7 @@ Status: **first slice built and tested**, headless, no UI. Code is in `game/scri
 
 Re-themed as the **Cave Age** (see [ages](ages.md)), with the turn into the **Settled Age**.
 
-- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 125 events, 1 plant. Of the events, 17 are the Cave Age milestones, the fire story, the exploration chain and weather; 11 are the Settled Age's six milestones (their routes); 22 are the small story decisions that fill the Cave Age (see `ages.md`, "between the milestones") and 24 those of the Settled Age; 28 are Cave Age one-line journal moments and 23 the Settled Age's.
+- 2 eras (Cave, Settled), 3 starting villagers drawn at random per world from pools of 24 names, 4 traits and 3 looks (always at least one curious one), 5 buildings and 131 events, 1 plant. Of the events, 17 are the Cave Age milestones, the fire story, the exploration chain and weather; 11 are the Settled Age's six milestones (their routes); 22 are the small story decisions that fill the Cave Age (see `ages.md`, "between the milestones") and 24 those of the Settled Age; 6 are growth and food decisions (arrivals, a crowded camp, a lean spring; see `ages.md`, "Population and food"); 28 are Cave Age one-line journal moments and 23 the Settled Age's.
 - Cave Age buildings: Lookout, Drying Rack, Knapping Spot. Settled Age buildings: Field, Hut (they only appear once settled).
 - **The world starts without fire.** A curious villager may find a burning tree, or an industrious one may strike a spark; passing on either lights the fire anyway via embers. Nothing can be built until there is fire.
 - The chain: fire → build the Lookout → a curious villager asks to scout the western forest → they return with a seed → you plant it → it flowers → a rare butterfly visits.
