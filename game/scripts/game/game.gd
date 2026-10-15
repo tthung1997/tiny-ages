@@ -61,6 +61,8 @@ var _settings_path: String = UserSettings.DEFAULT_PATH
 var _autosave: bool = true
 var _dev: bool = false
 var _shot_path: String = ""
+## Whether the viewport was part of the click region for falling rain or snow at the last update.
+var _sky_covered: bool = false
 
 @onready var _window: DesktopWindow = $DesktopWindow
 @onready var _world_view: WorldView = $World
@@ -231,6 +233,8 @@ func _advance_clock(delta: float) -> void:
 	if sim.world.tick != ticks_before:
 		_world_view.on_world_changed()
 		_icons.update_weather(sim.world, sim.config)
+		if _world_view.covers_sky() != _sky_covered:
+			_update_hud_region()
 		if _panel.mode() == &"villager":
 			_panel.show_villager(sim, _panel.villager_id())
 
@@ -254,9 +258,11 @@ func _on_layout_changed(_content_size: Vector2i) -> void:
 	_icons.position = origin
 	_panel.position = Vector2(origin.x, 0.0)
 	_world_view.set_full_scene(_window.mode == DesktopWindow.Mode.WINDOW)
+	_update_hud_region()
 
 
 func _update_hud_region() -> void:
+	_sky_covered = _world_view.covers_sky()
 	var regions: Array[Rect2i] = _world_view.clickable_regions()
 	regions.append_array(_icons.clickable_regions())
 	if _hud.visible:

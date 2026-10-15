@@ -227,23 +227,30 @@ func test_the_sky_clouds_only_exist_in_the_opaque_window() -> void:
 	view.free()
 
 
-func test_on_the_desktop_rain_only_falls_over_the_land() -> void:
+## Rain and snow fall from the top of the viewport. On the desktop there is no sky, and Windows
+## only draws inside the click region, so the viewport is part of it while they last.
+func test_on_the_desktop_falling_rain_takes_in_the_whole_viewport() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = _view_for(sim)
-	sim.world.weather = &"rain"
+	var whole: Rect2i = Rect2i(Vector2i.ZERO, WorldLayout.VIEW_SIZE)
 	view.set_full_scene(false)
 	view.on_world_changed()
-	assert_true(view._weather._mask.get_shader_parameter("masked"), "No sky to fall from")
-	var lowest: int = 255
-	var highest: int = 0
-	for x: int in WorldLayout.VIEW_SIZE.x:
-		var top: int = roundi(view._weather._tops_image.get_pixel(x, 0).r * 255.0)
-		lowest = mini(lowest, top)
-		highest = maxi(highest, top)
-	assert_true(lowest < WorldLayout.VIEW_SIZE.y, "There is land in view")
-	assert_true(lowest > 0, "It does not start at the very top of the strip")
+	assert_false(view.covers_sky())
+	assert_false(view.clickable_regions().has(whole), "A clear sky leaves the desktop alone")
+	sim.world.weather = &"rain"
+	view.on_world_changed()
+	assert_true(view.covers_sky())
+	assert_true(view.clickable_regions().has(whole))
+	sim.world.weather = &"snow"
+	view.on_world_changed()
+	assert_true(view.clickable_regions().has(whole))
+	sim.world.weather = &"drought"
+	view.on_world_changed()
+	assert_false(view.clickable_regions().has(whole), "Nothing falls in a drought")
+	sim.world.weather = &"rain"
 	view.set_full_scene(true)
-	assert_false(view._weather._mask.get_shader_parameter("masked"), "The sky is drawn there")
+	assert_false(view.covers_sky(), "The opaque window draws its own sky")
+	assert_false(view.clickable_regions().has(whole))
 	view.free()
 
 

@@ -51,7 +51,6 @@ var _drag_mouse_x: float = 0.0
 var _press_position: Vector2 = Vector2.ZERO
 var _drag_camera_x: float = 0.0
 var _applied_pixel: int = -999999
-var _skyline: Skyline
 var _season_ground: ShaderMaterial = ShaderMaterial.new()
 var _season_trees: ShaderMaterial = ShaderMaterial.new()
 var _applied_season: int = -1
@@ -172,7 +171,16 @@ func camera_x() -> int:
 
 ## Areas that must stay clickable in strip mode (the pan arrows), in viewport art pixels.
 func clickable_regions() -> Array[Rect2i]:
-	return _ui.clickable_regions()
+	var regions: Array[Rect2i] = _ui.clickable_regions()
+	if covers_sky():
+		regions.append(Rect2i(Vector2i.ZERO, WorldLayout.VIEW_SIZE))
+	return regions
+
+
+## Whether rain or snow is falling across the whole viewport with no sky drawn behind it (strip and
+## corner mode), so the viewport is drawn, and therefore clickable, while it lasts.
+func covers_sky() -> bool:
+	return _weather.covers_sky()
 
 
 func on_world_changed() -> void:
@@ -318,7 +326,6 @@ func _apply_camera() -> void:
 		return
 	_applied_pixel = pixel
 	_weather.set_view(float(pixel))
-	_update_land()
 	_world.position.x = -float(pixel)
 	if _window != null:
 		_window.set_scroll(pixel - WorldLayout.WORLD_LEFT)
@@ -545,15 +552,6 @@ func _rebuild_skyline() -> void:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
 	_window.set_skyline(skyline.tops)
-	_skyline = skyline
-	_update_land()
-
-
-## The land's top edge across the viewport, for the weather layer.
-func _update_land() -> void:
-	if _skyline != null:
-		var start: int = _applied_pixel - WorldLayout.WORLD_LEFT
-		_weather.set_land(_skyline.slice(start, WorldLayout.VIEW_SIZE.x))
 
 
 ## A sprite's left edge as a column of the whole world (which starts at WORLD_LEFT).
