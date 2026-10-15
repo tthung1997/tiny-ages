@@ -23,6 +23,7 @@ enum Kind {
 	HAS_BUILDING_TAG, ## A completed building that weather can reach (see BuildingDef.tags): has
 	## tag `key`, or is any building if `key` is empty, and is not already damaged.
 	HAS_DAMAGED_BUILDING, ## Some completed building is damaged (negate: none is).
+	TIDE_LOW, ## The sea is at low tide (negate: it is not).
 }
 
 @export var kind: Kind = Kind.FLAG_SET
@@ -73,6 +74,8 @@ func is_met(world: WorldState, config: SimConfig, subject: VillagerState = null)
 			result = not world.damageable_buildings(key).is_empty()
 		Kind.HAS_DAMAGED_BUILDING:
 			result = world.has_damaged_building()
+		Kind.TIDE_LOW:
+			result = config.is_low_tide(world.tick)
 	return result != negate
 
 

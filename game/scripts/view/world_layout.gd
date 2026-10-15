@@ -102,9 +102,67 @@ const FIRE_SPOTS: Array[Vector2] = [Vector2(88, 78), Vector2(96, 79), Vector2(60
 const SOCIAL_SPOTS: Array[Vector2] = [Vector2(62, 78), Vector2(84, 79), Vector2(98, 78)]
 const WOOD_SPOTS: Array[Vector2] = [Vector2(-82, 78), Vector2(-74, 79), Vector2(-54, 78)]
 const FORAGE_SPOTS: Array[Vector2] = [Vector2(188, 77), Vector2(206, 78), Vector2(176, 78)]
-## The forest to the west is walkable; the camp's river stops the east at about x = 298.
+## The forest to the west is walkable; the camp's river stops the east at about x = 298 until a
+## crossing is laid (`crossing_open`), and then the spit beyond it is walkable too.
 const WANDER_X: Vector2 = Vector2(-150.0, 290.0)
+const WANDER_X_CROSSED: Vector2 = Vector2(-150.0, 545.0)
 const WANDER_Y: Vector2 = Vector2(75.0, 79.0)
+## The two answers to "The hard crossing" (flags); either opens the way over the river, which runs
+## from about x = 302 to x = 476 along the foot rows. Mirrors tools/art/cave_river.js.
+const CROSSING_FLAGS: Array[StringName] = [&"stepping_stones", &"log_bridge"]
+const CROSSING_X: Vector2 = Vector2(302.0, 476.0)
+## Foragers fish from the near bank once the group has fished, cut reeds on the far bank once there
+## is a crossing, and gather shellfish on the flats at low tide (the view's picture of foraging: the
+## sim only knows they forage). Each is where to stand and what to face.
+const FISH_FLAGS: Array[StringName] = [&"fish_by_hand", &"fish_trap"]
+const REED_FLAGS: Array[StringName] = [&"path_foraging", &"reed_beds", &"reed_teachers"]
+const FISH_SPOTS: Array[Vector2] = [Vector2(294, 78), Vector2(288, 79), Vector2(297, 77)]
+const FISH_FOCUS_X: float = 340.0
+const REED_SPOTS: Array[Vector2] = [Vector2(494, 77), Vector2(502, 78), Vector2(498, 79)]
+const REED_FOCUS_X: float = 480.0
+const FLATS_SPOTS: Array[Vector2] = [Vector2(640, 78), Vector2(646, 79), Vector2(637, 77)]
+const FLATS_FOCUS_X: float = 720.0
+## The wet flats the sea leaves at low tide (tools/art/cave_pages.js): an overlay on the east page's
+## shore, laid over the sea. It has FLATS_STEPS steps of how far out the sea is (`TideLook`), each in
+## FLATS_FRAMES frames (`east_tide_flats_<step>_<frame>`) that lap in and out on the sea's clock.
+const FLATS_STEPS: int = 3
+const FLATS_FRAMES: int = 3
+const FLATS_Z: int = -94
+## The ambient life on the river and its far bank (tools/art/cave_pages.js): fish rising and birds
+## on the reeds (`east_life_0..`, swapped every LIFE_FRAME_SECONDS while any of it is on screen),
+## and a deer that drinks at dawn and dusk (`east_deer_0..`). LIFE_X is the camp x range they cover.
+const LIFE_FRAMES: int = 3
+const DEER_FRAMES: int = 2
+const LIFE_FRAME_SECONDS: float = 0.9
+const LIFE_X: Vector2 = Vector2(384.0, 500.0)
+const LIFE_Z: int = 71
+
+
+## Whether the group has laid a way over the river.
+static func crossing_open(world: WorldState) -> bool:
+	for flag: StringName in CROSSING_FLAGS:
+		if world.has_flag(flag):
+			return true
+	return false
+
+
+## How far east and west the unhurried walkers may wander.
+static func wander_range(world: WorldState) -> Vector2:
+	return WANDER_X_CROSSED if crossing_open(world) else WANDER_X
+
+
+static func flats_frame_name(step: int, frame: int) -> StringName:
+	return StringName("east_tide_flats_%d_%d" % [
+		clampi(step, 1, FLATS_STEPS), posmod(frame, FLATS_FRAMES)
+	])
+
+
+static func life_frame_name(frame: int) -> StringName:
+	return StringName("east_life_%d" % posmod(frame, LIFE_FRAMES))
+
+
+static func deer_frame_name(frame: int) -> StringName:
+	return StringName("east_deer_%d" % posmod(frame, DEER_FRAMES))
 
 
 ## Whether the group has woven cloth, so villagers swap their furs for woven tunics.

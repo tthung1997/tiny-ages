@@ -162,6 +162,12 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   season gets `_season(Season.X)`; `SEASON_IS`, `WEATHER_IS` and `HAS_BUILDING_TAG` are *passing*
   conditions for `is_decision_stale`, so a decision asked in its season is not withdrawn. Tests that
   jump the clock must land in the right season.
+- **The tide** (issue #9): `SimConfig.tide_at(tick)` is a pure function of the tick (period
+  `tide_period_ticks`, 12.4, so low tide drifts through the day), `is_low_tide` and
+  `SimCondition.Kind.TIDE_LOW` use it, and it is a *passing* condition for `is_decision_stale`.
+  Nothing is saved. Forks that are asked at low tide are authored once per answer to "The hard
+  crossing" (`low_tide_stones`, `low_tide_log`, `fish_on_the_turn_*`) because there is no OR
+  condition and old saves already hold one of the two flags.
 - Design rules baked in: decisions wait indefinitely and never penalise waiting; nothing
   fails or kills; open-ended with chapter milestones, no ending.
 - Content seeds come from `tools/build_sim_content.gd` (a bootstrap — after running it,
@@ -204,7 +210,16 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   rounds to whole pixels; `ScrollUi` and `PanArrow` are the edge arrows and page dots. The
   side pages have their own art (`west_*`, `east_*`, from `tools/art/cave_pages.js`; see
   `WorldLayout.SIDE_PAGES`). The camp's river blocks the whole ground at its east edge, so
-  the east is water and villagers wander west only; arrivals come from the west.
+  the east is water and villagers wander west only until the group lays a crossing
+  (`stepping_stones` or `log_bridge`: `WorldLayout.crossing_open`); then they may walk to the
+  spit. Arrivals always come from the west.
+- **River life on the east page** (issue #9, `docs/ages.md` V13): the crossing and the river's
+  props are `SceneProps` (the crossing is two pieces, camp and east, `tools/art/cave_river.js`;
+  clay pits, flax, the flood bank, boats and the weir are in `settled_camp.js`). Foragers *look*
+  like they fish, cut reeds and gather shellfish (`VillagerPlanner._plan_forage`: view-only, the
+  sim only knows `forage`). `RiverLife` (deer by the hour) and `TideLook` (how bare the flats
+  are) are pure and tested; fish and birds are `east_life_*` frames swapped on a slow clock that
+  sleeps off-screen, the flats an overlay in three steps (`TideLook.flats_step`) whose foam frames swap with the sea.
 - **Clickable region across the scroll**: `WorldView` builds a world-wide `Skyline` and the
   `DesktopWindow` reads the slice in view (`set_skyline`, `set_scroll`); the arrows and HUD
   are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
@@ -228,11 +243,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   `tools/art/weather.js`): in strip and corner mode the whole viewport joins the click region while
   they fall (`WorldView.covers_sky`), because Windows only draws inside it. A drought and a tornado are
   events, journal lines and decisions with no visuals. Look at it with `--season=` and `--weather=`.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp weather ui_seasons`,
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_river cave_villagers cave_celestial cave_stars settled_camp weather ui_seasons`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
-  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--damaged`). **`--dev`** turns on the text overlay and the dev
+  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--tide=low|high`, `--damaged`). **`--dev`** turns on the text overlay and the dev
   keys (mode, scale, speed, bot...); `--hud` is the overlay alone. Without them the screen has
   only the player's UI (docs/gameplay.md P12). Always use
   `--nosave` (or `--save=`) in automated runs so the player's save and window settings are not

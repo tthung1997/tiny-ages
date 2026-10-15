@@ -27,7 +27,7 @@ const STORY_DAY: Dictionary = {
 	&"smoke": 316, &"tools_pile": 342,
 	&"floors": 11, &"lost_flint": 80, &"night_noises": 98, &"ford": 152, &"feather": 182,
 	&"bats": 204, &"honey": 227, &"fish_run": 246, &"drum": 265, &"first_snow": 285,
-	&"echo": 307, &"sky_stone": 331, &"warm_pool": 350,
+	&"echo": 307, &"sky_stone": 331, &"warm_pool": 350, &"low_tide": 215,
 }
 ## Days into the Settled Age (not since the start) before each of its milestones can happen. The
 ## age is paced like the Cave Age: five hidden milestones spread over about the same five real
@@ -50,7 +50,7 @@ const SETTLED_STORY_DAY: Dictionary = {
 	&"kiln": 118, &"wet": 130, &"fowl": 142, &"dye": 172, &"loom": 184, &"flood": 196,
 	&"neighbours": 208, &"salt": 226, &"count": 238, &"beads": 262, &"wall": 286,
 	&"looking_back": 312, &"threshold": 28, &"midsummer": 152, &"children": 274, &"fog": 298,
-	&"evenings": 322,
+	&"evenings": 322, &"canoe": 160, &"weir": 218,
 }
 ## Chance per tick of a small journal line, and how long before the same one can repeat. About one
 ## line every quarter hour of real time across all of them.
@@ -1230,6 +1230,12 @@ func _reachable(tag: StringName, negate: bool = false) -> SimCondition:
 	return _cond(SimCondition.Kind.HAS_BUILDING_TAG, tag, 0, negate)
 
 
+## One of the quiet moments that belongs to the sea being out.
+func _at_low_tide(event: EventDef) -> EventDef:
+	event.requires.append(_cond(SimCondition.Kind.TIDE_LOW))
+	return event
+
+
 ## One of the quiet moments that belongs to a season.
 func _seasonal(event_id: StringName, season: int, line: String) -> EventDef:
 	var event: EventDef = _ambient(event_id, line)
@@ -1578,6 +1584,8 @@ func _story_decisions() -> Array[EventDef]:
 		_star_watching(), _smoke_in_the_cave(), _tools_pile(), _cold_floors(), _lost_flint(),
 		_night_noises(), _the_ford(), _bright_feather(), _bats_in_the_back(), _bee_tree(),
 		_fish_run(), _hollow_log(), _first_snow(), _echo_in_the_cave(), _sky_stone(), _warm_pool(),
+		_low_tide(&"stepping_stones", &"low_tide_stones"),
+		_low_tide(&"log_bridge", &"low_tide_log"),
 	]
 
 
@@ -2387,6 +2395,8 @@ func _settled_stories() -> Array[EventDef]:
 		_wild_fowl(), _dyed_cloth(), _the_loom_frame(), _the_flood(), _smoke_in_the_next_valley(),
 		_pots_for_salt(), _winter_count(), _green_beads(), _the_low_wall(), _looking_back(),
 		_the_threshold(), _midsummer(), _children_in_the_field(), _the_fog(), _long_evenings(),
+		_a_boat_for_the_river(), _tide_weir(&"stepping_stones", &"fish_on_the_turn_stones"),
+		_tide_weir(&"log_bridge", &"fish_on_the_turn_log"),
 	]
 
 
@@ -3067,6 +3077,94 @@ func _long_evenings() -> EventDef:
 	return event
 
 
+## ---- The river and the sea (docs/ages.md V13, issue #9): what the east page's water gives. The
+## tide is low only part of the time (`SimConfig.tide_at`), so these are asked in that window.
+
+## The Cave Age's low tide, asked once a crossing to the spit is open (one copy per answer to "The
+## hard crossing", so saves that already answered it work). The sea is out for hours at a time.
+func _low_tide(crossing: StringName, event_id: StringName) -> EventDef:
+	var event: EventDef = _story(
+		event_id, "The sea has gone out", &"nature", STORY_DAY[&"low_tide"],
+		"The sea has gone a long way out beyond the spit, and the wet sand ticks and glitters. "
+		+ "It will not stay out for long."
+	)
+	event.requires.append(_flag_set(crossing))
+	event.requires.append(_cond(SimCondition.Kind.TIDE_LOW))
+	event.choices = _choices([
+		_answer(
+			&"gather_shellfish", "Go out onto the flats for shellfish",
+			"Everyone went out onto the flats with baskets, and came back before the water did, "
+			+ "heavy and wet.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 5), _set_flag(&"shellfish_gathered")],
+		),
+		_answer(
+			&"comb_the_tideline", "Walk the tideline for driftwood",
+			"The tideline was littered with pale, salt-dry wood, and it was carried back by the "
+			+ "armful.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"wood", 5), _set_flag(&"driftwood_gathered")],
+		),
+	])
+	return event
+
+
+## The Settled Age's low tide: what to do with the flats, asked once a crossing is open.
+func _tide_weir(crossing: StringName, event_id: StringName) -> EventDef:
+	var event: EventDef = _settled_story(
+		event_id, "Fish on the turn of the tide", &"nature", SETTLED_STORY_DAY[&"weir"],
+		"Fish are left in the pools on the flats each time the sea goes out, and the gulls "
+		+ "know it."
+	)
+	event.requires.append(_flag_set(crossing))
+	event.requires.append(_cond(SimCondition.Kind.TIDE_LOW))
+	event.choices = _choices([
+		_answer(
+			&"build_a_weir", "Pile a weir of stones to hold the fish",
+			"A curved weir of stones went up on the flats, and the next tide left it full.",
+			[
+				_spend(&"wood", 6),
+				_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 8),
+				_set_flag(&"tide_weir"),
+			],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"wade_out_with_baskets", "Wade out with baskets at the turn",
+			"They waded out with baskets as the water turned, and took what the pools held.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 4), _set_flag(&"tide_baskets")],
+		),
+	])
+	return event
+
+
+func _a_boat_for_the_river() -> EventDef:
+	var event: EventDef = _settled_story(
+		&"a_boat_for_the_river", "A boat for the river", &"settlement",
+		SETTLED_STORY_DAY[&"canoe"],
+		"The river is wide, and the fish are in the middle of it. Someone has been looking at it "
+		+ "for a long time."
+	)
+	event.choices = _choices([
+		_answer(
+			&"hollow_a_dugout", "Hollow a log into a dugout canoe",
+			"A log was burned and scraped hollow, and the canoe went into the river with "
+			+ "everyone watching. It floated.",
+			[
+				_spend(&"wood", 6),
+				_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 6),
+				_set_flag(&"dugout_canoe"),
+			],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"bind_a_raft", "Bind a raft of reeds",
+			"Reeds were bound in great bundles into a raft, which rode low, wobbled, and carried "
+			+ "three people across and back.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"reed_raft")],
+		),
+	])
+	return event
+
+
 ## ---- Growth and food (docs/gameplay.md P5, P13): arrivals while there is room and food, and the
 ## forks that ease a crowded or hungry camp. Nobody dies or starves: a family may leave to live
 ## elsewhere, and a shortage only moves what the group does with its days.
@@ -3537,6 +3635,17 @@ func _ambient_lines() -> Array[EventDef]:
 			"The willow trap in the channel was checked at dawn, and was not empty."
 		),
 		_remembered(
+			&"shells_in_pockets", &"shellfish_gathered",
+			"Someone was still finding small shells in their sleeves, and not minding."
+		),
+		_remembered(
+			&"salt_in_the_fire", &"driftwood_gathered",
+			"The driftwood burned blue and green at the edges, and everyone watched it."
+		),
+		_at_low_tide(_ambient(
+			&"tide_out", "The tide was out, and the far sand shone wet to the edge of the sky.", 60
+		)),
+		_remembered(
 			&"drum_in_the_valley", &"log_drum",
 			"The drum sounded across the valley at dusk, and something answered far off."
 		),
@@ -3964,6 +4073,27 @@ func _settled_ambient_lines() -> Array[EventDef]:
 			&"mending_evening", &"evening_work",
 			"A pile of mending sat by the fire, half done, and talk was going over it like water."
 		),
+		_settled_remembered(
+			&"dugout_at_the_bank", &"dugout_canoe",
+			"The dugout rocked at the bank, and every child had been told twice to stay out of it."
+		),
+		_settled_remembered(
+			&"raft_poled_over", &"reed_raft",
+			"The reed raft was poled across and back, low in the water, with a lot of laughing."
+		),
+		_settled_remembered(
+			&"weir_full", &"tide_weir",
+			"The stone weir on the flats held a silver heap of fish, and the gulls complained."
+		),
+		_settled_remembered(
+			&"baskets_at_the_turn", &"tide_baskets",
+			"Somebody waded out at the turn of the tide with a basket, and came back wet to the "
+			+ "waist."
+		),
+		_at_low_tide(_settled_ambient(
+			&"gulls_on_the_flats",
+			"Gulls stood in rows on the wet flats, all facing the water, all waiting for it."
+		)),
 	]
 
 

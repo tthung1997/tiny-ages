@@ -144,6 +144,7 @@ func is_decision_stale(decision: PendingDecision) -> bool:
 				or condition.kind == SimCondition.Kind.WEATHER_IS \
 				or condition.kind == SimCondition.Kind.HAS_BUILDING_TAG \
 				or condition.kind == SimCondition.Kind.HAS_DAMAGED_BUILDING \
+				or condition.kind == SimCondition.Kind.TIDE_LOW \
 				or condition.kind == SimCondition.Kind.CONSTRUCTION_IDLE
 		if not transient and not condition.is_met(world, config):
 			return true

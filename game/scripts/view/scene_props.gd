@@ -34,6 +34,22 @@ const PROPS: Dictionary = {
 	&"west_scarecrow": {"at_x": -384.0, "z": 76, "kind": Kind.FLAG, "key": &"scarecrow"},
 	&"west_roof_a": {"at_x": -384.0, "z": 72, "kind": Kind.ACHIEVEMENT, "key": &"a_village"},
 	&"west_roof_b": {"at_x": -384.0, "z": 71, "kind": Kind.ACHIEVEMENT, "key": &"a_village"},
+	# The river (docs/ages.md V13): the crossing runs over the camp page and the east page, so it
+	# is two pieces; the rest sits on the near bank and in the shallows (camp page), or on the
+	# flats (east page). Mirrors tools/art/cave_river.js and settled_camp.js.
+	&"crossing_stones": {"at_x": 0.0, "z": 70, "kind": Kind.FLAG, "key": &"stepping_stones"},
+	&"east_crossing_stones": {"at_x": 384.0, "z": 70, "kind": Kind.FLAG, "key": &"stepping_stones"},
+	&"crossing_log": {"at_x": 0.0, "z": 70, "kind": Kind.FLAG, "key": &"log_bridge"},
+	&"east_crossing_log": {"at_x": 384.0, "z": 70, "kind": Kind.FLAG, "key": &"log_bridge"},
+	&"river_trap": {"at_x": 0.0, "z": 72, "kind": Kind.FLAG, "key": &"fish_trap"},
+	&"reed_bundles": {"at_x": 0.0, "z": 74, "kind": Kind.FLAG, "key": &"reed_beds"},
+	&"clay_pits": {"at_x": 0.0, "z": 67, "kind": Kind.ACHIEVEMENT, "key": &"fired_clay"},
+	&"flax_thread": {"at_x": 0.0, "z": 72, "kind": Kind.FLAG, "key": &"flax_thread"},
+	&"flax_beaten": {"at_x": 0.0, "z": 78, "kind": Kind.FLAG, "key": &"flax_beaten"},
+	&"river_bank": {"at_x": 0.0, "z": 60, "kind": Kind.FLAG, "key": &"river_bank"},
+	&"boat_dugout": {"at_x": 0.0, "z": 71, "kind": Kind.FLAG, "key": &"dugout_canoe"},
+	&"boat_raft": {"at_x": 0.0, "z": 71, "kind": Kind.FLAG, "key": &"reed_raft"},
+	&"east_tide_weir": {"at_x": 384.0, "z": 77, "kind": Kind.FLAG, "key": &"tide_weir"},
 }
 
 

@@ -5343,6 +5343,146 @@ chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("4_euihr")]([SubResource("Resource_3bn2l"), SubResource("Resource_urqu0")])
 
+[sub_resource type="Resource" id="Resource_h7lqr"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 5
+
+[sub_resource type="Resource" id="Resource_slkji"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"shellfish_gathered"
+
+[sub_resource type="Resource" id="Resource_tna8n"]
+script = ExtResource("5_x2sw1")
+text = "Everyone went out onto the flats with baskets, and came back before the water did, heavy and wet."
+
+[sub_resource type="Resource" id="Resource_8tka3"]
+script = ExtResource("4_euihr")
+id = &"gather_shellfish"
+label = "Go out onto the flats for shellfish"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_h7lqr"), SubResource("Resource_slkji"), SubResource("Resource_tna8n")])
+
+[sub_resource type="Resource" id="Resource_c17uy"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"wood"
+amount = 5
+
+[sub_resource type="Resource" id="Resource_ar5uh"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"driftwood_gathered"
+
+[sub_resource type="Resource" id="Resource_lyher"]
+script = ExtResource("5_x2sw1")
+text = "The tideline was littered with pale, salt-dry wood, and it was carried back by the armful."
+
+[sub_resource type="Resource" id="Resource_yca6p"]
+script = ExtResource("4_euihr")
+id = &"comb_the_tideline"
+label = "Walk the tideline for driftwood"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_c17uy"), SubResource("Resource_ar5uh"), SubResource("Resource_lyher")])
+
+[sub_resource type="Resource" id="Resource_5y4vg"]
+script = ExtResource("6_xydym")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_j6r0x"]
+script = ExtResource("6_xydym")
+kind = 5
+amount = 215
+
+[sub_resource type="Resource" id="Resource_2c7ef"]
+script = ExtResource("6_xydym")
+key = &"stepping_stones"
+
+[sub_resource type="Resource" id="Resource_1njvu"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_mgqkr"]
+script = ExtResource("3_0wd41")
+id = &"low_tide_stones"
+title = "The sea has gone out"
+body = "The sea has gone a long way out beyond the spit, and the wet sand ticks and glitters. It will not stay out for long."
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_5y4vg"), SubResource("Resource_j6r0x"), SubResource("Resource_2c7ef"), SubResource("Resource_1njvu")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_8tka3"), SubResource("Resource_yca6p")])
+
+[sub_resource type="Resource" id="Resource_mpi81"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 5
+
+[sub_resource type="Resource" id="Resource_slx5p"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"shellfish_gathered"
+
+[sub_resource type="Resource" id="Resource_am5e1"]
+script = ExtResource("5_x2sw1")
+text = "Everyone went out onto the flats with baskets, and came back before the water did, heavy and wet."
+
+[sub_resource type="Resource" id="Resource_t3rc5"]
+script = ExtResource("4_euihr")
+id = &"gather_shellfish"
+label = "Go out onto the flats for shellfish"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_mpi81"), SubResource("Resource_slx5p"), SubResource("Resource_am5e1")])
+
+[sub_resource type="Resource" id="Resource_0clhn"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"wood"
+amount = 5
+
+[sub_resource type="Resource" id="Resource_wyvk3"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"driftwood_gathered"
+
+[sub_resource type="Resource" id="Resource_prwkv"]
+script = ExtResource("5_x2sw1")
+text = "The tideline was littered with pale, salt-dry wood, and it was carried back by the armful."
+
+[sub_resource type="Resource" id="Resource_xg448"]
+script = ExtResource("4_euihr")
+id = &"comb_the_tideline"
+label = "Walk the tideline for driftwood"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_0clhn"), SubResource("Resource_wyvk3"), SubResource("Resource_prwkv")])
+
+[sub_resource type="Resource" id="Resource_r5tnw"]
+script = ExtResource("6_xydym")
+key = &"fire_found"
+
+[sub_resource type="Resource" id="Resource_0l2q2"]
+script = ExtResource("6_xydym")
+kind = 5
+amount = 215
+
+[sub_resource type="Resource" id="Resource_arkn7"]
+script = ExtResource("6_xydym")
+key = &"log_bridge"
+
+[sub_resource type="Resource" id="Resource_xq5is"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_nfa5u"]
+script = ExtResource("3_0wd41")
+id = &"low_tide_log"
+title = "The sea has gone out"
+body = "The sea has gone a long way out beyond the spit, and the wet sand ticks and glitters. It will not stay out for long."
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_r5tnw"), SubResource("Resource_0l2q2"), SubResource("Resource_arkn7"), SubResource("Resource_xq5is")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_t3rc5"), SubResource("Resource_xg448")])
+
 [sub_resource type="Resource" id="Resource_p578w"]
 script = ExtResource("5_x2sw1")
 kind = 1
@@ -5383,7 +5523,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 2
 
-[sub_resource type="Resource" id="Resource_mgqkr"]
+[sub_resource type="Resource" id="Resource_im1hx"]
 script = ExtResource("3_0wd41")
 id = &"what_the_cave_is_for"
 title = "What the cave is for"
@@ -5447,7 +5587,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 8
 
-[sub_resource type="Resource" id="Resource_nfa5u"]
+[sub_resource type="Resource" id="Resource_btc77"]
 script = ExtResource("3_0wd41")
 id = &"marking_the_ground"
 title = "Whose ground"
@@ -5502,7 +5642,7 @@ amount = 14
 script = ExtResource("6_xydym")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_im1hx"]
+[sub_resource type="Resource" id="Resource_7iwfm"]
 script = ExtResource("3_0wd41")
 id = &"first_furrows"
 title = "The digging sticks"
@@ -5570,7 +5710,7 @@ amount = 14
 script = ExtResource("6_xydym")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_btc77"]
+[sub_resource type="Resource" id="Resource_tlued"]
 script = ExtResource("3_0wd41")
 id = &"pasture_gate"
 title = "Into the sown ground"
@@ -5639,7 +5779,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"first_roof"
 
-[sub_resource type="Resource" id="Resource_7iwfm"]
+[sub_resource type="Resource" id="Resource_wnh4f"]
 script = ExtResource("3_0wd41")
 id = &"mending_the_roof"
 title = "Rain through the thatch"
@@ -5703,7 +5843,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 46
 
-[sub_resource type="Resource" id="Resource_tlued"]
+[sub_resource type="Resource" id="Resource_ejjpc"]
 script = ExtResource("3_0wd41")
 id = &"the_well"
 title = "A place to fetch water"
@@ -5758,7 +5898,7 @@ amount = 58
 script = ExtResource("6_xydym")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_wnh4f"]
+[sub_resource type="Resource" id="Resource_5oq4u"]
 script = ExtResource("3_0wd41")
 id = &"the_scarecrow"
 title = "Birds in the field"
@@ -5826,7 +5966,7 @@ amount = 58
 script = ExtResource("6_xydym")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_ejjpc"]
+[sub_resource type="Resource" id="Resource_lvbo7"]
 script = ExtResource("3_0wd41")
 id = &"the_herd_dog"
 title = "A dog at the fold"
@@ -5895,7 +6035,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_5oq4u"]
+[sub_resource type="Resource" id="Resource_o55pb"]
 script = ExtResource("3_0wd41")
 id = &"a_dry_store"
 title = "Damp grain"
@@ -5950,7 +6090,7 @@ amount = 82
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_lvbo7"]
+[sub_resource type="Resource" id="Resource_202c3"]
 script = ExtResource("3_0wd41")
 id = &"the_quarrel"
 title = "Over the fence"
@@ -6023,7 +6163,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_o55pb"]
+[sub_resource type="Resource" id="Resource_rb8g7"]
 script = ExtResource("3_0wd41")
 id = &"harvest_festival"
 title = "More than enough"
@@ -6078,7 +6218,7 @@ amount = 100
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_202c3"]
+[sub_resource type="Resource" id="Resource_myemd"]
 script = ExtResource("3_0wd41")
 id = &"the_oldest_voice"
 title = "Before the huts"
@@ -6151,7 +6291,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_rb8g7"]
+[sub_resource type="Resource" id="Resource_jv7hd"]
 script = ExtResource("3_0wd41")
 id = &"the_kiln_pit"
 title = "A pit for the pots"
@@ -6220,7 +6360,7 @@ script = ExtResource("6_xydym")
 kind = 13
 amount = 1
 
-[sub_resource type="Resource" id="Resource_myemd"]
+[sub_resource type="Resource" id="Resource_5lak7"]
 script = ExtResource("3_0wd41")
 id = &"a_wet_summer"
 title = "Nine days of rain"
@@ -6284,7 +6424,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 142
 
-[sub_resource type="Resource" id="Resource_jv7hd"]
+[sub_resource type="Resource" id="Resource_dem84"]
 script = ExtResource("3_0wd41")
 id = &"wild_fowl"
 title = "Small brown birds"
@@ -6353,7 +6493,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"woven_cloth"
 
-[sub_resource type="Resource" id="Resource_5lak7"]
+[sub_resource type="Resource" id="Resource_f7kau"]
 script = ExtResource("3_0wd41")
 id = &"dyed_cloth"
 title = "A colour for the cloth"
@@ -6425,7 +6565,7 @@ key = &"woven_cloth"
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_dem84"]
+[sub_resource type="Resource" id="Resource_i7j5c"]
 script = ExtResource("3_0wd41")
 id = &"the_loom_frame"
 title = "Two posts and some thread"
@@ -6497,7 +6637,7 @@ amount = 196
 script = ExtResource("6_xydym")
 kind = 13
 
-[sub_resource type="Resource" id="Resource_f7kau"]
+[sub_resource type="Resource" id="Resource_03aes"]
 script = ExtResource("3_0wd41")
 id = &"the_flood"
 title = "The river is rising"
@@ -6561,7 +6701,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 208
 
-[sub_resource type="Resource" id="Resource_i7j5c"]
+[sub_resource type="Resource" id="Resource_u67f1"]
 script = ExtResource("3_0wd41")
 id = &"smoke_in_the_next_valley"
 title = "Smoke beyond the ridge"
@@ -6623,7 +6763,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_03aes"]
+[sub_resource type="Resource" id="Resource_ocqsx"]
 script = ExtResource("3_0wd41")
 id = &"pots_for_salt"
 title = "Salt"
@@ -6692,7 +6832,7 @@ script = ExtResource("6_xydym")
 kind = 13
 amount = 2
 
-[sub_resource type="Resource" id="Resource_u67f1"]
+[sub_resource type="Resource" id="Resource_t40kq"]
 script = ExtResource("3_0wd41")
 id = &"winter_count"
 title = "Before winter"
@@ -6752,7 +6892,7 @@ key = &"green_stone"
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_ocqsx"]
+[sub_resource type="Resource" id="Resource_hextx"]
 script = ExtResource("3_0wd41")
 id = &"green_beads"
 title = "What the stone does"
@@ -6821,7 +6961,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 286
 
-[sub_resource type="Resource" id="Resource_t40kq"]
+[sub_resource type="Resource" id="Resource_inhey"]
 script = ExtResource("3_0wd41")
 id = &"the_low_wall"
 title = "How far the village goes"
@@ -6876,7 +7016,7 @@ amount = 312
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_hextx"]
+[sub_resource type="Resource" id="Resource_tmcvw"]
 script = ExtResource("3_0wd41")
 id = &"looking_back"
 title = "Up at the cave"
@@ -6931,7 +7071,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 28
 
-[sub_resource type="Resource" id="Resource_inhey"]
+[sub_resource type="Resource" id="Resource_he8y4"]
 script = ExtResource("3_0wd41")
 id = &"the_threshold"
 title = "Mud at the door"
@@ -6987,7 +7127,7 @@ script = ExtResource("6_xydym")
 kind = 13
 amount = 1
 
-[sub_resource type="Resource" id="Resource_tmcvw"]
+[sub_resource type="Resource" id="Resource_rlo75"]
 script = ExtResource("3_0wd41")
 id = &"midsummer"
 title = "The longest day"
@@ -7038,7 +7178,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 274
 
-[sub_resource type="Resource" id="Resource_he8y4"]
+[sub_resource type="Resource" id="Resource_4fjua"]
 script = ExtResource("3_0wd41")
 id = &"children_in_the_field"
 title = "Small hands"
@@ -7088,7 +7228,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 298
 
-[sub_resource type="Resource" id="Resource_rlo75"]
+[sub_resource type="Resource" id="Resource_ma63a"]
 script = ExtResource("3_0wd41")
 id = &"the_fog"
 title = "Three days of fog"
@@ -7139,7 +7279,7 @@ script = ExtResource("6_xydym")
 kind = 11
 amount = 322
 
-[sub_resource type="Resource" id="Resource_4fjua"]
+[sub_resource type="Resource" id="Resource_4lbu0"]
 script = ExtResource("3_0wd41")
 id = &"long_evenings"
 title = "The long evenings"
@@ -7148,6 +7288,250 @@ requires = Array[ExtResource("6_xydym")]([SubResource("Resource_yao7s"), SubReso
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("4_euihr")]([SubResource("Resource_uamrp"), SubResource("Resource_ayue2")])
+
+[sub_resource type="Resource" id="Resource_48m41"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"wood"
+amount = -6
+
+[sub_resource type="Resource" id="Resource_2u6i0"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_g1lhh"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"dugout_canoe"
+
+[sub_resource type="Resource" id="Resource_wrmaq"]
+script = ExtResource("5_x2sw1")
+text = "A log was burned and scraped hollow, and the canoe went into the river with everyone watching. It floated."
+
+[sub_resource type="Resource" id="Resource_qf1c1"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_a2s2r"]
+script = ExtResource("4_euihr")
+id = &"hollow_a_dugout"
+label = "Hollow a log into a dugout canoe"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_qf1c1")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_48m41"), SubResource("Resource_2u6i0"), SubResource("Resource_g1lhh"), SubResource("Resource_wrmaq")])
+
+[sub_resource type="Resource" id="Resource_a7rvc"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 3
+
+[sub_resource type="Resource" id="Resource_px6qd"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"reed_raft"
+
+[sub_resource type="Resource" id="Resource_jrr6t"]
+script = ExtResource("5_x2sw1")
+text = "Reeds were bound in great bundles into a raft, which rode low, wobbled, and carried three people across and back."
+
+[sub_resource type="Resource" id="Resource_8a88o"]
+script = ExtResource("4_euihr")
+id = &"bind_a_raft"
+label = "Bind a raft of reeds"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_a7rvc"), SubResource("Resource_px6qd"), SubResource("Resource_jrr6t")])
+
+[sub_resource type="Resource" id="Resource_y5nvv"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_q51uk"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 160
+
+[sub_resource type="Resource" id="Resource_f55ls"]
+script = ExtResource("3_0wd41")
+id = &"a_boat_for_the_river"
+title = "A boat for the river"
+body = "The river is wide, and the fish are in the middle of it. Someone has been looking at it for a long time."
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_y5nvv"), SubResource("Resource_q51uk")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_a2s2r"), SubResource("Resource_8a88o")])
+
+[sub_resource type="Resource" id="Resource_7jqom"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"wood"
+amount = -6
+
+[sub_resource type="Resource" id="Resource_dv063"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 8
+
+[sub_resource type="Resource" id="Resource_7bkx0"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"tide_weir"
+
+[sub_resource type="Resource" id="Resource_c247s"]
+script = ExtResource("5_x2sw1")
+text = "A curved weir of stones went up on the flats, and the next tide left it full."
+
+[sub_resource type="Resource" id="Resource_wwb2i"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_nbmfs"]
+script = ExtResource("4_euihr")
+id = &"build_a_weir"
+label = "Pile a weir of stones to hold the fish"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_wwb2i")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_7jqom"), SubResource("Resource_dv063"), SubResource("Resource_7bkx0"), SubResource("Resource_c247s")])
+
+[sub_resource type="Resource" id="Resource_iv2yl"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 4
+
+[sub_resource type="Resource" id="Resource_sxc1r"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"tide_baskets"
+
+[sub_resource type="Resource" id="Resource_ime5u"]
+script = ExtResource("5_x2sw1")
+text = "They waded out with baskets as the water turned, and took what the pools held."
+
+[sub_resource type="Resource" id="Resource_lh0ye"]
+script = ExtResource("4_euihr")
+id = &"wade_out_with_baskets"
+label = "Wade out with baskets at the turn"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_iv2yl"), SubResource("Resource_sxc1r"), SubResource("Resource_ime5u")])
+
+[sub_resource type="Resource" id="Resource_rpvl7"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_pll67"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 218
+
+[sub_resource type="Resource" id="Resource_ljhak"]
+script = ExtResource("6_xydym")
+key = &"stepping_stones"
+
+[sub_resource type="Resource" id="Resource_3stys"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_ge3xv"]
+script = ExtResource("3_0wd41")
+id = &"fish_on_the_turn_stones"
+title = "Fish on the turn of the tide"
+body = "Fish are left in the pools on the flats each time the sea goes out, and the gulls know it."
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_rpvl7"), SubResource("Resource_pll67"), SubResource("Resource_ljhak"), SubResource("Resource_3stys")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_nbmfs"), SubResource("Resource_lh0ye")])
+
+[sub_resource type="Resource" id="Resource_01ran"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"wood"
+amount = -6
+
+[sub_resource type="Resource" id="Resource_8favw"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 8
+
+[sub_resource type="Resource" id="Resource_grfpd"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"tide_weir"
+
+[sub_resource type="Resource" id="Resource_6g45o"]
+script = ExtResource("5_x2sw1")
+text = "A curved weir of stones went up on the flats, and the next tide left it full."
+
+[sub_resource type="Resource" id="Resource_i2x7h"]
+script = ExtResource("6_xydym")
+kind = 2
+key = &"wood"
+amount = 6
+
+[sub_resource type="Resource" id="Resource_gnwgy"]
+script = ExtResource("4_euihr")
+id = &"build_a_weir"
+label = "Pile a weir of stones to hold the fish"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_i2x7h")])
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_01ran"), SubResource("Resource_8favw"), SubResource("Resource_grfpd"), SubResource("Resource_6g45o")])
+
+[sub_resource type="Resource" id="Resource_57gyn"]
+script = ExtResource("5_x2sw1")
+kind = 0
+key = &"food"
+amount = 4
+
+[sub_resource type="Resource" id="Resource_3j1lj"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"tide_baskets"
+
+[sub_resource type="Resource" id="Resource_bckbp"]
+script = ExtResource("5_x2sw1")
+text = "They waded out with baskets as the water turned, and took what the pools held."
+
+[sub_resource type="Resource" id="Resource_pceao"]
+script = ExtResource("4_euihr")
+id = &"wade_out_with_baskets"
+label = "Wade out with baskets at the turn"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_57gyn"), SubResource("Resource_3j1lj"), SubResource("Resource_bckbp")])
+
+[sub_resource type="Resource" id="Resource_i23mg"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_jpq64"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 218
+
+[sub_resource type="Resource" id="Resource_x107a"]
+script = ExtResource("6_xydym")
+key = &"log_bridge"
+
+[sub_resource type="Resource" id="Resource_1r4ow"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_ccg0i"]
+script = ExtResource("3_0wd41")
+id = &"fish_on_the_turn_log"
+title = "Fish on the turn of the tide"
+body = "Fish are left in the pools on the flats each time the sea goes out, and the gulls know it."
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_i23mg"), SubResource("Resource_jpq64"), SubResource("Resource_x107a"), SubResource("Resource_1r4ow")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_gnwgy"), SubResource("Resource_pceao")])
 
 [sub_resource type="Resource" id="Resource_7wjfc"]
 script = ExtResource("5_x2sw1")
@@ -7228,7 +7612,7 @@ kind = 2
 key = &"food"
 amount = 12
 
-[sub_resource type="Resource" id="Resource_ma63a"]
+[sub_resource type="Resource" id="Resource_p65dx"]
 script = ExtResource("3_0wd41")
 id = &"traveller_at_dusk"
 title = "A traveller at dusk"
@@ -7319,7 +7703,7 @@ kind = 2
 key = &"wood"
 amount = 8
 
-[sub_resource type="Resource" id="Resource_4lbu0"]
+[sub_resource type="Resource" id="Resource_5o20g"]
 script = ExtResource("3_0wd41")
 id = &"too_many_for_the_cave"
 title = "Too many for the cave"
@@ -7408,7 +7792,7 @@ negate = true
 script = ExtResource("6_xydym")
 kind = 7
 
-[sub_resource type="Resource" id="Resource_f55ls"]
+[sub_resource type="Resource" id="Resource_tex2y"]
 script = ExtResource("3_0wd41")
 id = &"who_leads_the_foraging"
 title = "Who leads the foraging"
@@ -7503,7 +7887,7 @@ kind = 2
 key = &"wood"
 amount = 10
 
-[sub_resource type="Resource" id="Resource_ge3xv"]
+[sub_resource type="Resource" id="Resource_dfght"]
 script = ExtResource("3_0wd41")
 id = &"family_at_the_door"
 title = "Another family at the door"
@@ -7589,7 +7973,7 @@ kind = 2
 key = &"wood"
 amount = 12
 
-[sub_resource type="Resource" id="Resource_ccg0i"]
+[sub_resource type="Resource" id="Resource_cp2lu"]
 script = ExtResource("3_0wd41")
 id = &"too_many_for_the_village"
 title = "Too many for the village"
@@ -7668,7 +8052,7 @@ negate = true
 script = ExtResource("6_xydym")
 kind = 13
 
-[sub_resource type="Resource" id="Resource_p65dx"]
+[sub_resource type="Resource" id="Resource_3odwt"]
 script = ExtResource("3_0wd41")
 id = &"a_lean_spring"
 title = "A lean spring"
@@ -7687,7 +8071,7 @@ text = "Mist lay on the river until midday, and the camp was very quiet."
 script = ExtResource("6_xydym")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_5o20g"]
+[sub_resource type="Resource" id="Resource_solnv"]
 script = ExtResource("3_0wd41")
 id = &"morning_mist"
 title = "A quiet moment"
@@ -7705,7 +8089,7 @@ text = "A heron stood in the shallows all afternoon, as if it had business there
 script = ExtResource("6_xydym")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_tex2y"]
+[sub_resource type="Resource" id="Resource_r1ogh"]
 script = ExtResource("3_0wd41")
 id = &"heron"
 title = "A quiet moment"
@@ -7728,7 +8112,7 @@ script = ExtResource("6_xydym")
 kind = 13
 amount = 3
 
-[sub_resource type="Resource" id="Resource_dfght"]
+[sub_resource type="Resource" id="Resource_qdrbr"]
 script = ExtResource("3_0wd41")
 id = &"frost_glitter"
 title = "A quiet moment"
@@ -7751,7 +8135,7 @@ script = ExtResource("6_xydym")
 kind = 13
 amount = 2
 
-[sub_resource type="Resource" id="Resource_cp2lu"]
+[sub_resource type="Resource" id="Resource_4hmtb"]
 script = ExtResource("3_0wd41")
 id = &"geese"
 title = "A quiet moment"
@@ -7769,7 +8153,7 @@ text = "Thunder grumbled far off, and everyone looked up and nobody was afraid."
 script = ExtResource("6_xydym")
 kind = 5
 
-[sub_resource type="Resource" id="Resource_3odwt"]
+[sub_resource type="Resource" id="Resource_je3wh"]
 script = ExtResource("3_0wd41")
 id = &"far_thunder"
 title = "A quiet moment"
@@ -7788,7 +8172,7 @@ script = ExtResource("6_xydym")
 kind = 5
 amount = 10
 
-[sub_resource type="Resource" id="Resource_solnv"]
+[sub_resource type="Resource" id="Resource_c38qe"]
 script = ExtResource("3_0wd41")
 id = &"warm_wind"
 title = "A quiet moment"
@@ -7819,7 +8203,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_r1ogh"]
+[sub_resource type="Resource" id="Resource_you37"]
 script = ExtResource("3_0wd41")
 id = &"watching_ants"
 title = "A quiet moment"
@@ -7851,7 +8235,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_qdrbr"]
+[sub_resource type="Resource" id="Resource_cvets"]
 script = ExtResource("3_0wd41")
 id = &"shiny_pebble"
 title = "A quiet moment"
@@ -7883,7 +8267,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_4hmtb"]
+[sub_resource type="Resource" id="Resource_bhfx2"]
 script = ExtResource("3_0wd41")
 id = &"humming"
 title = "A quiet moment"
@@ -7915,7 +8299,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_je3wh"]
+[sub_resource type="Resource" id="Resource_v8xsm"]
 script = ExtResource("3_0wd41")
 id = &"a_joke"
 title = "A quiet moment"
@@ -7947,7 +8331,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_c38qe"]
+[sub_resource type="Resource" id="Resource_frd55"]
 script = ExtResource("3_0wd41")
 id = &"sharpened_everything"
 title = "A quiet moment"
@@ -7979,7 +8363,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_you37"]
+[sub_resource type="Resource" id="Resource_2ce7b"]
 script = ExtResource("3_0wd41")
 id = &"woodpile"
 title = "A quiet moment"
@@ -8011,7 +8395,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_cvets"]
+[sub_resource type="Resource" id="Resource_6cj6i"]
 script = ExtResource("3_0wd41")
 id = &"crocuses"
 title = "A quiet moment"
@@ -8043,7 +8427,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_bhfx2"]
+[sub_resource type="Resource" id="Resource_xf0wq"]
 script = ExtResource("3_0wd41")
 id = &"bird_call"
 title = "A quiet moment"
@@ -8066,7 +8450,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"wolf_fed"
 
-[sub_resource type="Resource" id="Resource_v8xsm"]
+[sub_resource type="Resource" id="Resource_jye1w"]
 script = ExtResource("3_0wd41")
 id = &"wolf_waits"
 title = "A quiet moment"
@@ -8088,7 +8472,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"wolf_driven_off"
 
-[sub_resource type="Resource" id="Resource_frd55"]
+[sub_resource type="Resource" id="Resource_k3vke"]
 script = ExtResource("3_0wd41")
 id = &"wolf_howl"
 title = "A quiet moment"
@@ -8110,7 +8494,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"work_song"
 
-[sub_resource type="Resource" id="Resource_2ce7b"]
+[sub_resource type="Resource" id="Resource_7b330"]
 script = ExtResource("3_0wd41")
 id = &"song_again"
 title = "A quiet moment"
@@ -8132,7 +8516,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"art_herd"
 
-[sub_resource type="Resource" id="Resource_6cj6i"]
+[sub_resource type="Resource" id="Resource_bjcwf"]
 script = ExtResource("3_0wd41")
 id = &"herd_on_the_wall"
 title = "A quiet moment"
@@ -8154,7 +8538,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"art_sky"
 
-[sub_resource type="Resource" id="Resource_xf0wq"]
+[sub_resource type="Resource" id="Resource_1it0c"]
 script = ExtResource("3_0wd41")
 id = &"moon_on_the_wall"
 title = "A quiet moment"
@@ -8176,7 +8560,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"second_hearth"
 
-[sub_resource type="Resource" id="Resource_jye1w"]
+[sub_resource type="Resource" id="Resource_cdaif"]
 script = ExtResource("3_0wd41")
 id = &"two_fires"
 title = "A quiet moment"
@@ -8198,7 +8582,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"snares"
 
-[sub_resource type="Resource" id="Resource_k3vke"]
+[sub_resource type="Resource" id="Resource_a743v"]
 script = ExtResource("3_0wd41")
 id = &"snare_rabbit"
 title = "A quiet moment"
@@ -8220,7 +8604,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"mammoth_fed"
 
-[sub_resource type="Resource" id="Resource_7b330"]
+[sub_resource type="Resource" id="Resource_fimve"]
 script = ExtResource("3_0wd41")
 id = &"mammoth_stays"
 title = "A quiet moment"
@@ -8242,7 +8626,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"deer_tended"
 
-[sub_resource type="Resource" id="Resource_bjcwf"]
+[sub_resource type="Resource" id="Resource_po8x5"]
 script = ExtResource("3_0wd41")
 id = &"deer_returns"
 title = "A quiet moment"
@@ -8264,7 +8648,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"star_names"
 
-[sub_resource type="Resource" id="Resource_1it0c"]
+[sub_resource type="Resource" id="Resource_4rwfm"]
 script = ExtResource("3_0wd41")
 id = &"hunter_overhead"
 title = "A quiet moment"
@@ -8286,7 +8670,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"living_tale"
 
-[sub_resource type="Resource" id="Resource_cdaif"]
+[sub_resource type="Resource" id="Resource_cphko"]
 script = ExtResource("3_0wd41")
 id = &"tale_told_again"
 title = "A quiet moment"
@@ -8308,7 +8692,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"path_hunting"
 
-[sub_resource type="Resource" id="Resource_a743v"]
+[sub_resource type="Resource" id="Resource_ebqmo"]
 script = ExtResource("3_0wd41")
 id = &"hunters_home"
 title = "A quiet moment"
@@ -8330,7 +8714,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"path_hunting"
 
-[sub_resource type="Resource" id="Resource_fimve"]
+[sub_resource type="Resource" id="Resource_sjndk"]
 script = ExtResource("3_0wd41")
 id = &"one_that_got_away"
 title = "A quiet moment"
@@ -8352,7 +8736,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"path_foraging"
 
-[sub_resource type="Resource" id="Resource_po8x5"]
+[sub_resource type="Resource" id="Resource_bd0an"]
 script = ExtResource("3_0wd41")
 id = &"baskets_full"
 title = "A quiet moment"
@@ -8374,7 +8758,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"embers_waited"
 
-[sub_resource type="Resource" id="Resource_4rwfm"]
+[sub_resource type="Resource" id="Resource_7qamo"]
 script = ExtResource("3_0wd41")
 id = &"fire_banked"
 title = "A quiet moment"
@@ -8396,7 +8780,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"nut_hammer"
 
-[sub_resource type="Resource" id="Resource_cphko"]
+[sub_resource type="Resource" id="Resource_oiilm"]
 script = ExtResource("3_0wd41")
 id = &"nut_stone_again"
 title = "A quiet moment"
@@ -8418,7 +8802,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"tales_told"
 
-[sub_resource type="Resource" id="Resource_ebqmo"]
+[sub_resource type="Resource" id="Resource_6yjj8"]
 script = ExtResource("3_0wd41")
 id = &"tale_by_the_fire"
 title = "A quiet moment"
@@ -8440,7 +8824,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"songs_sung"
 
-[sub_resource type="Resource" id="Resource_sjndk"]
+[sub_resource type="Resource" id="Resource_s5o1e"]
 script = ExtResource("3_0wd41")
 id = &"fire_song"
 title = "A quiet moment"
@@ -8462,7 +8846,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"body_paint"
 
-[sub_resource type="Resource" id="Resource_bd0an"]
+[sub_resource type="Resource" id="Resource_1pgg2"]
 script = ExtResource("3_0wd41")
 id = &"red_cheek"
 title = "A quiet moment"
@@ -8484,7 +8868,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"strangers_welcomed"
 
-[sub_resource type="Resource" id="Resource_7qamo"]
+[sub_resource type="Resource" id="Resource_lpwfu"]
 script = ExtResource("3_0wd41")
 id = &"newcomer_laughs"
 title = "A quiet moment"
@@ -8506,7 +8890,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"strangers_courted"
 
-[sub_resource type="Resource" id="Resource_oiilm"]
+[sub_resource type="Resource" id="Resource_tk683"]
 script = ExtResource("3_0wd41")
 id = &"food_at_dusk"
 title = "A quiet moment"
@@ -8528,7 +8912,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"scouted_alone"
 
-[sub_resource type="Resource" id="Resource_6yjj8"]
+[sub_resource type="Resource" id="Resource_66j5g"]
 script = ExtResource("3_0wd41")
 id = &"scout_boots"
 title = "A quiet moment"
@@ -8550,7 +8934,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"scouted_together"
 
-[sub_resource type="Resource" id="Resource_s5o1e"]
+[sub_resource type="Resource" id="Resource_t5c7n"]
 script = ExtResource("3_0wd41")
 id = &"walk_to_the_forest"
 title = "A quiet moment"
@@ -8572,7 +8956,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"seed_in_sun"
 
-[sub_resource type="Resource" id="Resource_1pgg2"]
+[sub_resource type="Resource" id="Resource_5s0ii"]
 script = ExtResource("3_0wd41")
 id = &"sunny_seed"
 title = "A quiet moment"
@@ -8594,7 +8978,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"seed_in_shade"
 
-[sub_resource type="Resource" id="Resource_lpwfu"]
+[sub_resource type="Resource" id="Resource_jtpsn"]
 script = ExtResource("3_0wd41")
 id = &"shady_seed"
 title = "A quiet moment"
@@ -8616,7 +9000,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"stars_private"
 
-[sub_resource type="Resource" id="Resource_tk683"]
+[sub_resource type="Resource" id="Resource_bjgap"]
 script = ExtResource("3_0wd41")
 id = &"private_sky"
 title = "A quiet moment"
@@ -8638,7 +9022,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"prints_read"
 
-[sub_resource type="Resource" id="Resource_66j5g"]
+[sub_resource type="Resource" id="Resource_mv4j8"]
 script = ExtResource("3_0wd41")
 id = &"bear_in_ash"
 title = "A quiet moment"
@@ -8660,7 +9044,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"feast_held"
 
-[sub_resource type="Resource" id="Resource_t5c7n"]
+[sub_resource type="Resource" id="Resource_hcxon"]
 script = ExtResource("3_0wd41")
 id = &"feast_song"
 title = "A quiet moment"
@@ -8682,7 +9066,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"food_dried"
 
-[sub_resource type="Resource" id="Resource_5s0ii"]
+[sub_resource type="Resource" id="Resource_qvt5g"]
 script = ExtResource("3_0wd41")
 id = &"dried_food"
 title = "A quiet moment"
@@ -8704,7 +9088,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"fire_turns"
 
-[sub_resource type="Resource" id="Resource_jtpsn"]
+[sub_resource type="Resource" id="Resource_vo4kx"]
 script = ExtResource("3_0wd41")
 id = &"seat_by_the_fire"
 title = "A quiet moment"
@@ -8726,7 +9110,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"mammoth_distant"
 
-[sub_resource type="Resource" id="Resource_bjgap"]
+[sub_resource type="Resource" id="Resource_i2nd5"]
 script = ExtResource("3_0wd41")
 id = &"mammoth_far_edge"
 title = "A quiet moment"
@@ -8748,7 +9132,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"work_quiet"
 
-[sub_resource type="Resource" id="Resource_mv4j8"]
+[sub_resource type="Resource" id="Resource_4s6l1"]
 script = ExtResource("3_0wd41")
 id = &"knee_rhythm"
 title = "A quiet moment"
@@ -8770,7 +9154,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"ridge_watched"
 
-[sub_resource type="Resource" id="Resource_hcxon"]
+[sub_resource type="Resource" id="Resource_kmqyp"]
 script = ExtResource("3_0wd41")
 id = &"ridge_in_the_rain"
 title = "A quiet moment"
@@ -8792,7 +9176,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"shared_cave"
 
-[sub_resource type="Resource" id="Resource_qvt5g"]
+[sub_resource type="Resource" id="Resource_rgjj3"]
 script = ExtResource("3_0wd41")
 id = &"warm_and_crowded"
 title = "A quiet moment"
@@ -8814,7 +9198,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"trusted_bank"
 
-[sub_resource type="Resource" id="Resource_vo4kx"]
+[sub_resource type="Resource" id="Resource_cq3jj"]
 script = ExtResource("3_0wd41")
 id = &"bank_held"
 title = "A quiet moment"
@@ -8836,7 +9220,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"stores_on_ledge"
 
-[sub_resource type="Resource" id="Resource_i2nd5"]
+[sub_resource type="Resource" id="Resource_hm6yr"]
 script = ExtResource("3_0wd41")
 id = &"ledge_stores"
 title = "A quiet moment"
@@ -8858,7 +9242,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"deer_left"
 
-[sub_resource type="Resource" id="Resource_4s6l1"]
+[sub_resource type="Resource" id="Resource_88w4w"]
 script = ExtResource("3_0wd41")
 id = &"limp_on_the_far_bank"
 title = "A quiet moment"
@@ -8880,7 +9264,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"meal_shared"
 
-[sub_resource type="Resource" id="Resource_kmqyp"]
+[sub_resource type="Resource" id="Resource_wqjox"]
 script = ExtResource("3_0wd41")
 id = &"traveller_word"
 title = "A quiet moment"
@@ -8902,7 +9286,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"smoky_cave"
 
-[sub_resource type="Resource" id="Resource_rgjj3"]
+[sub_resource type="Resource" id="Resource_yxvn6"]
 script = ExtResource("3_0wd41")
 id = &"red_eyes"
 title = "A quiet moment"
@@ -8924,7 +9308,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"smoke_hole"
 
-[sub_resource type="Resource" id="Resource_cq3jj"]
+[sub_resource type="Resource" id="Resource_bfvwe"]
 script = ExtResource("3_0wd41")
 id = &"stars_through_the_roof"
 title = "A quiet moment"
@@ -8946,7 +9330,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"hide_floor"
 
-[sub_resource type="Resource" id="Resource_hm6yr"]
+[sub_resource type="Resource" id="Resource_wpyys"]
 script = ExtResource("3_0wd41")
 id = &"hide_floor_warm"
 title = "A quiet moment"
@@ -8968,7 +9352,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"reed_beds"
 
-[sub_resource type="Resource" id="Resource_88w4w"]
+[sub_resource type="Resource" id="Resource_0yld7"]
 script = ExtResource("3_0wd41")
 id = &"reeds_rustle"
 title = "A quiet moment"
@@ -8990,7 +9374,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"wrestled"
 
-[sub_resource type="Resource" id="Resource_wqjox"]
+[sub_resource type="Resource" id="Resource_itrrt"]
 script = ExtResource("3_0wd41")
 id = &"wrestle_again"
 title = "A quiet moment"
@@ -9012,7 +9396,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"searched_together"
 
-[sub_resource type="Resource" id="Resource_yxvn6"]
+[sub_resource type="Resource" id="Resource_wpnbs"]
 script = ExtResource("3_0wd41")
 id = &"lost_things"
 title = "A quiet moment"
@@ -9034,7 +9418,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"torch_at_mouth"
 
-[sub_resource type="Resource" id="Resource_bfvwe"]
+[sub_resource type="Resource" id="Resource_tugnu"]
 script = ExtResource("3_0wd41")
 id = &"torch_at_the_mouth"
 title = "A quiet moment"
@@ -9056,7 +9440,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"deep_sleepers"
 
-[sub_resource type="Resource" id="Resource_wpyys"]
+[sub_resource type="Resource" id="Resource_jvm7t"]
 script = ExtResource("3_0wd41")
 id = &"back_of_the_cave"
 title = "A quiet moment"
@@ -9078,7 +9462,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"stepping_stones"
 
-[sub_resource type="Resource" id="Resource_0yld7"]
+[sub_resource type="Resource" id="Resource_p7j6f"]
 script = ExtResource("3_0wd41")
 id = &"stones_in_the_river"
 title = "A quiet moment"
@@ -9100,7 +9484,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"log_bridge"
 
-[sub_resource type="Resource" id="Resource_itrrt"]
+[sub_resource type="Resource" id="Resource_4ju8w"]
 script = ExtResource("3_0wd41")
 id = &"log_bridge_creaks"
 title = "A quiet moment"
@@ -9122,7 +9506,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"feather_worn"
 
-[sub_resource type="Resource" id="Resource_wpnbs"]
+[sub_resource type="Resource" id="Resource_lv1wy"]
 script = ExtResource("3_0wd41")
 id = &"feather_in_hair"
 title = "A quiet moment"
@@ -9144,7 +9528,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"feather_shared"
 
-[sub_resource type="Resource" id="Resource_tugnu"]
+[sub_resource type="Resource" id="Resource_mn5ya"]
 script = ExtResource("3_0wd41")
 id = &"feather_over_the_fire"
 title = "A quiet moment"
@@ -9166,7 +9550,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"bats_kept"
 
-[sub_resource type="Resource" id="Resource_jvm7t"]
+[sub_resource type="Resource" id="Resource_maaea"]
 script = ExtResource("3_0wd41")
 id = &"bats_leave_dusk"
 title = "A quiet moment"
@@ -9188,7 +9572,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"bats_smoked"
 
-[sub_resource type="Resource" id="Resource_p7j6f"]
+[sub_resource type="Resource" id="Resource_85vtr"]
 script = ExtResource("3_0wd41")
 id = &"smoked_cave"
 title = "A quiet moment"
@@ -9210,7 +9594,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"honey_taken"
 
-[sub_resource type="Resource" id="Resource_4ju8w"]
+[sub_resource type="Resource" id="Resource_6al76"]
 script = ExtResource("3_0wd41")
 id = &"honey_again"
 title = "A quiet moment"
@@ -9232,7 +9616,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"honey_shared"
 
-[sub_resource type="Resource" id="Resource_lv1wy"]
+[sub_resource type="Resource" id="Resource_b1mli"]
 script = ExtResource("3_0wd41")
 id = &"bees_still_there"
 title = "A quiet moment"
@@ -9254,7 +9638,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"fish_by_hand"
 
-[sub_resource type="Resource" id="Resource_mn5ya"]
+[sub_resource type="Resource" id="Resource_2num6"]
 script = ExtResource("3_0wd41")
 id = &"wet_and_laughing"
 title = "A quiet moment"
@@ -9276,7 +9660,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"fish_trap"
 
-[sub_resource type="Resource" id="Resource_maaea"]
+[sub_resource type="Resource" id="Resource_o24bb"]
 script = ExtResource("3_0wd41")
 id = &"trap_in_the_channel"
 title = "A quiet moment"
@@ -9285,6 +9669,73 @@ requires = Array[ExtResource("6_xydym")]([SubResource("Resource_y7434"), SubReso
 chance_per_tick = 0.0045
 cooldown_ticks = 360
 effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_a4xut")])
+
+[sub_resource type="Resource" id="Resource_hbmde"]
+script = ExtResource("5_x2sw1")
+text = "Someone was still finding small shells in their sleeves, and not minding."
+
+[sub_resource type="Resource" id="Resource_13nrw"]
+script = ExtResource("6_xydym")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_po61k"]
+script = ExtResource("6_xydym")
+key = &"shellfish_gathered"
+
+[sub_resource type="Resource" id="Resource_376a3"]
+script = ExtResource("3_0wd41")
+id = &"shells_in_pockets"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_13nrw"), SubResource("Resource_po61k")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_hbmde")])
+
+[sub_resource type="Resource" id="Resource_4dmwj"]
+script = ExtResource("5_x2sw1")
+text = "The driftwood burned blue and green at the edges, and everyone watched it."
+
+[sub_resource type="Resource" id="Resource_xxtgt"]
+script = ExtResource("6_xydym")
+kind = 5
+
+[sub_resource type="Resource" id="Resource_lohk7"]
+script = ExtResource("6_xydym")
+key = &"driftwood_gathered"
+
+[sub_resource type="Resource" id="Resource_5fo5d"]
+script = ExtResource("3_0wd41")
+id = &"salt_in_the_fire"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_xxtgt"), SubResource("Resource_lohk7")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_4dmwj")])
+
+[sub_resource type="Resource" id="Resource_s3b4g"]
+script = ExtResource("5_x2sw1")
+text = "The tide was out, and the far sand shone wet to the edge of the sky."
+
+[sub_resource type="Resource" id="Resource_fwxbm"]
+script = ExtResource("6_xydym")
+kind = 5
+amount = 60
+
+[sub_resource type="Resource" id="Resource_6dh8l"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_p2f64"]
+script = ExtResource("3_0wd41")
+id = &"tide_out"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_fwxbm"), SubResource("Resource_6dh8l")])
+chance_per_tick = 0.0045
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_s3b4g")])
 
 [sub_resource type="Resource" id="Resource_tbk7w"]
 script = ExtResource("5_x2sw1")
@@ -9298,7 +9749,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"log_drum"
 
-[sub_resource type="Resource" id="Resource_85vtr"]
+[sub_resource type="Resource" id="Resource_7apdw"]
 script = ExtResource("3_0wd41")
 id = &"drum_in_the_valley"
 title = "A quiet moment"
@@ -9320,7 +9771,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"bone_pipe"
 
-[sub_resource type="Resource" id="Resource_6al76"]
+[sub_resource type="Resource" id="Resource_iylia"]
 script = ExtResource("3_0wd41")
 id = &"pipe_at_night"
 title = "A quiet moment"
@@ -9342,7 +9793,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"snow_figure"
 
-[sub_resource type="Resource" id="Resource_b1mli"]
+[sub_resource type="Resource" id="Resource_cnmxn"]
 script = ExtResource("3_0wd41")
 id = &"snow_figure_stands"
 title = "A quiet moment"
@@ -9364,7 +9815,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"snow_tracks"
 
-[sub_resource type="Resource" id="Resource_2num6"]
+[sub_resource type="Resource" id="Resource_tr7n2"]
 script = ExtResource("3_0wd41")
 id = &"unknown_tracks"
 title = "A quiet moment"
@@ -9386,7 +9837,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"echo_games"
 
-[sub_resource type="Resource" id="Resource_o24bb"]
+[sub_resource type="Resource" id="Resource_raubt"]
 script = ExtResource("3_0wd41")
 id = &"echo_game"
 title = "A quiet moment"
@@ -9408,7 +9859,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"echo_whispers"
 
-[sub_resource type="Resource" id="Resource_376a3"]
+[sub_resource type="Resource" id="Resource_q3qlx"]
 script = ExtResource("3_0wd41")
 id = &"echo_whisper"
 title = "A quiet moment"
@@ -9430,7 +9881,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"sky_stone_kept"
 
-[sub_resource type="Resource" id="Resource_5fo5d"]
+[sub_resource type="Resource" id="Resource_ki6qg"]
 script = ExtResource("3_0wd41")
 id = &"stone_by_the_fire"
 title = "A quiet moment"
@@ -9452,7 +9903,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"sky_stone_marked"
 
-[sub_resource type="Resource" id="Resource_p2f64"]
+[sub_resource type="Resource" id="Resource_mrtj0"]
 script = ExtResource("3_0wd41")
 id = &"ring_of_white"
 title = "A quiet moment"
@@ -9474,7 +9925,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"warm_pool_used"
 
-[sub_resource type="Resource" id="Resource_7apdw"]
+[sub_resource type="Resource" id="Resource_ub2nj"]
 script = ExtResource("3_0wd41")
 id = &"steam_up_the_valley"
 title = "A quiet moment"
@@ -9496,7 +9947,7 @@ kind = 5
 script = ExtResource("6_xydym")
 key = &"warm_bags"
 
-[sub_resource type="Resource" id="Resource_iylia"]
+[sub_resource type="Resource" id="Resource_m3vbp"]
 script = ExtResource("3_0wd41")
 id = &"warm_feet"
 title = "A quiet moment"
@@ -9520,7 +9971,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"first_roof"
 
-[sub_resource type="Resource" id="Resource_cnmxn"]
+[sub_resource type="Resource" id="Resource_555gm"]
 script = ExtResource("3_0wd41")
 id = &"smoke_from_roofs"
 title = "A quiet moment"
@@ -9539,7 +9990,7 @@ script = ExtResource("6_xydym")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_tr7n2"]
+[sub_resource type="Resource" id="Resource_ilevw"]
 script = ExtResource("3_0wd41")
 id = &"swallows"
 title = "A quiet moment"
@@ -9558,7 +10009,7 @@ script = ExtResource("6_xydym")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_raubt"]
+[sub_resource type="Resource" id="Resource_gc03t"]
 script = ExtResource("3_0wd41")
 id = &"dogs_at_dusk"
 title = "A quiet moment"
@@ -9577,7 +10028,7 @@ script = ExtResource("6_xydym")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_q3qlx"]
+[sub_resource type="Resource" id="Resource_62ooa"]
 script = ExtResource("3_0wd41")
 id = &"harvest_moon"
 title = "A quiet moment"
@@ -9596,7 +10047,7 @@ script = ExtResource("6_xydym")
 kind = 8
 amount = 1
 
-[sub_resource type="Resource" id="Resource_ki6qg"]
+[sub_resource type="Resource" id="Resource_7bwmb"]
 script = ExtResource("3_0wd41")
 id = &"worn_path"
 title = "A quiet moment"
@@ -9620,7 +10071,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"first_harvest"
 
-[sub_resource type="Resource" id="Resource_mrtj0"]
+[sub_resource type="Resource" id="Resource_7ni6q"]
 script = ExtResource("3_0wd41")
 id = &"smell_of_bread"
 title = "A quiet moment"
@@ -9644,7 +10095,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"fired_clay"
 
-[sub_resource type="Resource" id="Resource_ub2nj"]
+[sub_resource type="Resource" id="Resource_r4at2"]
 script = ExtResource("3_0wd41")
 id = &"pots_ring"
 title = "A quiet moment"
@@ -9668,7 +10119,7 @@ script = ExtResource("6_xydym")
 kind = 9
 key = &"woven_cloth"
 
-[sub_resource type="Resource" id="Resource_m3vbp"]
+[sub_resource type="Resource" id="Resource_uekey"]
 script = ExtResource("3_0wd41")
 id = &"spindle_turns"
 title = "A quiet moment"
@@ -9691,7 +10142,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"path_agriculture"
 
-[sub_resource type="Resource" id="Resource_555gm"]
+[sub_resource type="Resource" id="Resource_ad4wu"]
 script = ExtResource("3_0wd41")
 id = &"rain_on_the_field"
 title = "A quiet moment"
@@ -9714,7 +10165,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"path_herding"
 
-[sub_resource type="Resource" id="Resource_ilevw"]
+[sub_resource type="Resource" id="Resource_5pqpx"]
 script = ExtResource("3_0wd41")
 id = &"bleating_at_night"
 title = "A quiet moment"
@@ -9746,7 +10197,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_gc03t"]
+[sub_resource type="Resource" id="Resource_iygpg"]
 script = ExtResource("3_0wd41")
 id = &"counting_roofs"
 title = "A quiet moment"
@@ -9779,7 +10230,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_62ooa"]
+[sub_resource type="Resource" id="Resource_xy5wh"]
 script = ExtResource("3_0wd41")
 id = &"everyones_business"
 title = "A quiet moment"
@@ -9812,7 +10263,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_7bwmb"]
+[sub_resource type="Resource" id="Resource_5pl8c"]
 script = ExtResource("3_0wd41")
 id = &"same_fence"
 title = "A quiet moment"
@@ -9845,7 +10296,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_7ni6q"]
+[sub_resource type="Resource" id="Resource_e7cpg"]
 script = ExtResource("3_0wd41")
 id = &"flower_corner"
 title = "A quiet moment"
@@ -9878,7 +10329,7 @@ kind = 7
 script = ExtResource("6_xydym")
 kind = 10
 
-[sub_resource type="Resource" id="Resource_r4at2"]
+[sub_resource type="Resource" id="Resource_y7b0b"]
 script = ExtResource("3_0wd41")
 id = &"with_the_herd"
 title = "A quiet moment"
@@ -9902,7 +10353,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"cave_store"
 
-[sub_resource type="Resource" id="Resource_uekey"]
+[sub_resource type="Resource" id="Resource_5mttt"]
 script = ExtResource("3_0wd41")
 id = &"stores_in_the_cave"
 title = "A quiet moment"
@@ -9925,7 +10376,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"well_dug"
 
-[sub_resource type="Resource" id="Resource_ad4wu"]
+[sub_resource type="Resource" id="Resource_w27nk"]
 script = ExtResource("3_0wd41")
 id = &"well_water"
 title = "A quiet moment"
@@ -9948,7 +10399,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"scarecrow"
 
-[sub_resource type="Resource" id="Resource_5pqpx"]
+[sub_resource type="Resource" id="Resource_rg8lm"]
 script = ExtResource("3_0wd41")
 id = &"scarecrow_hat"
 title = "A quiet moment"
@@ -9971,7 +10422,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"festival"
 
-[sub_resource type="Resource" id="Resource_iygpg"]
+[sub_resource type="Resource" id="Resource_arej0"]
 script = ExtResource("3_0wd41")
 id = &"festival_tune"
 title = "A quiet moment"
@@ -9994,7 +10445,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"kiln"
 
-[sub_resource type="Resource" id="Resource_xy5wh"]
+[sub_resource type="Resource" id="Resource_8ns83"]
 script = ExtResource("3_0wd41")
 id = &"kiln_night"
 title = "A quiet moment"
@@ -10017,7 +10468,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"dyed_cloth"
 
-[sub_resource type="Resource" id="Resource_5pl8c"]
+[sub_resource type="Resource" id="Resource_qfkxi"]
 script = ExtResource("3_0wd41")
 id = &"red_tunic"
 title = "A quiet moment"
@@ -10040,7 +10491,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"low_wall"
 
-[sub_resource type="Resource" id="Resource_e7cpg"]
+[sub_resource type="Resource" id="Resource_d4yog"]
 script = ExtResource("3_0wd41")
 id = &"wall_at_dusk"
 title = "A quiet moment"
@@ -10063,7 +10514,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"green_beads"
 
-[sub_resource type="Resource" id="Resource_y7b0b"]
+[sub_resource type="Resource" id="Resource_63sju"]
 script = ExtResource("3_0wd41")
 id = &"beads_clicking"
 title = "A quiet moment"
@@ -10086,7 +10537,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"hand_dug"
 
-[sub_resource type="Resource" id="Resource_5mttt"]
+[sub_resource type="Resource" id="Resource_tmghi"]
 script = ExtResource("3_0wd41")
 id = &"hands_in_the_soil"
 title = "A quiet moment"
@@ -10109,7 +10560,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"leaky_roofs"
 
-[sub_resource type="Resource" id="Resource_w27nk"]
+[sub_resource type="Resource" id="Resource_00c7p"]
 script = ExtResource("3_0wd41")
 id = &"pot_under_the_drip"
 title = "A quiet moment"
@@ -10132,7 +10583,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"well_carriers"
 
-[sub_resource type="Resource" id="Resource_rg8lm"]
+[sub_resource type="Resource" id="Resource_kpyny"]
 script = ExtResource("3_0wd41")
 id = &"water_carriers"
 title = "A quiet moment"
@@ -10155,7 +10606,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"field_watchers"
 
-[sub_resource type="Resource" id="Resource_arej0"]
+[sub_resource type="Resource" id="Resource_2imdh"]
 script = ExtResource("3_0wd41")
 id = &"birds_scattered"
 title = "A quiet moment"
@@ -10178,7 +10629,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"dog_at_a_distance"
 
-[sub_resource type="Resource" id="Resource_8ns83"]
+[sub_resource type="Resource" id="Resource_8a25b"]
 script = ExtResource("3_0wd41")
 id = &"dog_on_the_hill"
 title = "A quiet moment"
@@ -10201,7 +10652,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"hanging_baskets"
 
-[sub_resource type="Resource" id="Resource_qfkxi"]
+[sub_resource type="Resource" id="Resource_vrtl2"]
 script = ExtResource("3_0wd41")
 id = &"swallows_in_the_rafters"
 title = "A quiet moment"
@@ -10224,7 +10675,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"cooled_off"
 
-[sub_resource type="Resource" id="Resource_d4yog"]
+[sub_resource type="Resource" id="Resource_6c66i"]
 script = ExtResource("3_0wd41")
 id = &"quiet_neighbours"
 title = "A quiet moment"
@@ -10247,7 +10698,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"laid_by"
 
-[sub_resource type="Resource" id="Resource_63sju"]
+[sub_resource type="Resource" id="Resource_6ae1i"]
 script = ExtResource("3_0wd41")
 id = &"full_stores"
 title = "A quiet moment"
@@ -10270,7 +10721,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"short_tale"
 
-[sub_resource type="Resource" id="Resource_tmghi"]
+[sub_resource type="Resource" id="Resource_ks2r5"]
 script = ExtResource("3_0wd41")
 id = &"short_story"
 title = "A quiet moment"
@@ -10293,7 +10744,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"ash_baking"
 
-[sub_resource type="Resource" id="Resource_00c7p"]
+[sub_resource type="Resource" id="Resource_34x6e"]
 script = ExtResource("3_0wd41")
 id = &"cracked_pot"
 title = "A quiet moment"
@@ -10316,7 +10767,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"waited_out_rain"
 
-[sub_resource type="Resource" id="Resource_kpyny"]
+[sub_resource type="Resource" id="Resource_n0aic"]
 script = ExtResource("3_0wd41")
 id = &"pond_remembered"
 title = "A quiet moment"
@@ -10339,7 +10790,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"wild_fowl_left"
 
-[sub_resource type="Resource" id="Resource_2imdh"]
+[sub_resource type="Resource" id="Resource_4j7ps"]
 script = ExtResource("3_0wd41")
 id = &"hens_on_the_roofs"
 title = "A quiet moment"
@@ -10362,7 +10813,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"plain_cloth"
 
-[sub_resource type="Resource" id="Resource_8a25b"]
+[sub_resource type="Resource" id="Resource_bnxx7"]
 script = ExtResource("3_0wd41")
 id = &"undyed_cloth"
 title = "A quiet moment"
@@ -10385,7 +10836,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"spindle_only"
 
-[sub_resource type="Resource" id="Resource_vrtl2"]
+[sub_resource type="Resource" id="Resource_bwd6i"]
 script = ExtResource("3_0wd41")
 id = &"spindle_whirr"
 title = "A quiet moment"
@@ -10408,7 +10859,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"moved_to_high_ground"
 
-[sub_resource type="Resource" id="Resource_6c66i"]
+[sub_resource type="Resource" id="Resource_1yfer"]
 script = ExtResource("3_0wd41")
 id = &"high_ground_stores"
 title = "A quiet moment"
@@ -10431,7 +10882,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"waited_for_visitors"
 
-[sub_resource type="Resource" id="Resource_6ae1i"]
+[sub_resource type="Resource" id="Resource_ld17n"]
 script = ExtResource("3_0wd41")
 id = &"smoke_watchers"
 title = "A quiet moment"
@@ -10454,7 +10905,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"pots_kept"
 
-[sub_resource type="Resource" id="Resource_ks2r5"]
+[sub_resource type="Resource" id="Resource_qiixx"]
 script = ExtResource("3_0wd41")
 id = &"pots_on_the_shelf"
 title = "A quiet moment"
@@ -10477,7 +10928,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"trusted_stores"
 
-[sub_resource type="Resource" id="Resource_34x6e"]
+[sub_resource type="Resource" id="Resource_praxj"]
 script = ExtResource("3_0wd41")
 id = &"stores_trusted"
 title = "A quiet moment"
@@ -10500,7 +10951,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"cave_left_alone"
 
-[sub_resource type="Resource" id="Resource_n0aic"]
+[sub_resource type="Resource" id="Resource_3hj0x"]
 script = ExtResource("3_0wd41")
 id = &"bats_in_the_cave"
 title = "A quiet moment"
@@ -10523,7 +10974,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"thatched_roofs"
 
-[sub_resource type="Resource" id="Resource_4j7ps"]
+[sub_resource type="Resource" id="Resource_qlonm"]
 script = ExtResource("3_0wd41")
 id = &"thatch_dry"
 title = "A quiet moment"
@@ -10546,7 +10997,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"turf_roofs"
 
-[sub_resource type="Resource" id="Resource_bnxx7"]
+[sub_resource type="Resource" id="Resource_gqw0r"]
 script = ExtResource("3_0wd41")
 id = &"turf_in_flower"
 title = "A quiet moment"
@@ -10569,7 +11020,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"calves_penned"
 
-[sub_resource type="Resource" id="Resource_bwd6i"]
+[sub_resource type="Resource" id="Resource_oirwk"]
 script = ExtResource("3_0wd41")
 id = &"calves_in_the_pen"
 title = "A quiet moment"
@@ -10592,7 +11043,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"calves_grazing"
 
-[sub_resource type="Resource" id="Resource_1yfer"]
+[sub_resource type="Resource" id="Resource_0j0rv"]
 script = ExtResource("3_0wd41")
 id = &"calves_on_the_meadow"
 title = "A quiet moment"
@@ -10615,7 +11066,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"pot_fired"
 
-[sub_resource type="Resource" id="Resource_ld17n"]
+[sub_resource type="Resource" id="Resource_ytiws"]
 script = ExtResource("3_0wd41")
 id = &"pot_rings"
 title = "A quiet moment"
@@ -10638,7 +11089,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"dish_baked"
 
-[sub_resource type="Resource" id="Resource_qiixx"]
+[sub_resource type="Resource" id="Resource_eh0n1"]
 script = ExtResource("3_0wd41")
 id = &"dish_on_the_stones"
 title = "A quiet moment"
@@ -10661,7 +11112,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"bowls_in_ash"
 
-[sub_resource type="Resource" id="Resource_praxj"]
+[sub_resource type="Resource" id="Resource_onmec"]
 script = ExtResource("3_0wd41")
 id = &"ash_bowls"
 title = "A quiet moment"
@@ -10684,7 +11135,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"bowls_in_pit"
 
-[sub_resource type="Resource" id="Resource_3hj0x"]
+[sub_resource type="Resource" id="Resource_6pr0f"]
 script = ExtResource("3_0wd41")
 id = &"pit_bowls"
 title = "A quiet moment"
@@ -10707,7 +11158,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"flax_thread"
 
-[sub_resource type="Resource" id="Resource_qlonm"]
+[sub_resource type="Resource" id="Resource_b7swp"]
 script = ExtResource("3_0wd41")
 id = &"flax_thread_spun"
 title = "A quiet moment"
@@ -10730,7 +11181,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"flax_beaten"
 
-[sub_resource type="Resource" id="Resource_gqw0r"]
+[sub_resource type="Resource" id="Resource_tpsiq"]
 script = ExtResource("3_0wd41")
 id = &"stiff_cloth"
 title = "A quiet moment"
@@ -10753,7 +11204,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"wool_spun"
 
-[sub_resource type="Resource" id="Resource_oirwk"]
+[sub_resource type="Resource" id="Resource_sdu6a"]
 script = ExtResource("3_0wd41")
 id = &"wool_spun_fine"
 title = "A quiet moment"
@@ -10776,7 +11227,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"wool_felted"
 
-[sub_resource type="Resource" id="Resource_0j0rv"]
+[sub_resource type="Resource" id="Resource_7wsy3"]
 script = ExtResource("3_0wd41")
 id = &"felt_boots"
 title = "A quiet moment"
@@ -10799,7 +11250,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"reed_teachers"
 
-[sub_resource type="Resource" id="Resource_ytiws"]
+[sub_resource type="Resource" id="Resource_gfqbk"]
 script = ExtResource("3_0wd41")
 id = &"reed_lessons"
 title = "A quiet moment"
@@ -10822,7 +11273,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"fine_plaiting"
 
-[sub_resource type="Resource" id="Resource_eh0n1"]
+[sub_resource type="Resource" id="Resource_cjb1i"]
 script = ExtResource("3_0wd41")
 id = &"fine_plait"
 title = "A quiet moment"
@@ -10845,7 +11296,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"bead_shown"
 
-[sub_resource type="Resource" id="Resource_onmec"]
+[sub_resource type="Resource" id="Resource_4wf7a"]
 script = ExtResource("3_0wd41")
 id = &"elders_remember"
 title = "A quiet moment"
@@ -10868,7 +11319,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"traders_asked"
 
-[sub_resource type="Resource" id="Resource_6pr0f"]
+[sub_resource type="Resource" id="Resource_2su26"]
 script = ExtResource("3_0wd41")
 id = &"traders_return"
 title = "A quiet moment"
@@ -10891,7 +11342,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"families_taken_in"
 
-[sub_resource type="Resource" id="Resource_b7swp"]
+[sub_resource type="Resource" id="Resource_bw4y3"]
 script = ExtResource("3_0wd41")
 id = &"families_inside"
 title = "A quiet moment"
@@ -10914,7 +11365,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"families_by_the_river"
 
-[sub_resource type="Resource" id="Resource_tpsiq"]
+[sub_resource type="Resource" id="Resource_fgyby"]
 script = ExtResource("3_0wd41")
 id = &"river_roof"
 title = "A quiet moment"
@@ -10937,7 +11388,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"long_table"
 
-[sub_resource type="Resource" id="Resource_sdu6a"]
+[sub_resource type="Resource" id="Resource_e03bo"]
 script = ExtResource("3_0wd41")
 id = &"long_table_set"
 title = "A quiet moment"
@@ -10960,7 +11411,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"dish_supper"
 
-[sub_resource type="Resource" id="Resource_7wsy3"]
+[sub_resource type="Resource" id="Resource_3d3d5"]
 script = ExtResource("3_0wd41")
 id = &"one_dish_each"
 title = "A quiet moment"
@@ -10983,7 +11434,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"door_stones"
 
-[sub_resource type="Resource" id="Resource_gfqbk"]
+[sub_resource type="Resource" id="Resource_7y6s0"]
 script = ExtResource("3_0wd41")
 id = &"flat_stone_door"
 title = "A quiet moment"
@@ -11006,7 +11457,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"door_mats"
 
-[sub_resource type="Resource" id="Resource_cjb1i"]
+[sub_resource type="Resource" id="Resource_0nbag"]
 script = ExtResource("3_0wd41")
 id = &"mat_at_the_door"
 title = "A quiet moment"
@@ -11029,7 +11480,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"midsummer_hill"
 
-[sub_resource type="Resource" id="Resource_4wf7a"]
+[sub_resource type="Resource" id="Resource_i7vgm"]
 script = ExtResource("3_0wd41")
 id = &"hill_fire_remembered"
 title = "A quiet moment"
@@ -11052,7 +11503,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"midsummer_hearth"
 
-[sub_resource type="Resource" id="Resource_2su26"]
+[sub_resource type="Resource" id="Resource_ma37o"]
 script = ExtResource("3_0wd41")
 id = &"hearth_all_night"
 title = "A quiet moment"
@@ -11075,7 +11526,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"young_helpers"
 
-[sub_resource type="Resource" id="Resource_bw4y3"]
+[sub_resource type="Resource" id="Resource_uy5kb"]
 script = ExtResource("3_0wd41")
 id = &"small_helpers"
 title = "A quiet moment"
@@ -11098,7 +11549,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"sheaf_fort"
 
-[sub_resource type="Resource" id="Resource_fgyby"]
+[sub_resource type="Resource" id="Resource_suiwq"]
 script = ExtResource("3_0wd41")
 id = &"sheaf_fort"
 title = "A quiet moment"
@@ -11121,7 +11572,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"fog_gong"
 
-[sub_resource type="Resource" id="Resource_e03bo"]
+[sub_resource type="Resource" id="Resource_p70mb"]
 script = ExtResource("3_0wd41")
 id = &"gong_stone"
 title = "A quiet moment"
@@ -11144,7 +11595,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"fog_rope"
 
-[sub_resource type="Resource" id="Resource_3d3d5"]
+[sub_resource type="Resource" id="Resource_r67hm"]
 script = ExtResource("3_0wd41")
 id = &"rope_between_huts"
 title = "A quiet moment"
@@ -11167,7 +11618,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"evening_tales"
 
-[sub_resource type="Resource" id="Resource_7y6s0"]
+[sub_resource type="Resource" id="Resource_rvimm"]
 script = ExtResource("3_0wd41")
 id = &"told_in_turns"
 title = "A quiet moment"
@@ -11190,7 +11641,7 @@ amount = 1
 script = ExtResource("6_xydym")
 key = &"evening_work"
 
-[sub_resource type="Resource" id="Resource_0nbag"]
+[sub_resource type="Resource" id="Resource_wbnhq"]
 script = ExtResource("3_0wd41")
 id = &"mending_evening"
 title = "A quiet moment"
@@ -11200,7 +11651,122 @@ chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_3dkw5")])
 
-[sub_resource type="Resource" id="Resource_i7vgm"]
+[sub_resource type="Resource" id="Resource_j3bb4"]
+script = ExtResource("5_x2sw1")
+text = "The dugout rocked at the bank, and every child had been told twice to stay out of it."
+
+[sub_resource type="Resource" id="Resource_vxqmc"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_ixn4a"]
+script = ExtResource("6_xydym")
+key = &"dugout_canoe"
+
+[sub_resource type="Resource" id="Resource_h1ck5"]
+script = ExtResource("3_0wd41")
+id = &"dugout_at_the_bank"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_vxqmc"), SubResource("Resource_ixn4a")])
+chance_per_tick = 0.002
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_j3bb4")])
+
+[sub_resource type="Resource" id="Resource_r3aqp"]
+script = ExtResource("5_x2sw1")
+text = "The reed raft was poled across and back, low in the water, with a lot of laughing."
+
+[sub_resource type="Resource" id="Resource_oef4u"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_dw3q2"]
+script = ExtResource("6_xydym")
+key = &"reed_raft"
+
+[sub_resource type="Resource" id="Resource_k3sp5"]
+script = ExtResource("3_0wd41")
+id = &"raft_poled_over"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_oef4u"), SubResource("Resource_dw3q2")])
+chance_per_tick = 0.002
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_r3aqp")])
+
+[sub_resource type="Resource" id="Resource_00p5y"]
+script = ExtResource("5_x2sw1")
+text = "The stone weir on the flats held a silver heap of fish, and the gulls complained."
+
+[sub_resource type="Resource" id="Resource_6qcfc"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_n16ch"]
+script = ExtResource("6_xydym")
+key = &"tide_weir"
+
+[sub_resource type="Resource" id="Resource_7hiay"]
+script = ExtResource("3_0wd41")
+id = &"weir_full"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_6qcfc"), SubResource("Resource_n16ch")])
+chance_per_tick = 0.002
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_00p5y")])
+
+[sub_resource type="Resource" id="Resource_m4cij"]
+script = ExtResource("5_x2sw1")
+text = "Somebody waded out at the turn of the tide with a basket, and came back wet to the waist."
+
+[sub_resource type="Resource" id="Resource_y478v"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_8sst3"]
+script = ExtResource("6_xydym")
+key = &"tide_baskets"
+
+[sub_resource type="Resource" id="Resource_jpabc"]
+script = ExtResource("3_0wd41")
+id = &"baskets_at_the_turn"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_y478v"), SubResource("Resource_8sst3")])
+chance_per_tick = 0.002
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_m4cij")])
+
+[sub_resource type="Resource" id="Resource_jqksi"]
+script = ExtResource("5_x2sw1")
+text = "Gulls stood in rows on the wet flats, all facing the water, all waiting for it."
+
+[sub_resource type="Resource" id="Resource_kpnk3"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 1
+
+[sub_resource type="Resource" id="Resource_0ckrf"]
+script = ExtResource("6_xydym")
+kind = 17
+
+[sub_resource type="Resource" id="Resource_oyco2"]
+script = ExtResource("3_0wd41")
+id = &"gulls_on_the_flats"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_kpnk3"), SubResource("Resource_0ckrf")])
+chance_per_tick = 0.002
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_jqksi")])
+
+[sub_resource type="Resource" id="Resource_mcvk7"]
 script = ExtResource("7_yklc2")
 id = &"strange_flower"
 display_name = "Strange flower"
@@ -11210,21 +11776,21 @@ flower_flag = &"strange_flower_bloomed"
 flower_achievement = &"unexpected_garden"
 flower_achievement_title = "Unexpected Garden"
 
-[sub_resource type="Resource" id="Resource_ma37o"]
+[sub_resource type="Resource" id="Resource_iblje"]
 script = ExtResource("9_5n80e")
 id = &"rain"
 display_name = "Rain"
 min_days = 2.0
 max_days = 4.0
 
-[sub_resource type="Resource" id="Resource_uy5kb"]
+[sub_resource type="Resource" id="Resource_utwo8"]
 script = ExtResource("9_5n80e")
 id = &"snow"
 display_name = "Snow"
 min_days = 2.0
 max_days = 4.0
 
-[sub_resource type="Resource" id="Resource_suiwq"]
+[sub_resource type="Resource" id="Resource_vkir5"]
 script = ExtResource("9_5n80e")
 id = &"storm"
 display_name = "Storm"
@@ -11232,7 +11798,7 @@ max_days = 2.0
 food_multiplier = 0.85
 wood_multiplier = 0.8
 
-[sub_resource type="Resource" id="Resource_p70mb"]
+[sub_resource type="Resource" id="Resource_xb306"]
 script = ExtResource("9_5n80e")
 id = &"drought"
 display_name = "Drought"
@@ -11240,7 +11806,7 @@ min_days = 8.0
 max_days = 12.0
 food_multiplier = 0.65
 
-[sub_resource type="Resource" id="Resource_r67hm"]
+[sub_resource type="Resource" id="Resource_a1kim"]
 script = ExtResource("9_5n80e")
 id = &"flood"
 display_name = "Flood"
@@ -11248,7 +11814,7 @@ min_days = 3.0
 max_days = 5.0
 food_multiplier = 0.7
 
-[sub_resource type="Resource" id="Resource_rvimm"]
+[sub_resource type="Resource" id="Resource_yla4w"]
 script = ExtResource("9_5n80e")
 id = &"tornado"
 display_name = "Tornado"
@@ -11256,7 +11822,7 @@ max_days = 1.0
 food_multiplier = 0.6
 then = &"debris"
 
-[sub_resource type="Resource" id="Resource_wbnhq"]
+[sub_resource type="Resource" id="Resource_c7jev"]
 script = ExtResource("9_5n80e")
 id = &"debris"
 display_name = "Wreckage"
@@ -11266,11 +11832,11 @@ food_multiplier = 0.6
 
 [resource]
 script = ExtResource("8_cekk5")
-events = Array[ExtResource("3_0wd41")]([SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv"), SubResource("Resource_ccg0i"), SubResource("Resource_p65dx"), SubResource("Resource_5o20g"), SubResource("Resource_tex2y"), SubResource("Resource_dfght"), SubResource("Resource_cp2lu"), SubResource("Resource_3odwt"), SubResource("Resource_solnv"), SubResource("Resource_r1ogh"), SubResource("Resource_qdrbr"), SubResource("Resource_4hmtb"), SubResource("Resource_je3wh"), SubResource("Resource_c38qe"), SubResource("Resource_you37"), SubResource("Resource_cvets"), SubResource("Resource_bhfx2"), SubResource("Resource_v8xsm"), SubResource("Resource_frd55"), SubResource("Resource_2ce7b"), SubResource("Resource_6cj6i"), SubResource("Resource_xf0wq"), SubResource("Resource_jye1w"), SubResource("Resource_k3vke"), SubResource("Resource_7b330"), SubResource("Resource_bjcwf"), SubResource("Resource_1it0c"), SubResource("Resource_cdaif"), SubResource("Resource_a743v"), SubResource("Resource_fimve"), SubResource("Resource_po8x5"), SubResource("Resource_4rwfm"), SubResource("Resource_cphko"), SubResource("Resource_ebqmo"), SubResource("Resource_sjndk"), SubResource("Resource_bd0an"), SubResource("Resource_7qamo"), SubResource("Resource_oiilm"), SubResource("Resource_6yjj8"), SubResource("Resource_s5o1e"), SubResource("Resource_1pgg2"), SubResource("Resource_lpwfu"), SubResource("Resource_tk683"), SubResource("Resource_66j5g"), SubResource("Resource_t5c7n"), SubResource("Resource_5s0ii"), SubResource("Resource_jtpsn"), SubResource("Resource_bjgap"), SubResource("Resource_mv4j8"), SubResource("Resource_hcxon"), SubResource("Resource_qvt5g"), SubResource("Resource_vo4kx"), SubResource("Resource_i2nd5"), SubResource("Resource_4s6l1"), SubResource("Resource_kmqyp"), SubResource("Resource_rgjj3"), SubResource("Resource_cq3jj"), SubResource("Resource_hm6yr"), SubResource("Resource_88w4w"), SubResource("Resource_wqjox"), SubResource("Resource_yxvn6"), SubResource("Resource_bfvwe"), SubResource("Resource_wpyys"), SubResource("Resource_0yld7"), SubResource("Resource_itrrt"), SubResource("Resource_wpnbs"), SubResource("Resource_tugnu"), SubResource("Resource_jvm7t"), SubResource("Resource_p7j6f"), SubResource("Resource_4ju8w"), SubResource("Resource_lv1wy"), SubResource("Resource_mn5ya"), SubResource("Resource_maaea"), SubResource("Resource_85vtr"), SubResource("Resource_6al76"), SubResource("Resource_b1mli"), SubResource("Resource_2num6"), SubResource("Resource_o24bb"), SubResource("Resource_376a3"), SubResource("Resource_5fo5d"), SubResource("Resource_p2f64"), SubResource("Resource_7apdw"), SubResource("Resource_iylia"), SubResource("Resource_cnmxn"), SubResource("Resource_tr7n2"), SubResource("Resource_raubt"), SubResource("Resource_q3qlx"), SubResource("Resource_ki6qg"), SubResource("Resource_mrtj0"), SubResource("Resource_ub2nj"), SubResource("Resource_m3vbp"), SubResource("Resource_555gm"), SubResource("Resource_ilevw"), SubResource("Resource_gc03t"), SubResource("Resource_62ooa"), SubResource("Resource_7bwmb"), SubResource("Resource_7ni6q"), SubResource("Resource_r4at2"), SubResource("Resource_uekey"), SubResource("Resource_ad4wu"), SubResource("Resource_5pqpx"), SubResource("Resource_iygpg"), SubResource("Resource_xy5wh"), SubResource("Resource_5pl8c"), SubResource("Resource_e7cpg"), SubResource("Resource_y7b0b"), SubResource("Resource_5mttt"), SubResource("Resource_w27nk"), SubResource("Resource_rg8lm"), SubResource("Resource_arej0"), SubResource("Resource_8ns83"), SubResource("Resource_qfkxi"), SubResource("Resource_d4yog"), SubResource("Resource_63sju"), SubResource("Resource_tmghi"), SubResource("Resource_00c7p"), SubResource("Resource_kpyny"), SubResource("Resource_2imdh"), SubResource("Resource_8a25b"), SubResource("Resource_vrtl2"), SubResource("Resource_6c66i"), SubResource("Resource_6ae1i"), SubResource("Resource_ks2r5"), SubResource("Resource_34x6e"), SubResource("Resource_n0aic"), SubResource("Resource_4j7ps"), SubResource("Resource_bnxx7"), SubResource("Resource_bwd6i"), SubResource("Resource_1yfer"), SubResource("Resource_ld17n"), SubResource("Resource_qiixx"), SubResource("Resource_praxj"), SubResource("Resource_3hj0x"), SubResource("Resource_qlonm"), SubResource("Resource_gqw0r"), SubResource("Resource_oirwk"), SubResource("Resource_0j0rv"), SubResource("Resource_ytiws"), SubResource("Resource_eh0n1"), SubResource("Resource_onmec"), SubResource("Resource_6pr0f"), SubResource("Resource_b7swp"), SubResource("Resource_tpsiq"), SubResource("Resource_sdu6a"), SubResource("Resource_7wsy3"), SubResource("Resource_gfqbk"), SubResource("Resource_cjb1i"), SubResource("Resource_4wf7a"), SubResource("Resource_2su26"), SubResource("Resource_bw4y3"), SubResource("Resource_fgyby"), SubResource("Resource_e03bo"), SubResource("Resource_3d3d5"), SubResource("Resource_7y6s0"), SubResource("Resource_0nbag")])
+events = Array[ExtResource("3_0wd41")]([SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p"), SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv"), SubResource("Resource_ccg0i"), SubResource("Resource_p65dx"), SubResource("Resource_5o20g"), SubResource("Resource_tex2y"), SubResource("Resource_dfght"), SubResource("Resource_cp2lu"), SubResource("Resource_3odwt"), SubResource("Resource_solnv"), SubResource("Resource_r1ogh"), SubResource("Resource_qdrbr"), SubResource("Resource_4hmtb"), SubResource("Resource_je3wh"), SubResource("Resource_c38qe"), SubResource("Resource_you37"), SubResource("Resource_cvets"), SubResource("Resource_bhfx2"), SubResource("Resource_v8xsm"), SubResource("Resource_frd55"), SubResource("Resource_2ce7b"), SubResource("Resource_6cj6i"), SubResource("Resource_xf0wq"), SubResource("Resource_jye1w"), SubResource("Resource_k3vke"), SubResource("Resource_7b330"), SubResource("Resource_bjcwf"), SubResource("Resource_1it0c"), SubResource("Resource_cdaif"), SubResource("Resource_a743v"), SubResource("Resource_fimve"), SubResource("Resource_po8x5"), SubResource("Resource_4rwfm"), SubResource("Resource_cphko"), SubResource("Resource_ebqmo"), SubResource("Resource_sjndk"), SubResource("Resource_bd0an"), SubResource("Resource_7qamo"), SubResource("Resource_oiilm"), SubResource("Resource_6yjj8"), SubResource("Resource_s5o1e"), SubResource("Resource_1pgg2"), SubResource("Resource_lpwfu"), SubResource("Resource_tk683"), SubResource("Resource_66j5g"), SubResource("Resource_t5c7n"), SubResource("Resource_5s0ii"), SubResource("Resource_jtpsn"), SubResource("Resource_bjgap"), SubResource("Resource_mv4j8"), SubResource("Resource_hcxon"), SubResource("Resource_qvt5g"), SubResource("Resource_vo4kx"), SubResource("Resource_i2nd5"), SubResource("Resource_4s6l1"), SubResource("Resource_kmqyp"), SubResource("Resource_rgjj3"), SubResource("Resource_cq3jj"), SubResource("Resource_hm6yr"), SubResource("Resource_88w4w"), SubResource("Resource_wqjox"), SubResource("Resource_yxvn6"), SubResource("Resource_bfvwe"), SubResource("Resource_wpyys"), SubResource("Resource_0yld7"), SubResource("Resource_itrrt"), SubResource("Resource_wpnbs"), SubResource("Resource_tugnu"), SubResource("Resource_jvm7t"), SubResource("Resource_p7j6f"), SubResource("Resource_4ju8w"), SubResource("Resource_lv1wy"), SubResource("Resource_mn5ya"), SubResource("Resource_maaea"), SubResource("Resource_85vtr"), SubResource("Resource_6al76"), SubResource("Resource_b1mli"), SubResource("Resource_2num6"), SubResource("Resource_o24bb"), SubResource("Resource_376a3"), SubResource("Resource_5fo5d"), SubResource("Resource_p2f64"), SubResource("Resource_7apdw"), SubResource("Resource_iylia"), SubResource("Resource_cnmxn"), SubResource("Resource_tr7n2"), SubResource("Resource_raubt"), SubResource("Resource_q3qlx"), SubResource("Resource_ki6qg"), SubResource("Resource_mrtj0"), SubResource("Resource_ub2nj"), SubResource("Resource_m3vbp"), SubResource("Resource_555gm"), SubResource("Resource_ilevw"), SubResource("Resource_gc03t"), SubResource("Resource_62ooa"), SubResource("Resource_7bwmb"), SubResource("Resource_7ni6q"), SubResource("Resource_r4at2"), SubResource("Resource_uekey"), SubResource("Resource_ad4wu"), SubResource("Resource_5pqpx"), SubResource("Resource_iygpg"), SubResource("Resource_xy5wh"), SubResource("Resource_5pl8c"), SubResource("Resource_e7cpg"), SubResource("Resource_y7b0b"), SubResource("Resource_5mttt"), SubResource("Resource_w27nk"), SubResource("Resource_rg8lm"), SubResource("Resource_arej0"), SubResource("Resource_8ns83"), SubResource("Resource_qfkxi"), SubResource("Resource_d4yog"), SubResource("Resource_63sju"), SubResource("Resource_tmghi"), SubResource("Resource_00c7p"), SubResource("Resource_kpyny"), SubResource("Resource_2imdh"), SubResource("Resource_8a25b"), SubResource("Resource_vrtl2"), SubResource("Resource_6c66i"), SubResource("Resource_6ae1i"), SubResource("Resource_ks2r5"), SubResource("Resource_34x6e"), SubResource("Resource_n0aic"), SubResource("Resource_4j7ps"), SubResource("Resource_bnxx7"), SubResource("Resource_bwd6i"), SubResource("Resource_1yfer"), SubResource("Resource_ld17n"), SubResource("Resource_qiixx"), SubResource("Resource_praxj"), SubResource("Resource_3hj0x"), SubResource("Resource_qlonm"), SubResource("Resource_gqw0r"), SubResource("Resource_oirwk"), SubResource("Resource_0j0rv"), SubResource("Resource_ytiws"), SubResource("Resource_eh0n1"), SubResource("Resource_onmec"), SubResource("Resource_6pr0f"), SubResource("Resource_b7swp"), SubResource("Resource_tpsiq"), SubResource("Resource_sdu6a"), SubResource("Resource_7wsy3"), SubResource("Resource_gfqbk"), SubResource("Resource_cjb1i"), SubResource("Resource_4wf7a"), SubResource("Resource_2su26"), SubResource("Resource_bw4y3"), SubResource("Resource_fgyby"), SubResource("Resource_e03bo"), SubResource("Resource_3d3d5"), SubResource("Resource_7y6s0"), SubResource("Resource_0nbag"), SubResource("Resource_i7vgm"), SubResource("Resource_ma37o"), SubResource("Resource_uy5kb"), SubResource("Resource_suiwq"), SubResource("Resource_p70mb"), SubResource("Resource_r67hm"), SubResource("Resource_rvimm"), SubResource("Resource_wbnhq"), SubResource("Resource_h1ck5"), SubResource("Resource_k3sp5"), SubResource("Resource_7hiay"), SubResource("Resource_jpabc"), SubResource("Resource_oyco2")])
 buildings = Array[ExtResource("1_wh8jf")]([SubResource("Resource_jqx0p"), SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8"), SubResource("Resource_4ragh"), SubResource("Resource_pgv5y")])
-plants = Array[ExtResource("7_yklc2")]([SubResource("Resource_i7vgm")])
+plants = Array[ExtResource("7_yklc2")]([SubResource("Resource_mcvk7")])
 eras = Array[ExtResource("2_0otko")]([SubResource("Resource_7a64m"), SubResource("Resource_suuu8")])
-weathers = Array[ExtResource("9_5n80e")]([SubResource("Resource_ma37o"), SubResource("Resource_uy5kb"), SubResource("Resource_suiwq"), SubResource("Resource_p70mb"), SubResource("Resource_r67hm"), SubResource("Resource_rvimm"), SubResource("Resource_wbnhq")])
+weathers = Array[ExtResource("9_5n80e")]([SubResource("Resource_iblje"), SubResource("Resource_utwo8"), SubResource("Resource_vkir5"), SubResource("Resource_xb306"), SubResource("Resource_a1kim"), SubResource("Resource_yla4w"), SubResource("Resource_c7jev")])
 villager_names = Array[String](["Mira", "Theo", "Wren", "Ash", "Bram", "Cora", "Dov", "Elm", "Fenn", "Gale", "Hale", "Ivo", "Juno", "Kest", "Lark", "Moss", "Nia", "Orin", "Pike", "Rue", "Sage", "Tarn", "Una", "Vale"])
 villager_traits = Array[StringName]([&"curious", &"social", &"industrious", &"nature_loving"])
 villager_looks = Array[StringName]([&"mira", &"theo", &"wren"])

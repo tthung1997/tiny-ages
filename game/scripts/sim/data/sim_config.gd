@@ -24,6 +24,13 @@ extends Resource
 ## A damaged building produces this share of its output until it is mended.
 @export_range(0.0, 1.0, 0.05) var damaged_output: float = 0.5
 
+@export_group("Tide")
+## Ticks from one high tide to the next. It is not a whole number of hours, so low tide drifts
+## through the day instead of always falling at the same hour (12.4 ticks is two tides a day).
+@export_range(4.0, 48.0, 0.1) var tide_period_ticks: float = 12.4
+## The tide counts as low below this level (0 is the lowest, 1 the highest).
+@export_range(0.0, 0.5, 0.01) var low_tide_level: float = 0.2
+
 @export_group("Daily rhythm")
 @export_range(0, 23) var wake_hour: int = 6
 @export_range(0, 23) var sleep_hour: int = 22
@@ -84,6 +91,16 @@ func season_at(tick: int) -> int:
 ## Which day of its season a tick falls in, from 0.
 func day_of_season(tick: int) -> int:
 	return posmod(day_of(tick), days_per_season)
+
+
+## The sea's level at a tick, from 0 (lowest) to 1 (highest). A pure function of the tick, so it
+## needs no saving and offline catch-up lands on the same tide as playing through.
+func tide_at(tick: int) -> float:
+	return 0.5 + 0.5 * cos(TAU * float(tick) / tide_period_ticks)
+
+
+func is_low_tide(tick: int) -> bool:
+	return tide_at(tick) < low_tide_level
 
 
 ## Hour of day, 0-23, whatever the tick resolution.
