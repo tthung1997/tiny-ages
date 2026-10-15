@@ -269,6 +269,10 @@ func remove_villager() -> VillagerState:
 	if leaver == null:
 		return null
 	world.villagers.erase(leaver)
+	add_journal(
+		"%s left the group to live elsewhere." % leaver.display_name,
+		&"settlement", &"", leaver.id,
+	)
 	for decision: PendingDecision in world.pending.duplicate():
 		if decision.subject_id == leaver.id:
 			world.pending.erase(decision)

@@ -138,6 +138,10 @@ func test_the_newest_villager_at_home_leaves() -> void:
 	assert_eq(sim.world.villagers.size(), size - 1)
 	assert_eq(left, [newest] as Array[VillagerState])
 	assert_true(sim.world.find_villager(newest.id) == null)
+	assert_true(
+		SimFixture.journal_index(sim.world, "%s left the group" % newest.display_name) >= 0,
+		"The journal says who left, as it says who joined",
+	)
 
 
 func test_someone_who_is_away_is_not_the_one_who_leaves() -> void:
