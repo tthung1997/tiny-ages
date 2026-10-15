@@ -123,8 +123,10 @@ const REED_FOCUS_X: float = 480.0
 const FLATS_SPOTS: Array[Vector2] = [Vector2(640, 78), Vector2(646, 79), Vector2(637, 77)]
 const FLATS_FOCUS_X: float = 720.0
 ## The wet flats the sea leaves at low tide (tools/art/cave_pages.js): an overlay on the east page's
-## shore, laid over the sea. Its alpha follows the tide (`TideLook`).
-const FLATS: StringName = &"east_tide_flats"
+## shore, laid over the sea. It has FLATS_STEPS steps of how far out the sea is (`TideLook`), each in
+## FLATS_FRAMES frames (`east_tide_flats_<step>_<frame>`) that lap in and out on the sea's clock.
+const FLATS_STEPS: int = 3
+const FLATS_FRAMES: int = 3
 const FLATS_Z: int = -94
 ## The ambient life on the river and its far bank (tools/art/cave_pages.js): fish rising and birds
 ## on the reeds (`east_life_0..`, swapped every LIFE_FRAME_SECONDS while any of it is on screen),
@@ -147,6 +149,12 @@ static func crossing_open(world: WorldState) -> bool:
 ## How far east and west the unhurried walkers may wander.
 static func wander_range(world: WorldState) -> Vector2:
 	return WANDER_X_CROSSED if crossing_open(world) else WANDER_X
+
+
+static func flats_frame_name(step: int, frame: int) -> StringName:
+	return StringName("east_tide_flats_%d_%d" % [
+		clampi(step, 1, FLATS_STEPS), posmod(frame, FLATS_FRAMES)
+	])
 
 
 static func life_frame_name(frame: int) -> StringName:

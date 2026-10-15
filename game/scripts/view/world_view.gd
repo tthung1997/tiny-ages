@@ -47,6 +47,8 @@ var _sea_state: int = WeatherLook.SEA_CALM
 var _sea_frame: int = 0
 var _sea_clock: float = 0.0
 var _flats: Sprite2D
+var _flats_sets: Array = []
+var _flats_step: int = 0
 var _life: Sprite2D
 var _life_frames: Array[Texture2D] = []
 var _life_frame: int = 0
@@ -110,7 +112,12 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 		_sea_sets.append(frames)
 	_sea_frames = _sea_sets[WeatherLook.SEA_CALM]
 	var east_x: float = float(WorldLayout.SIDE_PAGES["east_"])
-	_flats = _make_sprite(WorldLayout.FLATS, WorldLayout.FLATS_Z, east_x)
+	_flats = _make_sprite(WorldLayout.flats_frame_name(1, 0), WorldLayout.FLATS_Z, east_x)
+	for step: int in range(1, WorldLayout.FLATS_STEPS + 1):
+		var flats_frames: Array[Texture2D] = []
+		for frame: int in WorldLayout.FLATS_FRAMES:
+			flats_frames.append(_load_art(WorldLayout.flats_frame_name(step, frame)))
+		_flats_sets.append(flats_frames)
 	_life = _make_sprite(WorldLayout.life_frame_name(0), WorldLayout.LIFE_Z, east_x)
 	_deer = _make_sprite(WorldLayout.deer_frame_name(0), WorldLayout.LIFE_Z + 1, east_x)
 	for frame: int in WorldLayout.LIFE_FRAMES:
@@ -295,6 +302,13 @@ func _animate_sea(delta: float) -> void:
 	_sea_clock = 0.0
 	_sea_frame = posmod(_sea_frame + 1, WorldLayout.SEA_FRAMES)
 	_sea.texture = _sea_frames[_sea_frame]
+	_show_flats_frame()
+
+
+## The flats' foam laps in step with the sea's swell.
+func _show_flats_frame() -> void:
+	if _flats_step > 0:
+		_flats.texture = _flats_sets[_flats_step - 1][_sea_frame]
 
 
 ## The fish and birds swap frames on a slow clock, and do nothing while none of the river's far
@@ -320,9 +334,11 @@ func _animate_life(delta: float) -> void:
 func _refresh_life() -> void:
 	var hour: float = DayNight.hour_of_world(_sim.world, _sim.config)
 	_deer.visible = RiverLife.deer_visible(hour)
-	var alpha: float = TideLook.flats_alpha(_sim.config.tide_at(_sim.world.tick))
-	_flats.visible = alpha > 0.0
-	_flats.modulate.a = alpha
+	var step: int = TideLook.flats_step(_sim.config.tide_at(_sim.world.tick))
+	_flats.visible = step > 0
+	if step != _flats_step:
+		_flats_step = step
+		_show_flats_frame()
 
 
 func _process(delta: float) -> void:

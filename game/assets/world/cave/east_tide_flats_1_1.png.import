@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnfsphoyitv11"
-path="res://.godot/imported/east_tide_flats.png-11a2889a8219c56e450b9688c0a81ec9.ctex"
+uid="uid://ncjoim6ryk6v"
+path="res://.godot/imported/east_tide_flats_1_1.png-8c395d841f0a0c8d92b8847727d76c77.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/world/cave/east_tide_flats.png"
-dest_files=["res://.godot/imported/east_tide_flats.png-11a2889a8219c56e450b9688c0a81ec9.ctex"]
+source_file="res://assets/world/cave/east_tide_flats_1_1.png"
+dest_files=["res://.godot/imported/east_tide_flats_1_1.png-8c395d841f0a0c8d92b8847727d76c77.ctex"]
 
 [params]
 

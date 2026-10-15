@@ -300,26 +300,34 @@ function riverLife(L, reedTops) {
   }
 }
 // Low tide leaves the shore bare: a band of wet sand, pools, shells and a pale line of foam where the
-// sea now ends. Drawn over the sea and faded in and out with the tide (TideLook).
+// sea now ends. As the tide falls the band widens in TIDE_STEPS steps (1 thin, 3 fully out), and each
+// step has TIDE_PHASES frames in which the foam laps in and out a pixel or two. Drawn over the sea and
+// swapped on the sea's clock (WorldView); TideLook picks the step.
+var TIDE_STEPS = [0, 0.35, 0.65, 1], TIDE_PHASES = 3;
 function tideFlats(L) {
+  var step, f;
+  for (step = 1; step < TIDE_STEPS.length; step++)
+    for (f = 0; f < TIDE_PHASES; f++) L['tide_flats_' + step + '_' + f] = flatsFrame(TIDE_STEPS[step], f);
+}
+function flatsFrame(frac, f) {
   var B = new Buf(W, H), x, y, s, w, d, r, c;
   for (y = G; y < H; y++) {
-    s = shoreEdge(y); w = 9 + Math.floor((y - G) / 3);
+    s = shoreEdge(y); w = Math.max(4, Math.round((9 + Math.floor((y - G) / 3)) * frac) + f - 1);
     for (x = s; x < s + w; x++) {
       d = x - s; r = hash(x, y);
       c = d < 2 ? '#b3a47e' : (d < w - 3 ? (r < 40 ? '#a69773' : '#cdbd92') : '#bfae83');
       if (d >= w - 2) c = (x + y) % 2 == 0 ? '#f2fafc' : '#bfe4ee';
       B.px(x, y, c);
     }
-    for (x = s + 2; x < s + w - 3; x++) { // small pools and shells
+    for (x = s + 2; x < s + w - 4; x++) { // small pools and shells
       r = hash(x * 3, y * 7);
       if (r < 5) { B.px(x, y, '#7cc0d8'); B.px(x + 1, y, '#9fd6e6'); }
       else if (r < 9) B.px(x, y, '#f7fbf7');
       else if (r < 12) B.px(x, y, '#e8b8a8');
     }
   }
-  B.rect(shoreEdge(72) + 3, 72, 6, 2, '#b9a88a'); B.rect(shoreEdge(72) + 3, 72, 6, 1, '#d8cbb0');
-  L.tide_flats = B;
+  if (frac == 1) { B.rect(shoreEdge(72) + 3, 72, 6, 2, '#b9a88a'); B.rect(shoreEdge(72) + 3, 72, 6, 1, '#d8cbb0'); }
+  return B;
 }
 
 // ---- render ---------------------------------------------------------------------------------

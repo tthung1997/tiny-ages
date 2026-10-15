@@ -133,16 +133,18 @@ func test_shellfish_are_gathered_on_the_flats_at_low_tide_only() -> void:
 		assert_false(WorldLayout.FLATS_SPOTS.has(plan.target), "No crossing, no flats")
 
 
-func test_the_flats_show_as_the_sea_goes_out() -> void:
-	assert_eq(TideLook.flats_alpha(1.0), 0.0)
-	assert_eq(TideLook.flats_alpha(TideLook.HIGH_LEVEL), 0.0)
-	assert_eq(TideLook.flats_alpha(0.0), 1.0)
-	assert_eq(TideLook.flats_alpha(TideLook.LOW_LEVEL), 1.0)
-	var last: float = -1.0
-	for step: int in 11:
-		var alpha: float = TideLook.flats_alpha(1.0 - float(step) / 10.0)
-		assert_true(alpha >= last, "Falling water shows more sand")
-		last = alpha
+func test_the_flats_widen_as_the_sea_goes_out() -> void:
+	assert_eq(TideLook.flats_step(1.0), 0, "Covered at high tide")
+	assert_eq(TideLook.flats_step(0.55), 0)
+	assert_eq(TideLook.flats_step(0.5), 1)
+	assert_eq(TideLook.flats_step(0.3), 2)
+	assert_eq(TideLook.flats_step(0.0), WorldLayout.FLATS_STEPS, "Fully out at the lowest")
+	var last: int = -1
+	for tenth: int in 11:
+		var step: int = TideLook.flats_step(1.0 - float(tenth) / 10.0)
+		assert_true(step >= last, "Falling water shows more sand")
+		last = step
+	assert_eq(TideLook.STEP_LEVELS.size(), WorldLayout.FLATS_STEPS)
 
 
 func test_the_deer_comes_at_dawn_and_dusk() -> void:
@@ -154,7 +156,10 @@ func test_the_deer_comes_at_dawn_and_dusk() -> void:
 
 
 func test_the_river_art_exists() -> void:
-	var names: Array[StringName] = [WorldLayout.FLATS]
+	var names: Array[StringName] = []
+	for step: int in range(1, WorldLayout.FLATS_STEPS + 1):
+		for frame: int in WorldLayout.FLATS_FRAMES:
+			names.append(WorldLayout.flats_frame_name(step, frame))
 	for frame: int in WorldLayout.LIFE_FRAMES:
 		names.append(WorldLayout.life_frame_name(frame))
 	for frame: int in WorldLayout.DEER_FRAMES:
@@ -168,18 +173,29 @@ func test_the_view_follows_the_tide_and_the_hour() -> void:
 	var view: WorldView = WorldView.new()
 	view.setup(sim, DesktopWindow.new())
 	var bare: int = 0
-	while not sim.config.is_low_tide(bare):
+	while sim.config.tide_at(bare) > 0.05:
 		bare += 1
 	sim.world.tick = bare
 	view.on_world_changed()
 	assert_true(view._flats.visible, "The flats show at low tide")
-	assert_true(view._flats.modulate.a > 0.5)
+	assert_eq(view._flats_step, WorldLayout.FLATS_STEPS)
+	var full_width: Texture2D = view._flats.texture
 	var covered: int = bare
 	while sim.config.tide_at(covered) < 0.8:
 		covered += 1
 	sim.world.tick = covered
 	view.on_world_changed()
 	assert_false(view._flats.visible, "The sea covers them at high tide")
+	var halfway: int = bare
+	while TideLook.flats_step(sim.config.tide_at(halfway)) != 1:
+		halfway += 1
+	sim.world.tick = halfway
+	view.on_world_changed()
+	assert_true(view._flats.visible)
+	assert_true(view._flats.texture != full_width, "A thinner band as the water comes back")
+	view._sea_frame = 1
+	view._show_flats_frame()
+	assert_eq(view._flats.texture, view._flats_sets[0][1], "The foam laps with the sea")
 	var noon: int = DAY * 3 + 12
 	sim.world.tick = noon
 	view.on_world_changed()

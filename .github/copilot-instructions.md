@@ -219,7 +219,7 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   like they fish, cut reeds and gather shellfish (`VillagerPlanner._plan_forage`: view-only, the
   sim only knows `forage`). `RiverLife` (deer by the hour) and `TideLook` (how bare the flats
   are) are pure and tested; fish and birds are `east_life_*` frames swapped on a slow clock that
-  sleeps off-screen, the flats an overlay faded with `SimConfig.tide_at`.
+  sleeps off-screen, the flats an overlay in three steps (`TideLook.flats_step`) whose foam frames swap with the sea.
 - **Clickable region across the scroll**: `WorldView` builds a world-wide `Skyline` and the
   `DesktopWindow` reads the slice in view (`set_skyline`, `set_scroll`); the arrows and HUD
   are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
