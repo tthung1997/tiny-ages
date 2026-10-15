@@ -101,7 +101,7 @@ func _ready() -> void:
 		_world_view.jump_camera(options["cam"])
 	_icons.update_pending(0)
 	_icons.update_stock(sim.world, sim.config)
-	_icons.update_weather(sim.world, sim.config)
+	_icons.update_season(sim.world, sim.config)
 	_hud_layer.add_child(_icons)
 	_hud_layer.add_child(_panel)
 	_panel.animated = true
@@ -232,7 +232,7 @@ func _advance_clock(delta: float) -> void:
 		_bot.answer_all(sim)
 	if sim.world.tick != ticks_before:
 		_world_view.on_world_changed()
-		_icons.update_weather(sim.world, sim.config)
+		_icons.update_season(sim.world, sim.config)
 		if _world_view.covers_sky() != _sky_covered:
 			_update_hud_region()
 		if _panel.mode() == &"villager":

@@ -54,9 +54,9 @@ placeholder and does not yet follow these decisions; see "What this changes".
   figure, name, traits and profession; picking a row opens that villager's panel.
 - **P12 The strip shows almost nothing, always.** Permanently on screen there are only the wood and
   food gauges (P2), the bulb (when a decision waits), the journal book (with an unread dot), a
-  small, quiet **gear** and a small **season and weather glyph** (a sprout, a sun, a leaf, a
-  snowflake, or the weather while there is some: no number, no timer, no flashing; picking it opens
-  Stores, which says "Late spring, rain" in words). Everything
+  small, quiet **gear** and a small **season glyph** (a sprout, a sun, a leaf or a snowflake: no
+  number, no timer, no flashing; picking it opens Stores, which says "Late spring, rain" in
+  words). Everything
   else is on demand: the gear (or a **right click on the strip**, as a shortcut) opens a short
   menu with the journal, **Villagers** (P11), **Achievements** (everything the group has earned, oldest
   first, each with an icon and the title it was earned under: only what is earned, no empty slots, no
@@ -101,9 +101,11 @@ placeholder and does not yet follow these decisions; see "What this changes".
   `SimConfig.self_repair_days` (6) whatever is answered. Nobody is hurt, nothing is lost for good
   and nothing flashes or sounds. (4) **An earlier answer can guard against it**: a raised bank, a
   stores ledge or a well turns the damaging fork into a calm journal line. (5) A story decision
-  that names a season (a frost, the snowmelt, midsummer) waits for it. (6) The player sees it:
-  the world is animated (rain, snow, heat shimmer, flood water, a funnel), the palette follows the
-  season, broken buildings look broken, and the strip glyph says which season or weather it is.
+  that names a season (a frost, the snowmelt, midsummer) waits for it. (6) What the player sees:
+  the palette follows the season (with snow, blossom and leaves), **rain and snow are animated** (a
+  storm and a flood reuse the rain), and the strip glyph says which season it is. **A drought and a
+  tornado are drawn as nothing**: they show up only as their journal lines and decisions, and a
+  broken building is told in the journal, not drawn. Art for them can come later.
 
 ## Safeguards for the gate
 

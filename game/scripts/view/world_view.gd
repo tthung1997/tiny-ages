@@ -56,10 +56,7 @@ var _season_trees: ShaderMaterial = ShaderMaterial.new()
 var _applied_season: int = -1
 var _season_overlays: Array[Sprite2D] = []
 var _weather: WeatherLayer = WeatherLayer.new()
-var _wrecks: Dictionary = {}
 
-## A broken building is a little darker, with wreckage at its foot.
-const DAMAGED_TINT: Color = Color(0.78, 0.72, 0.68)
 const SEASON_SHADER: String = "res://assets/world/season_palette.gdshader"
 
 
@@ -81,7 +78,7 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	_sun = _make_sky_sprite(_celestial(0))
 	_moon = _make_sky_sprite(_celestial(1))
 	add_child(_weather)
-	_weather.setup(_world, _clip)
+	_weather.setup(_clip)
 	add_child(_tint)
 	for index: int in WorldLayout.BACKDROP.size():
 		var layer: StringName = WorldLayout.BACKDROP[index]
@@ -115,17 +112,6 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	_fire_glow.material = additive
 	_fire_glow.use_parent_material = false
-	for building_id: StringName in WorldLayout.BUILDINGS:
-		var slot: Dictionary = WorldLayout.BUILDINGS[building_id]
-		var wreck: Sprite2D = Sprite2D.new()
-		wreck.centered = false
-		wreck.visible = false
-		wreck.use_parent_material = true
-		wreck.z_index = int(slot["z"]) + 1
-		wreck.position = Vector2(float(slot["cx"]) - 14.0, float(slot["foot"]) - 12.0)
-		wreck.texture = _weather.wreck_texture(_wrecks.size())
-		_world.add_child(wreck)
-		_wrecks[building_id] = wreck
 	_ui.layout(float(WorldLayout.VIEW_SIZE.x))
 	_ui.z_index = 1000
 	_ui.pan_requested.connect(func(direction: int) -> void: pan_by(direction * WorldLayout.PAN_STEP))
@@ -325,7 +311,6 @@ func _apply_camera() -> void:
 	if pixel == _applied_pixel:
 		return
 	_applied_pixel = pixel
-	_weather.set_view(float(pixel))
 	_world.position.x = -float(pixel)
 	if _window != null:
 		_window.set_scroll(pixel - WorldLayout.WORLD_LEFT)
@@ -340,9 +325,6 @@ func _refresh_props() -> void:
 	for building_id: StringName in _buildings:
 		(_buildings[building_id] as Sprite2D).visible = world.has_building(building_id)
 		(_sites[building_id] as Sprite2D).visible = site != null and site.def_id == building_id
-		var broken: bool = world.has_damaged(building_id)
-		(_buildings[building_id] as Sprite2D).modulate = DAMAGED_TINT if broken else Color.WHITE
-		(_wrecks[building_id] as Sprite2D).visible = broken
 	for prop_id: StringName in _props:
 		(_props[prop_id] as Sprite2D).visible = SceneProps.is_shown(prop_id, world)
 	var planted: bool = not world.plants.is_empty()

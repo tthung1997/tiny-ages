@@ -3,33 +3,26 @@ extends RefCounted
 ## What the weather looks like, and how the season and weather read in words and on the strip's
 ## glyph. Pure and headless: the view asks, nothing here draws (docs/gameplay.md P14).
 ##
-## Each weather lists what it shows: `fall` (what falls from the sky), `dim` (how much it darkens
-## the light), `tint` (a colour cast), and the pieces `clouds`, `water`, `shimmer`, `cracks` and
-## `funnel`. The sim never reads any of this.
+## Only rain and snow are animated, and a storm and a flood reuse the rain (a storm a little darker).
+## Every other weather (a drought, a tornado, wreckage) shows up only as its events, journal lines
+## and decisions. Each entry lists what falls (`fall`) and how much it darkens the light (`dim`).
+## The sim never reads any of this.
 
 const RAIN: StringName = &"rain"
 const SNOW: StringName = &"snow"
 
 const LOOKS: Dictionary = {
 	&"rain": {"fall": &"rain", "dim": 0.9},
-	&"storm": {"fall": &"rain", "dim": 0.74, "clouds": true},
-	&"flood": {"fall": &"rain", "dim": 0.88, "water": true},
-	&"drought": {"tint": Color(1.0, 0.92, 0.78), "shimmer": true, "cracks": true},
+	&"storm": {"fall": &"rain", "dim": 0.8},
+	&"flood": {"fall": &"rain", "dim": 0.88},
 	&"snow": {"fall": &"snow", "dim": 0.94},
-	&"tornado": {"dim": 0.7, "clouds": true, "funnel": true},
-	&"debris": {"dim": 0.96},
 }
-## How each weather reads in a line ("Late spring, rain").
+## Cells of the strip glyph sheet (tools/art/ui_seasons.js): the four seasons.
+const GLYPH_COUNT: int = 4
+## How a weather that falls reads in a line.
 const NAMES: Dictionary = {
-	&"rain": "rain", &"storm": "a storm", &"flood": "flood", &"drought": "drought",
-	&"snow": "snow", &"tornado": "a tornado", &"debris": "wreckage",
+	&"rain": "rain", &"storm": "a storm", &"flood": "a flood", &"snow": "snow",
 }
-## Cells of the strip glyph sheet (tools/art/ui_weather.js): the four seasons, then the weather.
-const SEASON_GLYPHS: Array[int] = [0, 1, 2, 3]
-const WEATHER_GLYPHS: Dictionary = {
-	&"rain": 4, &"snow": 5, &"storm": 6, &"drought": 7, &"flood": 8, &"tornado": 9, &"debris": 10,
-}
-const GLYPH_COUNT: int = 11
 
 
 ## What falls from the sky under `weather`: RAIN, SNOW or &"" for nothing.
@@ -37,33 +30,24 @@ static func fall(weather: StringName) -> StringName:
 	return LOOKS.get(weather, {}).get("fall", &"")
 
 
-## Whether `weather` shows the piece `what` (&"clouds", &"water", &"shimmer", &"cracks" or
-## &"funnel").
-static func shows(weather: StringName, what: StringName) -> bool:
-	return LOOKS.get(weather, {}).get(what, false)
-
-
-## The colour the light is multiplied by under `weather`: white for a clear sky.
+## The colour the light is multiplied by under `weather`: white for any that is not drawn.
 static func tint(weather: StringName) -> Color:
-	var look: Dictionary = LOOKS.get(weather, {})
-	var dim: float = look.get("dim", 1.0)
-	var cast: Color = look.get("tint", Color.WHITE)
-	return Color(cast.r * dim, cast.g * dim, cast.b * dim)
+	var dim: float = LOOKS.get(weather, {}).get("dim", 1.0)
+	return Color(dim, dim, dim)
 
 
-## The strip glyph for the world now: the weather while there is some, else the season.
+## The strip glyph for the world now: the season (a sprout, a sun, a leaf, a snowflake).
 static func glyph_cell(world: WorldState, config: SimConfig) -> int:
-	if WEATHER_GLYPHS.has(world.weather):
-		return WEATHER_GLYPHS[world.weather]
-	return SEASON_GLYPHS[config.season_at(world.tick)]
+	return config.season_at(world.tick)
 
 
-## "Late spring" or "Late spring, rain": for the stores panel and the glyph's tooltip.
+## "Late spring" or "Late spring, rain": for the stores panel and the glyph's tooltip. Only what
+## falls from the sky is named (rain, a storm, a flood, snow), since that is what is seen.
 static func describe(world: WorldState, config: SimConfig) -> String:
 	var season: int = config.season_at(world.tick)
 	var text: String = Season.describe(
 		season, config.day_of_season(world.tick), config.days_per_season
 	)
-	if NAMES.has(world.weather):
+	if LOOKS.has(world.weather):
 		text += ", %s" % NAMES[world.weather]
 	return text

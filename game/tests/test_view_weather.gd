@@ -15,43 +15,33 @@ func _view_for(sim: Simulation) -> WorldView:
 	return view
 
 
-func test_every_weather_has_a_look_a_glyph_and_a_name() -> void:
+func test_only_what_falls_from_the_sky_is_drawn() -> void:
 	var content: ContentLibrary = SimFixture.load_content()
 	assert_gt(content.weathers.size(), 5)
 	for weather: WeatherDef in content.weathers:
-		assert_true(WeatherLook.LOOKS.has(weather.id), "%s has a look" % weather.id)
-		assert_true(WeatherLook.WEATHER_GLYPHS.has(weather.id), "%s has a glyph" % weather.id)
-		assert_true(WeatherLook.NAMES.has(weather.id), "%s has a name" % weather.id)
-		assert_true(WeatherLook.WEATHER_GLYPHS[weather.id] < WeatherLook.GLYPH_COUNT)
+		var falls: bool = [&"rain", &"snow", &"storm", &"flood"].has(weather.id)
+		assert_eq(WeatherLook.LOOKS.has(weather.id), falls, "%s is drawn only if it falls" % weather.id)
+		assert_eq(WeatherLook.fall(weather.id) != &"", falls)
 
 
-func test_rain_falls_in_a_storm_and_a_flood_and_snow_in_winter() -> void:
-	assert_eq(WeatherLook.fall(&"rain"), WeatherLook.RAIN)
-	assert_eq(WeatherLook.fall(&"storm"), WeatherLook.RAIN)
-	assert_eq(WeatherLook.fall(&"flood"), WeatherLook.RAIN)
+func test_rain_a_storm_and_a_flood_fall_as_rain_and_snow_as_snow() -> void:
+	for id: StringName in [&"rain", &"storm", &"flood"]:
+		assert_eq(WeatherLook.fall(id), WeatherLook.RAIN, "%s shows the rain" % id)
 	assert_eq(WeatherLook.fall(&"snow"), WeatherLook.SNOW)
-	assert_eq(WeatherLook.fall(&"drought"), &"")
-	assert_eq(WeatherLook.fall(&""), &"")
+	for id: StringName in [&"drought", &"tornado", &"debris", &""]:
+		assert_eq(WeatherLook.fall(id), &"", "%s shows up only as events" % id)
 
 
-func test_each_piece_belongs_to_its_weather() -> void:
-	assert_true(WeatherLook.shows(&"flood", &"water"))
-	assert_true(WeatherLook.shows(&"drought", &"cracks"))
-	assert_true(WeatherLook.shows(&"drought", &"shimmer"))
-	assert_true(WeatherLook.shows(&"tornado", &"funnel"))
-	assert_true(WeatherLook.shows(&"storm", &"clouds"))
-	assert_false(WeatherLook.shows(&"rain", &"funnel"))
-	assert_false(WeatherLook.shows(&"", &"clouds"))
-
-
-func test_a_clear_sky_leaves_the_light_alone_and_a_storm_darkens_it() -> void:
+func test_a_clear_sky_leaves_the_light_alone_and_a_storm_darkens_it_most() -> void:
 	assert_eq(WeatherLook.tint(&""), Color.WHITE)
-	assert_true(WeatherLook.tint(&"storm").r < WeatherLook.tint(&"rain").r)
 	assert_true(WeatherLook.tint(&"rain").r < 1.0)
-	assert_true(WeatherLook.tint(&"drought").b < WeatherLook.tint(&"drought").r, "Warm and dry")
+	assert_true(WeatherLook.tint(&"snow").r < 1.0)
+	assert_true(WeatherLook.tint(&"storm").r < WeatherLook.tint(&"rain").r)
+	for id: StringName in [&"drought", &"tornado", &"debris"]:
+		assert_eq(WeatherLook.tint(id), Color.WHITE, "%s does not change the light" % id)
 
 
-func test_the_glyph_shows_the_season_and_the_weather_over_it() -> void:
+func test_the_glyph_shows_the_season_only() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	assert_eq(WeatherLook.glyph_cell(sim.world, sim.config), 0, "A new world is in spring")
 	sim.world.tick = 25 * DAY
@@ -59,18 +49,19 @@ func test_the_glyph_shows_the_season_and_the_weather_over_it() -> void:
 	sim.world.tick = 65 * DAY
 	assert_eq(WeatherLook.glyph_cell(sim.world, sim.config), 3)
 	sim.world.weather = &"storm"
-	assert_eq(WeatherLook.glyph_cell(sim.world, sim.config), WeatherLook.WEATHER_GLYPHS[&"storm"])
+	assert_eq(WeatherLook.glyph_cell(sim.world, sim.config), 3, "Weather does not change it")
 
 
-func test_the_words_name_the_season_and_the_weather() -> void:
+func test_the_words_name_the_season_and_what_falls() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	sim.world.tick = 18 * DAY
 	assert_eq(WeatherLook.describe(sim.world, sim.config), "Late spring")
 	sim.world.weather = &"rain"
 	assert_eq(WeatherLook.describe(sim.world, sim.config), "Late spring, rain")
-	sim.world.tick = 30 * DAY
+	sim.world.weather = &"flood"
+	assert_eq(WeatherLook.describe(sim.world, sim.config), "Late spring, a flood")
 	sim.world.weather = &"tornado"
-	assert_eq(WeatherLook.describe(sim.world, sim.config), "Summer, a tornado")
+	assert_eq(WeatherLook.describe(sim.world, sim.config), "Late spring")
 
 
 func test_the_stores_panel_says_the_season() -> void:
@@ -80,14 +71,17 @@ func test_the_stores_panel_says_the_season() -> void:
 	assert_eq(view.season_line, "Early spring")
 
 
-func test_the_strip_glyph_follows_the_world_and_can_be_clicked() -> void:
+func test_the_strip_glyph_follows_the_season_and_can_be_clicked() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var icons: StripIcons = StripIcons.new()
-	icons.update_weather(sim.world, sim.config)
+	icons.update_season(sim.world, sim.config)
 	assert_eq(icons.glyph_cell(), 0)
 	sim.world.weather = &"flood"
-	icons.update_weather(sim.world, sim.config)
-	assert_eq(icons.glyph_cell(), WeatherLook.WEATHER_GLYPHS[&"flood"])
+	icons.update_season(sim.world, sim.config)
+	assert_eq(icons.glyph_cell(), 0, "A flood is not on the glyph")
+	sim.world.tick = 45 * DAY
+	icons.update_season(sim.world, sim.config)
+	assert_eq(icons.glyph_cell(), Season.AUTUMN)
 	var found: bool = false
 	for region: Rect2i in icons.clickable_regions():
 		found = found or region.position == Vector2i(StripIcons.GLYPH_POSITION)
@@ -167,25 +161,6 @@ func test_the_overlay_is_the_same_every_time() -> void:
 		assert_eq(first.get_data(), second.get_data())
 
 
-func test_a_broken_building_looks_broken_until_mended() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	var field: BuildingState = BuildingState.new()
-	field.def_id = &"field"
-	field.complete = true
-	sim.world.buildings.append(field)
-	var view: WorldView = _view_for(sim)
-	assert_false((view._wrecks[&"field"] as Sprite2D).visible)
-	field.damaged = true
-	view.on_world_changed()
-	assert_true((view._wrecks[&"field"] as Sprite2D).visible, "Wreckage at its foot")
-	assert_true((view._buildings[&"field"] as Sprite2D).modulate != Color.WHITE)
-	field.damaged = false
-	view.on_world_changed()
-	assert_false((view._wrecks[&"field"] as Sprite2D).visible)
-	assert_eq((view._buildings[&"field"] as Sprite2D).modulate, Color.WHITE)
-	view.free()
-
-
 func test_the_weather_layer_sleeps_under_a_clear_sky() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = _view_for(sim)
@@ -195,35 +170,33 @@ func test_the_weather_layer_sleeps_under_a_clear_sky() -> void:
 	view.on_world_changed()
 	assert_true(view._weather.is_animating())
 	assert_true(view._weather.is_processing())
+	sim.world.weather = &"snow"
+	view.on_world_changed()
+	assert_true(view._weather.is_processing())
 	sim.world.weather = &""
 	view.on_world_changed()
 	assert_false(view._weather.is_processing(), "It goes back to sleep when the sky clears")
 	view.free()
 
 
-func test_a_piece_in_the_world_sleeps_while_it_is_off_screen() -> void:
+func test_the_other_weather_draws_nothing() -> void:
 	var sim: Simulation = SimFixture.new_sim()
+	var field: BuildingState = BuildingState.new()
+	field.def_id = &"field"
+	field.complete = true
+	field.damaged = true
+	sim.world.buildings.append(field)
 	var view: WorldView = _view_for(sim)
-	view.set_full_scene(false)
-	sim.world.weather = &"tornado"
-	view.on_world_changed()
-	view._weather.set_view(0.0)
-	assert_true(view._weather.is_animating(), "The funnel is in the camp")
-	view._weather.set_view(-384.0)
-	assert_false(view._weather.is_animating(), "Nobody sees it from the west page")
-	assert_false(view._weather.is_processing())
-	view.free()
-
-
-func test_the_sky_clouds_only_exist_in_the_opaque_window() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	var view: WorldView = _view_for(sim)
-	sim.world.weather = &"storm"
-	view.set_full_scene(false)
-	view.on_world_changed()
-	assert_false(view._weather._clouds.visible, "No sky on the desktop")
-	view.set_full_scene(true)
-	assert_true(view._weather._clouds.visible)
+	for id: StringName in [&"drought", &"tornado", &"debris"]:
+		sim.world.weather = id
+		view.on_world_changed()
+		assert_false(view._weather.is_animating(), "%s is only an event" % id)
+		assert_false(view.covers_sky())
+	for id: StringName in [&"storm", &"flood"]:
+		sim.world.weather = id
+		view.on_world_changed()
+		assert_true(view._weather.is_animating(), "%s shows the rain" % id)
+	assert_eq((view._buildings[&"field"] as Sprite2D).modulate, Color.WHITE, "Damage is not drawn")
 	view.free()
 
 
@@ -251,20 +224,6 @@ func test_on_the_desktop_falling_rain_takes_in_the_whole_viewport() -> void:
 	view.set_full_scene(true)
 	assert_false(view.covers_sky(), "The opaque window draws its own sky")
 	assert_false(view.clickable_regions().has(whole))
-	view.free()
-
-
-func test_flood_water_and_cracked_ground_show_with_their_weather() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	var view: WorldView = _view_for(sim)
-	sim.world.weather = &"flood"
-	view.on_world_changed()
-	assert_true(view._weather._flood_camp.visible and view._weather._flood_east.visible)
-	assert_false(view._weather._cracks_camp.visible)
-	sim.world.weather = &"drought"
-	view.on_world_changed()
-	assert_true(view._weather._cracks_camp.visible)
-	assert_false(view._weather._flood_camp.visible)
 	view.free()
 
 

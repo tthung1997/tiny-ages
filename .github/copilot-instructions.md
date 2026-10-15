@@ -224,12 +224,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
 - Seasons and weather in the view: `SeasonLook` and `WeatherLook` are pure and tested; a shader
   (`assets/world/season_palette.gdshader`) shifts the green of the existing art per season and
   `SeasonOverlay` draws snow, blossom and leaves from the backdrop's own edges (rebuilt only when the
-  season turns); `WeatherLayer` animates `assets/world/weather.png` on a slow clock that sleeps unless an
-  animated piece is on screen (`tools/art/weather.js`, rows mirrored in the script); a broken
-  building is darker with wreckage. Pieces that scroll live in the world, the rain, shimmer and
-  clouds in the clip. Window-mode only: the sky clouds. Look at it with `--season=`, `--weather=`
-  and `--damaged`.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp weather ui_weather`,
+  season turns). **Only what falls is drawn: rain, snow, and rain for a storm and a flood** (`WeatherLayer`, `assets/world/weather.png`,
+  `tools/art/weather.js`): in strip and corner mode the whole viewport joins the click region while
+  they fall (`WorldView.covers_sky`), because Windows only draws inside it. A drought and a tornado are
+  events, journal lines and decisions with no visuals. Look at it with `--season=` and `--weather=`.
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_villagers cave_celestial cave_stars settled_camp weather ui_seasons`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
@@ -254,7 +253,7 @@ holds still between ticks).
 with `Simulation.resolve_decision`. While a panel is open `DesktopWindow.set_panel_height`
 grows the window upward by the panel's current height (`PanelHost.current_height()`; a
 villager's panel is shorter, see `PanelHost.HEIGHTS`) and the click region takes in the panel. `StripIcons` is the bulb, the
-journal book and a quiet season and weather glyph (picking it opens Stores), the only things always on screen. A right click on the strip
+journal book and a quiet season glyph (picking it opens Stores), the only things always on screen. A right click on the strip
 (`WorldView.menu_requested`) opens the menu panel (journal, stores, settings, quit);
 `MenuPresenter` builds the stores and settings rows as data, `PanelHost` reports `action_picked`,
 and `Game._on_action` applies it. Window settings live in `UserSettings` (`user://settings.cfg`,

@@ -125,7 +125,7 @@ Night = tint (`r·0.36+10, g·0.44+16, b·0.74+52`) with exceptions for self-lit
 - Bulb floats too high above the workshop; wheat rows are busy; sheep/rabbit generic.
 - Night: window glow too busy ("sunflower"), sheep go bluish.
 - `bun` hair reads as a blob; `tuft` is minimal. Faces are 1–2 px — hand-polish after the style is frozen.
-- Missing: campfire/bulb/sheep animation, sleep/carry poses, wildlife, more buildings, achievements art. (Seasons and weather are in: see ages.md V11.)
+- Missing: campfire/bulb/sheep animation, sleep/carry poses, wildlife, more buildings, achievements art. (Seasons, rain and snow are in: see ages.md V12.)
 - Chop wind-up/strike and hammer frames have no motion smear.
 
 ## 4. LibreSprite scripting notes (hard-won)

@@ -26,8 +26,8 @@ const PIPS_REGIONS: Array[Rect2i] = [
 ]
 const WOOD_POSITION: Vector2 = Vector2(285.0, 3.0)
 const FOOD_POSITION: Vector2 = Vector2(307.0, 3.0)
-## The season and weather glyph sits left of the gauges: one 12x12 cell of its own sheet.
-const GLYPH_SHEET_PATH: String = "res://assets/ui/weather_glyphs.png"
+## The season glyph sits left of the gauges: one 12x12 cell of its own sheet.
+const GLYPH_SHEET_PATH: String = "res://assets/ui/season_glyphs.png"
 const GLYPH_SIZE: Vector2i = Vector2i(12, 12)
 const GLYPH_POSITION: Vector2 = Vector2(264.0, 3.0)
 const GLYPH_QUIET: Color = Color(1.0, 1.0, 1.0, 0.85)
@@ -109,8 +109,8 @@ func food_gauge() -> StockIcon:
 	return _food
 
 
-## The glyph for the season, or the weather while there is some. Cheap to call every frame.
-func update_weather(world: WorldState, config: SimConfig) -> void:
+## The glyph for the season (the tooltip also names rain or snow). Cheap to call every frame.
+func update_season(world: WorldState, config: SimConfig) -> void:
 	var cell: int = WeatherLook.glyph_cell(world, config)
 	if cell != _glyph_cell:
 		_glyph_cell = cell

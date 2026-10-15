@@ -154,14 +154,6 @@ func has_damaged_building() -> bool:
 	return false
 
 
-## Whether a completed building of this definition is damaged.
-func has_damaged(def_id: StringName) -> bool:
-	for building: BuildingState in buildings:
-		if building.complete and building.damaged and building.def_id == def_id:
-			return true
-	return false
-
-
 func has_achievement(key: StringName) -> bool:
 	return achievements.has(key)
 
