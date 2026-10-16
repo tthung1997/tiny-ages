@@ -4,7 +4,8 @@ extends Node2D
 ## their construction sites as the world says, the strange flower, villagers walking and
 ## working, and the light through the day. It only reads WorldState; it never changes it.
 ## Call `on_world_changed()` after the simulation advances. Clicking a villager (a press and
-## release without dragging) reports `villager_clicked`.
+## release without dragging) reports `villager_clicked`; resting the pointer on a named thing
+## reports `hover_changed`.
 ##
 ## The world is three pages wide (WorldLayout): pages west and east of the camp have their own
 ## art, drawn by tools/art/cave_pages.js.
@@ -12,9 +13,22 @@ extends Node2D
 signal villager_clicked(villager_id: StringName)
 ## A right click on the strip: the game opens its menu.
 signal menu_requested
+## The pointer has rested on something long enough for its name to show (`text`, with the pointer
+## at `at` in viewport pixels), or it has moved on (`text` is empty).
+signal hover_changed(text: String, at: Vector2)
 
 ## How far the pointer may move between press and release and still be a click, in art pixels.
 const CLICK_SLOP: float = 3.0
+## How much room round the pointer still counts as resting on a thin piece, in art pixels.
+const HOVER_REACH: int = 1
+## How often the pointer's target is looked at again while it rests (people and the tide move).
+const HOVER_REFRESH_SECONDS: float = 0.1
+## A pointer that has sent no motion for this long is checked against the real mouse, because the
+## desktop stops sending it once it leaves the clickable region.
+const HOVER_STALE_MSEC: int = 150
+## How far the real mouse may be from the last known pointer before the pointer has left, in art
+## pixels.
+const HOVER_LEFT_DISTANCE: float = 6.0
 
 var _sim: Simulation
 var _window: DesktopWindow
@@ -71,6 +85,17 @@ var _season_trees: ShaderMaterial = ShaderMaterial.new()
 var _applied_season: int = -1
 var _season_overlays: Array[Sprite2D] = []
 var _weather: WeatherLayer = WeatherLayer.new()
+var _landmark_sources: Dictionary = {}
+var _alpha: AlphaHit = AlphaHit.new()
+var _dwell: HoverDwell = HoverDwell.new()
+var _pointer: Vector2 = Vector2.ZERO
+var _pointer_in: bool = false
+var _pointer_pinned: bool = false
+var _pointer_msec: int = 0
+var _hover_text: String = ""
+var _hover_clock: float = 0.0
+var _hover_suppressed: bool = false
+var _tip_text: String = ""
 
 const SEASON_SHADER: String = "res://assets/world/season_palette.gdshader"
 
@@ -125,7 +150,9 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	for frame: int in WorldLayout.DEER_FRAMES:
 		_deer_frames.append(_load_art(WorldLayout.deer_frame_name(frame)))
 	for layer: StringName in WorldLayout.STATIC_Z:
-		_static_layers.append(_make_sprite(layer, WorldLayout.STATIC_Z[layer]))
+		var camp_layer: Sprite2D = _make_sprite(layer, WorldLayout.STATIC_Z[layer])
+		_static_layers.append(camp_layer)
+		_landmark_sources[layer] = camp_layer
 	for prefix: String in WorldLayout.SIDE_PAGES:
 		for layer: StringName in WorldLayout.SIDE_STATIC[prefix]:
 			var side: Sprite2D = _make_sprite(
@@ -213,6 +240,7 @@ func on_world_changed() -> void:
 	_refresh_actors()
 	_weather.apply(_sim.world, _full_scene)
 	update_light()
+	_refresh_hover()
 
 
 ## Re-tints the scene for the current time of day, season and weather. Cheap enough to call every
@@ -347,6 +375,12 @@ func _process(delta: float) -> void:
 	_animate_fire(delta)
 	_animate_sea(delta)
 	_animate_life(delta)
+	_update_hover(delta)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		_stop_hover()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -355,12 +389,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_button(button)
 		return
 	var motion := event as InputEventMouseMotion
-	if motion != null and _dragging:
-		_camera.jump_to(_drag_camera_x - (motion.position.x - _drag_mouse_x))
-		_apply_camera()
+	if motion != null:
+		if _dragging:
+			_camera.jump_to(_drag_camera_x - (motion.position.x - _drag_mouse_x))
+			_apply_camera()
+		_pointer_pinned = false
+		_track_pointer(motion.position)
 
 
 func _handle_button(button: InputEventMouseButton) -> void:
+	_hover_suppressed = true
+	_dwell.clear()
+	_sync_tooltip()
 	match button.button_index:
 		MOUSE_BUTTON_LEFT:
 			if not button.pressed:
@@ -405,6 +445,162 @@ func villager_at(at: Vector2) -> StringName:
 	return found
 
 
+## The front-most named thing at a point of the window (art pixels), or null if there is none:
+## props, buildings and their sites, the fire, the flower, the river's life, the camp's landmarks
+## and villagers. Only what is drawn counts, so nothing the group has not earned is ever named. The
+## one in front wins, as clicking does; a villager wins a tie with a prop.
+func thing_at(at: Vector2) -> HoverHit:
+	var point: Vector2 = _world.to_local(at)
+	var found: HoverHit = null
+	for prop_id: StringName in _props:
+		found = HoverHit.in_front(found, _sprite_hit(
+			_props[prop_id], point, StringName("prop:%s" % prop_id), SceneProps.name_of(prop_id)
+		))
+	for building_id: StringName in _buildings:
+		var label: String = _building_name(building_id)
+		found = HoverHit.in_front(found, _sprite_hit(
+			_buildings[building_id], point, StringName("building:%s" % building_id), label
+		))
+		found = HoverHit.in_front(found, _sprite_hit(
+			_sites[building_id], point, StringName("site:%s" % building_id),
+			"%s, being built" % label if not label.is_empty() else ""
+		))
+	var flower: Sprite2D = _flower_bloom if _flower_bloom.visible else _flower_sprout
+	found = HoverHit.in_front(found, _sprite_hit(flower, point, &"flower", _flower_name()))
+	if WorldLayout.FIRE_HIT.has_point(point):
+		found = HoverHit.in_front(found, _sprite_hit(_fire_pit, point, &"fire", "Fire"))
+	found = HoverHit.in_front(found, _sprite_hit(_deer, point, &"deer", "Deer"))
+	for landmark_id: StringName in WorldLandmarks.ids():
+		found = HoverHit.in_front(found, _landmark_hit(landmark_id, point))
+	for id: StringName in _actors:
+		var actor: VillagerActor = _actors[id]
+		if actor.visible and actor.hit_rect().has_point(point):
+			found = HoverHit.in_front(found, HoverHit.make(
+				StringName("villager:%s" % id), _villager_name(id), int(actor.position.y)
+			))
+	return found
+
+
+## A hit on a sprite that is showing and has an opaque pixel (give or take `HOVER_REACH`) under the
+## point, or null.
+func _sprite_hit(sprite: Sprite2D, point: Vector2, key: StringName, text: String) -> HoverHit:
+	if not sprite.visible or text.is_empty():
+		return null
+	if not _alpha.opaque_near(sprite.texture, point - sprite.position, HOVER_REACH):
+		return null
+	return HoverHit.make(key, text, sprite.z_index)
+
+
+func _landmark_hit(id: StringName, point: Vector2) -> HoverHit:
+	if not WorldLandmarks.contains(id, point):
+		return null
+	var source: Sprite2D = _landmark_sources.get(WorldLandmarks.source_of(id))
+	if source != null and not _alpha.opaque_near(
+		source.texture, point - source.position, HOVER_REACH
+	):
+		return null
+	return HoverHit.make(
+		StringName("landmark:%s" % id), WorldLandmarks.name_of(id), WorldLandmarks.z_of(id)
+	)
+
+
+func _building_name(building_id: StringName) -> String:
+	var def: BuildingDef = _sim.content.get_building(building_id)
+	return def.display_name if def != null else ""
+
+
+func _flower_name() -> String:
+	if _sim.world.plants.is_empty():
+		return ""
+	var def: PlantDef = _sim.content.get_plant(_sim.world.plants[0].def_id)
+	return def.display_name if def != null else ""
+
+
+func _villager_name(id: StringName) -> String:
+	for villager: VillagerState in _sim.world.villagers:
+		if villager.id == id:
+			return VillagerPresenter.tooltip_for(villager)
+	return ""
+
+
+## The pointer moved to `at`. A tooltip is only for a pointer resting over the view.
+func _track_pointer(at: Vector2) -> void:
+	_hover_suppressed = false
+	_pointer_msec = Time.get_ticks_msec()
+	if _dragging or not _clip.get_global_rect().has_point(at):
+		_stop_hover()
+		return
+	_pointer = at
+	_pointer_in = true
+	_refresh_hover()
+
+
+## Looks at what is under the pointer; a different thing starts the wait for its tooltip again.
+func _refresh_hover() -> void:
+	if not _pointer_in or _hover_suppressed or _dragging:
+		return
+	var hit: HoverHit = thing_at(_pointer)
+	_hover_text = hit.text if hit != null else ""
+	_dwell.point_at(hit.key if hit != null else &"")
+	_sync_tooltip()
+
+
+## For looking at tooltips (--hover=): rests the pointer at `at` (viewport pixels) and shows what it
+## names straight away. It stays there however the real mouse moves.
+func rest_pointer_at(at: Vector2) -> void:
+	_pointer_pinned = true
+	_track_pointer(at + _clip.global_position)
+	_dwell.advance(HoverDwell.DELAY_SECONDS)
+	_sync_tooltip()
+
+
+func _stop_hover() -> void:
+	_pointer_in = false
+	_dwell.clear()
+	_sync_tooltip()
+
+
+## Does nothing at all unless the pointer is over the view.
+func _update_hover(delta: float) -> void:
+	if not _pointer_in:
+		return
+	_hover_clock += delta
+	if _hover_clock >= HOVER_REFRESH_SECONDS:
+		_hover_clock = 0.0
+		if _pointer_has_left():
+			_stop_hover()
+			return
+		_refresh_hover()
+	_dwell.advance(delta)
+	_sync_tooltip()
+
+
+## Tells the game when the tooltip should show or go away.
+func _sync_tooltip() -> void:
+	var text: String = _hover_text if _dwell.is_ready() else ""
+	if text == _tip_text:
+		return
+	_tip_text = text
+	hover_changed.emit(text, _pointer - _clip.global_position)
+
+
+## The desktop sends no motion once the pointer is over the part of the strip that is click-through,
+## so a pointer that has been quiet for a moment is checked against the real mouse. Only a window
+## that floats on the desktop needs it.
+func _pointer_has_left() -> bool:
+	if _pointer_pinned or _window == null or not _window.is_inside_tree() \
+			or _window.mode == DesktopWindow.Mode.WINDOW:
+		return false
+	if Time.get_ticks_msec() - _pointer_msec < HOVER_STALE_MSEC:
+		return false
+	var window: Window = _window.get_window()
+	if window.content_scale_size.x <= 0 or window.content_scale_size.y <= 0:
+		return false
+	var ratio: Vector2 = Vector2(window.size) / Vector2(window.content_scale_size)
+	var mouse: Vector2 = Vector2(DisplayServer.mouse_get_position() - window.position) / ratio
+	return mouse.distance_to(_pointer) > HOVER_LEFT_DISTANCE
+
+
 func _apply_camera() -> void:
 	var pixel: int = _camera.pixel_x()
 	_ui.update_state(
@@ -417,6 +613,7 @@ func _apply_camera() -> void:
 	_world.position.x = -float(pixel)
 	if _window != null:
 		_window.set_scroll(pixel - WorldLayout.WORLD_LEFT)
+	_refresh_hover()
 
 
 func _refresh_props() -> void:
