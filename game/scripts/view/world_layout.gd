@@ -66,6 +66,8 @@ const CHOP_X: float = -66.0
 const FIRE_PIT: StringName = &"fire_pit"
 const FIRE_PIT_Z: int = 70
 const FIRE_FRAMES: int = 4
+## Where the fire pit itself is (the art piece also holds the firelight in the cave mouth).
+const FIRE_HIT: Rect2 = Rect2(64, 64, 16, 14)
 const FIRE_FRAME_SECONDS: float = 0.2
 ## How bright the glow is on each flame frame, so it breathes with the fire.
 const FIRE_GLOW_FLICKER: Array[float] = [1.0, 0.9, 0.96, 0.84]

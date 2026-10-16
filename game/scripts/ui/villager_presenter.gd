@@ -157,6 +157,14 @@ static func _card(villager: VillagerState) -> VillagerPresenter:
 	return view
 
 
+## What hover says about a villager: their name, and their role if they have one.
+static func tooltip_for(villager: VillagerState) -> String:
+	var role: String = String(villager.profession).replace("_", " ").capitalize()
+	if role.is_empty():
+		return villager.display_name
+	return "%s - %s" % [villager.display_name, role]
+
+
 static func traits_text_for(villager: VillagerState) -> String:
 	var parts: PackedStringArray = PackedStringArray()
 	for trait_name: StringName in villager.traits:

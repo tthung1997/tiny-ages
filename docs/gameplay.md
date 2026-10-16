@@ -49,7 +49,10 @@ placeholder and does not yet follow these decisions; see "What this changes".
 - **P10 Content budget.** About 25-30 questions for the five-day Cave Age (the buildings and milestones plus about 20 small story decisions; roughly 4-6 per workday), plus ambient lines and trait-driven variants
   (one authored event plays differently per villager). Visible consequences matter most: choices
   change buildings, props and clothing, so there is a reason to look.
-- **P11 Light interaction.** Clicking a villager shows their name, traits and current thought. The
+- **P11 Light interaction.** Clicking a villager shows their name, traits and current thought. Resting
+  the pointer on something in the world (a villager, a prop, a building, the fire, the river's life,
+  a landmark) names it after a short pause: a small plate with the name only (a villager's role too),
+  never on its own, no sound, and only for what is drawn, so the age gate stays hidden. The
   **Villagers** list in the menu shows the whole group at once: one row each with a full-body
   figure, name, traits and profession; picking a row opens that villager's panel.
 - **P12 The strip shows almost nothing, always.** Permanently on screen there are only the wood and

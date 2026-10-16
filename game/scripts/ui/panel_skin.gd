@@ -32,6 +32,8 @@ var button_text: Color = Color("2b2d42")
 var button_text_disabled: Color = Color("6a5a40")
 var scroll_track: Color = Color("b48c58")
 var scroll_grabber: Color = Color("6a4326")
+## The hover tooltip's paper; its border is `muted` and its text `ink`.
+var tooltip_fill: Color = Color("e6d3a6")
 ## Padding between the panel's art edge and its content (left, top, right, bottom).
 var content_margins: Rect2 = Rect2(14, 11, 14, 10)
 var panel_region: Rect2 = Rect2(0, 0, 384, PANEL_HEIGHT)
@@ -76,6 +78,7 @@ static func clay() -> PanelSkin:
 	skin.button_text_disabled = Color("6a5a48")
 	skin.scroll_track = Color("c9a07a")
 	skin.scroll_grabber = Color("6e4a2c")
+	skin.tooltip_fill = Color("ead9bb")
 	skin._place_pieces()
 	return skin
 

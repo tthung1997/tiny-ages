@@ -224,6 +224,15 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   `DesktopWindow` reads the slice in view (`set_skyline`, `set_scroll`); the arrows and HUD
   are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
   on Windows (it clips drawing).
+- **Hover tooltips** (issue #22): resting the pointer ~0.35 s (`HoverDwell`) on something names it,
+  name only, never on its own. `WorldView.thing_at` picks the front-most named thing by z (a villager
+  wins a tie): visible props (`SceneProps.PROPS[...]["name"]`: a new prop must have one, a test
+  enforces it), buildings and sites (`BuildingDef.display_name`), the fire, the flower, the deer,
+  villagers (`VillagerPresenter.tooltip_for`), and `WorldLandmarks` for what is baked into a
+  shared layer (cave, pine, mammoth, fish, egrets: rectangles that mirror the art scripts). A pixel
+  test (`AlphaHit`) keeps the empty part of a full-width piece from counting. `WorldTooltip` is drawn
+  in the HUD layer, and while it is up `Game` adds its `region()` to the click region (so it shows in
+  strip and corner mode). Side-page scenery stays unnamed. Look at it with `--hover=x,y`.
 - `VillagerPlanner` (pure logic, tested) turns a villager's activity into a spot and pose;
   `VillagerActor` walks and animates; away or sleeping villagers are hidden. A plan's
   `focus_x` is where to face on arrival and can be negative (the world runs west of the camp):
@@ -247,7 +256,7 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
-  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--tide=low|high`, `--damaged`). **`--dev`** turns on the text overlay and the dev
+  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--tide=low|high`, `--damaged`, `--hover=x,y`). **`--dev`** turns on the text overlay and the dev
   keys (mode, scale, speed, bot...); `--hud` is the overlay alone. Without them the screen has
   only the player's UI (docs/gameplay.md P12). Always use
   `--nosave` (or `--save=`) in automated runs so the player's save and window settings are not

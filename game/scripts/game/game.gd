@@ -24,7 +24,8 @@ extends Node2D
 ##   camp is 0) --panel=decision|journal|away|villager|villagers|achievements|menu|stores|settings
 ##   (open that panel at
 ##   start) --season=spring|summer|autumn|winter --weather=rain|storm|drought|flood|snow|
-##   tornado|debris --damaged (look at a season, the weather, broken buildings) --shot=<png> (save
+##   tornado|debris --damaged (look at a season, the weather, broken buildings) --hover=<x>,<y>
+##   (rest the pointer there, in viewport pixels, and show the tooltip straight away) --shot=<png> (save
 ##   the rendered viewport after a moment, then quit)
 
 const CONTENT_PATH: String = "res://resources/sim/content.tres"
@@ -52,6 +53,7 @@ var _manual_days: bool = false
 var _last_pending: int = -1
 var _panel: PanelHost = PanelHost.new()
 var _icons: StripIcons = StripIcons.new()
+var _tooltip: WorldTooltip = WorldTooltip.new()
 var _time_scale: float = 1.0
 var _tick_budget: float = 0.0
 var _clock_timer: float = 0.0
@@ -113,15 +115,21 @@ func _ready() -> void:
 	_icons.update_season(sim.world, sim.config)
 	_hud_layer.add_child(_icons)
 	_hud_layer.add_child(_panel)
+	_hud_layer.add_child(_tooltip)
 	_panel.animated = true
 	_panel.set_skin(PanelSkin.for_era(sim.world.era))
-	sim.era_advanced.connect(func(era: EraDef) -> void: _panel.set_skin(PanelSkin.for_era(era.id)))
+	_tooltip.set_skin(PanelSkin.for_era(sim.world.era))
+	sim.era_advanced.connect(func(era: EraDef) -> void:
+		_panel.set_skin(PanelSkin.for_era(era.id))
+		_tooltip.set_skin(PanelSkin.for_era(era.id))
+	)
 	_icons.bulb_pressed.connect(_open_decisions)
 	_icons.journal_pressed.connect(_toggle_journal)
 	_icons.menu_pressed.connect(_on_menu_requested)
 	_icons.stores_pressed.connect(_toggle_stores)
 	_world_view.villager_clicked.connect(_on_villager_clicked)
 	_world_view.menu_requested.connect(_on_menu_requested)
+	_world_view.hover_changed.connect(_on_hover_changed)
 	_panel.choice_picked.connect(_on_choice_picked)
 	_panel.action_picked.connect(_on_action)
 	_panel.decisions_requested.connect(_open_decisions)
@@ -133,6 +141,8 @@ func _ready() -> void:
 	_update_hud_region()
 	_open_startup_panel(options.get("panel", ""))
 	_window.apply()
+	if options.has("hover"):
+		_world_view.rest_pointer_at(options["hover"])
 	if not _shot_path.is_empty():
 		await get_tree().create_timer(SHOT_DELAY_SECONDS).timeout
 		await RenderingServer.frame_post_draw
@@ -265,6 +275,7 @@ func _on_layout_changed(_content_size: Vector2i) -> void:
 	_world_view.position = origin
 	_hud.position = origin + HUD_OFFSET
 	_icons.position = origin
+	_tooltip.origin = origin
 	_panel.position = Vector2(origin.x, 0.0)
 	_world_view.set_full_scene(_window.mode == DesktopWindow.Mode.WINDOW)
 	_update_hud_region()
@@ -274,6 +285,8 @@ func _update_hud_region() -> void:
 	_sky_covered = _world_view.covers_sky()
 	var regions: Array[Rect2i] = _world_view.clickable_regions()
 	regions.append_array(_icons.clickable_regions())
+	if _tooltip.visible:
+		regions.append(_tooltip.region())
 	if _hud.visible:
 		regions.append(HUD_REGION)
 	_window.set_extra_regions(regions)
@@ -322,6 +335,16 @@ func _on_villager_clicked(villager_id: StringName) -> void:
 		return
 	_panel.show_villager(sim, villager_id)
 	_fit_window()
+
+
+## The pointer has rested on something (show its name) or moved on. The plate is drawn inside the
+## viewport, so the click region takes it in while it is up.
+func _on_hover_changed(text: String, at: Vector2) -> void:
+	if text.is_empty():
+		_tooltip.hide_tip()
+	else:
+		_tooltip.show_at(text, at)
+	_update_hud_region()
 
 
 ## The gear or a right click on the strip opens the menu; another puts it away.
@@ -596,6 +619,10 @@ func _apply_cmdline() -> Dictionary:
 			options["panel"] = arg.trim_prefix("--panel=")
 		elif arg.begins_with("--cam="):
 			options["cam"] = arg.trim_prefix("--cam=").to_float()
+		elif arg.begins_with("--hover="):
+			var parts: PackedStringArray = arg.trim_prefix("--hover=").split(",")
+			if parts.size() == 2:
+				options["hover"] = Vector2(parts[0].to_float(), parts[1].to_float())
 		elif arg.begins_with("--shot="):
 			_shot_path = arg.trim_prefix("--shot=")
 	return options
