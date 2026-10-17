@@ -11,6 +11,10 @@ signal journal_pressed
 signal menu_pressed
 ## A wood or food gauge was picked: the numbers are in the stores panel.
 signal stores_pressed
+## The pointer has rested on the season glyph (`text` is its name) or moved off it (`text` is
+## empty). `at` is the pointer in viewport pixels. The name is drawn by `WorldTooltip` inside the
+## viewport, because a native tooltip window is cut off by the strip's click region.
+signal hover_changed(text: String, at: Vector2)
 
 const SHEET_PATH: String = "res://assets/ui/icons.png"
 const BULB_FRAME: Vector2i = Vector2i(18, 20)
@@ -47,6 +51,9 @@ var _badge: Label = Label.new()
 var _glyph: TextureButton = TextureButton.new()
 var _glyph_cell: int = -1
 var _glyph_frames: Array[AtlasTexture] = []
+var _glyph_text: String = ""
+var _glyph_tip: String = ""
+var _dwell: HoverDwell = HoverDwell.new()
 var _time: float = 0.0
 var _frames: Array[AtlasTexture] = []
 
@@ -65,7 +72,12 @@ func _init() -> void:
 		_glyph_frames.append(frame)
 	_glyph.position = GLYPH_POSITION
 	_glyph.self_modulate = GLYPH_QUIET
-	_glyph.pressed.connect(func() -> void: stores_pressed.emit())
+	_glyph.pressed.connect(func() -> void:
+		_stop_glyph_hover()
+		stores_pressed.emit()
+	)
+	_glyph.mouse_entered.connect(func() -> void: _dwell.point_at(&"season"))
+	_glyph.mouse_exited.connect(_stop_glyph_hover)
 	add_child(_glyph)
 	for frame: int in 2:
 		_frames.append(_atlas(Rect2i(Vector2i(frame * BULB_FRAME.x, 0), BULB_FRAME)))
@@ -116,8 +128,11 @@ func update_season(world: WorldState, config: SimConfig) -> void:
 		_glyph_cell = cell
 		_glyph.texture_normal = _glyph_frames[cell]
 	var text: String = WeatherLook.describe(world, config)
-	if _glyph.tooltip_text != text:
-		_glyph.tooltip_text = text
+	if _glyph_text != text:
+		_glyph_text = text
+		if not _glyph_tip.is_empty():
+			_glyph_tip = text
+			hover_changed.emit(text, get_local_mouse_position())
 
 
 ## Which glyph cell is showing, for looking at what the strip says.
@@ -155,11 +170,27 @@ func clickable_regions() -> Array[Rect2i]:
 
 
 func _process(delta: float) -> void:
+	_update_glyph_hover(delta)
 	if not _bulb.visible:
 		return
 	_time += delta
 	_bulb.texture_normal = _frames[int(_time / BLINK_SECONDS) % 2]
 	_bulb.position.y = BULB_POSITION.y + (1.0 if fmod(_time, 1.4) > 0.7 else 0.0)
+
+
+## The season's name shows once the pointer has rested on the glyph, like the world's names.
+func _update_glyph_hover(delta: float) -> void:
+	_dwell.advance(delta)
+	var tip: String = _glyph_text if _dwell.is_ready() else ""
+	if tip == _glyph_tip:
+		return
+	_glyph_tip = tip
+	hover_changed.emit(tip, get_local_mouse_position())
+
+
+func _stop_glyph_hover() -> void:
+	_dwell.clear()
+	_update_glyph_hover(0.0)
 
 
 func _stock_icon(resource: StringName, region: Rect2i, at: Vector2) -> StockIcon:

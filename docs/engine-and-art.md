@@ -16,7 +16,7 @@ Context: [MVP concept](mvp-concept.md) — a tiny world that lives at the edge o
 | A4 | **Villager = "style A" mini chibi, 16 px tall**, professions via overlays | Smallest and cutest; keeps the settlement looking like a settlement; hair/colour carry identity. Chosen over larger/more detailed options (see [rejected](#6-options-considered-and-rejected)). | Faces prove too expressionless at 1×. |
 | A5 | **Native strip height ≈ 80 px** (384 px wide test) | At 2× that is 160 px on screen. Test 64–80 px native too. | — |
 | A6 | **Day/night and seasons as palette transforms**, not separate art | Night variant produced by a script from the day PNG and reads well. Resolved for seasons: a small canvas shader shifts the green in the existing art (`assets/world/season_palette.gdshader`, `SeasonLook`) and a few pieces are drawn from the backdrop's own edges (`SeasonOverlay`: snow, blossom, leaves), so no per-season art. | Seasons that need real art for the tree line (a true bare tree) rather than a palette. |
-| A7 | **Background is layered** (sky, far hills, near hills, tree line, ground+props), and each display mode chooses layers: normal window shows all; strip/corner drop the sky and far hills and keep near hills + tree line | Keeps depth and "place" on the desktop without covering apps behind. The strip's visible/clickable region is the union of the kept layers, so hills and trees are clickable. | Hills in the strip feel intrusive (drop to tree line only) or too empty (add a taller range). |
+| A7 | **Background is layered** (sky, far hills, near hills, tree line, ground+props), and each display mode chooses layers: normal window shows all; strip/corner drop the sky and keep far hills, near hills + tree line | Keeps depth and "place" on the desktop without covering apps behind, and the sky does not look empty. The strip's visible/clickable region is the union of the kept layers, so mountains, hills and trees are clickable. | Mountains in the strip feel intrusive (drop to near hills and tree line only). |
 | A8 | **The world is wider than the strip**: the viewport shows one 384 px "page" (the camp) of a 3-page, 1152 px world (west forest and ridge, camp, east river and sea), and the player pans with edge arrows, click-drag, the wheel or A/D | The camp page cannot hold more villagers and places; the strip window already spans the screen, so more can be shown without taking space. The camp art stays as is; new pages are added at the sides. | The viewport should be wider on big monitors (make its width a setting), or panning gets in the way of glancing. |
 
 ## 2. Engine notes
@@ -34,7 +34,7 @@ Code: `game/scripts/window/desktop_window.gd` (reusable `DesktopWindow`) and the
 Verified (measured through Win32 APIs and screen captures, not just by eye):
 
 - **Strip mode works**: borderless, transparent, no caption, full usable width × 160 px (2×), docked to the bottom of the usable area (above the taskbar).
-- **Per-pixel transparency works**: the world floats over other applications; the sky and far hills are hidden in strip mode, and near hills, tree line and ground remain (decision A7).
+- **Per-pixel transparency works**: the world floats over other applications; the sky is hidden in strip mode, and far hills, near hills, tree line and ground remain (decision A7).
 - **Always-on-top** toggles at runtime; mode, scale (1–4×) and "next monitor" hotkeys all re-layout correctly, including onto a second monitor with a different resolution.
 - **Click-through works**: `WindowFromPoint` returns the app underneath for transparent or off-art points and the game for art points.
 - **Integer scaling stays crisp** at 2× via `content_scale_size` + integer scale mode.
@@ -82,7 +82,7 @@ Reference images: [`art/reference/`](../art/reference/) (1× source PNGs) and `p
 ### 3.2 Scene layout (strip)
 
 - Canvas 384×80 (test); ground line at y = 56; sky 0–55; two hill layers; round-bump tree line; ground in 3 bands.
-- **Layers** (back to front), generated as separate PNGs in `art/reference/layers/`: `sky` (bands, sun, clouds), `far_hills`, `near_hills`, `trees`, `ground` (ground, river, props, villagers). `strip_v2.png` is their composite. Strip/corner modes hide `sky` and `far_hills`; the opaque window shows everything.
+- **Layers** (back to front), generated as separate PNGs in `art/reference/layers/`: `sky` (bands, sun, clouds), `far_hills`, `near_hills`, `trees`, `ground` (ground, river, props, villagers). `strip_v2.png` is their composite. Strip/corner modes hide `sky`; the opaque window shows everything.
 - **Lanes** (foot y): back ≈ 64–66, middle ≈ 69–73, front ≈ 74–78. Draw back-to-front by foot y; each object gets an elliptical ground shadow (`#4a8a38`).
 - Path winds through the front lane; river enters from the right with a diagonal bank.
 - Landmarks sit in the back lane; villagers/animals in the middle and front lanes.

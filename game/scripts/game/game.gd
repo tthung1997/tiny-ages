@@ -130,6 +130,7 @@ func _ready() -> void:
 	_world_view.villager_clicked.connect(_on_villager_clicked)
 	_world_view.menu_requested.connect(_on_menu_requested)
 	_world_view.hover_changed.connect(_on_hover_changed)
+	_icons.hover_changed.connect(_on_icon_hover_changed)
 	_panel.choice_picked.connect(_on_choice_picked)
 	_panel.action_picked.connect(_on_action)
 	_panel.decisions_requested.connect(_open_decisions)
@@ -345,6 +346,13 @@ func _on_hover_changed(text: String, at: Vector2) -> void:
 	else:
 		_tooltip.show_at(text, at)
 	_update_hud_region()
+
+
+## A name on the strip icons: it takes over from whatever the world was naming.
+func _on_icon_hover_changed(text: String, at: Vector2) -> void:
+	if not text.is_empty():
+		_world_view.release_pointer()
+	_on_hover_changed(text, at)
 
 
 ## The gear or a right click on the strip opens the menu; another puts it away.

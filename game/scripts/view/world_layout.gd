@@ -37,8 +37,8 @@ const CELL_SIZE: Vector2i = Vector2i(28, 30)
 const FOOT_OFFSET: Vector2 = Vector2(-14.0, -28.0)
 
 const BACKDROP: Array[StringName] = [&"sky", &"far_hills", &"near_hills", &"trees", &"ground"]
-## Backdrop layers that stay in strip and corner mode; the others only show in the opaque window.
-const DESKTOP_BACKDROP: Array[StringName] = [&"near_hills", &"trees", &"ground"]
+## Backdrop layers that stay in strip and corner mode; the sky only shows in the opaque window.
+const DESKTOP_BACKDROP: Array[StringName] = [&"far_hills", &"near_hills", &"trees", &"ground"]
 const STATIC_Z: Dictionary = {&"static_back": 10, &"static_mid": 70}
 
 ## State-driven buildings: art slot and draw order (z is the foot row, so villagers walk
