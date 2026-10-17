@@ -241,8 +241,8 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   The fire pit (`fire_pit_0..3`, flame frames, with the firelight in the cave mouth) is state-driven like a
   building and only shows once the fire is found; it flickers on a 0.2 s clock that sleeps unless the fire is lit
   and in view. `fire_glow.png` is an additive glow that fades in with the dark while there is
-  fire. Before fire the group gathers in the cave mouth. Wood is cut at the west forest. Sky and far hills only show in the opaque
-  window (decision A7); strip and corner mode keep near hills, trees and ground. The sun, moon and
+  fire. Before fire the group gathers in the cave mouth. Wood is cut at the west forest. Sky only shows in the opaque
+  window (decision A7); strip and corner mode keep the far mountains, near hills, trees and ground. The sun, moon and
   stars (`celestial.png`, `stars.png`) are children of the clip, not of the scrolling world, so they stay
   put as you pan; `DayNight` says where they are, and they too exist only in the opaque window.
 - Seasons and weather in the view: `SeasonLook` and `WeatherLook` are pure and tested; a shader

@@ -89,6 +89,25 @@ func test_the_strip_glyph_follows_the_season_and_can_be_clicked() -> void:
 	icons.free()
 
 
+func test_the_season_glyph_names_itself_in_the_viewport_after_resting() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.tick = 3 * DAY
+	var icons: StripIcons = StripIcons.new()
+	icons.update_season(sim.world, sim.config)
+	var shown: Array[String] = []
+	icons.hover_changed.connect(func(text: String, _at: Vector2) -> void: shown.append(text))
+	icons._glyph.mouse_entered.emit()
+	icons._process(HoverDwell.DELAY_SECONDS * 0.5)
+	assert_eq(shown.size(), 0, "Not until the pointer has rested")
+	icons._process(HoverDwell.DELAY_SECONDS)
+	assert_eq(shown, ["Early spring"] as Array[String])
+	icons._process(1.0)
+	assert_eq(shown.size(), 1, "Said once, not every frame")
+	icons._glyph.mouse_exited.emit()
+	assert_eq(shown, ["Early spring", ""] as Array[String], "Moving off puts it away")
+	icons.free()
+
+
 func test_villagers_think_about_the_weather() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var villager: VillagerState = sim.world.villagers[0]

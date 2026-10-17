@@ -184,8 +184,8 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	on_world_changed()
 
 
-## Only the opaque window shows the full diorama; on the desktop the sky and far hills would
-## cover other apps, so strip and corner mode keep the near hills, tree line and ground.
+## Only the opaque window shows the sky; on the desktop it would cover other apps, so strip and
+## corner mode keep the far mountains, near hills, tree line and ground.
 func set_full_scene(full: bool) -> void:
 	_full_scene = full
 	for layer: StringName in _backdrop:
@@ -552,6 +552,11 @@ func rest_pointer_at(at: Vector2) -> void:
 	_track_pointer(at + _clip.global_position)
 	_dwell.advance(HoverDwell.DELAY_SECONDS)
 	_sync_tooltip()
+
+
+## Puts away whatever the world was naming, because something else (the strip's icons) names now.
+func release_pointer() -> void:
+	_stop_hover()
 
 
 func _stop_hover() -> void:

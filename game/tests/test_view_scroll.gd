@@ -440,6 +440,18 @@ func test_the_sky_bodies_stay_put_while_the_world_scrolls() -> void:
 	parts[1].free()
 
 
+func test_the_far_mountains_stay_on_the_desktop_but_the_sky_does_not() -> void:
+	var parts: Array = _sky_view(12)
+	var view: WorldView = parts[2]
+	view.set_full_scene(false)
+	for sprite: Sprite2D in view._backdrop[&"far_hills"]:
+		assert_true(sprite.visible, "The mountains stay in strip and corner mode")
+	for sprite: Sprite2D in view._backdrop[&"sky"]:
+		assert_false(sprite.visible, "The sky would cover other apps")
+	view.free()
+	parts[1].free()
+
+
 func test_the_sun_sits_behind_the_far_hills_and_in_front_of_the_sky() -> void:
 	var parts: Array = _sky_view(12)
 	var view: WorldView = parts[2]
