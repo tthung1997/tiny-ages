@@ -434,7 +434,12 @@ func _report_click(at: Vector2) -> void:
 ## the one in front, whose feet are lower on screen, wins. Hidden (asleep or away) villagers
 ## cannot be clicked.
 func villager_at(at: Vector2) -> StringName:
-	var point: Vector2 = _world.to_local(at)
+	return _front_villager(_world.to_local(at))
+
+
+## The one villager that both clicking and hovering name at a world point: the lowest feet win,
+## and the first of two level villagers wins, so the tooltip never names someone else.
+func _front_villager(point: Vector2) -> StringName:
 	var found: StringName = &""
 	var front: float = -INF
 	for id: StringName in _actors:
@@ -472,12 +477,12 @@ func thing_at(at: Vector2) -> HoverHit:
 	found = HoverHit.in_front(found, _sprite_hit(_deer, point, &"deer", "Deer"))
 	for landmark_id: StringName in WorldLandmarks.ids():
 		found = HoverHit.in_front(found, _landmark_hit(landmark_id, point))
-	for id: StringName in _actors:
-		var actor: VillagerActor = _actors[id]
-		if actor.visible and actor.hit_rect().has_point(point):
-			found = HoverHit.in_front(found, HoverHit.make(
-				StringName("villager:%s" % id), _villager_name(id), int(actor.position.y)
-			))
+	var villager: StringName = _front_villager(point)
+	if villager != &"":
+		found = HoverHit.in_front(found, HoverHit.make(
+			StringName("villager:%s" % villager), _villager_name(villager),
+			int((_actors[villager] as VillagerActor).position.y)
+		))
 	return found
 
 
@@ -693,12 +698,16 @@ func _refresh_actors() -> void:
 		if not present.has(id):
 			(_actors[id] as VillagerActor).queue_free()
 			_actors.erase(id)
+	var plans: Array[VillagerPlan] = []
+	for slot: int in world.villagers.size():
+		plans.append(_planner.plan(world.villagers[slot], world, _sim.config, slot))
+	VillagerPlanner.spread(plans)
 	for slot: int in world.villagers.size():
 		var villager: VillagerState = world.villagers[slot]
 		var actor: VillagerActor = _actors.get(villager.id)
 		if actor == null:
 			actor = _make_actor(villager)
-		actor.apply_plan(_planner.plan(villager, world, _sim.config, slot))
+		actor.apply_plan(plans[slot])
 
 
 func _make_actor(villager: VillagerState) -> VillagerActor:
