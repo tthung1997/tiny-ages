@@ -4,7 +4,28 @@ extends RefCounted
 ## logic with no nodes, so it is testable headless. The only randomness is where an aimless
 ## wanderer heads; it is view-side and never touches the simulation.
 
+## Two villagers who stay put never stand closer than this, so each can be told apart and clicked.
+const MIN_GAP: float = 8.0
+
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+
+## Moves a villager who would stand on top of an earlier one to the west of them (west is always
+## open ground), until nobody stays put within `MIN_GAP` of another. Wanderers keep their own
+## random targets. Deterministic, so a villager does not shuffle between refreshes.
+static func spread(plans: Array[VillagerPlan]) -> void:
+	var placed: Array[VillagerPlan] = []
+	for plan: VillagerPlan in plans:
+		if not plan.visible or plan.wander:
+			continue
+		var moved: bool = true
+		while moved:
+			moved = false
+			for other: VillagerPlan in placed:
+				if absf(other.target.x - plan.target.x) < MIN_GAP:
+					plan.target.x = other.target.x - MIN_GAP
+					moved = true
+		placed.append(plan)
 
 
 ## `slot` is the villager's index, used to spread people over the available spots.

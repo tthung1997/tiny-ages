@@ -95,6 +95,40 @@ func test_hunters_stand_at_the_far_end_of_the_forest_with_a_spear() -> void:
 		assert_true(spot.y >= WorldLayout.WANDER_Y.x and spot.y <= WorldLayout.WANDER_Y.y)
 
 
+func test_villagers_who_stay_put_never_share_a_spot() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.tick = sim.config.tick_for_hour(10)
+	var planner: VillagerPlanner = VillagerPlanner.new()
+	for count: int in [4, 7]:
+		var plans: Array[VillagerPlan] = []
+		for slot: int in count:
+			var villager: VillagerState = sim.world.villagers[slot % sim.world.villagers.size()]
+			villager.activity = VillagerState.ACTIVITY_GATHER_WOOD
+			plans.append(planner.plan(villager, sim.world, sim.config, slot))
+		VillagerPlanner.spread(plans)
+		for first: int in plans.size():
+			for second: int in range(first + 1, plans.size()):
+				var gap: float = absf(plans[first].target.x - plans[second].target.x)
+				assert_true(gap >= VillagerPlanner.MIN_GAP, "%d and %d are %s apart" % [
+					first, second, gap
+				])
+
+
+func test_spreading_leaves_wanderers_and_the_hidden_alone() -> void:
+	var wanderer: VillagerPlan = VillagerPlan.new()
+	wanderer.wander = true
+	wanderer.target = Vector2(50, 78)
+	var asleep: VillagerPlan = VillagerPlan.new()
+	asleep.visible = false
+	asleep.target = Vector2(50, 78)
+	var standing: VillagerPlan = VillagerPlan.new()
+	standing.target = Vector2(50, 78)
+	VillagerPlanner.spread([wanderer, asleep, standing] as Array[VillagerPlan])
+	assert_eq(wanderer.target, Vector2(50, 78))
+	assert_eq(asleep.target, Vector2(50, 78))
+	assert_eq(standing.target, Vector2(50, 78))
+
+
 func test_a_plan_with_no_target_to_face_says_so() -> void:
 	var plan: VillagerPlan = _plan_for(VillagerState.ACTIVITY_WANDER)
 	assert_false(plan.has_focus(), "Wanderers just face where they walk")

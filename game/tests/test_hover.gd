@@ -190,6 +190,23 @@ func test_the_fish_are_named_across_their_rectangles() -> void:
 	view.free()
 
 
+func test_hovering_and_clicking_name_the_same_villager_when_two_stand_together() -> void:
+	var view: WorldView = _view()
+	var first: VillagerState = view._sim.world.villagers[0]
+	var second: VillagerState = view._sim.world.villagers[1]
+	var spot: Vector2 = Vector2(100, 78)
+	(view._actors[first.id] as VillagerActor).position = spot
+	(view._actors[second.id] as VillagerActor).position = spot
+	view.jump_camera(60.0)
+	var at: Vector2 = Vector2(40, 66)
+	var clicked: StringName = view.villager_at(at)
+	assert_true(clicked != &"")
+	var hit: HoverHit = view.thing_at(at)
+	assert_true(hit != null)
+	assert_eq(hit.key, StringName("villager:%s" % clicked), "The tooltip names who a click picks")
+	view.free()
+
+
 func test_a_villager_is_named_and_wins_a_tie_with_a_prop() -> void:
 	var view: WorldView = _view()
 	view._sim.world.achievements.append(&"fired_clay")
