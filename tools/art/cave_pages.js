@@ -94,10 +94,13 @@ function westPage() {
   for (var px = 10; px < 352; px += 11 + Math.floor(rnd() * 8)) {
     var foot = lanes[k % lanes.length]; k++;
     if (rnd() < (px / W) * 0.7) continue; // sparser towards the camp
-    (foot <= 70 ? backP : midP).push(obj(16, 26, px, foot, pine, { sh: 6 }));
+    // The village stands in the forest's edge on the front rows, so every pine stands behind it, on
+    // the back lanes (and behind the wall from x = 52 on): a tree is never drawn in front of a house.
+    if (px >= 52) foot = 56 + (k % 4) * 2; else if (foot > 66) foot -= 12;
+    backP.push(obj(16, 26, px, foot, pine, { sh: 6 }));
   }
   midP.push(obj(10, 8, 318, 77, stump, { sh: 4 }), obj(10, 8, 262, 75, stump, { sh: 4 }), obj(18, 7, 158, 76, fallenlog, { sh: 6 }),
-    obj(12, 8, 96, 74, bush, { sh: 5 }), obj(12, 8, 212, 77, bush, { sh: 5 }), obj(12, 8, 346, 72, bush, { sh: 5 }),
+    obj(12, 8, 96, 76, bush, { sh: 5 }), obj(12, 8, 212, 77, bush, { sh: 5 }), obj(12, 8, 346, 77, bush, { sh: 5 }),
     obj(10, 6, 128, 78, rocks, { sh: 4 }), obj(10, 6, 288, 79, rocks, { sh: 4 }));
   L.static_back = layerOf(backP);
   L.static_mid = layerOf(midP);

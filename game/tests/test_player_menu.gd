@@ -244,8 +244,12 @@ func test_the_villager_list_shows_everyone_and_opens_the_one_picked() -> void:
 		if button.text.is_empty():
 			rows.append(button)
 	assert_eq(rows.size(), sim.world.villagers.size(), "One row each")
-	for row: Button in rows:
-		assert_eq(row.find_children("*", "TextureRect", true, false).size(), 1, "...with a portrait")
+	for index: int in rows.size():
+		var pictures: int = rows[index].find_children("*", "TextureRect", true, false).size()
+		var role_art: bool = not WorldLayout.role_sheet_path(
+			sim.world.villagers[index].profession
+		).is_empty()
+		assert_eq(pictures, 2 if role_art else 1, "...with a portrait, and the role's overlay")
 	rows[0].pressed.emit()
 	assert_eq(picked, [PanelHost.villager_action(sim.world.villagers[0].id)] as Array[StringName])
 	_button(panel, "Back").pressed.emit()

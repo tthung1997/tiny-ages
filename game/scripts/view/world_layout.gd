@@ -8,11 +8,11 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## Art folders by era order. A piece is found by looking from the current age back to the first, so
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
-const ERA_DIRS: Array[String] = ["cave", "settled"]
+const ERA_DIRS: Array[String] = ["cave", "settled", "bronze"]
+## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
-## The same villagers in woven tunics, worn once the group has woven cloth.
-const CLOTH_VILLAGER_DIR: String = "res://assets/world/settled/villagers/"
-const CLOTH_ACHIEVEMENT: StringName = &"woven_cloth"
+## Role overlays (an apron, a pack) drawn over any villager, one sheet per profession.
+const ROLE_DIR: String = "res://assets/world/roles/"
 
 ## What the viewport shows at once: one "page", the camp. Everything below is in camp pixels
 ## (the camp page's top-left is 0, 0); the world extends one page west and one page east.
@@ -41,14 +41,39 @@ const BACKDROP: Array[StringName] = [&"sky", &"far_hills", &"near_hills", &"tree
 const DESKTOP_BACKDROP: Array[StringName] = [&"far_hills", &"near_hills", &"trees", &"ground"]
 const STATIC_Z: Dictionary = {&"static_back": 10, &"static_mid": 70}
 
+## Where props live (docs/ages.md B10): a place is a named patch of the world, in camp pixels
+## (x, y, width, height), tied to something real: the yard in front of the cave, the river bank, the
+## village at the west forest's edge, the east shore. A prop (`SceneProps`) names its place and its
+## art must sit inside it, so "where does this go?" has one answer. Mirrors the art scripts.
+const PLACES: Dictionary = {
+	&"cave_mouth": Rect2(0, 60, 88, 21),
+	&"cave_yard": Rect2(88, 62, 118, 19),
+	&"river_bank": Rect2(264, 56, 120, 25),
+	&"west_market": Rect2(-384, 36, 56, 45),
+	&"west_village": Rect2(-326, 36, 326, 45),
+	&"east_shore": Rect2(384, 40, 384, 41),
+}
+
 ## State-driven buildings: art slot and draw order (z is the foot row, so villagers walk
-## behind or in front correctly).
+## behind or in front correctly). The world has three lanes (docs/ages.md B10): the back lane, whose
+## foot row is `BACK_LANE` (the cave's base), where every building stands; the mid lane (foot rows
+## 72-76) for what is smaller than a building; and the front lane (75-79) where people walk. The art
+## is drawn with the first pieces on the bottom rows, so a piece is lifted onto its lane by `at`
+## (dx, dy: how far its sprite is moved), and `cx`, `foot` and `z` are where it ends up.
+const BACK_LANE: int = 67
 const BUILDINGS: Dictionary = {
-	&"lookout": {"cx": 300, "foot": 66, "z": 66},
-	&"drying_rack": {"cx": 132, "foot": 70, "z": 70},
-	&"knapping_spot": {"cx": 160, "foot": 79, "z": 78},
-	&"hut": {"cx": 268, "foot": 71, "z": 71},
-	&"field": {"cx": 228, "foot": 78, "z": 55},
+	&"lookout": {"cx": 300, "foot": 66, "z": 66, "at": Vector2(0, 0)},
+	&"drying_rack": {"cx": 138, "foot": 67, "z": 67, "at": Vector2(6, -4)},
+	&"knapping_spot": {"cx": 160, "foot": 76, "z": 75, "at": Vector2(0, -3)},
+	&"hut": {"cx": 268, "foot": 67, "z": 67, "at": Vector2(0, -4)},
+	&"field": {"cx": 228, "foot": 74, "z": 55, "at": Vector2(0, -4)},
+	# The Bronze Age's workshops stand on the back lane in the cave yard: the smithy beside the
+	# rack (west of the lone pine, whose trunk would cover it), the trading post where the road
+	# comes in from the west.
+	&"smithy": {"cx": 172, "foot": 67, "z": 67, "at": Vector2(-12, -12)},
+	&"trading_post": {"cx": 108, "foot": 67, "z": 67, "at": Vector2(0, -12)},
+	# The Quay stands in the river's far lane above the stepping stones.
+	&"quay": {"cx": 338, "foot": 72, "z": 72, "at": Vector2(0, 0)},
 }
 const FLOWER_Z: int = 73
 
@@ -103,7 +128,15 @@ const HUNT_SPOTS: Array[Vector2] = [Vector2(-318, 77), Vector2(-296, 79), Vector
 const FIRE_SPOTS: Array[Vector2] = [Vector2(88, 78), Vector2(96, 79), Vector2(60, 79)]
 const SOCIAL_SPOTS: Array[Vector2] = [Vector2(62, 78), Vector2(84, 79), Vector2(98, 78)]
 const WOOD_SPOTS: Array[Vector2] = [Vector2(-82, 78), Vector2(-74, 79), Vector2(-54, 78)]
-const FORAGE_SPOTS: Array[Vector2] = [Vector2(188, 77), Vector2(206, 78), Vector2(176, 78)]
+## Foragers gather round the lone pine, on its east side: the Smithy stands west of it.
+const FORAGE_SPOTS: Array[Vector2] = [Vector2(212, 78), Vector2(220, 79), Vector2(228, 77)]
+## The Bronze Age's workers: a Smith hammers beside the Smithy, facing it, and a Trader walks the
+## road between the Trading Post and the market at the west edge of the village (docs/ages.md B4).
+## Both buildings stand on the back lane, so these spots are in front of them.
+const SMITHY_SPOTS: Array[Vector2] = [Vector2(182, 73), Vector2(190, 74), Vector2(176, 75)]
+const POST_SPOTS: Array[Vector2] = [Vector2(100, 73), Vector2(112, 74), Vector2(120, 73)]
+const MARKET_SPOTS: Array[Vector2] = [Vector2(-346, 80), Vector2(-336, 79), Vector2(-356, 79)]
+const MARKET_X: float = -348.0
 ## The forest to the west is walkable; the camp's river stops the east at about x = 298 until a
 ## crossing is laid (`crossing_open`), and then the spit beyond it is walkable too.
 const WANDER_X: Vector2 = Vector2(-150.0, 290.0)
@@ -111,7 +144,7 @@ const WANDER_X_CROSSED: Vector2 = Vector2(-150.0, 545.0)
 const WANDER_Y: Vector2 = Vector2(75.0, 79.0)
 ## The two answers to "The hard crossing" (flags); either opens the way over the river, which runs
 ## from about x = 302 to x = 476 along the foot rows. Mirrors tools/art/cave_river.js.
-const CROSSING_FLAGS: Array[StringName] = [&"stepping_stones", &"log_bridge"]
+const CROSSING_FLAGS: Array[StringName] = [&"stepping_stones", &"log_bridge", &"road_laid"]
 const CROSSING_X: Vector2 = Vector2(302.0, 476.0)
 ## Foragers fish from the near bank once the group has fished, cut reeds on the far bank once there
 ## is a crossing, and gather shellfish on the flats at low tide (the view's picture of foraging: the
@@ -167,22 +200,26 @@ static func deer_frame_name(frame: int) -> StringName:
 	return StringName("east_deer_%d" % posmod(frame, DEER_FRAMES))
 
 
-## Whether the group has woven cloth, so villagers swap their furs for woven tunics.
-static func wears_cloth(world: WorldState) -> bool:
-	return world.has_achievement(CLOTH_ACHIEVEMENT)
-
-
-## The sheet that draws a villager: the woven-tunic one once the group wears cloth, else (or if a
-## look has no cloth sheet) the fur one, and Mira's for a look nobody has drawn.
-static func villager_sheet_path(look: StringName, cloth: bool) -> String:
-	if cloth:
-		var woven: String = "%s%s.png" % [CLOTH_VILLAGER_DIR, look]
-		if ResourceLoader.exists(woven):
-			return woven
-	var fur: String = "%s%s.png" % [VILLAGER_DIR, look]
-	if ResourceLoader.exists(fur):
-		return fur
+## The sheet that draws a villager (`VillagerOutfit.for_world` says what they wear). If the outfit
+## has no sheet for the look, the next simpler outfit's is used, down to the furs; a look nobody
+## has drawn wears Mira's, and a missing sheet is never an error.
+static func villager_sheet_path(look: StringName, outfit: StringName) -> String:
+	var start: int = maxi(VillagerOutfit.ORDER.find(outfit), 0)
+	for who: StringName in [look, &"mira"]:
+		for index: int in range(start, -1, -1):
+			var path: String = VillagerOutfit.sheet_path(VillagerOutfit.ORDER[index], who)
+			if not path.is_empty():
+				return path
 	return "%smira.png" % VILLAGER_DIR
+
+
+## The overlay a profession adds on top of a villager's body (the Smith's apron, the Trader's
+## pack): same sheet layout as the villagers', in `ROLE_DIR`. "" for a profession with none.
+static func role_sheet_path(profession: StringName) -> String:
+	if profession == &"":
+		return ""
+	var path: String = "%s%s.png" % [ROLE_DIR, profession]
+	return path if ResourceLoader.exists(path) else ""
 
 
 static func fire_frame_name(frame: int) -> StringName:
@@ -206,6 +243,12 @@ static func piece_path(layer: StringName, era_order: int) -> String:
 
 static func spot(spots: Array[Vector2], index: int) -> Vector2:
 	return spots[posmod(index, spots.size())]
+
+
+## How far a building's art is moved from where it was drawn (its `at`), in camp pixels.
+static func building_offset(building_id: StringName) -> Vector2:
+	var slot: Dictionary = BUILDINGS.get(building_id, {})
+	return slot.get("at", Vector2.ZERO)
 
 
 ## Where a villager stands to work on a building site.

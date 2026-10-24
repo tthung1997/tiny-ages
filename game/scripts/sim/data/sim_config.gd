@@ -65,7 +65,7 @@ extends Resource
 @export_range(0.0, 2.0, 0.01) var forage_crowding: float = 0.6
 ## Most villagers the group can ever have, whatever the content says: a safety net for the cost
 ## of the simulation and the view. Room for newcomers normally runs out long before (Simulation.room).
-@export_range(3, 100) var max_villagers: int = 14
+@export_range(3, 100) var max_villagers: int = 22
 
 @export_group("Strip")
 ## How the wood and food icons on the strip read a stock (StockGauge), as fractions of

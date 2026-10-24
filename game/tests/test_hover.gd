@@ -124,15 +124,15 @@ func test_the_front_one_wins_and_a_tie_goes_to_the_later() -> void:
 
 func test_a_prop_is_named_only_once_the_world_shows_it() -> void:
 	var view: WorldView = _view()
-	var sprite: Sprite2D = view._props[&"pots"]
+	var sprite: Sprite2D = view._props[&"west_well"]
 	var spot: Vector2 = _solid_spot(sprite)
-	assert_true(spot.is_finite(), "The pots are drawn somewhere")
+	assert_true(spot.is_finite(), "The well is drawn somewhere")
 	var at: Vector2 = _look_at(view, sprite, spot)
-	assert_eq(view.thing_at(at), null, "Nothing is named before the pots exist")
-	view._sim.world.achievements.append(&"fired_clay")
+	assert_eq(view.thing_at(at), null, "Nothing is named before the well exists")
+	view._sim.world.flags[&"well_dug"] = true
 	view.on_world_changed()
 	var hit: HoverHit = view.thing_at(at)
-	assert_true(hit != null and hit.text == "Clay pots", "The pots are named")
+	assert_true(hit != null and hit.text == "Well", "The well is named")
 	view.free()
 
 

@@ -10,11 +10,13 @@ const ICON_ORDER: Array[StringName] = [
 	&"fire", &"stone_tools", &"reliable_food", &"shared_stories", &"bigger_group",
 	&"unexpected_garden", &"first_roof", &"first_harvest", &"fired_clay", &"woven_cloth",
 	&"a_village", &"green_stone", &"the_first_field", &"a_place_to_stay", &"rare_visitor",
+	&"first_casting", &"bronze_alloy", &"mud_brick_walls", &"wheel_and_road", &"a_town",
+	&"beyond_the_water",
 ]
 const ICONS_PATH: String = "res://assets/ui/achievements.png"
 const CELL: Vector2i = Vector2i(20, 20)
 ## Shown for an achievement with no icon of its own: the cell after the last one in `ICON_ORDER`.
-const GENERIC_ICON: int = 15
+const GENERIC_ICON: int = 21
 
 
 class Badge:

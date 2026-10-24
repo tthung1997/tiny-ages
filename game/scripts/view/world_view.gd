@@ -46,7 +46,7 @@ var _buildings: Dictionary = {}
 var _sites: Dictionary = {}
 var _props: Dictionary = {}
 var _art_era: int = -1
-var _cloth: bool = false
+var _outfit: StringName = VillagerOutfit.FUR
 var _flower_sprout: Sprite2D
 var _flower_bloom: Sprite2D
 var _fire_pit: Sprite2D
@@ -162,10 +162,15 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 			_static_layers.append(side)
 	for building_id: StringName in WorldLayout.BUILDINGS:
 		var z: int = WorldLayout.BUILDINGS[building_id]["z"]
-		_buildings[building_id] = _make_piece(StringName("building_%s" % building_id), z)
-		_sites[building_id] = _make_piece(StringName("site_%s" % building_id), z)
+		var lift: Vector2 = WorldLayout.building_offset(building_id)
+		_buildings[building_id] = _make_piece(
+			StringName("building_%s" % building_id), z, lift.x, lift.y
+		)
+		_sites[building_id] = _make_piece(StringName("site_%s" % building_id), z, lift.x, lift.y)
 	for prop_id: StringName in SceneProps.ids():
-		_props[prop_id] = _make_piece(prop_id, SceneProps.z_of(prop_id), SceneProps.at_x_of(prop_id))
+		_props[prop_id] = _make_piece(
+			prop_id, SceneProps.z_of(prop_id), SceneProps.at_x_of(prop_id), SceneProps.at_y_of(prop_id)
+		)
 	_flower_sprout = _make_sprite(&"flower_sprout", WorldLayout.FLOWER_Z)
 	_flower_bloom = _make_sprite(&"flower_bloom", WorldLayout.FLOWER_Z)
 	_fire_pit = _make_sprite(WorldLayout.fire_frame_name(0), WorldLayout.FIRE_PIT_Z)
@@ -686,9 +691,9 @@ func _rebuild_season_overlays(season: int) -> void:
 
 func _refresh_actors() -> void:
 	var world: WorldState = _sim.world
-	var cloth: bool = WorldLayout.wears_cloth(world)
-	if cloth != _cloth:
-		_cloth = cloth
+	var outfit: StringName = VillagerOutfit.for_world(world)
+	if outfit != _outfit:
+		_outfit = outfit
 		for existing: VillagerActor in _actors.values():
 			existing.set_sheet(_sheet_for(existing.get_meta(&"look")))
 	var present: Dictionary = {}
@@ -707,6 +712,7 @@ func _refresh_actors() -> void:
 		var actor: VillagerActor = _actors.get(villager.id)
 		if actor == null:
 			actor = _make_actor(villager)
+		actor.set_role(villager.profession, _role_sheet(villager.profession))
 		actor.apply_plan(plans[slot])
 
 
@@ -721,7 +727,15 @@ func _make_actor(villager: VillagerState) -> VillagerActor:
 
 
 func _sheet_for(look: StringName) -> Texture2D:
-	return load(WorldLayout.villager_sheet_path(look, _cloth)) as Texture2D
+	return load(WorldLayout.villager_sheet_path(look, _outfit)) as Texture2D
+
+
+## The overlay a profession adds on top of the body, or null if it has none.
+func _role_sheet(profession: StringName) -> Texture2D:
+	var path: String = WorldLayout.role_sheet_path(profession)
+	if path.is_empty():
+		return null
+	return load(path) as Texture2D
 
 
 ## The camp's backdrop layer plus the same layer of the west and east pages (art/cave_pages.js).
@@ -756,13 +770,14 @@ func _load_art(layer: StringName) -> Texture2D:
 
 
 ## A piece that an age may redraw (a building, its site, a prop): its art is the newest the
-## current age has, and it is swapped when the age turns.
-func _make_piece(layer: StringName, z: int, at_x: float = 0.0) -> Sprite2D:
+## current age has, and it is swapped when the age turns. `at_x` and `at_y` place its top-left
+## corner (a piece is lifted onto its lane by a negative `at_y`).
+func _make_piece(layer: StringName, z: int, at_x: float = 0.0, at_y: float = 0.0) -> Sprite2D:
 	var sprite: Sprite2D = Sprite2D.new()
 	sprite.centered = false
 	sprite.use_parent_material = true
 	sprite.z_index = z
-	sprite.position.x = at_x
+	sprite.position = Vector2(at_x, at_y)
 	sprite.visible = false
 	sprite.set_meta(&"layer", layer)
 	sprite.texture = _load_piece(layer, WorldLayout.ERA_DIRS.size() - 1)
@@ -841,10 +856,10 @@ func _rebuild_skyline() -> void:
 	for building_id: StringName in _buildings:
 		for sprite: Sprite2D in [_buildings[building_id], _sites[building_id]]:
 			if sprite.visible:
-				skyline.add(sprite.texture, _world_column(sprite))
+				skyline.add(sprite.texture, _world_column(sprite), false, int(sprite.position.y))
 	for sprite: Sprite2D in _props.values():
 		if sprite.visible:
-			skyline.add(sprite.texture, _world_column(sprite))
+			skyline.add(sprite.texture, _world_column(sprite), false, int(sprite.position.y))
 	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit, _life, _deer]:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))

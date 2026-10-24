@@ -9,9 +9,12 @@
 //   west_plot_farm, west_plot_patch   the sown plot at the west meadow's edge: the farmers' bigger
 //                                 one and the herders' small patch (west page: sprite at x = -384)
 //   west_pen                      the herders' fenced pen and its animals (west page)
-//   pots, cloth_line, cloth_dyed, loom, low_wall, green_stones, hens      what answers and
-//   west_kiln, west_well, west_scarecrow, west_roof_a, west_roof_b       milestones put on the
-//                                 ground (SceneProps decides when each shows)
+//   pots, cloth_line, cloth_dyed, loom, low_wall, hens, flax_beaten   the crafts and the wall of the
+//                                 village at the west forest's edge (west page, page-local x)
+//   east_salt_pans, east_shell_heap, east_driftwood_stack, east_tide_baskets   the coast's work on the\n//                                 east page (page-local x), each in free ground; low_wall is the dry-stone\n//                                 wall along the back lane from the forest to the cave\n//   green_stones, clay_pits       the cave yard (camp page); west_kiln, west_well, west_scarecrow,
+//   west_roof_a, west_roof_b      and the village's roofs (west page); what answers and milestones
+//                                 put on the ground (SceneProps decides when each shows)
+// Every prop sits in a place (world_layout.gd PLACES); test_scene_props.gd checks it.
 // Slots are mirrored in game/scripts/view/world_layout.gd (BUILDINGS, SceneProps): change both
 // together. Preview: art/reference/settled_camp.png.
 seed = 41;
@@ -207,6 +210,36 @@ function lowwall(b) {
   b.rect(0, 8, 150, 1, ROCKD);
 }
 
+// ---- the wall along the back lane (west page, 325x13, page-local x 59..383, y 51..63) -------------------
+// A low dry-stone wall with timber posts that joins the forest's edge (a stout end post on the left) to
+// the cave's flank (a stone buttress on the right), with a gate near the middle: two taller posts under a
+// lintel and an open gap between them. Stones come from the position, not rnd, so nothing else shifts.
+var WALLX = 59, WALLY = 51, GATEL = 205, GATER = 229;
+function lowwallnew(b) {
+  var row, x, w, y, h, s, i, tops = ['#b8b5bd', '#a8a5ae', '#c4c1c9'], fills = [ROCK, '#7f7c86', '#8d8a93'];
+  function R(px, py, pw, ph, c) { b.rect(px - WALLX, py - WALLY, pw, ph, c); }
+  function P(px, py, c) { b.px(px - WALLX, py - WALLY, c); }
+  for (row = 0; row < 2; row++) {
+    y = row == 0 ? 60 : 57; h = row == 0 ? 4 : 3; x = WALLX + (row == 0 ? 0 : 3);
+    while (x < 384) {
+      w = 5 + ((x * 7 + row * 3) % 4);
+      if (x + w > GATEL - 1 && x < GATER + 2) { x = GATER + 2 + (row == 0 ? 0 : 3); continue; }
+      s = (x * 5 + row) % 3;
+      R(x, y, Math.min(w - 1, 384 - x), h, fills[s]); R(x, y, Math.min(w - 1, 384 - x), 1, tops[s]);
+      P(x, y, '#a8a5ae'); R(x, y + h - 1, Math.min(w - 1, 384 - x), 1, ROCKD);
+      x += w;
+    }
+  }
+  for (i = 0; i < 11; i++) { // timber posts along the run
+    x = [95, 131, 167, 251, 287, 323, 359][i]; if (x === undefined) break;
+    R(x, 54, 2, 10, WOOD); R(x, 54, 1, 10, WOODL); P(x, 54, '#d9a566'); P(x + 1, 54, WOOD);
+  }
+  R(59, 52, 4, 12, WOOD); R(59, 52, 1, 12, WOODL); R(59, 52, 4, 1, '#d9a566'); R(60, 53, 2, 1, WOODL); R(59, 57, 4, 1, '#6a4326'); R(59, 61, 4, 1, '#6a4326');
+  R(377, 53, 7, 11, ROCK); R(377, 53, 7, 1, '#c4c1c9'); R(377, 56, 7, 1, ROCKD); R(377, 60, 7, 1, ROCKD); R(380, 53, 1, 3, ROCKD); R(382, 57, 1, 3, ROCKD); R(378, 61, 1, 3, ROCKD);
+  R(GATEL, 51, 3, 13, WOOD); R(GATEL, 51, 1, 13, WOODL); R(GATER - 2, 51, 3, 13, WOOD); R(GATER - 2, 51, 1, 13, WOODL);
+  R(GATEL - 1, 51, GATER - GATEL + 3, 2, WOODL); R(GATEL - 1, 51, GATER - GATEL + 3, 1, '#d9a566'); R(GATEL, 53, GATER - GATEL + 1, 1, '#6a4326');
+  P(GATEL + 1, 56, '#c58f50'); P(GATER - 1, 56, '#6a4326');
+}
 // A heap of green stone, 14x8.
 function greenstones(b) {
   b.ell(5, 5, 4.5, 3, '#3fa88a'); b.ell(10, 5, 3.5, 2.6, '#2a7a64'); b.ell(7, 3, 3, 2, '#5fcfae');
@@ -298,6 +331,44 @@ function weir(b) {
   }
 }
 
+// ---- the coast's work (east page, page-local x; each sits where the east page art is free) ------------
+// Salt pans, 28x3: three shallow clay-rimmed squares with a white salt crust, on the grass-and-sand edge.
+function saltpans(b) {
+  var i, x;
+  for (i = 0; i < 3; i++) {
+    x = i * 10;
+    b.rect(x, 0, 8, 3, CLAY); b.rect(x, 0, 8, 1, CLAYL); b.rect(x, 2, 8, 1, CLAYD);
+    b.rect(x + 1, 1, 6, 1, i == 1 ? '#e8ecee' : '#ffffff'); b.px(x + 2 + i, 1, '#cfd8e0'); b.px(x + 5, 1, '#e8ecee');
+  }
+  b.px(8, 1, CLAYD); b.px(18, 1, CLAYD);
+}
+// A stack of bleached driftwood, 15x7: three layers of weathered logs with round cut ends on the right,
+// bound with two cords.
+function driftstack(b) {
+  var r, x0 = [0, 1, 3, 5], x1 = [14, 13, 11, 9], y = [5, 3, 1, 0], k, w;
+  for (r = 0; r < 4; r++) {
+    k = r == 3 ? 1 : 2; w = x1[r] - x0[r] + 1;
+    b.rect(x0[r], y[r], w, k, '#c4b290'); b.rect(x0[r], y[r], w, 1, '#e2d4b4');
+    if (k == 2) b.rect(x0[r], y[r] + 1, w, 1, '#8f7e5c');
+    b.px(x1[r], y[r], '#f0e0b8'); if (k == 2) b.px(x1[r], y[r] + 1, '#d9c48c'); b.px(x1[r] - 1, y[r], '#7a6a48');
+    b.px(x0[r] + 2, y[r] + k - 1, '#6f5f3e'); b.px(x0[r] + 6 + (r % 2), y[r], '#a89870');
+  }
+  b.rect(4, 1, 1, 6, '#8a5a36'); b.rect(10, 1, 1, 6, '#8a5a36'); b.px(4, 1, '#c58f50'); b.px(10, 1, '#c58f50');
+  b.rect(0, 6, 15, 1, '#8f7e5c');
+}
+// A heap of shells and a basket, 6x5: a mound of pale and pink shells with a small woven basket at its foot.
+function shellheap(b) {
+  b.rect(1, 0, 2, 1, '#ffffff'); b.rect(1, 1, 4, 1, '#f0e6d8'); b.rect(0, 2, 6, 1, '#f8f0e4'); b.rect(0, 3, 6, 2, '#e8dcc8');
+  b.px(2, 0, '#f0e6d8'); b.px(3, 1, '#e8b8b0'); b.px(1, 2, '#e8b8b0'); b.px(4, 2, '#cfc0a8'); b.px(2, 3, '#cfc0a8'); b.px(5, 3, '#e8b8b0'); b.px(4, 4, '#cfc0a8'); b.px(1, 4, '#d8b8a0');
+  b.rect(0, 3, 3, 2, '#c9a050'); b.rect(0, 3, 3, 1, '#f0d078'); b.px(1, 4, '#8c6420'); b.px(2, 4, '#a8802c');
+}
+// Two woven tide baskets on stakes, 9x5: bright straw fish baskets set in the sand, each beside a driven stake.
+function tidebaskets(b) {
+  b.rect(0, 2, 4, 3, '#d9a050'); b.rect(0, 2, 4, 1, '#f0c878'); b.rect(0, 3, 4, 1, '#a8762e'); b.px(1, 4, '#8c5f31'); b.px(3, 4, '#8c5f31'); b.px(2, 3, '#f0c878');
+  b.rect(4, 0, 1, 5, '#8a5a36'); b.px(4, 0, '#d9a566');
+  b.rect(5, 1, 3, 4, '#d9a050'); b.rect(5, 1, 3, 1, '#f0c878'); b.rect(5, 3, 3, 1, '#a8762e'); b.px(6, 2, '#f0c878'); b.px(5, 4, '#8c5f31'); b.px(7, 4, '#8c5f31');
+  b.rect(8, 0, 1, 5, '#8a5a36'); b.px(8, 0, '#d9a566');
+}
 var layers = {};
 // camp slots: [w, h, cx, foot, draw, shadow]
 var HUT = [34, 24, 268, 71, roundhouse, 14], HUTSITE = [24, 12, 268, 71, hutsite, 9];
@@ -307,30 +378,35 @@ layers.site_hut = layerOf([obj(HUTSITE[0], HUTSITE[1], HUTSITE[2], HUTSITE[3], H
 layers.building_field = layerOf([obj(FIELD[0], FIELD[1], FIELD[2], FIELD[3], FIELD[4], { sh: FIELD[5] })]);
 layers.site_field = layerOf([obj(FIELDSITE[0], FIELDSITE[1], FIELDSITE[2], FIELDSITE[3], FIELDSITE[4], { sh: FIELDSITE[5] })]);
 // west page props: page-local x = world x + 384
-layers.west_plot_farm = layerOf([obj(58, 12, 234, 78, sownplot, { z: 55 })]);
-layers.west_plot_patch = layerOf([obj(26, 9, 234, 78, patch, { z: 55 })]);
+layers.west_plot_farm = layerOf([obj(58, 12, 276, 78, sownplot, { z: 55 })]);
+layers.west_plot_patch = layerOf([obj(26, 9, 276, 78, patch, { z: 55 })]);
 layers.west_pen = layerOf([obj(56, 22, 354, 77, pen, { sh: 0 })]);
 // what the answers put on the ground: camp page first, then the west page (page-local x)
-layers.pots = layerOf([obj(18, 10, 178, 79, pots, { sh: 8 })]);
-layers.cloth_line = layerOf([obj(40, 17, 158, 67, clothline, { sh: 0 })]);
-layers.cloth_dyed = layerOf([obj(40, 17, 158, 67, dyedcloth, { sh: 0, z: 68 })]);
-layers.loom = layerOf([obj(16, 16, 192, 77, loom, { sh: 7 })]);
-layers.low_wall = layerOf([obj(150, 9, 179, 63, lowwall, { sh: 0 })]);
-layers.green_stones = layerOf([obj(14, 8, 9, 79, greenstones, { sh: 6 })]);
-layers.hens = layerOf([obj(20, 8, 262, 79, hens, { sh: 0 })]);
-layers.west_kiln = layerOf([obj(26, 26, 292, 78, kiln, { sh: 12 })]);
-layers.west_well = layerOf([obj(16, 17, 268, 77, well, { sh: 8 })]);
-layers.west_scarecrow = layerOf([obj(12, 18, 234, 76, scarecrow, { sh: 4 })]);
+layers.pots = layerOf([obj(18, 10, 212, 79, pots, { sh: 8 })]);
+layers.cloth_line = layerOf([obj(40, 17, 80, 75, clothline, { sh: 0 })]);
+layers.cloth_dyed = layerOf([obj(40, 17, 80, 75, dyedcloth, { sh: 0, z: 76 })]);
+layers.loom = layerOf([obj(16, 16, 128, 78, loom, { sh: 7 })]);
+layerOf([obj(150, 9, 205, 68, lowwall, { sh: 0 })]); // drawn and dropped: keeps the random numbers the later pieces use
+layers.low_wall = layerOf([obj(325, 13, 221, 64, lowwallnew, { sh: 0 })]);
+layers.green_stones = layerOf([obj(14, 8, 106, 79, greenstones, { sh: 6 })]);
+layers.hens = layerOf([obj(20, 8, 156, 79, hens, { sh: 0 })]);
+layers.west_kiln = layerOf([obj(26, 26, 234, 78, kiln, { sh: 12 })]);
+layers.west_well = layerOf([obj(16, 17, 196, 78, well, { sh: 8 })]);
+layers.west_scarecrow = layerOf([obj(12, 18, 276, 76, scarecrow, { sh: 4 })]);
 layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
 layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
 // the river (camp page; the weir is on the east page, page-local x)
-layers.clay_pits = layerOf([obj(24, 9, 308, 66, claypits, { sh: 9 })]);
-layers.flax_thread = layerOf([obj(20, 9, 312, 72, flaxsoak, { sh: 0 })]);
-layers.flax_beaten = layerOf([obj(20, 9, 296, 79, flaxbeaten, { sh: 8 })]);
+layers.clay_pits = layerOf([obj(24, 9, 186, 78, claypits, { sh: 9 })]);
+layers.flax_thread = layerOf([obj(20, 9, 345, 72, flaxsoak, { sh: 0 })]);
+layers.flax_beaten = layerOf([obj(20, 9, 106, 79, flaxbeaten, { sh: 8 })]);
 layers.river_bank = layerOf([obj(30, 18, 306, 80, riverbank, { sh: 0 })]);
-layers.boat_dugout = layerOf([obj(26, 8, 352, 70, dugout, { sh: 0 })]);
-layers.boat_raft = layerOf([obj(24, 7, 352, 70, reedraft, { sh: 0 })]);
+layers.boat_dugout = layerOf([obj(26, 8, 370, 70, dugout, { sh: 0 })]);
+layers.boat_raft = layerOf([obj(24, 7, 370, 70, reedraft, { sh: 0 })]);
 layers.east_tide_weir = layerOf([obj(20, 8, 258, 78, weir, { sh: 0 })]);
+layers.east_salt_pans = layerOf([obj(28, 3, 158, 77, saltpans, { sh: 0 })]);
+layers.east_driftwood_stack = layerOf([obj(15, 7, 173, 72, driftstack, { sh: 0 })]);
+layers.east_shell_heap = layerOf([obj(6, 5, 203, 77, shellheap, { sh: 0 })]);
+layers.east_tide_baskets = layerOf([obj(9, 5, 216, 77, tidebaskets, { sh: 0 })]);
 
 // preview: every piece on a plain meadow (the camp slots at their camp x, the west props shown at
 // the page-local x they have in the file)

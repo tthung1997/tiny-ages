@@ -243,10 +243,20 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 		if sprite.texture is AtlasTexture or sprite.texture is ImageTexture:
 			continue # weather, wreckage and season pieces are not page art
 		if sprite.position.x == float(WorldLayout.SIDE_PAGES["west_"]):
-			assert_true(sprite.texture.resource_path.contains("west_"), "West page art on the west")
+			var prop_piece: bool = sprite.has_meta(&"layer") \
+					and SceneProps.PROPS.has(sprite.get_meta(&"layer"))
+			if not prop_piece:
+				assert_true(
+					sprite.texture.resource_path.contains("west_"), "West page art on the west"
+				)
 			west += 1
 		elif sprite.position.x == float(WorldLayout.SIDE_PAGES["east_"]):
-			assert_true(sprite.texture.resource_path.contains("east_"), "East page art on the east")
+			var east_prop: bool = sprite.has_meta(&"layer") \
+					and SceneProps.PROPS.has(sprite.get_meta(&"layer"))
+			if not east_prop:
+				assert_true(
+					sprite.texture.resource_path.contains("east_"), "East page art on the east"
+				)
 			east += 1
 	var backdrop: int = WorldLayout.BACKDROP.size()
 	var west_props: int = 0

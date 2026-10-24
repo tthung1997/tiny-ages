@@ -115,6 +115,25 @@ func test_thoughts_reflect_the_traits() -> void:
 	assert_true(from_trait, "A social villager sometimes thinks social thoughts")
 
 
+func test_thoughts_reflect_a_role_and_the_bronze_age() -> void:
+	var sim: Simulation = _sim_at(12)
+	var villager: VillagerState = sim.world.villagers[0]
+	villager.activity = VillagerState.ACTIVITY_FORAGE
+	villager.profession = &"smith"
+	var from_role: bool = false
+	for thought: String in _thoughts(sim, villager, 80):
+		if VillagerPresenter.BY_PROFESSION[&"smith"].has(thought):
+			from_role = true
+		assert_false(VillagerPresenter.BRONZE_AGE.has(thought), "Not before the Bronze Age")
+	assert_true(from_role, "A smith sometimes thinks about the hearth")
+	sim.world.era_order = 2
+	var bronze: bool = false
+	for thought: String in _thoughts(sim, villager, 120):
+		if VillagerPresenter.BRONZE_AGE.has(thought):
+			bronze = true
+	assert_true(bronze, "The Bronze Age has its own thoughts")
+
+
 func test_without_fire_the_idle_are_cold_and_with_fire_they_are_not() -> void:
 	for lit: bool in [false, true]:
 		var sim: Simulation = _sim_at(12, lit)

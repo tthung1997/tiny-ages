@@ -1,7 +1,7 @@
 extends McpTestSuite
-## Villagers put on woven tunics once the group has woven cloth (docs/ages.md V10): the sheet is
-## chosen by the world, swapped live without losing the animation, and used for the popup portrait
-## too.
+## Villagers change clothes with the age (docs/ages.md B8): the sheet is chosen by the world,
+## swapped live without losing the animation, a newcomer arrives dressed, and the popup portrait
+## and the villager list wear the same clothes.
 
 
 func suite_name() -> String:
@@ -13,78 +13,104 @@ func _sheet_of(actor: VillagerActor) -> String:
 	return frame.atlas.resource_path
 
 
-func test_wearing_cloth_follows_the_achievement() -> void:
+func _dress_for(sim: Simulation, outfit: StringName) -> void:
+	match outfit:
+		VillagerOutfit.FUR:
+			sim.world.era_order = 0
+		VillagerOutfit.FIELD:
+			sim.world.era_order = 1
+		VillagerOutfit.WOVEN:
+			sim.world.era_order = 1
+			sim.world.achievements.append(&"woven_cloth")
+		VillagerOutfit.TOWN:
+			sim.world.era_order = 2
+		VillagerOutfit.BRONZE:
+			sim.world.era_order = 2
+			sim.world.achievements.append(&"first_casting")
+	assert_eq(VillagerOutfit.for_world(sim.world), outfit)
+
+
+func test_the_view_starts_in_furs() -> void:
 	var sim: Simulation = SimFixture.new_sim()
-	assert_false(WorldLayout.wears_cloth(sim.world))
-	sim.world.achievements.append(&"woven_cloth")
-	assert_true(WorldLayout.wears_cloth(sim.world))
+	var view: WorldView = WorldView.new()
+	view.setup(sim, DesktopWindow.new())
+	for actor: VillagerActor in view._actors.values():
+		assert_eq(_sheet_of(actor), WorldLayout.villager_sheet_path(actor.get_meta(&"look"), &"fur"))
+	view.free()
 
 
-func test_every_look_has_a_cloth_sheet_and_a_fur_one() -> void:
-	for look: StringName in SimFixture.load_content().villager_looks:
-		assert_true(WorldLayout.villager_sheet_path(look, true).contains("/settled/"), "%s" % look)
-		assert_true(WorldLayout.villager_sheet_path(look, false).contains("/cave/"), "%s" % look)
-		for cloth: bool in [true, false]:
-			var sheet: Texture2D = load(WorldLayout.villager_sheet_path(look, cloth)) as Texture2D
-			assert_eq(sheet.get_size(), Vector2(308, 30), "%s sheets keep the 11-cell layout" % look)
-
-
-func test_an_unknown_look_falls_back_to_a_sheet_that_exists() -> void:
-	assert_true(WorldLayout.villager_sheet_path(&"nobody", true).ends_with("mira.png"))
-	assert_true(WorldLayout.villager_sheet_path(&"nobody", false).ends_with("mira.png"))
-
-
-func test_villagers_change_clothes_when_the_cloth_is_woven() -> void:
+func test_villagers_change_clothes_as_the_world_earns_them() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = WorldView.new()
 	view.setup(sim, DesktopWindow.new())
 	var actor: VillagerActor = view._actors[sim.world.villagers[0].id]
 	assert_true(_sheet_of(actor).contains("/cave/"), "Furs to begin with")
-	sim.world.achievements.append(&"woven_cloth")
-	view.on_world_changed()
-	assert_true(_sheet_of(actor).contains("/settled/"), "Woven tunics once there is cloth")
-	for other: VillagerActor in view._actors.values():
-		assert_true(_sheet_of(other).contains("/settled/"), "Everyone changes")
+	for outfit: StringName in VillagerOutfit.ORDER:
+		_dress_for(sim, outfit)
+		view.on_world_changed()
+		for other: VillagerActor in view._actors.values():
+			var expected: String = WorldLayout.villager_sheet_path(other.get_meta(&"look"), outfit)
+			assert_eq(_sheet_of(other), expected, "Everyone wears the %s outfit" % outfit)
 	view.free()
 
 
-func test_a_villager_who_arrives_after_the_cloth_is_already_dressed() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	sim.world.achievements.append(&"woven_cloth")
-	var view: WorldView = WorldView.new()
-	view.setup(sim, DesktopWindow.new())
-	sim.add_villager()
-	view.on_world_changed()
-	for actor: VillagerActor in view._actors.values():
-		assert_true(_sheet_of(actor).contains("/settled/"))
-	view.free()
+func test_a_villager_who_arrives_later_is_already_dressed() -> void:
+	for outfit: StringName in VillagerOutfit.ORDER:
+		var sim: Simulation = SimFixture.new_sim()
+		_dress_for(sim, outfit)
+		var view: WorldView = WorldView.new()
+		view.setup(sim, DesktopWindow.new())
+		sim.add_villager()
+		view.on_world_changed()
+		for actor: VillagerActor in view._actors.values():
+			var expected: String = WorldLayout.villager_sheet_path(actor.get_meta(&"look"), outfit)
+			assert_eq(_sheet_of(actor), expected, "%s" % outfit)
+		view.free()
 
 
 func test_swapping_clothes_keeps_the_animation() -> void:
 	var actor: VillagerActor = VillagerActor.new()
-	actor.setup(&"t", load(WorldLayout.villager_sheet_path(&"mira", false)) as Texture2D)
+	actor.setup(&"t", load(WorldLayout.villager_sheet_path(&"mira", &"fur")) as Texture2D)
 	actor._sprite.play(&"chop")
 	actor._sprite.frame = 2
-	actor.set_sheet(load(WorldLayout.villager_sheet_path(&"mira", true)) as Texture2D)
-	assert_eq(actor._sprite.animation, &"chop")
-	assert_eq(actor._sprite.frame, 2)
-	assert_true(_sheet_of(actor).contains("/settled/"))
+	for outfit: StringName in VillagerOutfit.ORDER:
+		var path: String = WorldLayout.villager_sheet_path(&"mira", outfit)
+		actor.set_sheet(load(path) as Texture2D)
+		assert_eq(actor._sprite.animation, &"chop", "%s" % outfit)
+		assert_eq(actor._sprite.frame, 2, "%s" % outfit)
+		assert_eq(_sheet_of(actor), path)
 	actor.free()
 
 
 func test_the_popup_portrait_wears_the_same_clothes() -> void:
-	var sim: Simulation = SimFixture.new_sim()
-	for cloth: bool in [false, true]:
-		if cloth:
-			sim.world.achievements.append(&"woven_cloth")
+	for outfit: StringName in VillagerOutfit.ORDER:
+		var sim: Simulation = SimFixture.new_sim()
+		_dress_for(sim, outfit)
 		var panel: PanelHost = PanelHost.new()
 		panel.show_villager(sim, sim.world.villagers[0].id)
-		var checked: int = 0
-		for node: Node in panel.find_children("*", "TextureRect", true, false):
-			var picture: TextureRect = node as TextureRect
-			if picture.custom_minimum_size == PanelHost.PORTRAIT_SIZE:
-				var atlas: AtlasTexture = picture.texture as AtlasTexture
-				assert_eq(atlas.atlas.resource_path.contains("/settled/"), cloth)
-				checked += 1
-		assert_eq(checked, 1)
+		assert_eq(_portrait_sheets(panel), [
+			WorldLayout.villager_sheet_path(sim.world.villagers[0].look, outfit)
+		], "%s" % outfit)
 		panel.free()
+
+
+func test_the_villager_list_wears_the_same_clothes() -> void:
+	for outfit: StringName in VillagerOutfit.ORDER:
+		var sim: Simulation = SimFixture.new_sim()
+		_dress_for(sim, outfit)
+		var panel: PanelHost = PanelHost.new()
+		panel.show_villagers(sim)
+		var expected: Array[String] = []
+		for villager: VillagerState in sim.world.villagers:
+			expected.append(WorldLayout.villager_sheet_path(villager.look, outfit))
+		assert_eq(_portrait_sheets(panel), expected, "%s" % outfit)
+		panel.free()
+
+
+func _portrait_sheets(panel: PanelHost) -> Array[String]:
+	var sheets: Array[String] = []
+	for node: Node in panel.find_children("*", "TextureRect", true, false):
+		var picture: TextureRect = node as TextureRect
+		if picture.custom_minimum_size == PanelHost.PORTRAIT_SIZE:
+			sheets.append((picture.texture as AtlasTexture).atlas.resource_path)
+	return sheets

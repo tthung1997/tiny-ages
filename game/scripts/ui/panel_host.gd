@@ -172,7 +172,7 @@ func show_villager(sim: Simulation, villager_id: StringName) -> void:
 	_begin(&"villager", view.display_name)
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
-	row.add_child(_portrait(view.look, WorldLayout.wears_cloth(sim.world)))
+	row.add_child(_portrait(view.look, VillagerOutfit.for_world(sim.world), view.profession))
 	var column: VBoxContainer = VBoxContainer.new()
 	column.add_theme_constant_override("separation", 3)
 	var width: float = TEXT_WIDTH - PORTRAIT_SIZE.x - 8.0
@@ -229,9 +229,9 @@ func show_stores(sim: Simulation) -> void:
 ## that villager's own panel (the game reacts to the `villager:<id>` action).
 func show_villagers(sim: Simulation) -> void:
 	_begin(&"villagers", "Villagers")
-	var cloth: bool = WorldLayout.wears_cloth(sim.world)
+	var outfit: StringName = VillagerOutfit.for_world(sim.world)
 	for view: VillagerPresenter in VillagerPresenter.group(sim.world):
-		_content.add_child(_villager_row(view, cloth))
+		_content.add_child(_villager_row(view, outfit))
 	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
 	_footer_label.text = ""
 
@@ -497,7 +497,7 @@ func _text(text: String, muted: bool = false, width: float = TEXT_WIDTH) -> Labe
 
 ## One row of the villager list: a flat button over the portrait, the name and the byline. It is
 ## exactly one portrait tall, so three rows fit in a panel.
-func _villager_row(view: VillagerPresenter, cloth: bool) -> Button:
+func _villager_row(view: VillagerPresenter, outfit: StringName) -> Button:
 	var button: Button = Button.new()
 	button.flat = true
 	var hover: StyleBoxFlat = StyleBoxFlat.new()
@@ -512,7 +512,7 @@ func _villager_row(view: VillagerPresenter, cloth: bool) -> Button:
 	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_theme_constant_override("separation", 8)
-	var picture: TextureRect = _portrait(view.look, cloth)
+	var picture: TextureRect = _portrait(view.look, outfit, view.profession)
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(picture)
 	var column: VBoxContainer = VBoxContainer.new()
@@ -545,8 +545,8 @@ static func villager_action(villager_id: StringName) -> StringName:
 
 
 ## The villager's idle frame from their sheet, at the size they are on screen.
-func _portrait(look: StringName, cloth: bool) -> TextureRect:
-	var path: String = WorldLayout.villager_sheet_path(look, cloth)
+func _portrait(look: StringName, outfit: StringName, profession: StringName = &"") -> TextureRect:
+	var path: String = WorldLayout.villager_sheet_path(look, outfit)
 	var picture: TextureRect = TextureRect.new()
 	var sheet: Texture2D = load(path) as Texture2D
 	if sheet != null:
@@ -557,4 +557,15 @@ func _portrait(look: StringName, cloth: bool) -> TextureRect:
 	picture.custom_minimum_size = PORTRAIT_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 	picture.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	var role_path: String = WorldLayout.role_sheet_path(profession)
+	if not role_path.is_empty():
+		var overlay: TextureRect = TextureRect.new()
+		var role_cell: AtlasTexture = AtlasTexture.new()
+		role_cell.atlas = load(role_path) as Texture2D
+		role_cell.region = Rect2(Vector2.ZERO, Vector2(WorldLayout.CELL_SIZE))
+		overlay.texture = role_cell
+		overlay.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		picture.add_child(overlay)
 	return picture

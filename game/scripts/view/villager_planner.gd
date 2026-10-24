@@ -44,9 +44,10 @@ func plan(
 		return result
 	match villager.activity:
 		VillagerState.ACTIVITY_GATHER_WOOD:
-			result.target = WorldLayout.spot(WorldLayout.WOOD_SPOTS, slot)
-			result.pose = &"chop"
-			result.focus_x = WorldLayout.CHOP_X
+			if not _plan_smith(result, villager, world, slot):
+				result.target = WorldLayout.spot(WorldLayout.WOOD_SPOTS, slot)
+				result.pose = &"chop"
+				result.focus_x = WorldLayout.CHOP_X
 		VillagerState.ACTIVITY_FORAGE:
 			_plan_forage(result, world, config, slot)
 		VillagerState.ACTIVITY_HUNT:
@@ -54,14 +55,17 @@ func plan(
 			result.pose = &"spear"
 			result.focus_x = WorldLayout.HUNT_X
 		VillagerState.ACTIVITY_SOCIALIZE:
-			if world.has_fire():
-				result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)
-				result.focus_x = WorldLayout.FIRE_X
-			else:
-				_plan_cold_camp(result, slot)
+			if not _plan_trader(result, villager, world, config, slot):
+				if world.has_fire():
+					result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)
+					result.focus_x = WorldLayout.FIRE_X
+				else:
+					_plan_cold_camp(result, slot)
 		VillagerState.ACTIVITY_BUILD:
 			_plan_build(result, world, slot)
 		VillagerState.ACTIVITY_WANDER:
+			if _plan_trader(result, villager, world, config, slot):
+				return result
 			result.wander = true
 			var range_x: Vector2 = WorldLayout.wander_range(world)
 			result.target = Vector2(
@@ -71,6 +75,39 @@ func plan(
 		_:
 			_plan_hearth(result, world, slot)
 	return result
+
+
+## A Smith with a Smithy to work at hammers in front of it instead of cutting wood in the forest
+## (in the sim it is still wood for the hearth; the view only shows where it is spent).
+func _plan_smith(
+	result: VillagerPlan, villager: VillagerState, world: WorldState, slot: int
+) -> bool:
+	if villager.profession != &"smith" or not world.has_building(&"smithy"):
+		return false
+	result.target = WorldLayout.spot(WorldLayout.SMITHY_SPOTS, slot)
+	result.pose = &"hammer"
+	result.focus_x = float(WorldLayout.BUILDINGS[&"smithy"]["cx"])
+	return true
+
+
+## A Trader walks the road: to the market once there is one, and to the Trading Post, on
+## alternate days, instead of wandering at random.
+func _plan_trader(
+	result: VillagerPlan, villager: VillagerState, world: WorldState, config: SimConfig, slot: int
+) -> bool:
+	if villager.profession != &"trader":
+		return false
+	var market: bool = world.has_flag(&"market_day")
+	var post: bool = world.has_building(&"trading_post")
+	if not market and not post:
+		return false
+	if market and (not post or posmod(config.day_of(world.tick) + slot, 2) == 0):
+		result.target = WorldLayout.spot(WorldLayout.MARKET_SPOTS, slot)
+		result.focus_x = WorldLayout.MARKET_X
+	else:
+		result.target = WorldLayout.spot(WorldLayout.POST_SPOTS, slot)
+		result.focus_x = float(WorldLayout.BUILDINGS[&"trading_post"]["cx"])
+	return true
 
 
 ## Foragers spread over the places the group forages: the pines, and once the world has them the
