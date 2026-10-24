@@ -108,13 +108,32 @@ var PAL = {
   clothTheo: { shirt: '#6f8fae', shirtD: '#56738f', trim: '#e6dcc2', pants: '#5a4a3a', hair: '#3a2a24', hairD: '#241914', hairL: '#5a463c' },
   clothWren: { shirt: '#9db08a', shirtD: '#7e9270', trim: '#e6dcc2', pants: '#6a5a4a', hair: '#d9d9e0', hairD: '#b0b0bc', hairL: '#ffffff' }
 };
+// Later ages' outfits (use with outfit: 'field' | 'town' | 'fittings'): the same hair as the
+// villager's other palettes, new clothes. `patch` is the scrap sewn on a field tunic; `cloak` is the
+// town cloak and `trim` its red border (the colour of dyed cloth, drawn for everyone).
+function palWith(base, extra) {
+  var r = {}, k;
+  for (k in base) r[k] = base[k];
+  for (k in extra) r[k] = extra[k];
+  return r;
+}
+PAL.fieldMira = palWith(PAL.clothMira, { shirt: '#c2b484', shirtD: '#998c60', patch: '#8a6038' });
+PAL.fieldTheo = palWith(PAL.clothTheo, { shirt: '#b8ac82', shirtD: '#928a5c', patch: '#7a5a3a' });
+PAL.fieldWren = palWith(PAL.clothWren, { shirt: '#bdb288', shirtD: '#968e62', patch: '#8f6a40' });
+PAL.townMira = palWith(PAL.clothMira, { shirt: '#dccba0', shirtD: '#b8a57a', cloak: '#9a5a3c', cloakD: '#744230', trim: '#c0392b' });
+PAL.townTheo = palWith(PAL.clothTheo, { shirt: '#c9a45a', shirtD: '#a3823f', cloak: '#55708f', cloakD: '#3f5670', trim: '#c0392b' });
+PAL.townWren = palWith(PAL.clothWren, { shirt: '#e0d6b8', shirtD: '#bcb08e', cloak: '#6a8a5a', cloakD: '#4f6a43', trim: '#c0392b' });
+var BRONZE = '#d9a23a', BRONZE_L = '#f7d56a', BRONZE_D = '#9a6a1f';
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
 //       role: farmer|builder|explorer|woodcutter|fisher|gatherer|undefined,
 //       hair: short|tuft|long|bun|pony,
 //       fur: true (hide tunic, bare legs, bone necklace), cloth: true (woven tunic, trousers; the
-//       palette needs `trim`), stone: true (stone tool heads) }
+//       palette needs `trim`), stone: true (stone tool heads),
+//       outfit: 'field' (hemp tunic, rope belt, rolled sleeves, bare feet; palette needs `patch`) |
+//       'town' (long belted tunic with a red hem, hooded cloak, boots; palette needs `cloak`,
+//       `cloakD`, `trim`) | 'fittings' (town plus bronze pin, buckle and arm rings) }
 // Draw into a Buf(27, 27); feet land on row 26, body centre column 13, faces right.
 // Use mirror() for left-facing. Place with outlined(buf, OUT).
 function vil(o) {
@@ -130,14 +149,39 @@ function vil(o) {
     if (wk == 1) h1 = lh - 1;
     if (wk == 2) { l1 += 2; l2 -= 2; }
     if (wk == 3) h2 = lh - 1;
-    function leg(x, h) { b.rect(x, legTop - dy, lw, h - 1 + dy, legc); b.rect(x, legTop + h - 1, lw + 1, 1, o.fur ? '#5a4636' : '#4a3224'); }
+    var ofit = o.outfit, field = ofit == 'field', brz = ofit == 'fittings', town = ofit == 'town' || brz;
+    var sole = o.fur ? '#5a4636' : '#4a3224';
+    if (field) { legc = SKD; sole = '#c98a6a'; }
+    if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
+    function leg(x, h) {
+      b.rect(x, legTop - dy, lw, h - 1 + dy, legc); b.rect(x, legTop + h - 1, lw + 1, 1, sole);
+      if (town) b.rect(x, legTop - dy, lw, 1, '#9a7448'); // boot cuff
+    }
     leg(l1, h1); leg(l2, h2);
+    if (town) { // the hood bunched behind the head, and the cloak hanging down the back, red at its edge
+      b.ell(hx - 2, hcy + 1, rx + 1, ry + 0.5, cl.cloak);
+      b.rect(bx - 3, bodyTop, 3, bh + 2, cl.cloakD); b.rect(bx - 3, bodyTop, 1, bh + 2, cl.cloak);
+      b.rect(bx - 3, bodyTop + bh + 1, 3, 1, cl.trim);
+    }
+    // an arm: a sleeve line from the shoulder to the hand; rolled back on field clothes, ringed in bronze on fittings
+    function arm(x0, y0, x1, y1) {
+      if (!ofit) { b.line(x0, y0, x1, y1, cl.shirt, 2); return; }
+      if (field) {
+        var mx = Math.round(x0 + (x1 - x0) * 0.45), my = Math.round(y0 + (y1 - y0) * 0.45);
+        b.line(x0, y0, mx, my, cl.shirt, 2); b.line(mx, my, x1, y1, SK, 2); b.rect(mx, my, 2, 2, '#ece0b8');
+        return;
+      }
+      b.line(x0, y0, x1, y1, cl.shirt, 2);
+      if (brz) { var qx = Math.round(x0 + (x1 - x0) * 0.8), qy = Math.round(y0 + (y1 - y0) * 0.8); b.rect(qx, qy, 2, 2, BRONZE); b.px(qx, qy, BRONZE_L); }
+    }
     if (o.role == 'explorer') { b.rect(bx - 3, bodyTop, 3, 5, WOOD); b.rect(bx - 3, bodyTop, 3, 1, WOODL); b.px(bx - 2, bodyTop + 2, '#e8c46a'); }
     if (o.role == 'gatherer') { b.rect(bx - 3, bodyTop + 1, 3, 4, '#c9a06a'); b.px(bx - 2, bodyTop + 2, '#a8763e'); b.px(bx - 3, bodyTop + 3, '#a8763e'); b.px(bx - 2, bodyTop, '#c8433a'); b.px(bx - 1, bodyTop, '#6a3f8f'); }
     var ba = bh - 2, fa = bh - 2;
     if (wk == 0) fa = 2;
     if (wk == 2) ba = 2;
     b.rect(bx - 1, bodyTop + 1, 2, ba, cl.shirtD); b.rect(bx - 1, bodyTop + 1 + ba, 2, 1, SKD);
+    if (field) { b.rect(bx - 1, bodyTop + 2, 2, 1, '#cfc29a'); b.rect(bx - 1, bodyTop + 3, 2, ba - 1, SKD); }
+    if (brz) b.rect(bx - 1, bodyTop + ba, 2, 1, BRONZE_D);
     b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh - 2, bw, 2, cl.shirtD); b.rect(bx, bodyTop + bh - 1, bw, 1, o.fur ? '#4a3224' : '#6b4a2f');
     if (o.fur) {
       for (var hm = 0; hm < bw; hm += 2) b.px(bx + hm, bodyTop + bh, cl.shirtD); // ragged hem
@@ -148,12 +192,23 @@ function vil(o) {
       b.px(bx + 1, bodyTop, cl.trim); b.px(bx + 2, bodyTop, cl.trim);
       b.rect(bx, bodyTop + bh, bw, 1, cl.shirtD);
     }
+    if (field) { // a hemp tunic to the knee, a rope belt with its end hanging, a leather scrap sewn on
+      b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh, bw, 1, cl.shirtD);
+      b.rect(bx, bodyTop + bh - 2, bw, 1, '#ece0b8'); b.px(bx + bw - 2, bodyTop + bh - 1, '#ece0b8');
+      b.rect(bx + 1, bodyTop + bh - 1, 2, 2, cl.patch);
+    }
+    if (town) { // a long belted tunic flared to a red hem, the cloak across the shoulders
+      b.rect(bx, bodyTop, bw, bh, cl.shirt); b.rect(bx, bodyTop + bh - 1, bw, 1, '#6b4a2f');
+      b.rect(bx - 1, bodyTop + bh, bw + 2, 1, cl.trim);
+      b.rect(bx - 1, bodyTop + 2, bw + 1, 1, cl.cloak); b.rect(bx - 1, bodyTop + 3, 1, 2, cl.cloakD);
+      if (brz) { b.rect(bx + bw - 3, bodyTop + bh - 1, 2, 1, BRONZE_L); b.px(bx + 3, bodyTop + 2, BRONZE_L); b.px(bx + 3, bodyTop + 3, BRONZE_D); }
+    }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }
     if (o.role == 'explorer') { b.rect(bx, bodyTop, bw, 1, '#3fa7a0'); b.rect(bx + bw - 2, bodyTop, 2, 3, '#3fa7a0'); }
     var sx = bx + bw, sy = bodyTop + 1;
     function tool(hxp, hyp, tx, ty, kind) {
-      b.line(sx - 1, sy, hxp, hyp, cl.shirt, 2); b.rect(hxp, hyp, 2, 2, SK); b.line(hxp, hyp, tx, ty, WOOD, 1);
+      arm(sx - 1, sy, hxp, hyp); b.rect(hxp, hyp, 2, 2, SK); b.line(hxp, hyp, tx, ty, WOOD, 1);
       if (kind == 'axe') { b.rect(tx - 1, ty - 1, 3, 3, headc); b.px(tx - 1, ty - 1, headl); }
       else if (kind == 'hammer') b.rect(tx - 1, ty - 1, 3, 2, headc);
     }
@@ -165,13 +220,15 @@ function vil(o) {
       if (f == 0) tool(sx + 2, sy - 1, sx + 3, sy - 6, 'hammer'); else tool(sx + 2, sy + 1, sx + 7, sy + 3, 'hammer');
     } else if (pose == 'fish') {
       var up = f == 0 ? 0 : 1;
-      b.line(sx - 1, sy, sx + 2, sy + 1 - up, cl.shirt, 2); b.rect(sx + 2, sy + 1 - up, 2, 2, SK);
+      arm(sx - 1, sy, sx + 2, sy + 1 - up); b.rect(sx + 2, sy + 1 - up, 2, 2, SK);
       b.line(sx + 3, sy + 1 - up, sx + 10, sy - 7 - up, WOOD, 1); // rod tip = (sx+10, sy-7-up)
     } else if (pose == 'spear') { // held upright, stone tip above the head
-      b.line(sx - 1, sy, sx + 2, sy + 1, cl.shirt, 2); b.rect(sx + 2, sy + 1, 2, 2, SK);
+      arm(sx - 1, sy, sx + 2, sy + 1); b.rect(sx + 2, sy + 1, 2, 2, SK);
       b.line(sx + 3, yb, sx + 3, 3, WOOD, 1); b.rect(sx + 3, 0, 1, 3, '#cfd8e0'); b.px(sx + 3, 3, '#c9a06a');
     } else {
       b.rect(bx + bw - 1, bodyTop + 1, 2, fa, cl.shirt); b.rect(bx + bw - 1, bodyTop + 1 + fa, 2, 1, SK);
+      if (field) { b.rect(bx + bw - 1, bodyTop + 2, 2, 1, '#ece0b8'); b.rect(bx + bw - 1, bodyTop + 3, 2, fa - 2, SK); }
+      if (brz) b.rect(bx + bw - 1, bodyTop + fa, 2, 1, BRONZE);
     }
     b.ell(hx - 2, hcy + 1, rx, ry, cl.hairD); // back hair
     if (o.hair == 'long') { b.rect(hx - rx - 2, hcy - 1, 4, ry + 4, cl.hairD); b.rect(hx - rx - 2, hcy - 1, 1, ry + 4, cl.hair); b.rect(hx - rx - 2, hcy + ry + 2, 4, 1, cl.hair); }

@@ -20,6 +20,14 @@ const HUNGRY_FOOD_WEIGHT: float = 3.0
 const HUNGRY_OTHER_WEIGHT: float = 0.5
 ## Chance per tick that an idle villager joins a building site that appears.
 const BUILD_DRIFT_CHANCE: float = 0.5
+## A profession tilts what its villager chooses, the way a trait does, and never assigns work
+## (docs/ages.md B4): a Forager forages more, a Smith cuts the wood the hearth burns, and a Trader
+## walks the road and talks to whoever is on it.
+const PROFESSION_BIAS: Dictionary = {
+	&"forager": {VillagerState.ACTIVITY_FORAGE: 2.0},
+	&"smith": {VillagerState.ACTIVITY_GATHER_WOOD: 2.0},
+	&"trader": {VillagerState.ACTIVITY_WANDER: 2.0, VillagerState.ACTIVITY_SOCIALIZE: 2.0},
+}
 
 
 func step(sim: Simulation) -> void:
@@ -86,16 +94,24 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 	weights.append(
 		WEIGHT_GATHER * other_push
 		* _bias(villager, VillagerState.TRAIT_INDUSTRIOUS) * _plenty(sim, &"wood")
+		* profession_bias(villager, VillagerState.ACTIVITY_GATHER_WOOD)
 	)
 	activities.append(VillagerState.ACTIVITY_FORAGE)
 	weights.append(
 		WEIGHT_FORAGE * food_push
 		* _bias(villager, VillagerState.TRAIT_NATURE_LOVING) * _plenty(sim, &"food")
+		* profession_bias(villager, VillagerState.ACTIVITY_FORAGE)
 	)
 	activities.append(VillagerState.ACTIVITY_SOCIALIZE)
-	weights.append(WEIGHT_SOCIALIZE * _bias(villager, VillagerState.TRAIT_SOCIAL))
+	weights.append(
+		WEIGHT_SOCIALIZE * _bias(villager, VillagerState.TRAIT_SOCIAL)
+		* profession_bias(villager, VillagerState.ACTIVITY_SOCIALIZE)
+	)
 	activities.append(VillagerState.ACTIVITY_WANDER)
-	weights.append(WEIGHT_WANDER * _bias(villager, VillagerState.TRAIT_CURIOUS))
+	weights.append(
+		WEIGHT_WANDER * _bias(villager, VillagerState.TRAIT_CURIOUS)
+		* profession_bias(villager, VillagerState.ACTIVITY_WANDER)
+	)
 	if sim.world.has_flag(&"path_hunting"):
 		activities.append(VillagerState.ACTIVITY_HUNT)
 		weights.append(
@@ -116,6 +132,12 @@ func _choose_activity(sim: Simulation, villager: VillagerState, building_underwa
 
 func _bias(villager: VillagerState, trait_name: StringName) -> float:
 	return TRAIT_BIAS if villager.has_trait(trait_name) else 1.0
+
+
+## How much a villager's profession (if any) tilts a choice of `activity`.
+static func profession_bias(villager: VillagerState, activity: StringName) -> float:
+	var tilts: Dictionary = PROFESSION_BIAS.get(villager.profession, {})
+	return float(tilts.get(activity, 1.0))
 
 
 ## Whether food is low: below the same line the strip gauge reads as low.

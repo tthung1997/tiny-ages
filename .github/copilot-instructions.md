@@ -177,7 +177,12 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   `GATHER_RATE`; `SimConfig.comfortable_stock` stops villagers and buildings piling up stock.
   The Settled Age has the same tables in days *into the age*: `SETTLED_DAY` (milestones),
   `SETTLED_STORY_DAY`, `SETTLED_AMBIENT_CHANCE`, with `_settled_story`, `_settled_ambient` and
-  friends. A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
+  friends, and the Bronze Age the same with `BRONZE_DAY`, `BRONZE_STORY_DAY`,
+  `BRONZE_AMBIENT_CHANCE`, `_bronze_road` (a decision that earns a milestone), `_route`,
+  `_bronze_story` and `_bronze_ambient`. A milestone gets more than one road and one road open to
+  every group; the Settled Age's gate out is its six milestones plus 8640 ticks and *The metal's
+  road* (`path_smithing` / `path_trading`) opens the Bronze Age. `VillagerSystem.PROFESSION_BIAS`
+  lets a Forager, Smith or Trader tilt (never assign) a villager's day. A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
   harmless, a journal line each, a flag for later lines); a quiet moment is `_ambient`,
   `_ambient_about` (a trait) or `_remembered` (a flag). Costs are a `_has` requirement plus
   a `_spend` effect, so the panel shows "needs 8 wood". A decision is a fork (P13 in
@@ -192,17 +197,25 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
 The view only reads `WorldState`; it never changes it, and the sim never knows it exists.
 `Game` calls `WorldView.on_world_changed()` after the sim advances.
 
-- Every art piece (`game/assets/world/<age>/*.png`) is a full 384×80 transparent sprite
-  already at its final position, so placing it is `position = (0, 0)`. Draw order is z =
-  the foot row (see `WorldLayout`). `WorldLayout` mirrors the slots in `tools/art/cave_strip.js`:
-  change both together.
+- Every art piece (`game/assets/world/<age>/*.png`) is a full 384×80 transparent sprite.
+  Most are drawn already at their final position, so placing one is `position = (0, 0)`; the rest
+  are *lifted* onto their lane (`BUILDINGS[id]["at"]`, `SceneProps` `at_y`, a plain sprite offset).
+  Draw order is z = the foot row (see `WorldLayout`). **Three lanes**: buildings stand on the back lane
+  (`WorldLayout.BACK_LANE`, foot row 67, the cave's base), small props on the mid lane (feet 72-76),
+  and people walk the front lane (75-79); never put a building on the bottom row, and keep tall
+  scenery (pines) behind the village on the back rows (`tools/art/cave_pages.js`). `WorldLayout`
+  mirrors the slots in `tools/art/cave_strip.js`: change both together.
 - **Ages accumulate; slots are upgraded in place** (`docs/ages.md` V10). Art lives in one folder
   per age (`WorldLayout.ERA_DIRS`); a building, site or prop uses the newest art the current age
   has (`WorldLayout.piece_path`), and `WorldView` retextures when the age turns. A new age draws
   only what changes, with a `tools/art/<age>_*.js` script, and everything else stays. Pieces
   that show because of a flag, achievement or building (not a building of that name) are
-  `SceneProps` (pure, tested); add one there and in the art script. Villagers wear the woven-tunic
-  sheets once `woven_cloth` is earned (`WorldLayout.villager_sheet_path`).
+  `SceneProps` (pure, tested); add one there and in the art script. **Every prop belongs to a
+  `place` (`WorldLayout.PLACES`) and its art must sit inside it**; an age can fold props into a
+  tidier piece (`replaced_by`), retire them (`until_era`) or hold one back (`from_era`), and
+  `test_scene_props.gd` checks containment, overlaps and a per-page budget in every age (docs/ages.md
+  B10). Villagers wear one outfit per age and milestone (`VillagerOutfit`: fur, field clothes,
+  woven tunic, town clothes, bronze fittings; `WorldLayout.villager_sheet_path(look, outfit)`), and a profession adds an overlay over the body (`WorldLayout.role_sheet_path`, `VillagerActor.set_role`; `tools/art/role_overlays.js`).
 - **The world is wider than the viewport** (decision A8). Everything lives in "camp pixels":
   the camp page is x 0..384, the world runs from `WorldLayout.WORLD_LEFT` (−384) to
   `WORLD_RIGHT` (768), and the viewport shows one 384 px page. `WorldView` keeps a scrolling
@@ -252,11 +265,11 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   `tools/art/weather.js`): in strip and corner mode the whole viewport joins the click region while
   they fall (`WorldView.covers_sky`), because Windows only draws inside it. A drought and a tornado are
   events, journal lines and decisions with no visuals. Look at it with `--season=` and `--weather=`.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_river cave_villagers cave_celestial cave_stars settled_camp weather ui_seasons`,
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_river cave_villagers cave_celestial cave_stars settled_camp settled_villagers bronze_camp bronze_villagers weather ui_seasons ui_skin_bronze ui_achievements`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
-  `--build=hut,field`, `--flag=`, `--earn=`, `--season=`, `--weather=`, `--tide=low|high`, `--damaged`, `--hover=x,y`). **`--dev`** turns on the text overlay and the dev
+  `--build=hut,field`, `--flag=`, `--earn=`, `--role=smith,trader`, `--season=`, `--weather=`, `--tide=low|high`, `--damaged`, `--hover=x,y`). **`--dev`** turns on the text overlay and the dev
   keys (mode, scale, speed, bot...); `--hud` is the overlay alone. Without them the screen has
   only the player's UI (docs/gameplay.md P12). Always use
   `--nosave` (or `--save=`) in automated runs so the player's save and window settings are not
@@ -288,7 +301,7 @@ separate from the save; launch flags override them). The sim withdraws a decisio
 where each piece sits in its atlas (`tools/art/ui_skin_<hide|clay>.js`). To add an age: draw the
 atlas (same layout as the existing ones), add a factory to `PanelSkin.skins()`; `Game` swaps the
 skin on `era_advanced`, and an age without one uses the Cave skin (Cave: hide; Settled: timber
-and clay). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
+and clay; Bronze: mud-brick and hammered bronze). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
 panels: `--panel=decision|journal|away|villager|menu|stores|settings`, `--manual`, `--fire`,

@@ -21,6 +21,10 @@ const HIT_SIZE: Vector2 = Vector2(16.0, 28.0)
 var villager_id: StringName = &""
 
 var _sprite: AnimatedSprite2D = AnimatedSprite2D.new()
+## What a role adds on top of the body (an apron, a pack): the same sheet layout, kept in step with
+## the body's animation and frame (docs/engine-and-art.md A4).
+var _role_sprite: AnimatedSprite2D = AnimatedSprite2D.new()
+var _role: StringName = &""
 var _target: Vector2 = Vector2.ZERO
 var _pose: StringName = &"idle"
 var _focus_x: float = NAN
@@ -33,12 +37,40 @@ func _init() -> void:
 	_sprite.centered = false
 	_sprite.offset = WorldLayout.FOOT_OFFSET
 	add_child(_sprite)
+	_role_sprite.centered = false
+	_role_sprite.offset = WorldLayout.FOOT_OFFSET
+	_role_sprite.visible = false
+	add_child(_role_sprite)
 
 
 func setup(id: StringName, sheet: Texture2D) -> void:
 	villager_id = id
 	_sprite.sprite_frames = build_frames(sheet)
 	_sprite.play(&"idle")
+
+
+## Puts a role's overlay on the villager (an empty `role` or a missing sheet takes it off).
+func set_role(role: StringName, sheet: Texture2D) -> void:
+	if role == _role and (sheet != null) == _role_sprite.visible:
+		return
+	_role = role
+	_role_sprite.visible = sheet != null
+	if sheet != null:
+		_role_sprite.sprite_frames = build_frames(sheet)
+		_sync_role()
+
+
+func role() -> StringName:
+	return _role
+
+
+func _sync_role() -> void:
+	if not _role_sprite.visible or _role_sprite.sprite_frames == null:
+		return
+	if _role_sprite.animation != _sprite.animation:
+		_role_sprite.animation = _sprite.animation
+	_role_sprite.frame = _sprite.frame
+	_role_sprite.flip_h = _sprite.flip_h
 
 
 ## Swaps the art (the villager put on woven clothes) without losing the animation they are in.
@@ -109,6 +141,7 @@ func _process(delta: float) -> void:
 			_sprite.flip_h = _focus_x < position.x
 		_play(_pose)
 	z_index = int(position.y)
+	_sync_role()
 
 
 func _arrived() -> bool:

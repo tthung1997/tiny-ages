@@ -28,7 +28,7 @@ import zlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 DIST = os.path.join(HERE, "dist")
-SCENES = ["strip", "cave_strip", "cave_pages", "cave_river", "cave_villagers", "cave_celestial", "cave_stars", "settled_camp", "settled_villagers", "weather", "ui_icons", "ui_seasons", "ui_achievements", "game_icon", "ui_skin_hide", "ui_skin_clay", "night", "villager_sheet", "villager_walk", "workshop_stages"]  # night reads strip's output
+SCENES = ["strip", "cave_strip", "cave_pages", "cave_river", "cave_villagers", "cave_celestial", "cave_stars", "settled_camp", "settled_villagers", "bronze_camp", "bronze_villagers", "role_overlays", "weather", "ui_icons", "ui_seasons", "ui_achievements", "game_icon", "ui_skin_hide", "ui_skin_clay", "ui_skin_bronze", "night", "villager_sheet", "villager_walk", "workshop_stages"]  # night reads strip's output
 
 
 def write_blank_png(path, w, h):
@@ -89,3 +89,5 @@ if __name__ == "__main__":
             exe = os.environ.get("LIBRESPRITE_EXE", "libresprite")
             out = os.path.join(DIST, n + ".bundle.js")
             subprocess.run([exe, "-b", "--script", out], check=True)
+            if n == "role_overlays":  # its preview is composited over the real villager sheets
+                subprocess.run([sys.executable, os.path.join(HERE, "role_preview.py")], check=True)

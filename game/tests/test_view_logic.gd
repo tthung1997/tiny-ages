@@ -77,6 +77,112 @@ func test_builders_hammer_at_the_active_site() -> void:
 	assert_eq(plan.focus_x, float(WorldLayout.BUILDINGS[&"hut"]["cx"]))
 
 
+func _bronze_plan(activity: StringName, profession: StringName, flags: Array, slot: int = 0) \
+		-> VillagerPlan:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.tick = sim.config.tick_for_hour(10)
+	for flag: StringName in flags:
+		if SimFixture.load_content().get_building(flag) != null:
+			var building: BuildingState = BuildingState.new()
+			building.def_id = flag
+			building.complete = true
+			sim.world.buildings.append(building)
+		else:
+			sim.world.flags[flag] = true
+	var villager: VillagerState = sim.world.villagers[0]
+	villager.activity = activity
+	villager.profession = profession
+	return VillagerPlanner.new().plan(villager, sim.world, sim.config, slot)
+
+
+func test_a_smith_hammers_in_front_of_the_smithy_instead_of_cutting_wood() -> void:
+	var plan: VillagerPlan = _bronze_plan(VillagerState.ACTIVITY_GATHER_WOOD, &"smith", [&"smithy"])
+	assert_eq(plan.pose, &"hammer")
+	assert_true(WorldLayout.SMITHY_SPOTS.has(plan.target))
+	assert_eq(plan.focus_x, float(WorldLayout.BUILDINGS[&"smithy"]["cx"]))
+	var no_smithy: VillagerPlan = _bronze_plan(VillagerState.ACTIVITY_GATHER_WOOD, &"smith", [])
+	assert_eq(no_smithy.pose, &"chop", "A smith with nowhere to work still cuts wood")
+	var other: VillagerPlan = _bronze_plan(VillagerState.ACTIVITY_GATHER_WOOD, &"", [&"smithy"])
+	assert_eq(other.pose, &"chop", "Only the smith works the smithy")
+
+
+func test_a_trader_walks_between_the_trading_post_and_the_market() -> void:
+	var post: VillagerPlan = _bronze_plan(
+		VillagerState.ACTIVITY_WANDER, &"trader", [&"trading_post"]
+	)
+	assert_false(post.wander, "A trader does not wander at random")
+	assert_true(WorldLayout.POST_SPOTS.has(post.target))
+	var market: VillagerPlan = _bronze_plan(
+		VillagerState.ACTIVITY_SOCIALIZE, &"trader", [&"market_day"]
+	)
+	assert_true(WorldLayout.MARKET_SPOTS.has(market.target))
+	assert_eq(market.focus_x, WorldLayout.MARKET_X)
+	var both: Array[Vector2] = []
+	for slot: int in 2:
+		both.append(
+			_bronze_plan(
+				VillagerState.ACTIVITY_WANDER, &"trader", [&"trading_post", &"market_day"], slot
+			).target
+		)
+	assert_true(
+		WorldLayout.MARKET_SPOTS.has(both[0]) != WorldLayout.MARKET_SPOTS.has(both[1]),
+		"With both, traders go to each on alternate days"
+	)
+	var nowhere: VillagerPlan = _bronze_plan(VillagerState.ACTIVITY_WANDER, &"trader", [])
+	assert_true(nowhere.wander, "With neither, a trader wanders like anyone")
+
+
+func test_nobody_is_sent_to_stand_behind_a_building() -> void:
+	var spot_lists: Array = [
+		WorldLayout.FORAGE_SPOTS, WorldLayout.SOCIAL_SPOTS, WorldLayout.FIRE_SPOTS,
+		WorldLayout.SMITHY_SPOTS, WorldLayout.POST_SPOTS, WorldLayout.COLD_SPOTS,
+		WorldLayout.WOOD_SPOTS, WorldLayout.MARKET_SPOTS,
+	]
+	var last: int = WorldLayout.ERA_DIRS.size() - 1
+	for building_id: StringName in WorldLayout.BUILDINGS:
+		var path: String = WorldLayout.piece_path(StringName("building_%s" % building_id), last)
+		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()
+		used.position += Vector2i(WorldLayout.building_offset(building_id))
+		var z: int = int(WorldLayout.BUILDINGS[building_id]["z"])
+		for spots: Array in spot_lists:
+			for spot: Vector2 in spots:
+				var under: bool = spot.x > float(used.position.x) and spot.x < float(used.end.x)
+				assert_false(
+					under and int(spot.y) < z,
+					"%s would stand behind the %s" % [spot, building_id]
+				)
+
+
+func test_buildings_stand_on_the_back_lane_with_the_cave() -> void:
+	var last: int = WorldLayout.ERA_DIRS.size() - 1
+	for building_id: StringName in [&"hut", &"drying_rack", &"smithy", &"trading_post"]:
+		var slot: Dictionary = WorldLayout.BUILDINGS[building_id]
+		assert_eq(int(slot["foot"]), WorldLayout.BACK_LANE, "%s's foot" % building_id)
+		assert_eq(int(slot["z"]), WorldLayout.BACK_LANE, "%s's depth" % building_id)
+		var path: String = WorldLayout.piece_path(StringName("building_%s" % building_id), last)
+		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()
+		var bottom: int = used.end.y - 1 + int(WorldLayout.building_offset(building_id).y)
+		assert_true(
+			absi(bottom - WorldLayout.BACK_LANE) <= 1,
+			"%s's art ends at row %d, not on the back lane" % [building_id, bottom]
+		)
+
+
+func test_every_prop_that_is_a_building_or_a_yard_is_on_the_back_lane() -> void:
+	var last: int = WorldLayout.ERA_DIRS.size() - 1
+	for prop_id: StringName in [
+		&"west_roof_a", &"west_roof_b", &"west_kiln", &"potters_yard", &"weavers_row",
+		&"farmstead_farm", &"farmstead_herd", &"west_pen",
+	]:
+		var path: String = WorldLayout.piece_path(prop_id, last)
+		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()
+		var bottom: int = used.end.y - 1 + int(SceneProps.at_y_of(prop_id))
+		assert_true(
+			absi(bottom - WorldLayout.BACK_LANE) <= 2,
+			"%s's art ends at row %d, not on the back lane" % [prop_id, bottom]
+		)
+
+
 func test_builders_with_no_site_wait_at_the_fire() -> void:
 	var plan: VillagerPlan = _plan_for(VillagerState.ACTIVITY_BUILD)
 	assert_eq(plan.pose, &"idle")
@@ -191,8 +297,12 @@ func test_every_layout_asset_exists() -> void:
 	for layer: StringName in WorldLayout.STATIC_Z:
 		names.append(String(layer))
 	for building_id: StringName in WorldLayout.BUILDINGS:
-		names.append("building_%s" % building_id)
-		names.append("site_%s" % building_id)
+		for prefix: String in ["building_", "site_"]:
+			var layer: String = "%s%s" % [prefix, building_id]
+			assert_true(
+				not WorldLayout.piece_path(StringName(layer), WorldLayout.ERA_DIRS.size() - 1)
+				.is_empty(), "Missing %s" % layer
+			)
 	names.append_array(["flower_sprout", "flower_bloom"])
 	names.append(String(WorldLayout.FIRE_GLOW))
 	names.append(String(WorldLayout.STARS))

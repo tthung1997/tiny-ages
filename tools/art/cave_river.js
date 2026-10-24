@@ -89,7 +89,7 @@ layers.east_crossing_stones = crossing(stones, 384);
 layers.crossing_log = crossing(logs, 0);
 layers.east_crossing_log = crossing(logs, 384);
 layers.river_trap = layerOf([obj(10, 10, 328, 72, trap, { sh: 0 })]);
-layers.reed_bundles = layerOf([obj(16, 8, 280, 74, bundles, { sh: 8 })]);
+layers.reed_bundles = layerOf([obj(16, 8, 297, 77, bundles, { sh: 8 })]);
 
 // preview: the river between the banks, each piece in place
 var P = new Buf(W, H), name, y, x;

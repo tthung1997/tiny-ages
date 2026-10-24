@@ -409,7 +409,8 @@ func _change_setting(action: StringName) -> void:
 ## The window gives the panel room above the viewport while it is open.
 ## --fire lights the fire; --era=settled enters that age; --build=hut,field completes buildings
 ## (their milestones too); --flag=path_hunting,cave_art sets world flags; --earn=a_village,
-## fired_clay earns achievements; --give=wood:20,food:5 adds stock; --season=spring|summer|
+## fired_clay earns achievements; --give=wood:20,food:5 adds stock; --role=smith,trader,forager
+## gives the first villagers those professions (to see their overlays); --season=spring|summer|
 ## autumn|winter moves the clock to the middle of that season; --weather=rain|storm|drought|
 ## flood|snow|tornado|debris starts that weather for ten days; --damaged breaks every building
 ## built. For looking at things, not playing.
@@ -441,6 +442,9 @@ func _apply_dev_world(options: Dictionary) -> void:
 		var pair: PackedStringArray = part.split(":")
 		if pair.size() == 2:
 			sim.world.add_resource(StringName(pair[0]), pair[1].to_int())
+	var roles: PackedStringArray = String(options.get("role", "")).split(",", false)
+	for index: int in mini(roles.size(), sim.world.villagers.size()):
+		sim.world.villagers[index].profession = StringName(roles[index])
 
 
 ## Moves the clock to the middle of a season (keeping the hour), for looking at it.
@@ -623,6 +627,8 @@ func _apply_cmdline() -> Dictionary:
 			options["earn"] = arg.trim_prefix("--earn=")
 		elif arg.begins_with("--give="):
 			options["give"] = arg.trim_prefix("--give=")
+		elif arg.begins_with("--role="):
+			options["role"] = arg.trim_prefix("--role=")
 		elif arg.begins_with("--panel="):
 			options["panel"] = arg.trim_prefix("--panel=")
 		elif arg.begins_with("--cam="):

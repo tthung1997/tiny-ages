@@ -23,17 +23,18 @@ func _init(p_width: int, p_height: int) -> void:
 	tops.fill(height)
 
 
-## Adds a texture whose left edge sits at world column `x`, optionally mirrored. Columns
-## outside the skyline are ignored.
-func add(texture: Texture2D, x: int, flipped: bool = false) -> void:
+## Adds a texture whose left edge sits at world column `x`, optionally mirrored, and whose top edge
+## sits `y` rows down (negative is up: a piece lifted onto a back lane). Columns outside the
+## skyline are ignored.
+func add(texture: Texture2D, x: int, flipped: bool = false, y: int = 0) -> void:
 	if texture == null:
 		return
 	var columns: PackedInt32Array = column_tops(texture, height)
 	var count: int = columns.size()
 	for source: int in count:
 		var column: int = x + (count - 1 - source if flipped else source)
-		if column >= 0 and column < width:
-			tops[column] = mini(tops[column], columns[source])
+		if column >= 0 and column < width and columns[source] < height:
+			tops[column] = mini(tops[column], clampi(columns[source] + y, 0, height))
 
 
 ## `count` columns starting at `start`, clamped to the skyline's edges.

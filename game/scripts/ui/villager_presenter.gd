@@ -65,6 +65,31 @@ const BY_TRAIT: Dictionary = {
 		"Has noticed which flowers have opened.",
 	],
 }
+## What a role adds to a villager's thoughts (docs/ages.md B4).
+const BY_PROFESSION: Dictionary = {
+	&"scout": [
+		"Knows the whole ridge by heart.",
+		"Is already walking, in their head.",
+	],
+	&"forager": [
+		"Knows exactly where the berries are, and says so.",
+		"Is reading the ground for what is good to eat.",
+	],
+	&"smith": [
+		"Is listening to the hearth the way you listen to a friend.",
+		"Is wondering how hot is hot enough.",
+	],
+	&"trader": [
+		"Is counting what the road will bring.",
+		"Has a list that keeps getting longer.",
+	],
+}
+## Added once the Bronze Age has begun.
+const BRONZE_AGE: Array[String] = [
+	"Bronze is heavier than it looks.",
+	"The wall makes the night feel smaller.",
+	"Someone is hammering, and it is almost a tune.",
+]
 const ASLEEP: Array[String] = [
 	"Fast asleep.",
 	"Asleep, and dreaming of something.",
@@ -118,6 +143,8 @@ var look: StringName = &""
 var traits_text: String = ""
 ## For example "Scout". Empty if they have none.
 var role_text: String = ""
+## The raw profession (`smith`), so the panel can dress the portrait in its overlay.
+var profession: StringName = &""
 var thought: String = ""
 
 
@@ -154,6 +181,7 @@ static func _card(villager: VillagerState) -> VillagerPresenter:
 	view.look = villager.look if villager.look != &"" else villager.id
 	view.traits_text = traits_text_for(villager)
 	view.role_text = String(villager.profession).replace("_", " ").capitalize()
+	view.profession = villager.profession
 	return view
 
 
@@ -199,6 +227,9 @@ static func _pool(villager: VillagerState, world: WorldState) -> Array[String]:
 		pool.append_array(_lines(BY_TRAIT.get(trait_name, [])))
 	if world.resource_amount(&"food") < FOOD_LOW:
 		pool.append_array(LOW_FOOD)
+	pool.append_array(_lines(BY_PROFESSION.get(villager.profession, [])))
+	if world.era_order >= 2:
+		pool.append_array(BRONZE_AGE)
 	pool.append_array(_lines(BY_WEATHER.get(world.weather, [])))
 	return pool
 

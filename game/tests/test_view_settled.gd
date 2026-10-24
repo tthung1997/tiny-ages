@@ -27,21 +27,45 @@ func test_a_piece_is_found_in_the_newest_age_that_has_it() -> void:
 	)
 	assert_eq(WorldLayout.piece_path(&"no_such_piece", 1), "")
 	assert_true(
-		WorldLayout.piece_path(&"building_hut", 9).contains("/settled/"),
+		WorldLayout.piece_path(&"building_hut", 1).contains("/settled/"),
+		"The Settled Age's roundhouse"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_hut", 2).contains("/bronze/"),
+		"The Bronze Age redraws it in mud-brick"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_hut", 9).contains("/bronze/"),
 		"A later age with no folder yet uses the newest there is"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_lookout", 1).contains("/cave/"),
+		"Untouched slots keep their art through the Settled Age"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_lookout", 2).contains("/bronze/"),
+		"The Lookout becomes a gate tower in the Bronze Age"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_drying_rack", 2).contains("/cave/"),
+		"The Cave Age's memory stays"
 	)
 
 
-func test_every_building_and_prop_has_art_in_the_settled_age() -> void:
+func test_every_building_and_prop_has_art_in_the_age_that_shows_it() -> void:
+	var last: int = WorldLayout.ERA_DIRS.size() - 1
 	for building_id: StringName in WorldLayout.BUILDINGS:
 		for prefix: String in ["building_", "site_"]:
 			var layer: StringName = StringName(prefix + building_id)
 			assert_true(
-				not WorldLayout.piece_path(layer, 1).is_empty(), "No art for %s" % layer
+				not WorldLayout.piece_path(layer, last).is_empty(), "No art for %s" % layer
 			)
 	for prop_id: StringName in SceneProps.ids():
+		var from_era: int = int(SceneProps.PROPS[prop_id].get("from_era", 0))
 		assert_true(
-			not WorldLayout.piece_path(prop_id, 1).is_empty(), "No art for prop %s" % prop_id
+			not WorldLayout.piece_path(prop_id, maxi(from_era, 1)).is_empty()
+			or not WorldLayout.piece_path(prop_id, last).is_empty(),
+			"No art for prop %s" % prop_id
 		)
 		var at_x: float = SceneProps.at_x_of(prop_id)
 		assert_true(
@@ -79,6 +103,7 @@ func test_every_prop_shows_for_its_trigger_and_only_then() -> void:
 	for prop_id: StringName in SceneProps.ids():
 		var sim: Simulation = SimFixture.new_sim()
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
+		sim.world.era_order = int(spec.get("from_era", 0))
 		assert_false(SceneProps.is_shown(prop_id, sim.world), "%s starts hidden" % prop_id)
 		match spec["kind"]:
 			SceneProps.Kind.FLAG:
@@ -134,6 +159,45 @@ func test_a_played_settled_age_fills_the_world_with_what_the_group_did() -> void
 		assert_true(shown.has(expected), "%s should have appeared" % expected)
 
 
+func test_a_role_overlay_follows_the_body_and_comes_off_with_the_role() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var view: WorldView = _view_for(sim)
+	var villager: VillagerState = sim.world.villagers[0]
+	var actor: VillagerActor = view._actors[villager.id]
+	assert_eq(actor.role(), &"", "No role, no overlay")
+	var sheet: Texture2D = load(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.FUR))
+	actor.set_role(&"smith", sheet)
+	assert_eq(actor.role(), &"smith")
+	assert_true(actor._role_sprite.visible)
+	actor._sprite.play(&"walk")
+	actor._sprite.frame = 2
+	actor._sprite.flip_h = true
+	actor._sync_role()
+	assert_eq(actor._role_sprite.animation, &"walk")
+	assert_eq(actor._role_sprite.frame, 2)
+	assert_true(actor._role_sprite.flip_h, "It faces the way the body does")
+	actor.set_role(&"", null)
+	assert_false(actor._role_sprite.visible)
+	_free(view)
+
+
+func test_the_view_dresses_each_profession_that_has_an_overlay() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.villagers[0].profession = &"smith"
+	var view: WorldView = _view_for(sim)
+	view.on_world_changed()
+	var actor: VillagerActor = view._actors[sim.world.villagers[0].id]
+	var path: String = WorldLayout.role_sheet_path(&"smith")
+	assert_false(path.is_empty(), "There is art for the smith")
+	assert_eq(actor.role(), &"smith")
+	assert_eq(WorldLayout.role_sheet_path(&"no_such_role"), "")
+	assert_eq(WorldLayout.role_sheet_path(&""), "")
+	sim.world.villagers[0].profession = &""
+	view.on_world_changed()
+	assert_eq(actor.role(), &"", "Taking the role away takes the overlay off")
+	_free(view)
+
+
 func test_the_hut_art_is_upgraded_when_the_age_turns() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var view: WorldView = _view_for(sim)
@@ -160,6 +224,30 @@ func test_the_view_shows_props_only_when_the_world_says_so() -> void:
 	assert_true((view._props[&"west_plot_patch"] as Sprite2D).visible)
 	assert_false((view._props[&"west_plot_farm"] as Sprite2D).visible)
 	assert_true(view._signature != before, "The click region is rebuilt for the new pieces")
+	_free(view)
+
+
+func test_the_bronze_age_folds_scattered_props_into_tidier_pieces() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.advance_era(&"settled")
+	sim.world.achievements.append(&"fired_clay")
+	sim.world.achievements.append(&"woven_cloth")
+	sim.world.flags[&"loom"] = true
+	sim.world.flags[&"low_wall"] = true
+	var view: WorldView = _view_for(sim)
+	view.on_world_changed()
+	for old: StringName in [&"pots", &"loom", &"cloth_line", &"low_wall"]:
+		assert_true((view._props[old] as Sprite2D).visible, "%s stands in the Settled Age" % old)
+	assert_false((view._props[&"potters_yard"] as Sprite2D).visible)
+	sim.advance_era(&"bronze")
+	sim.world.flags[&"town_wall"] = true
+	view.on_world_changed()
+	for old: StringName in [&"pots", &"loom", &"cloth_line", &"low_wall"]:
+		assert_false((view._props[old] as Sprite2D).visible, "%s is folded away" % old)
+	for tidy: StringName in [&"potters_yard", &"weavers_row", &"town_wall"]:
+		assert_true((view._props[tidy] as Sprite2D).visible, "%s stands in the Bronze Age" % tidy)
+	var hut: Sprite2D = view._buildings[&"hut"]
+	assert_true(hut.texture.resource_path.contains("/bronze/"), "The roundhouse is mud-brick")
 	_free(view)
 
 

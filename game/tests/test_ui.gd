@@ -409,6 +409,21 @@ func test_the_settled_age_has_its_own_skin() -> void:
 	assert_true(settled.icon_for(&"wood") != null and settled.icon_for(&"food") != null)
 
 
+func test_the_bronze_age_has_its_own_skin() -> void:
+	var bronze: PanelSkin = PanelSkin.for_era(&"bronze")
+	assert_eq(bronze.era_id, &"bronze")
+	assert_true(bronze.atlas_path != PanelSkin.clay().atlas_path, "Its own atlas, not the clay")
+	assert_true(bronze.title_color != PanelSkin.clay().title_color)
+	assert_true(bronze.icon_for(&"wood") != null and bronze.icon_for(&"food") != null)
+
+
+func test_every_age_in_the_content_has_its_own_skin() -> void:
+	var content: ContentLibrary = SimFixture.load_content()
+	assert_true(not content.eras.is_empty(), "The content has ages")
+	for era: EraDef in content.eras:
+		assert_eq(PanelSkin.for_era(era.id).era_id, era.id, "%s has its own skin" % era.id)
+
+
 func test_the_panel_changes_skin_when_the_age_turns() -> void:
 	var panel: PanelHost = PanelHost.new()
 	assert_eq(panel.skin().era_id, &"cave")

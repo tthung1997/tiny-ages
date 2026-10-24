@@ -1,6 +1,6 @@
 // @open art/reference/ui_achievements.png
-// @canvas 320x20
-// The achievement icons, one 320x20 sheet of 16 round medals (20x20 each, in the order of
+// @canvas 440x20
+// The achievement icons, one 440x20 sheet of 22 round medals (20x20 each, in the order of
 // AchievementPresenter.ICON_ORDER, then a plain rosette for any achievement without its own)
 // -> art/reference/ui_achievements.png and game/assets/ui/achievements.png. The cell order is
 // mirrored in game/scripts/ui/achievement_presenter.gd; append new icons at the end.
@@ -81,14 +81,52 @@ function butterfly(g) {
   g.px(3, 4, '#ffe27a'); g.px(9, 4, '#ffe27a');
   g.rect(6, 3, 1, 7, INK); g.px(5, 2, INK); g.px(7, 2, INK);
 }
+function crucible(g) {
+  g.rect(1, 4, 5, 1, '#f59a3a'); g.rect(1, 5, 5, 4, '#6f6c78'); g.rect(2, 9, 3, 1, '#6f6c78');
+  g.rect(1, 5, 1, 4, '#8d8a93'); g.px(2, 4, '#ffe27a'); g.px(3, 4, '#ffe27a');
+  g.line(6, 4, 8, 6, '#f59a3a', 1); g.px(8, 7, '#ffe27a');
+  g.rect(7, 8, 5, 3, '#d9a23a'); g.rect(7, 8, 5, 1, '#f7d56a'); g.rect(7, 10, 5, 1, '#9a6a1f');
+}
+function alloy(g) {
+  g.rect(3, 3, 7, 2, '#f7d56a'); g.rect(1, 5, 10, 5, '#d9a23a');
+  g.rect(1, 5, 10, 1, '#f7d56a'); g.rect(1, 9, 10, 1, '#9a6a1f'); g.rect(10, 5, 1, 5, '#9a6a1f');
+  g.px(3, 7, '#c8ccd6'); g.px(4, 7, '#c8ccd6'); g.px(4, 8, '#9aa0aa'); g.px(7, 6, '#c8ccd6');
+  g.px(8, 8, '#c8ccd6'); g.px(8, 7, '#9aa0aa');
+}
+function brickWall(g) {
+  g.rect(1, 2, 10, 8, '#e8d4a8');
+  for (var r = 0; r < 4; r++) for (var b = -1; b < 3; b++) {
+    var bx = 1 + b * 4 + (r % 2) * 2;
+    var x0 = Math.max(bx, 1), x1 = Math.min(bx + 3, 11);
+    if (x1 > x0) g.rect(x0, 2 + r * 2, x1 - x0, 1, (b + r) % 2 ? '#c98a55' : '#b86a4a');
+  }
+}
+function wheel(g) {
+  g.ell(6, 6, 5, 5, WOOD); g.ell(6, 6, 3.6, 3.6, CREAM);
+  g.line(6, 2, 6, 10, WOOD, 1); g.line(2, 6, 10, 6, WOOD, 1);
+  g.line(3, 3, 9, 9, WOOD, 1); g.line(9, 3, 3, 9, WOOD, 1);
+  g.ell(6, 6, 1.6, 1.6, '#d9a23a'); g.px(5, 5, '#f7d56a'); g.px(6, 1, WOODL); g.px(1, 6, WOODL);
+}
+function town(g) {
+  g.rect(4, 4, 4, 6, '#c98a55'); g.rect(4, 4, 1, 6, '#e0a874');
+  for (var y = 0; y < 3; y++) g.rect(5 - y, 1 + y, 2 + 2 * y, 1, '#b86a4a');
+  g.rect(0, 7, 4, 3, '#b86a4a'); g.rect(8, 7, 4, 3, '#b86a4a');
+  g.rect(0, 6, 4, 1, '#d9a566'); g.rect(8, 6, 4, 1, '#d9a566');
+  g.rect(5, 7, 2, 3, '#3a2a22'); g.px(5, 6, '#3a2a22'); g.px(6, 6, '#3a2a22'); g.rect(0, 10, 12, 1, '#8f6a3a');
+}
+function sail(g) {
+  g.rect(6, 1, 1, 7, WOOD); g.tri(6, 1, 6, 4, '#f3e9d2', '#e8504a');
+  g.rect(2, 7, 9, 2, WOOD); g.rect(1, 7, 1, 1, WOOD); g.rect(2, 7, 9, 1, WOODL);
+  for (var x = 0; x < 12; x++) { g.px(x, 9 + (x % 4 < 2 ? 0 : 1), '#4a9ac8'); g.px(x, 10 + (x % 4 < 2 ? 0 : 1), '#8fbfe0'); }
+}
 function rosette(g) {
   g.rect(3, 8, 2, 3, '#e8504a'); g.rect(7, 8, 2, 3, '#c43a34');
   g.ell(6, 5, 3.6, 3.6, '#e8504a'); g.ell(6, 5, 1.8, 1.8, CREAM);
 }
 
 var GLYPHS = [fire, stoneTools, food, stories, group, garden, roof, harvest, clay, cloth, village,
-  greenStone, field, pen, butterfly, rosette];
-var SHEET = new Buf(320, 20);
+  greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail, rosette];
+var SHEET = new Buf(440, 20);
 for (var i = 0; i < GLYPHS.length; i++) {
   var medal = new Buf(18, 18);
   medal.ell(8.5, 8.5, 8.6, 8.6, RIM); medal.ell(8.5, 8.5, 7.2, 7.2, CREAM);
