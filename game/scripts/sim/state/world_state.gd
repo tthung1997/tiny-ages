@@ -26,6 +26,9 @@ const FRACTION_SCALE: float = 1000000.0
 @export var era_order: int = 0
 ## Tick the current era began; the entry gate of the next era measures from here.
 @export var era_started_tick: int = 0
+## The newest age the player has not been told about yet. The bulb carries it like a waiting
+## decision until `Simulation.acknowledge_era` clears it.
+@export var unseen_era: StringName = &""
 
 @export_group("Weather")
 ## The weather now (a WeatherDef id), or &"" for clear sky, and the tick its spell ends. The tick
