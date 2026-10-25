@@ -214,6 +214,7 @@ func advance_era(era_id: StringName) -> bool:
 	world.era = next.id
 	world.era_order = next.order
 	world.era_started_tick = world.tick
+	world.unseen_era = next.id
 	var line: String = next.intro_text
 	if line.is_empty():
 		line = "A new age began: %s." % next.display_name
@@ -221,6 +222,11 @@ func advance_era(era_id: StringName) -> bool:
 	refresh_housing()
 	era_advanced.emit(next)
 	return true
+
+
+## Marks the new age as told. Only the bulb cares: it stops carrying it.
+func acknowledge_era() -> void:
+	world.unseen_era = &""
 
 
 ## Whether the hidden entry gate of `era` is open: it is the next age, its required achievements

@@ -279,6 +279,28 @@ func test_the_away_panel_offers_to_show_waiting_decisions() -> void:
 	panel.free()
 
 
+func test_the_age_panel_names_the_age_and_stays_until_dismissed() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var era: EraDef = sim.content.get_era(&"settled")
+	var panel: PanelHost = PanelHost.new()
+	panel.show_age(era)
+	assert_eq(panel.mode(), &"age")
+	var texts: PackedStringArray = PackedStringArray()
+	for node: Node in panel.find_children("*", "Label", true, false):
+		texts.append((node as Label).text)
+	assert_true(texts.has("A new age: %s" % era.display_name))
+	assert_true(texts.has(era.description))
+	assert_true(panel.is_open(), "It does not go away by itself")
+	var dismissed: Array[Button] = []
+	for button: Button in _buttons(panel):
+		if button.text == "Got it":
+			dismissed.append(button)
+	assert_eq(dismissed.size(), 1)
+	dismissed[0].pressed.emit()
+	assert_false(panel.is_open())
+	panel.free()
+
+
 func test_old_button_actions_do_not_leak_into_new_content() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	var summary: AwaySummary = AwaySummary.new()

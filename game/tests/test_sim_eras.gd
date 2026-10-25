@@ -82,6 +82,18 @@ func test_the_era_is_saved() -> void:
 	assert_eq(loaded.era_started_tick, sim.world.era_started_tick)
 
 
+func test_a_new_age_waits_to_be_told_until_acknowledged() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	assert_eq(sim.world.unseen_era, &"")
+	sim.advance_era(&"settled")
+	assert_eq(sim.world.unseen_era, &"settled")
+	SaveStore.save_world(sim.world, SAVE_PATH)
+	assert_eq(SaveStore.load_world(SAVE_PATH).unseen_era, &"settled", "Quitting does not lose it")
+	sim.acknowledge_era()
+	assert_eq(sim.world.unseen_era, &"")
+	assert_eq(sim.world.era, &"settled", "Telling the player changes nothing else")
+
+
 func test_validation_catches_broken_era_references() -> void:
 	var content: ContentLibrary = SimFixture.load_content().duplicate(true)
 	var far_future: SimCondition = SimCondition.new()

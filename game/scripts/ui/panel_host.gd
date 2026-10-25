@@ -119,7 +119,7 @@ func is_open() -> bool:
 	return _open
 
 
-## Which kind of content is showing: &"decision", &"journal", &"away", &"villager", &"villagers",
+## Which kind of content is showing: &"decision", &"journal", &"away", &"age", &"villager", &"villagers",
 ## &"menu", &"stores", &"achievements", &"settings" or &"" when closed.
 func mode() -> StringName:
 	return _mode if _open else &""
@@ -345,6 +345,15 @@ func show_away(summary: AwaySummary) -> void:
 		var word: String = "decision is" if summary.decisions_waiting == 1 else "decisions are"
 		_content.add_child(_text("%d %s waiting for you." % [summary.decisions_waiting, word]))
 		_show_button(_secondary, "See it", func() -> void: decisions_requested.emit())
+	_show_button(_primary, "Got it", close_panel)
+	_footer_label.text = ""
+
+
+## Tells the player an age has begun. It stays until they dismiss it.
+func show_age(era: EraDef) -> void:
+	_begin(&"age", "A new age: %s" % era.display_name)
+	if not era.description.is_empty():
+		_content.add_child(_text(era.description))
 	_show_button(_primary, "Got it", close_panel)
 	_footer_label.text = ""
 

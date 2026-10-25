@@ -5,7 +5,7 @@ extends Node2D
 ##
 ## Click the gear or right-click the strip for the menu (journal, villagers, achievements, stores,
 ##   settings, quit); click the bulb (decision
-##   waiting) or the book (journal) at the top right of the strip.
+##   waiting or a new age has begun) or the book (journal) at the top right of the strip.
 ##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
 ##   Esc closes the open panel, or saves and quits; Q saves and quits
 ## Dev keys (only with --dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap -
@@ -21,7 +21,8 @@ extends Node2D
 ##   decisions) --manual --hour=<0-23> (then run on to that hour of the day, for looking at the
 ##   light) --tide=low|high (then run on to that tide, for the beach) --cam=<camp x> (start with
 ##   the viewport's left edge there: -384..384,
-##   camp is 0) --panel=decision|journal|away|villager|villagers|achievements|menu|stores|settings
+##   camp is 0) --panel=decision|journal|away|age|age_bulb|villager|villagers|achievements|menu|
+##   stores|settings
 ##   (open that panel at
 ##   start) --season=spring|summer|autumn|winter --weather=rain|storm|drought|flood|snow|
 ##   tornado|debris --damaged (look at a season, the weather, broken buildings) --hover=<x>,<y>
@@ -293,9 +294,10 @@ func _update_hud_region() -> void:
 	_window.set_extra_regions(regions)
 
 
-## Keeps the bulb, and the panel if it shows a decision, in step with what is pending.
+## Keeps the bulb, and the panel if it shows a decision, in step with what is pending. A new age
+## the player has not been told about counts like a decision with nothing to decide.
 func _refresh_pending() -> void:
-	var waiting: int = sim.world.pending.size()
+	var waiting: int = sim.world.pending.size() + _unseen_age_count()
 	if waiting == _last_pending:
 		return
 	_last_pending = waiting
@@ -305,7 +307,19 @@ func _refresh_pending() -> void:
 		_panel.show_decision(sim, 0)
 
 
+func _unseen_age_count() -> int:
+	return 0 if sim.world.unseen_era.is_empty() else 1
+
+
+## The bulb tells the new age first (the panel stays until "Got it"), then the decisions.
 func _open_decisions() -> void:
+	var era: EraDef = sim.content.get_era(sim.world.unseen_era)
+	if era != null:
+		sim.acknowledge_era()
+		_refresh_pending()
+		_panel.show_age(era)
+		_fit_window()
+		return
 	if sim.world.pending.is_empty():
 		return
 	_panel.show_decision(sim, 0)
@@ -465,9 +479,8 @@ func _fit_window() -> void:
 
 
 ## The "while you were away" summary on launch, or a panel chosen by the dev flag --panel=
-## (decision, journal, away, villager, villagers, achievements, menu, stores or settings) so each
-## can be looked at without
-## waiting for it to happen.
+## (decision, journal, away, age, age_bulb, villager, villagers, achievements, menu, stores or
+## settings) so each can be looked at without waiting for it to happen.
 func _open_startup_panel(requested: String) -> void:
 	match requested:
 		"decision":
@@ -477,6 +490,11 @@ func _open_startup_panel(requested: String) -> void:
 		"away":
 			_panel.show_away(_dev_away_summary())
 			_fit_window()
+		"age", "age_bulb":
+			sim.world.unseen_era = sim.world.era
+			_refresh_pending()
+			if requested == "age":
+				_open_decisions()
 		"villager":
 			_panel.show_villager(sim, sim.world.villagers[0].id)
 			_fit_window()
