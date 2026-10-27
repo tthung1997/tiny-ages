@@ -1,7 +1,7 @@
 class_name UserSettings
 extends RefCounted
 ## What the player chose about how the game sits on their desktop: the window mode, its size and
-## whether it stays on top. Saved in its own small file (not in the game save, so a new game keeps
+## whether it stays on top, plus its keyboard shortcuts. Saved separately (so a new game keeps
 ## them) and applied before the launch flags, which win. Pure data; the settings panel shows it
 ## and `Game` applies it.
 
@@ -12,6 +12,7 @@ const MODES: Array[StringName] = [&"strip", &"corner", &"window"]
 var mode: StringName = &"strip"
 var pixel_scale: int = 2
 var always_on_top: bool = true
+var shortcuts: WindowShortcuts = WindowShortcuts.new()
 
 
 ## The settings a window currently has.
@@ -37,6 +38,7 @@ static func load_from(path: String = DEFAULT_PATH) -> UserSettings:
 		DesktopWindow.MIN_SCALE, DesktopWindow.MAX_SCALE
 	)
 	settings.always_on_top = bool(file.get_value(SECTION, "always_on_top", settings.always_on_top))
+	settings.shortcuts.load_from(file)
 	return settings
 
 
@@ -45,6 +47,7 @@ func save_to(path: String = DEFAULT_PATH) -> bool:
 	file.set_value(SECTION, "mode", String(mode))
 	file.set_value(SECTION, "scale", pixel_scale)
 	file.set_value(SECTION, "always_on_top", always_on_top)
+	shortcuts.save_into(file)
 	return file.save(path) == OK
 
 
@@ -70,12 +73,14 @@ func apply_live(window: DesktopWindow) -> void:
 
 
 ## The settings after the player picks `action` in the settings panel (`mode:strip`, `scale:up`,
-## `scale:down`, `ontop:on`, `ontop:off`). An unknown action changes nothing.
+## `scale:down`, `ontop:on`, `ontop:off`, `shortcuts:on`, `shortcuts:off`).
+## An unknown action changes nothing.
 func changed_by(action: StringName) -> UserSettings:
 	var result: UserSettings = UserSettings.new()
 	result.mode = mode
 	result.pixel_scale = pixel_scale
 	result.always_on_top = always_on_top
+	result.shortcuts = shortcuts.copy()
 	var parts: PackedStringArray = String(action).split(":")
 	if parts.size() != 2:
 		return result
@@ -91,4 +96,7 @@ func changed_by(action: StringName) -> UserSettings:
 		"ontop":
 			if parts[1] == "on" or parts[1] == "off":
 				result.always_on_top = parts[1] == "on"
+		"shortcuts":
+			if parts[1] == "on" or parts[1] == "off":
+				result.shortcuts.enabled = parts[1] == "on"
 	return result

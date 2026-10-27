@@ -8,7 +8,8 @@ extends Node2D
 ##   waiting or a new age has begun) or the book (journal) at the top right of the strip.
 ##   A/D or arrows pan the view - Home back to camp - drag, wheel or the edge arrows also pan
 ##   Esc closes the open panel, or saves and quits; Q saves and quits
-## Dev keys (only with --dev): 1/2/3 mode - +/- scale - T on-top - P click-through - F fps cap -
+## Window shortcuts: 1/2/3 mode, +/- scale; configure or disable in Settings > Edit shortcuts.
+## Dev keys (only with --dev): T on-top - P click-through - F fps cap -
 ##   L low-processor - N next screen - H hide HUD - [ ] time speed - B auto-answer decisions -
 ##   Y answer one
 ## Launch args (after `--`): --dev (the dev keys and the text overlay) --hud (just the overlay)
@@ -62,6 +63,8 @@ var _save_timer: float = 0.0
 var _hud_timer: float = 0.0
 var _save_path: String = SaveStore.DEFAULT_PATH
 var _settings_path: String = UserSettings.DEFAULT_PATH
+var _settings: UserSettings = UserSettings.new()
+var _rebinding: StringName = &""
 var _autosave: bool = true
 var _dev: bool = false
 var _shot_path: String = ""
@@ -78,7 +81,9 @@ func _ready() -> void:
 	# The player's saved window settings go in first; launch flags, applied next, win. A run that
 	# must not touch the player's files (--nosave) neither reads nor writes them.
 	if not OS.get_cmdline_user_args().has("--nosave"):
-		UserSettings.load_from(_settings_path).apply_to(_window)
+		_settings = UserSettings.load_from(_settings_path)
+		_settings.apply_to(_window)
+	_settings.shortcuts.install()
 	var options: Dictionary = _apply_cmdline()
 	var config: SimConfig = load(CONFIG_PATH) as SimConfig
 	var content: ContentLibrary = load(CONTENT_PATH) as ContentLibrary
@@ -171,11 +176,42 @@ func _notification(what: int) -> void:
 		_save()
 
 
+func _input(event: InputEvent) -> void:
+	if _rebinding == &"":
+		return
+	if _panel.mode() != &"shortcuts":
+		_rebinding = &""
+		return
+	if event is not InputEventKey:
+		return
+	var key: InputEventKey = event
+	get_viewport().set_input_as_handled()
+	if not key.pressed or key.echo:
+		return
+	if key.keycode == KEY_ESCAPE:
+		_rebinding = &""
+		_panel.show_shortcuts(_settings.shortcuts, "Cancelled.")
+		return
+	var error: String = _settings.shortcuts.rebind(_rebinding, key.get_keycode_with_modifiers())
+	if not error.is_empty():
+		_panel.show_shortcuts(_settings.shortcuts, error)
+		return
+	_rebinding = &""
+	_settings.shortcuts.install()
+	_save_settings()
+	_panel.show_shortcuts(_settings.shortcuts)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is not InputEventKey:
 		return
 	var key := event as InputEventKey
 	if not key.pressed or key.echo:
+		return
+	var action: StringName = _settings.shortcuts.action_for(key)
+	if action != &"":
+		_change_setting(action)
+		get_viewport().set_input_as_handled()
 		return
 	match key.keycode:
 		KEY_A, KEY_LEFT:
@@ -198,19 +234,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				_dev_key(key.keycode)
 
 
-## The keys that only exist with --dev: window knobs, the overlay, time speed and the bot.
+## The keys that only exist with --dev: diagnostics, the overlay, time speed and the bot.
 func _dev_key(keycode: Key) -> void:
 	match keycode:
-		KEY_1:
-			_window.set_mode(DesktopWindow.Mode.STRIP)
-		KEY_2:
-			_window.set_mode(DesktopWindow.Mode.CORNER)
-		KEY_3:
-			_window.set_mode(DesktopWindow.Mode.WINDOW)
-		KEY_EQUAL, KEY_PLUS, KEY_KP_ADD:
-			_window.set_pixel_scale(_window.pixel_scale + 1)
-		KEY_MINUS, KEY_KP_SUBTRACT:
-			_window.set_pixel_scale(_window.pixel_scale - 1)
 		KEY_T:
 			_window.set_always_on_top(not _window.always_on_top)
 		KEY_P:
@@ -380,6 +406,11 @@ func _on_menu_requested() -> void:
 
 ## A button in the menu, the villager list, the stores panel or the settings panel.
 func _on_action(action: StringName) -> void:
+	_rebinding = &""
+	if String(action).begins_with("rebind:"):
+		_rebinding = StringName(String(action).trim_prefix("rebind:"))
+		_panel.show_shortcuts(_settings.shortcuts, "Press a key; Esc cancels.")
+		return
 	if String(action).begins_with("villager:"):
 		_panel.show_villager(sim, StringName(String(action).trim_prefix("villager:")))
 		_fit_window()
@@ -397,6 +428,13 @@ func _on_action(action: StringName) -> void:
 			_panel.show_stores(sim)
 		&"settings":
 			_show_settings()
+		&"shortcuts":
+			_panel.show_shortcuts(_settings.shortcuts)
+		&"shortcuts:reset":
+			_settings.shortcuts.reset()
+			_settings.shortcuts.install()
+			_save_settings()
+			_panel.show_shortcuts(_settings.shortcuts)
 		&"quit":
 			_save()
 			get_tree().quit()
@@ -408,16 +446,32 @@ func _on_action(action: StringName) -> void:
 
 
 func _show_settings() -> void:
-	_panel.show_settings(UserSettings.from_window(_window), DisplayServer.get_screen_count())
+	_sync_window_settings()
+	_panel.show_settings(_settings, DisplayServer.get_screen_count())
 
 
-## Applies a window setting picked in the panel, remembers it, and shows the panel again.
+## Applies and remembers a window or shortcut setting; refreshes its editor if open.
 func _change_setting(action: StringName) -> void:
-	var changed: UserSettings = UserSettings.from_window(_window).changed_by(action)
-	changed.apply_live(_window)
-	if _autosave:
-		changed.save_to(_settings_path)
-	_show_settings()
+	_sync_window_settings()
+	_settings = _settings.changed_by(action)
+	_settings.apply_live(_window)
+	_save_settings()
+	if _panel.mode() == &"settings":
+		_show_settings()
+	elif _panel.mode() == &"shortcuts":
+		_panel.show_shortcuts(_settings.shortcuts)
+
+
+func _sync_window_settings() -> void:
+	var current: UserSettings = UserSettings.from_window(_window)
+	current.shortcuts = _settings.shortcuts
+	_settings = current
+
+
+func _save_settings() -> void:
+	_sync_window_settings()
+	if _autosave and not _settings.save_to(_settings_path):
+		push_error("Could not save settings: %s" % _settings_path)
 
 
 ## The window gives the panel room above the viewport while it is open.

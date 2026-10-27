@@ -146,7 +146,7 @@ func test_the_settings_rows_mark_what_is_chosen_now() -> void:
 	settings.pixel_scale = 3
 	settings.always_on_top = false
 	var rows: Array[MenuPresenter.Row] = MenuPresenter.settings_rows(settings, 1)
-	assert_eq(rows.size(), 3, "No screen row with one screen")
+	assert_eq(rows.size(), 4, "No screen row with one screen")
 	var chosen: Array[String] = []
 	for option: MenuPresenter.Option in rows[0].options:
 		if option.selected:
@@ -156,7 +156,8 @@ func test_the_settings_rows_mark_what_is_chosen_now() -> void:
 	assert_eq(rows[1].options[1].action, &"", "...but is a label, not a button")
 	assert_false(rows[2].options[0].selected, "On is not chosen")
 	assert_true(rows[2].options[1].selected, "Off is")
-	assert_eq(MenuPresenter.settings_rows(settings, 2).size(), 4, "A second screen adds a row")
+	assert_eq(rows[3].options[0].action, &"shortcuts")
+	assert_eq(MenuPresenter.settings_rows(settings, 2).size(), 5, "A second screen adds a row")
 
 
 func test_the_stores_say_where_the_settlement_is_and_what_it_holds() -> void:
