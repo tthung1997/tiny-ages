@@ -75,6 +75,10 @@ static func settings_rows(settings: UserSettings, screens: int) -> Array[Row]:
 		screen.label = "Screen"
 		screen.options.append(_option("Next screen", &"screen:next"))
 		rows.append(screen)
+	var shortcuts: Row = Row.new()
+	shortcuts.label = "Keys"
+	shortcuts.options.append(_option("Edit shortcuts", &"shortcuts"))
+	rows.append(shortcuts)
 	return rows
 
 

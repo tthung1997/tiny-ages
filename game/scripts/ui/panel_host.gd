@@ -120,7 +120,7 @@ func is_open() -> bool:
 
 
 ## Which kind of content is showing: &"decision", &"journal", &"away", &"age", &"villager", &"villagers",
-## &"menu", &"stores", &"achievements", &"settings" or &"" when closed.
+## &"menu", &"stores", &"achievements", &"settings", &"shortcuts" or &"" when closed.
 func mode() -> StringName:
 	return _mode if _open else &""
 
@@ -300,6 +300,25 @@ func show_settings(settings: UserSettings, screens: int = 1) -> void:
 		_content.add_child(line)
 	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"menu"))
 	_footer_label.text = ""
+
+
+func show_shortcuts(shortcuts: WindowShortcuts, message: String = "") -> void:
+	_begin(&"shortcuts", "Window shortcuts")
+	var toggle: HBoxContainer = HBoxContainer.new()
+	toggle.add_child(_action_button("Enabled", &"shortcuts:on", shortcuts.enabled, 0.0))
+	toggle.add_child(_action_button("Disabled", &"shortcuts:off", not shortcuts.enabled, 0.0))
+	toggle.add_child(_action_button("Reset defaults", &"shortcuts:reset", false, 0.0))
+	_content.add_child(toggle)
+	for index: int in WindowShortcuts.ACTIONS.size():
+		var action: StringName = WindowShortcuts.ACTIONS[index]
+		var row: HBoxContainer = HBoxContainer.new()
+		row.add_child(_text(WindowShortcuts.LABELS[index], true, 64.0))
+		row.add_child(_action_button(
+			shortcuts.label_for(action), StringName("rebind:%s" % action), false, 0.0
+		))
+		_content.add_child(row)
+	_show_button(_primary, "Back", func() -> void: action_picked.emit(&"settings"))
+	_footer_label.text = message if not message.is_empty() else "Click a key to change it."
 
 
 ## A button that reports `action`. `selected` draws it pressed in, to mark the current choice.

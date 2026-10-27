@@ -67,9 +67,15 @@ placeholder and does not yet follow these decisions; see "What this changes".
   the moment), **Stores** (where the
   settlement is and the exact wood and food: the numbers P2 keeps off the
   strip), **Settings** (window mode, size, always on top, move to the next screen; remembered in
-  its own file, separate from the save) and Quit. No counters, clocks or speed controls: time of
+  its own file, separate from the save) and Quit. **Edit shortcuts** in Settings enables/disables
+  and rebinds the window keys: **1/2/3** for Strip/Corner/Window and **-/+** (also `=` and
+  numpad -/+) for size. Click a binding, then press a key (with optional modifiers); Esc cancels.
+  Conflicts and navigation/developer keys are rejected with a message. Reset defaults restores
+  all five bindings. Shortcuts work only while the game has keyboard focus, are on by default,
+  and are saved with the window settings; disabling them leaves mouse controls and navigation
+  intact. No counters, clocks or speed controls: time of
   day reads from the light, and time never pauses. The text overlay (day, stock, speed, the last
-  journal line) and the dev keys (mode, speed, bot) are developer tools behind `--dev` (or `--hud`
+  journal line) and the dev keys (diagnostics, speed with `[ ]`, bot) are behind `--dev` (or `--hud`
   for the overlay alone), so they cannot block the desktop or tempt the player to watch numbers.
 - **P13 A decision is a fork, not a favour.** (1) A decision is only asked while at least two of
   its answers can be picked right now (`EventDef.min_choices`, default 2); one answer is nothing to
