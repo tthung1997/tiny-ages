@@ -1,6 +1,6 @@
 // @open art/reference/ui_achievements.png
-// @canvas 440x20
-// The achievement icons, one 440x20 sheet of 22 round medals (20x20 each, in the order of
+// @canvas 560x20
+// The achievement icons, one 560x20 sheet of 28 round medals (20x20 each, in the order of
 // AchievementPresenter.ICON_ORDER, then a plain rosette for any achievement without its own)
 // -> art/reference/ui_achievements.png and game/assets/ui/achievements.png. The cell order is
 // mirrored in game/scripts/ui/achievement_presenter.gd; append new icons at the end.
@@ -124,9 +124,60 @@ function rosette(g) {
   g.ell(6, 5, 3.6, 3.6, '#e8504a'); g.ell(6, 5, 1.8, 1.8, CREAM);
 }
 
+// ---- the Iron Age (issue #35) -----------------------------------------------------------------
+var FE = '#4a505c', FEL = '#9aa5b5', FED = '#2c313b';
+function bloom(g) { // first_bloom: a glowing lump of iron held in tongs
+  g.line(0, 11, 5, 7, FE, 1); g.line(2, 11, 6, 8, FE, 1); g.px(0, 10, FEL); g.px(1, 11, FED);
+  g.ell(7.5, 4.5, 3.6, 3, '#e8504a'); g.ell(7.5, 4.5, 2.7, 2.2, '#f59a3a'); g.ell(7.5, 4.5, 1.4, 1.2, '#ffe27a');
+  g.px(6, 3, '#fff6c8'); g.px(5, 6, FEL); g.px(4, 7, FEL); g.px(10, 1, '#ffe27a'); g.px(11, 3, '#f59a3a');
+}
+function shareSheaf(g) { // fuller_harvest: a sheaf of wheat over an iron plough share
+  var tops = [[1, 2], [3.5, 1], [6, 0], [8.5, 1], [11, 2]];
+  for (var t = 0; t < tops.length; t++) {
+    g.line(6, 7, Math.round(tops[t][0]), Math.round(tops[t][1]) + 1, '#a8a040', 1);
+    g.ell(tops[t][0], tops[t][1], 1.1, 1.7, '#e6c84a'); g.px(tops[t][0], tops[t][1], '#f7e48a');
+  }
+  g.rect(5, 5, 3, 2, '#a8452f'); g.px(5, 5, '#d8674a');
+  g.rect(3, 8, 9, 1, FEL); g.rect(2, 9, 8, 1, FE); g.rect(1, 10, 6, 1, FE); g.px(0, 11, FEL); g.px(1, 11, FEL);
+  g.px(11, 8, FED); g.px(10, 9, FED); g.px(7, 10, FED);
+}
+function hillFort(g) { // the_hill_fort: a ringed hill with a timber rampart on top
+  g.ell(6, 12, 6.2, 6.4, '#5fae58'); g.ell(6, 12, 4.6, 4.6, '#4a9a4a');
+  g.px(1, 8, '#3f7a3a'); g.px(2, 7, '#3f7a3a'); g.px(10, 8, '#3f7a3a'); g.px(9, 7, '#3f7a3a');
+  g.rect(3, 5, 6, 4, '#b0793f'); g.rect(3, 5, 6, 1, '#d9a566'); g.rect(3, 8, 6, 1, '#8a5a36');
+  for (var s = 3; s < 9; s += 2) { g.px(s, 4, '#b0793f'); g.px(s, 3, '#d9a566'); }
+  g.rect(5, 6, 2, 3, FED); g.px(5, 6, FE); g.px(6, 6, FE);
+  g.px(2, 10, '#3f7a3a'); g.px(9, 10, '#3f7a3a'); g.rect(4, 10, 4, 1, '#3f7a3a');
+}
+function weighedCoin(g) { // silver_by_weight: a balance with a silver coin in one pan
+  g.rect(5, 2, 2, 8, FE); g.rect(5, 2, 1, 8, FEL); g.rect(3, 10, 6, 1, FED); g.rect(4, 9, 4, 1, FE);
+  g.rect(1, 2, 10, 1, FEL); g.px(0, 3, FEL); g.px(11, 3, FEL);
+  g.line(1, 3, 1, 6, FED, 1); g.line(10, 3, 10, 6, FED, 1);
+  g.rect(0, 7, 4, 1, FE); g.rect(8, 7, 4, 1, FE);
+  g.ell(2, 5, 2.1, 2.1, '#6e7788'); g.ell(2, 5, 1.3, 1.3, '#f4f7fb'); g.px(2, 4, '#9aa5b5');
+  g.rect(9, 5, 2, 2, '#6f6c78'); g.px(9, 5, '#8d8a93');
+}
+function tablet(g) { // written_word: a clay tablet pressed with signs
+  g.rect(2, 1, 8, 10, '#c98a55'); g.rect(3, 0, 6, 12, '#c98a55');
+  g.rect(2, 1, 1, 9, '#e0a874'); g.rect(3, 0, 5, 1, '#e0a874'); g.rect(9, 2, 1, 9, '#8f4f38'); g.rect(3, 11, 6, 1, '#8f4f38');
+  var rows = [[4, 6, 8], [4, 5, 8], [5, 7], [4, 6, 7]];
+  for (var r = 0; r < rows.length; r++) {
+    for (var c = 0; c < rows[r].length; c++) { g.px(rows[r][c], 2 + r * 2, INK); g.px(rows[r][c], 3 + r * 2, r % 2 ? '#6a3f2a' : INK); }
+  }
+}
+function longship(g) { // name_abroad: a deep-keeled ship under a square sail, a pennant at the mast
+  g.rect(6, 0, 1, 8, WOOD); g.rect(7, 0, 3, 1, '#e8504a'); g.px(10, 1, '#e8504a');
+  g.rect(2, 2, 9, 5, '#f3e9d2'); g.rect(2, 2, 9, 1, '#ffffff'); g.rect(2, 4, 9, 1, '#4a7fa8'); g.rect(2, 6, 9, 1, '#d8c8a0');
+  g.rect(6, 2, 1, 5, WOOD);
+  g.rect(1, 8, 10, 2, '#5a3a26'); g.rect(1, 8, 10, 1, '#8a5a36'); g.rect(3, 10, 6, 1, '#3a281a');
+  g.px(0, 7, '#8a5a36'); g.px(0, 8, '#5a3a26'); g.px(11, 7, '#8a5a36'); g.px(11, 8, '#5a3a26');
+  for (var x = 0; x < 12; x++) g.px(x, 11, (x % 4 < 2) ? '#4a9ac8' : '#8fbfe0');
+}
+
 var GLYPHS = [fire, stoneTools, food, stories, group, garden, roof, harvest, clay, cloth, village,
-  greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail, rosette];
-var SHEET = new Buf(440, 20);
+  greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail,
+  bloom, shareSheaf, hillFort, weighedCoin, tablet, longship, rosette];
+var SHEET = new Buf(560, 20);
 for (var i = 0; i < GLYPHS.length; i++) {
   var medal = new Buf(18, 18);
   medal.ell(8.5, 8.5, 8.6, 8.6, RIM); medal.ell(8.5, 8.5, 7.2, 7.2, CREAM);

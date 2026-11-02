@@ -27,7 +27,11 @@ func _dress_for(sim: Simulation, outfit: StringName) -> void:
 		VillagerOutfit.BRONZE:
 			sim.world.era_order = 2
 			sim.world.achievements.append(&"first_casting")
-	assert_eq(VillagerOutfit.for_world(sim.world), outfit)
+		VillagerOutfit.CHECKED:
+			sim.world.era_order = 3
+		VillagerOutfit.IRON:
+			sim.world.era_order = 3
+			sim.world.achievements.append(&"first_bloom")
 
 
 func test_the_view_starts_in_furs() -> void:

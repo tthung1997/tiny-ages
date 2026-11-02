@@ -155,7 +155,9 @@ func test_nobody_is_sent_to_stand_behind_a_building() -> void:
 
 func test_buildings_stand_on_the_back_lane_with_the_cave() -> void:
 	var last: int = WorldLayout.ERA_DIRS.size() - 1
-	for building_id: StringName in [&"hut", &"drying_rack", &"smithy", &"trading_post"]:
+	for building_id: StringName in [
+		&"hut", &"drying_rack", &"smithy", &"trading_post", &"bloomery", &"granary",
+	]:
 		var slot: Dictionary = WorldLayout.BUILDINGS[building_id]
 		assert_eq(int(slot["foot"]), WorldLayout.BACK_LANE, "%s's foot" % building_id)
 		assert_eq(int(slot["z"]), WorldLayout.BACK_LANE, "%s's depth" % building_id)
@@ -166,6 +168,26 @@ func test_buildings_stand_on_the_back_lane_with_the_cave() -> void:
 			absi(bottom - WorldLayout.BACK_LANE) <= 1,
 			"%s's art ends at row %d, not on the back lane" % [building_id, bottom]
 		)
+
+
+func test_no_building_covers_another_by_more_than_a_quarter() -> void:
+	var last: int = WorldLayout.ERA_DIRS.size() - 1
+	var rects: Dictionary = {}
+	for building_id: StringName in WorldLayout.BUILDINGS:
+		var path: String = WorldLayout.piece_path(StringName("building_%s" % building_id), last)
+		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()
+		used.position += Vector2i(WorldLayout.building_offset(building_id))
+		rects[building_id] = Rect2(used)
+	var ids: Array = rects.keys()
+	for i: int in ids.size():
+		for j: int in range(i + 1, ids.size()):
+			var a: Rect2 = rects[ids[i]]
+			var b: Rect2 = rects[ids[j]]
+			var common: float = a.intersection(b).get_area()
+			var share: float = common / minf(a.get_area(), b.get_area())
+			assert_true(share <= 0.25, "%s and %s cover each other (%d%%)" % [
+				ids[i], ids[j], int(share * 100.0)
+			])
 
 
 func test_every_prop_that_is_a_building_or_a_yard_is_on_the_back_lane() -> void:

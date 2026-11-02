@@ -8,7 +8,7 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## Art folders by era order. A piece is found by looking from the current age back to the first, so
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
-const ERA_DIRS: Array[String] = ["cave", "settled", "bronze"]
+const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron"]
 ## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
 ## Role overlays (an apron, a pack) drawn over any villager, one sheet per profession.
@@ -44,9 +44,13 @@ const STATIC_Z: Dictionary = {&"static_back": 10, &"static_mid": 70}
 ## Where props live (docs/ages.md B10): a place is a named patch of the world, in camp pixels
 ## (x, y, width, height), tied to something real: the yard in front of the cave, the river bank, the
 ## village at the west forest's edge, the east shore. A prop (`SceneProps`) names its place and its
-## art must sit inside it, so "where does this go?" has one answer. Mirrors the art scripts.
+## art must sit inside it, so "where does this go?" has one answer. Mirrors the art scripts. The cave
+## mouth takes in the opening (where the door goes, from its crown at y 47 down) as well as the
+## ground in front, where the pots stand.
 const PLACES: Dictionary = {
-	&"cave_mouth": Rect2(0, 60, 88, 21),
+	&"cave_mouth": Rect2(0, 46, 88, 35),
+	# The top of the cave's cliff, above the mouth: the standard stands on its edge (tools/art).
+	&"cave_cliff": Rect2(0, 0, 88, 40),
 	&"cave_yard": Rect2(88, 62, 118, 19),
 	&"river_bank": Rect2(264, 56, 120, 25),
 	&"west_market": Rect2(-384, 36, 56, 45),
@@ -74,6 +78,11 @@ const BUILDINGS: Dictionary = {
 	&"trading_post": {"cx": 108, "foot": 67, "z": 67, "at": Vector2(0, -12)},
 	# The Quay stands in the river's far lane above the stepping stones.
 	&"quay": {"cx": 338, "foot": 72, "z": 72, "at": Vector2(0, 0)},
+	# The Iron Age's two buildings (art drawn in place, tools/art/iron_camp.js): the Bloomery
+	# against the cave's flank, beside the Smithy's yard, and the Granary, a raised store on
+	# staddles, in front of the mammoth so the animal shows between its legs.
+	&"bloomery": {"cx": 85, "foot": 67, "z": 67, "at": Vector2(0, 0)},
+	&"granary": {"cx": 234, "foot": 67, "z": 67, "at": Vector2(0, -1)},
 }
 const FLOWER_Z: int = 73
 

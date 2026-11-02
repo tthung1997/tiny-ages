@@ -24,7 +24,9 @@ func test_each_world_wears_what_it_has_earned() -> void:
 		[2, [&"woven_cloth"], VillagerOutfit.TOWN],
 		[2, [&"first_casting"], VillagerOutfit.BRONZE],
 		[2, [&"woven_cloth", &"first_casting"], VillagerOutfit.BRONZE],
-		[3, [&"first_casting"], VillagerOutfit.BRONZE],
+		[3, [], VillagerOutfit.CHECKED],
+		[3, [&"first_casting"], VillagerOutfit.CHECKED],
+		[3, [&"first_bloom"], VillagerOutfit.IRON],
 	]
 	for item: Array in cases:
 		var earned: Array[StringName] = []
@@ -48,7 +50,11 @@ func test_a_new_world_wears_furs() -> void:
 
 func test_the_outfits_get_finer_as_the_world_does() -> void:
 	var seen: Array[StringName] = []
-	for step: Array in [[0, []], [1, []], [1, [&"woven_cloth"]], [2, []], [2, [&"first_casting"]]]:
+	var steps: Array = [
+		[0, []], [1, []], [1, [&"woven_cloth"]], [2, []], [2, [&"first_casting"]],
+		[3, []], [3, [&"first_bloom"]],
+	]
+	for step: Array in steps:
 		var earned: Array[StringName] = []
 		earned.assign(step[1])
 		seen.append(VillagerOutfit.for_world(_world(step[0], earned)))
@@ -74,6 +80,9 @@ func test_sheet_paths_sit_in_each_outfits_own_folder() -> void:
 	assert_true(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.TOWN).contains("/town/"))
 	var bronze: String = WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.BRONZE)
 	assert_true(bronze.contains("/fittings/"))
+	assert_true(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.CHECKED).contains("/iron/"))
+	var iron: String = WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.IRON)
+	assert_true(iron.contains("/iron/villagers/fittings/"))
 
 
 func test_the_outfits_are_drawn_differently() -> void:
@@ -82,7 +91,7 @@ func test_the_outfits_are_drawn_differently() -> void:
 		var sheet: Texture2D = load(WorldLayout.villager_sheet_path(&"mira", outfit)) as Texture2D
 		var image: Image = sheet.get_image()
 		seen[image.get_data().hex_encode()] = outfit
-	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "Five outfits, five different sheets")
+	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "Seven outfits, seven different sheets")
 
 
 func test_an_unknown_look_wears_miras_clothes_in_the_same_outfit() -> void:

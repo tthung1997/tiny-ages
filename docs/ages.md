@@ -151,7 +151,7 @@ Decided with the project owner and built: clothes differ by age, an outfit appea
 
 ### Looking ahead: the Iron Age
 
-Direction only (G7; nothing of it is built or drawn, and it can change). **Iron** is the natural next age: its real-world turning points are a metal that is common where bronze's tin is rare, working it at a higher heat, tools and farming that feed bigger towns, walled hill-forts, writing and coin. It is *not* a new game: it uses the same engine, an `EraDef` whose `required_achievements` are the Bronze six, a turn event, content and art.
+Direction only (G7; nothing of it is built or drawn, and it can change). **The design proposal is now "Iron Age" below (issue #35), and it wins where the two differ.** **Iron** is the natural next age: its real-world turning points are a metal that is common where bronze's tin is rare, working it at a higher heat, tools and farming that feed bigger towns, walled hill-forts, writing and coin. It is *not* a new game: it uses the same engine, an `EraDef` whose `required_achievements` are the Bronze six, a turn event, content and art.
 
 How Bronze prepares for it, without building any of it:
 
@@ -176,6 +176,7 @@ How Bronze prepares for it, without building any of it:
 7. **No tree in front of a house.** The west page's pines used to stand on any row, so a house or the cloth line beside one was drawn over a tree whose trunk stood lower (it looked as if it floated). Now every pine of the west page stands behind the village, on the back rows (`tools/art/cave_pages.js`); only stumps, bushes, rocks and the fallen log are on the front rows.
 8. **The wall connects two things**: the low wall (and the Bronze town wall, with its gate tower) runs behind the village from the forest's edge to the cave's flank, with a gate in the middle, instead of floating over the roofs.
 9. **The east spit has work on it**: salt pans (`salt`), a shell heap (`shellfish_gathered`), a driftwood stack (`driftwood_gathered`) and tide baskets (`tide_baskets`), each by the flag that says it was done; and the clay pots stand in front of the cave mouth (`cave_mouth` place), not in the village.
+10. **The cave keeps up with the ages.** The cave itself never changed, so each age leaves a quiet trace on it, with no journal line, sound or flash (P8, P12): a **door in the mouth** that follows the whole arch, one piece per age, each replacing the last (a lashed timber frame with a reed mat; a mud-brick arch with a copper oil lamp; a limewashed arch with an iron-bound door standing open and a lantern), and a **standard on the cliff above**, one piece per age, each replacing the last (a hide pennant on a bone-knobbed pole; a woven banner; a bronze disc with a red tail; an iron-framed slate banner). The pennant is the cave's own and shows from the first day; the rest show from the turn of their age. They wait for nothing the group did, only for the age (`SceneProps.Kind.ALWAYS` with `from_era`; a replaced piece lists every later one in `replaced_by` so none comes back), so a world with nothing earned shows exactly these; the door keeps the firelight and the gathering spots clear (a test checks the pixels). The `cave_mouth` place takes in the opening from its crown (y 46) down, `cave_cliff` is the top of the cliff (the standards stand on its edge, so they are inside the skyline and the click region), and the cave's own pieces are not counted in the per-page budget (they have their own cap). Art: `cave_strip.js` and the end of `settled_camp.js`, `bronze_camp.js` and `iron_camp.js`.
 
 **What Bronze tidies** (built; art `tools/art/bronze_camp.js`):
 
@@ -235,11 +236,205 @@ Twenty-three forks (two answers that each do something, a journal line each, a f
 - **World art** (`tools/art/bronze_camp.js` → `game/assets/world/bronze/`): the Smithy, Trading Post and Quay with their sites, mud-brick Hut and village roofs, the gate tower, the planked boat and reed ship, the potter's yard, the weaver's row, the town wall, the plank bridge, the boats at the quay, the market stalls, council ring, tally post, cart, donkeys, camp road, the two farmsteads and the trading ship.
 - **People and panels**: the town and bronze outfits (`bronze_villagers.js`); role overlays for the Smith (apron, hammer, headband), Trader (pack and rolled blanket), Forager (basket) and Scout (scarf and pack) (`role_overlays.js` → `game/assets/world/roles/<profession>.png`, drawn over any villager in any outfit by `VillagerActor.set_role`, and over the portraits in the villager panel and list); the roles' own thoughts and a few Bronze ones in `VillagerPresenter`; the Bronze panel skin (`ui_skin_bronze.js`) and six achievement medals. `--role=smith,trader,forager` gives the first villagers those professions, to look at them.
 
-**Still to do**: the Iron Age itself (`docs/ages.md`, "Looking ahead"). Everything the Bronze Age designed is built.
+**Still to do**: the Iron Age itself (see "Iron Age" below, proposed). Everything the Bronze Age designed is built.
 
 ### Open questions
 
 None left for the Bronze Age.
+
+## Iron Age
+
+Status: **built (issue #35): the sim, the milestones, the forks, the world art, the clothes, the UI skin and the medals.** The open questions below are settled as recommended, and the Classical Age is chosen as the age after it ("Looking ahead: the Classical Age"; direction only). It follows the Settled and Bronze Ages' shape (G6, G7, P13) and stands on what the Bronze Age left (B9, "Looking ahead: the Iron Age"). What is new is **a harder metal, farming that feeds a bigger town, a fort, coin, writing and a name beyond the sea**. Days are *days into the Iron Age* (`ERA_DAYS_AT_LEAST`; 72 days is a real day). Where this section and "Looking ahead" differ, this one is newer.
+
+The age as a story, one line per milestone: *a harder fire, a better edge, a stronger wall, a measured silver, a written word, a name abroad.*
+
+### Decisions
+
+| # | Decision | Why |
+|---|---|---|
+| I1 | **The gate out of the Bronze Age** is all six Bronze milestones (`first_casting`, `bronze_alloy`, `mud_brick_walls`, `wheel_and_road`, `a_town`, `beyond_the_water`) and **8640 ticks (5 real days)**, as every gate before it (G6). The turn event, **A harder fire**, asks *how* to work the dark stone (see "The turn"). It must read well when neither `dark_stone_*` flag is set: *A stone that rings* needs a curious villager, so a group may never have been asked. | Same pace from age to age; the hidden gate stays hidden (P8). Only `far_shore` is certain (every road to the last Bronze milestone sets it). |
+| I2 | **Two overture forks are added to the Bronze Age's last stretch** (days 330 and 346: *Red water*, *Fuel for the long burn*; see "Ending the quiet stretch"). Both expire with the age. | Its last decision is on day 312 and the gate opens on day 360, the same 48-day silence (about 16 real hours) B2 fixed for the Settled Age. Measured with `sim_timeline.gd -- 1 1250`: *A stone that rings* on day 1033, *Red water* 1052, *Fuel for the long burn* 1068, *A harder fire* 1081, so no gap is longer than 19 game days. |
+| I3 | **No new resource and no new gauge.** Iron and coin are things the group *has* (flags, props, journal lines), as bronze was (B3); iron moves the existing food and wood through forks. Costs are 6-30 wood or food, and `comfortable_stock` stays 40. | P2 and P12: the strip shows two gauges and nothing to manage. |
+| I4 | **No new profession.** The Smith and the Trader keep tilting a day (B4); the Smith's apron and hammer already say "iron". A *Scribe* is left as an open question. | The one engine system B4 added is enough; a new role is an overlay, a thought and a bias for little story. |
+| I5 | **Two new buildings, one real fork** (as B5): the **Bloomery** (craft, a tall clay furnace on the back lane) and the **Granary** (harvest, a raised timber store) are offered together from day 18 and the one not picked stays unbuilt; each milestone has other roads. The Bloomery earns the First Bloom when it stands; the Granary is one road to A Fuller Harvest (a full-granary decision that needs it, as the Trading Post's first load needed the Post). **The Beacon is a prop, not a building**: the fork *A fire the sea can see* (day 286) sets `beacon_lit` and a fire shows on the east headland. | G4 and V10: the world accumulates and slots upgrade in place. A building on the east page would need a new kind of slot for one optional piece. |
+| I6 | **The wall becomes the fort; the town does not move.** The Bronze town wall (or palisade, or ditch) and its gate tower are upgraded *in place* into a timber-laced rampart with an iron-bound gate, and the milestone reads the Bronze answer (`town_wall`, `palisade`, `dug_in`, none) as *The Wheel and the Road* read the herding or farming path. The hill-fort is a milestone, a flag (`hill_fort`) and a prop, not a new building. | A new hill is a new page of art and a new walk for villagers; an upgrade in place is the cheap, tidy answer (V10, B10) and it makes the Bronze wall matter. |
+| I7 | **The sea brings people, not goods.** The far shore (`far_shore`) is where the age's outward look goes: a ship comes up the river and asks the town's name, and the last milestone is *being known* (`known_abroad`). Nothing is lost for not having a Quay or a Beacon; a built Quay or Beacon only changes the picture. | #17 made the coast, Bronze put a ship on it; the next thing an open sea can do is bring someone. It also reads as the seed of the age after Iron without designing it. |
+| I8 | **Room for a bigger town**: `EraDef.housing` 12 (Bronze 10), the Bronze wall flags count as before, `hill_fort` adds +4, and `SimConfig.max_villagers` goes from 22 to **28**. Everyone still eats the same. | The age is about farming that feeds more mouths (milestone 2). A cap is only a ceiling; the group still grows by forks, never by a timer. |
+| I9 | **Clothes, one pair per age** (B8): **checked wool** at the turn and **iron fittings** when the First Bloom is earned (see "Clothes"). | The age should turn on the people first. |
+| I10 | **The Iron Age has no gate out in the build** (G7), but it is *designed toward one*: its six milestones are the gate of the **Classical Age**, which is added later as data. Every milestone and several forks hand something to it, and the last milestone sets `known_abroad`, which the Classical turn reads as `far_shore` is read here (see "Looking ahead: the Classical Age"). | Open-ended; nothing is ever "finished", and the transition does not have to be invented later. |
+| I11 | **Catch-up stays exact.** `advance_real_time(now)` must still equal ticking the same amount (tested), so no coarser offline step is proposed. Measure first (see "Catch-up cost"); optimise only if Iron is over budget. | The guarantee is what keeps saves and offline play honest. |
+
+### The turn: *A harder fire*
+
+Opens when the gate is met. The group has a stone that is *dark*, not green: heavy, it will not melt in the bronze fire, and it rings if struck (`dark_stone_bell` if they hung it; `dark_stone_tried` if they put it in the fire and it only glowed and blackened). It asks what to do with it. Both answers advance the age and set the age's **path**, which decides which road to the first milestone comes first (the other path's road comes a month later, and beating a lump flat is open to everyone):
+
+- **Work it here** (`path_bloomery`): the group digs bog iron from the red mud of the river flats and builds a hotter furnace (taller, fed with more charcoal and a pair of bellows). The home road: furnace, smith, Bloomery.
+- **Follow it to the source** (`path_ore`): a few people walk up to the dark hills the stone came from, and what they carry back opens a road. The source road: ore, travellers, the Granary's trade in iron tools.
+
+The text mentions `dark_stone_bell` or `dark_stone_tried` only through two quiet lines afterwards (the bell was the first sound of iron; the blackened lump was a question), as Bronze did with `copper_tried` and `green_beads`.
+
+### Milestones
+
+Six hidden achievements staged over the age (G6), each with more than one road and one road open to every group, so no earlier answer (no wall, no kiln, no neighbours, no boat, no tally) can block one. One table, `IRON_DAY`, in `tools/build_sim_content.gd`, the same spacing as `BRONZE_DAY`.
+
+| # | Milestone | Real-world turning point | Ways it can happen | From day | On screen |
+|---|---|---|---|---|---|
+| 1 | **The First Bloom** | Smelting iron in a bloomery | Build the Bloomery; or pack the furnace with ore and charcoal and burn it a night (`path_bloomery` from day 18, `path_ore` from 48); or a smith from over the ridge (`good_neighbours`) or a traveller by the road (`path_ore`, from day 30) shows how; or, for every group from day 54, take a black lump from the slag and hammer it until it rings | 18 | A bloomery by the Smithy, a slag heap, iron fittings on everyone |
+| 2 | **A Fuller Harvest** | Iron tools, deeper ploughing, bigger stores (needs 1) | A full granary (needs the Granary: fill it to the roof, or leave a third empty); or tip the digging stick with an iron share or fit a plough (`path_agriculture`); or iron shears, or a knife and patience (`path_herding`); or, from day 90 for every group, an iron axe clears a new field at the pine edge | 54 | A plough team or shearing at the village, a raised granary |
+| 3 | **The Hill-fort** | Fortified hill-forts | Heighten the brick wall (`town_wall`: lace it with oak, 14 wood, or bank earth behind it, 8); replace the stakes (`palisade`: oak posts and nails, 10 wood, or nail the old ones together); deepen the ditch (`dug_in`: dig it out, 8 wood, or throw up a bank); a bank and ditch or a stockade on the ridge above the town (12 or 10 wood, open to every group); or, from day 144 for every group, bind the gate in iron (free). Sets `hill_fort` | 108 | The wall redrawn as a rampart, an iron-bound gate tower |
+| 4 | **Silver by Weight** | Coinage (needs 2) | Cut a lump of silver to the town's weight stones (`stone_weights`) or handfuls (`handful_weights`); or copy a stranger's coin (needs the Trading Post); or, from day 198 for every group, press a mark in a lump or keep a standard lump by the gate. Sets `coin_struck` | 162 | A stamping anvil and a coin tray at the market |
+| 5 | **The Written Word** | Alphabetic writing (needs 4) | Signs for sounds pressed in clay (`clay_tablets`) or cut in a stick (`knot_cords`); or a name over the gate (needs 3); or, from day 246 for every group, a trader's tablet is copied sign by sign or learned by heart. Sets `letters` | 216 | A writing post in place of the tally |
+| 6 | **A Name Abroad** | The town is known to people it has never met (the outlook; sets `known_abroad`; needs 4) | A boat of goods to the far shore (`dugout_canoe` or `reed_raft`, one road each); or a ship from the far shore comes up the river and asks the name; or a rider arrives by the hard road (`road_laid`); or, from day 288 for every group, cut the name in a rock by the crossing or hang a painted board | 252 | A deep-keeled ship on the sea |
+
+- **P13 holds.** Each milestone decision is a fork whose answers both get there (one sooner, one slower or differently told), no pass answer, and a building is never the only road. Milestones are earned for *anyone* at home, with a trait only making someone likelier (`trait_weights`). `test_sim_iron.gd` fires every answer on every road, then plays the age on both paths, accepting everything and passing on each question twice first, with none of the Bronze answers to lean on.
+- **Why these six.** They are the Iron Age's own turning points, in an order that reads as a story. 3 and 4 do not need each other, so a group that built walls and a group that built a market tell different ages (G2). 5 needs 4 (a thing to count), 4 needs 2 (goods worth weighing) and 6 needs 4 (strangers who want to pay).
+- **A new twist, one per milestone**: 1 is the first *forged* (not cast) thing and the first iron on a person (the fittings), 2 reads the farming or herding path again and is where the Granary and farming meet, 3 reads the Bronze wall answers, 4 reads the Bronze weights answers and the toll, 5 reads the tally the Bronze Age left (`clay_tablets`, `knot_cords`) and 6 reads the boats.
+
+### Which Bronze systems continue and which get a twist
+
+| System | In the Iron Age |
+|---|---|
+| Population and food (#7) | **Continues**, with more room (I8): `housing` 12, `hill_fort` +4, `max_villagers` 28. The Bronze flags still count. |
+| Roles | **Continue** unchanged (I4). The Smith tilts a day toward the forge; a Trader walks between the Trading Post, the market and the gate. |
+| Seasons and weather (#8) | **Continue**. The Bloomery is `exposed`, so a storm can break it like any building (half output, then self-repair); the Granary is not. *Frost in the furnace* waits for winter. |
+| The tide (#9) | **Continues**; Iron adds no tide fork. |
+| River life (#9) | **Continues**; the new ship shares the sea with the fish and the egrets. |
+| Buildings' output | The Bloomery gives a little wood (0.5 a day, charcoal burned for it), the Granary a little food (0.5); neither adds to a full store (`comfortable_stock`). |
+| Costs | 3-14 wood or food. A bot ends Bronze with about 45 wood and 39 food, and the stock stays at 40-55 wood and 39 food through the Iron Age (`sim_timeline.gd -- 1 1250`). |
+
+### Clothes
+
+An outfit at the turn and a finer one at a milestone, as Bronze (B8). Two new looks, appended to `VillagerOutfit` (`CHECKED`, `IRON`), the same 11-cell sheet layout and the same three looks. `VillagerOutfit.for_world` returns the finest outfit earned; an achievement counts only in its own age or later.
+
+| Step | When | Look |
+|---|---|---|
+| Iron, at the turn | `era_order` 3 | **Checked wool**: a long checked tunic over trousers, a cloak pinned at the shoulder with a plain brooch, laced shoes |
+| Iron, finer | `first_bloom` earned (in the Iron Age or later) | **Iron fittings**: the checked wool with a dark iron brooch, belt buckle and boot studs |
+
+Art folders `iron/villagers/checked/` and `iron/villagers/fittings/`, drawn by `tools/art/iron_villagers.js` through the `outfit` option of `vil()` in `lib.js`. Roles stay overlays. A test fails if an outfit has no sheet for a look. Nothing is hinted and an outfit change is quiet (P8, P12).
+
+### What Iron tidies
+
+Same rules as B10: a prop is replaced, retired or waits for an age, and sits in a named place. `test_scene_props.gd` plays the Iron Age too.
+
+| Bronze pieces | Become |
+|---|---|
+| `town_wall`, `building_lookout` (gate tower) | Redrawn in place as the **rampart** and an iron-bound gate (`hill_fort`) |
+| `building_hut`, `west_roof_a`, `west_roof_b`, `building_lookout` | Redrawn in place: timber-and-daub houses with a deep thatch, and an iron-bound gate tower |
+| `east_sail` (trading ship) | A deep-keeled **ship** (`east_deep_ship`) once `known_abroad` is set |
+| `tally_post` | A **writing post** (`writing_post`) once `letters` is set |
+| `tally`, `council` | A **writing post** (`letters`); the council ring stays for the council road |
+| `east_sail` (trading ship) | A deep-keeled **ship** once `known_abroad` is set |
+| `smithy`, `trading_post`, `quay`, `quay_boats`, `market_stalls`, `cart`, `donkeys`, `road_camp`, plank bridge, `potters_yard`, `weavers_row`, `farmstead_farm`, `farmstead_herd` | Stay (G4) |
+
+New pieces, each by a flag, achievement or building and each with a `place` and a `name` (a test enforces both): the Bloomery and Granary (back lane) and their sites; a **slag heap** (`first_bloom`) in `cave_yard`; a **plough team** (`iron_share`) and **shearing pen** (`iron_shears`) at the farmstead in `west_village`; a **coin tray and stamping anvil** (`coin_struck`) in `west_market`; a **standing stone** (`standing_stone`) at the crossing in `river_bank`; and a **beacon** (`beacon_lit`) on the east spit's headland in `east_shore`. The coin tray is a small trestle over the market stall's counter, and the writing post a narrow tablet at the market's left edge, since the market place has no free ground. Art: `tools/art/iron_camp.js` and `iron_villagers.js` into `game/assets/world/iron/`, regenerated with `bundle.py`. A prop's `replaced_by` may be a list (`SceneProps.replacements_of`), so the Bronze low wall stays hidden under the rampart.
+
+### Between the milestones
+
+Twenty-seven forks (two answers that each do something, a journal line each, a flag a later line remembers), paced by `IRON_STORY_DAY`, the last three leading into the Classical turn, 30 ambient lines (`IRON_AMBIENT_CHANCE`; nine after a milestone, four about a trait, and 17 remembering an answer) and the Bronze Age's own. The two Bronze overture forks come first. In `tools/build_sim_content.gd`: `_iron_stories`, `_iron_ambient_lines`.
+
+| Where | Decision | What the answers do |
+|---|---|---|
+| Bronze, 330 | **Red water** | Skim the red scum off the marsh pools into a pot, or dig where the mud is thickest (4 wood) |
+| Bronze, 346 | **Fuel for the long burn** | Stack a second charcoal pit (8 wood), or wait for a day with wind |
+| 2 | **A hotter hearth** | A tall clay furnace (8 wood), or dig it into the bank |
+| 8 | **Downwind** (a social villager) | Move the furnace out of the smoke (6 wood), or ask everyone to keep clear |
+| 14 | **Who learns the slow work** (an industrious villager) | Take an apprentice, or every household learns a little |
+| 24 | **Slag** (needs the First Bloom) | Pave the lane with it, or heap it behind the furnace |
+| 32 | **The first iron** (needs the First Bloom) | A knife for everyone, or one good axe-head (+6 wood) |
+| 40 | **Nails over the door** (a social villager) | One over every door against trouble, or keep the nails for timbers (+3 wood) |
+| 66 | **A pot that does not break** (needs the First Bloom) | Hang an iron cauldron over the fire (5 wood), or keep to the clay pots |
+| 78 | **Rust** (needs the First Bloom) | Grease the tools (3 food), or keep them dry in the cave |
+| 90 | **Frost in the furnace** (winter, needs the First Bloom) | Keep it lit all winter (10 wood), or bank it and wait for spring |
+| 98 | **The tin trader** (needs the First Bloom) | Offer iron in place of tin (+4 wood), or keep buying bronze for the fine work (4 food) |
+| 112 | **Timber for the rampart** (needs the Hill-fort) | Oak from the far wood (12 wood), or the old gate's timbers |
+| 120 | **A name for the fort** (a social villager) | After the hill, or after the first family |
+| 130 | **Water in the ditch** (needs the Hill-fort) | Cut a channel (12 wood), or let it fill |
+| 140 | **Beans on the bank** (farmers) / **Sheep on the bank** (herders) | Plant it (+3 food), or leave it to the grass |
+| 150 | **Hands for the field** (needs A Fuller Harvest and room) | Take a family in (a new villager), or send them on with grain (4 food) |
+| 170 | **What goes on the coin** (needs Silver by Weight) | A tree, or a face |
+| 174 | **Who counts** (a social villager) | Someone keeps the count, or everyone counts aloud |
+| 186 | **Bad silver** (needs Silver by Weight) | Test it on a touchstone (3 food), or trust the trader |
+| 198 | **Who pays at the gate** (needs Silver by Weight) | Take a coin from every cart (+3 food), or waive it for neighbours |
+| 228 | **A name over the door** (needs the Written Word) | Cut it in the lintel, or press it in a clay plaque |
+| 240 | **Stone from the hill** (needs the Hill-fort) | Wedge a few blocks out of the ridge with iron and set them at the gate's foot (10 wood, `cut_stone`), or keep to timber and earth (`timber_town`) |
+| 262 | **Strangers' words** (a curious villager, needs `known_abroad`) | Learn theirs (`learned_words`), or teach them ours (`taught_words`) |
+| 286 | **A fire the sea can see** (needs `known_abroad`) | Light the headland (4 wood, `beacon_lit`), or trust the stars |
+| 312 | **A stone with a name** (a curious villager, needs `known_abroad`) | Stand it at the crossing (`standing_stone`), or cut it over the gate (`gate_name`) |
+| 330 | **A rider with a sash** (overture; needs `known_abroad`) | Send a guide to meet them on the road (`envoy_guided`), or wait for them at the gate (`envoy_waited`) |
+| 346 | **A table for strangers** (overture; needs `known_abroad`) | Lay a long table for the guests (10 food, `long_table`), or keep a watch at the gate by night (`night_watch`) |
+
+- The last answers set flags the Classical Age reads: `known_abroad`, `hill_fort`, `cut_stone` / `timber_town`, `coin_struck` (and the coin's tree or face), `letters`, `learned_words` / `taught_words`, `standing_stone` / `gate_name`, `envoy_guided` / `envoy_waited`.
+- The two overture forks fill the stretch between the last story fork (312) and the Classical gate (360), as B2 did. They expire with the age, and the Classical turn never depends on what they answered.
+- Until the Classical Age is built, the Iron Age simply keeps going (G7).
+
+### Looking ahead: the Classical Age
+
+Direction only (G7; not built and not drawn, and it can change), but designed now so the Iron Age's milestones lead somewhere (the lesson of B9). The age after Iron is the **Classical Age**: real-world turning points are the city, public life, written law, stone building, water brought in, learning and a stage, and a world of other cities. It is *not* a new game: an `EraDef` whose `required_achievements` are the Iron six and whose gate is those six plus **8640 ticks**, a turn, content and art.
+
+**The turn: *A seat at the table*** (working name). The strangers who asked the town's name (`known_abroad`, which every road to milestone 6 sets) send word: the town is big enough to be asked to be a city. Both answers advance the age, as the earlier turns did, and set its path:
+
+- **Keep our own ways** (`path_assembly`): the town gathers at the standing stone and agrees how to live. The home road: law, a square, a council.
+- **Take a place among theirs** (`path_league`): the town sends for the far shore's laws and joins its web of cities. The far road: ships, envoys, a harbour.
+
+Neither is a penalty or a conquest (P13): the age is open-ended, and neither answer is "worse". The turn must read well with none of the optional Iron flags set; it only *remembers* them in quiet lines (`standing_stone` or `gate_name`, `learned_words` or `taught_words`, the coin's tree or face, `envoy_guided` or `envoy_waited`).
+
+**What each Iron milestone hands over.**
+
+| Iron milestone | What the Classical Age takes from it |
+|---|---|
+| 1. The First Bloom | Iron is the tool metal: the chisel and the wedge that make stone building possible (with the *Stone from the hill* fork, `cut_stone`) |
+| 2. A Fuller Harvest | A surplus that can feed people who do not farm (a bigger `max_villagers`, a market that is more than a stall) |
+| 3. The Hill-fort | A citadel to build a town below: `hill_fort` is the *upper town* of a city |
+| 4. Silver by Weight | Coin makes a market, a treasury and a toll that is more than food: the coin's tree (a town) or face (a chief) colours how the age's own lines talk about rule |
+| 5. The Written Word | Law that is written, and the first books: `letters` is a precondition of the age's law and learning milestones |
+| 6. A Name Abroad | The outward look: `known_abroad` is what the turn reads, and the far shore is where the age's last milestone goes |
+
+**Milestones, sketched** (six, each with several roads and one open to every group, days spaced like `BRONZE_DAY`; names and roads are to be designed when the age is, not now):
+
+| # | Milestone | Real-world turning point | Reads |
+|---|---|---|---|
+| 1 | **Paved Streets** | A laid-out town, stone building | `cut_stone` or `timber_town`, `road_laid` |
+| 2 | **Water from Afar** | Aqueducts, drains, public baths | `well_dug` or `well_carriers` (Settled answers), the river answers |
+| 3 | **The Law** | Written law and courts | `letters`, the coin's face or tree, `toll` / `open_road` |
+| 4 | **The Square** | The agora or forum: public life | `market_day`, `council`, `standing_stone` or `gate_name`, `long_table` |
+| 5 | **The Lamp and the Stage** | Learning, theatre, a festival of the whole town | `learned_words` or `taught_words`, the `festival` answer, `letters` |
+| 6 | **The Wider World** | Long roads and a harbour of many ships (the outlook; sets a flag for the age after) | `path_assembly` or `path_league`, `quay_built` or the Beacon, `known_abroad` |
+
+**Needs of the age, noted early so they are not a surprise.** Another outfit pair and a Classical panel skin; the Iron buildings stay and the town grows around them (G4); a `max_villagers` step (probably 36); and, again, a catch-up measurement before adding another age (I11).
+
+### Catch-up cost
+
+Launch catch-up is `advance_real_time(now)`: exact, capped at `max_catch_up_ticks` (8760, one game year), and each tick scans every event, the cheap checks first (`EventDef.may_be_open`, then `_passes_history`, then `SimCondition.all_met`). The cost grows with the number of events (about 450 now, and every age adds a few dozen) and with villagers. Measured (`advance_ticks(480)`, 20 game days, headless, one seed, ms):
+
+| Age | 3 villagers | 20 villagers |
+|---|---|---|
+| Cave | 350 | 582 |
+| Settled | 505 | 817 |
+| Bronze | 556 | 848 |
+| Iron | 625 | 937 |
+
+Iron costs about 12% more than Bronze, so a full year of catch-up (the cap, 8760 ticks) is about 11 s on a small world and was about 10 s in Bronze. It is exact and nothing was changed to save time. Every Iron event sets `ERA_AT_LEAST` and `ERA_DAYS_AT_LEAST`, so `EventDef.may_be_open` drops it without touching the world. If a later age goes over budget, the exact options are an *upper* era gate in `may_be_open` for events that expire with their age, and skipping `_roll_new_event` while no decision slot is free and no ambient event can fire. A coarser step would break the "catch-up equals ticking" guarantee (I11) and is not proposed.
+
+### What is built
+
+- **Sim** (`tools/build_sim_content.gd`, then re-run it to regenerate `resources/sim/`): the Iron `EraDef` (order 3, housing 12, gate and turn as I1), the turn *A harder fire*, the building fork *Building in iron*, the milestone roads (`_first_bloom_roads`, `_fuller_harvest_roads`, `_hill_fort_roads`, `_silver_by_weight_roads`, `_written_word_roads`, `_name_abroad_roads`; 27 decisions), the 27 forks and 30 lines above, the Bloomery and Granary, and the two Bronze overture forks. Engine changes: `SimConfig.max_villagers` 22 → 28 and nothing else (`hill_fort` is one more entry in `flag_housing`).
+- **Tests**: `test_sim_iron.gd` (the gate, the turn, every answer on every road, the late roads open to every group, the buildings, a whole age on both paths and with passes), `test_scene_props.gd`, `test_villager_outfit.gd`, `test_achievements.gd` and the panel tests for the Iron pieces, outfits, medals and skin.
+- **People and panels**: the checked wool and iron fittings (`iron_villagers.js`), the Iron panel skin (`ui_skin_iron.js`: a dark iron frame with rust trim round a pale limewashed wall) and six medals (`ui_achievements.js`).
+- **World art**: `tools/art/iron_camp.js` → `game/assets/world/iron/` (see "What Iron tidies").
+
+**Still to do**: the Classical Age (see "Looking ahead"). Everything the Iron Age designed is built; it has no gate out, as G7 says, and the three forks that lead into the next age are in.
+
+### Open questions
+
+Settled with the project owner as recommended, and built:
+
+1. **Rampart in place** rather than a new hill-fort (I6).
+2. **A Beacon**: built as a prop shown by `beacon_lit`, not as a building (I5).
+3. **28 villagers** (catch-up measured above).
+4. **No Scribe profession** for now (I4).
+
+Still open: the working names (*A harder fire*, `path_bloomery` / `path_ore`, and the Classical turn *A seat at the table*, `path_assembly` / `path_league`) and the Classical Age's milestone roads, which are designed with that age.
 
 ## Candidate ages (for reference)
 
@@ -248,7 +443,9 @@ None left for the Bronze Age.
 | 1. Cave | Hunter-gatherers, fire, hides, flint tools | Caves, fire pits, lean-tos, furs, big game |
 | 2. Settled | Farming, herding, pottery, weaving | Huts, fields, pens, storage (reuses much of the current farm/tent art) |
 | 3. Bronze | Metal, trade, walls, first towns (proposed: "Bronze Age: design proposal") | Mud-brick, workshops, roads, boats |
-| 4+ | Iron (next, direction only: see "Looking ahead: the Iron Age"), then classical, medieval | Out of scope for now |
+| 4. Iron | A harder metal, farming for bigger towns, a fort, coin, writing, a name abroad (proposed: "Iron Age") | Forts, granaries, bloomeries, ships |
+| 5. Classical | Cities, law, stone building, water, learning, a wider world (direction: "Looking ahead: the Classical Age", under the Iron Age) | Paved streets, a square, aqueducts |
+| 6+ | Medieval and later | Out of scope for now |
 
 Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a horizon only. Not yet confirmed.
 
