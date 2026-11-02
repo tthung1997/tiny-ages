@@ -123,7 +123,13 @@ PAL.fieldWren = palWith(PAL.clothWren, { shirt: '#bdb288', shirtD: '#968e62', pa
 PAL.townMira = palWith(PAL.clothMira, { shirt: '#dccba0', shirtD: '#b8a57a', cloak: '#9a5a3c', cloakD: '#744230', trim: '#c0392b' });
 PAL.townTheo = palWith(PAL.clothTheo, { shirt: '#c9a45a', shirtD: '#a3823f', cloak: '#55708f', cloakD: '#3f5670', trim: '#c0392b' });
 PAL.townWren = palWith(PAL.clothWren, { shirt: '#e0d6b8', shirtD: '#bcb08e', cloak: '#6a8a5a', cloakD: '#4f6a43', trim: '#c0392b' });
+// Iron Age checked wool (use with outfit: 'checked' | 'iron'): `shirt` and `shirtD` are the tunic's
+// ground, `chkA` and `chkB` the two lines of the check, `cloak` and `cloakD` the pinned cloak.
+PAL.checkedMira = palWith(PAL.clothMira, { shirt: '#8c9bb3', shirtD: '#6b7a94', chkA: '#4f5b86', chkB: '#d1a548', cloak: '#b08a46', cloakD: '#8a6a32', pants: '#4a4f63' });
+PAL.checkedTheo = palWith(PAL.clothTheo, { shirt: '#bba66c', shirtD: '#968350', chkA: '#3f4f7a', chkB: '#7d8aa0', cloak: '#5b6f8a', cloakD: '#44546b', pants: '#3f4658' });
+PAL.checkedWren = palWith(PAL.clothWren, { shirt: '#a9b1bb', shirtD: '#868e9a', chkA: '#566a8a', chkB: '#b8903f', cloak: '#6f7e72', cloakD: '#566456', pants: '#4a4f58' });
 var BRONZE = '#d9a23a', BRONZE_L = '#f7d56a', BRONZE_D = '#9a6a1f';
+var IRON_D = '#2c313b', IRON_M = '#555d6b', IRON_L = '#9aa5b5';
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
@@ -133,7 +139,10 @@ var BRONZE = '#d9a23a', BRONZE_L = '#f7d56a', BRONZE_D = '#9a6a1f';
 //       palette needs `trim`), stone: true (stone tool heads),
 //       outfit: 'field' (hemp tunic, rope belt, rolled sleeves, bare feet; palette needs `patch`) |
 //       'town' (long belted tunic with a red hem, hooded cloak, boots; palette needs `cloak`,
-//       `cloakD`, `trim`) | 'fittings' (town plus bronze pin, buckle and arm rings) }
+//       `cloakD`, `trim`) | 'fittings' (town plus bronze pin, buckle and arm rings) |
+//       'checked' (long checked wool tunic over trousers, a cloak pinned at the shoulder, laced
+//       shoes; palette needs `chkA`, `chkB`, `cloak`, `cloakD`) | 'iron' (checked plus a dark iron
+//       brooch, buckle and boot studs) }
 // Draw into a Buf(27, 27); feet land on row 26, body centre column 13, faces right.
 // Use mirror() for left-facing. Place with outlined(buf, OUT).
 function vil(o) {
@@ -150,14 +159,23 @@ function vil(o) {
     if (wk == 2) { l1 += 2; l2 -= 2; }
     if (wk == 3) h2 = lh - 1;
     var ofit = o.outfit, field = ofit == 'field', brz = ofit == 'fittings', town = ofit == 'town' || brz;
+    var irn = ofit == 'iron', chk = ofit == 'checked' || irn;
     var sole = o.fur ? '#5a4636' : '#4a3224';
     if (field) { legc = SKD; sole = '#c98a6a'; }
     if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
+    if (chk) sole = '#7a5a3a';
     function leg(x, h) {
       b.rect(x, legTop - dy, lw, h - 1 + dy, legc); b.rect(x, legTop + h - 1, lw + 1, 1, sole);
       if (town) b.rect(x, legTop - dy, lw, 1, '#9a7448'); // boot cuff
+      if (chk) { // a laced shoe, studded with iron on the finer outfit
+        b.px(x + 1, legTop + h - 1, '#e8dcb8');
+        if (irn) { b.px(x, legTop + h - 1, IRON_L); b.px(x + 2, legTop + h - 1, IRON_L); }
+      }
     }
     leg(l1, h1); leg(l2, h2);
+    if (chk) { // the cloak hanging down the back, no hood
+      b.rect(bx - 3, bodyTop, 3, bh + 1, cl.cloakD); b.rect(bx - 3, bodyTop, 1, bh + 1, cl.cloak);
+    }
     if (town) { // the hood bunched behind the head, and the cloak hanging down the back, red at its edge
       b.ell(hx - 2, hcy + 1, rx + 1, ry + 0.5, cl.cloak);
       b.rect(bx - 3, bodyTop, 3, bh + 2, cl.cloakD); b.rect(bx - 3, bodyTop, 1, bh + 2, cl.cloak);
@@ -202,6 +220,17 @@ function vil(o) {
       b.rect(bx - 1, bodyTop + bh, bw + 2, 1, cl.trim);
       b.rect(bx - 1, bodyTop + 2, bw + 1, 1, cl.cloak); b.rect(bx - 1, bodyTop + 3, 1, 2, cl.cloakD);
       if (brz) { b.rect(bx + bw - 3, bodyTop + bh - 1, 2, 1, BRONZE_L); b.px(bx + 3, bodyTop + 2, BRONZE_L); b.px(bx + 3, bodyTop + 3, BRONZE_D); }
+    }
+    if (chk) { // a long checked tunic to the knee, a leather belt, the cloak pinned over one shoulder
+      b.rect(bx, bodyTop, bw, bh + 1, cl.shirt);
+      for (var cy = 0; cy <= bh; cy++) for (var cxx = 0; cxx < bw; cxx++) {
+        if (cxx % 3 == 1) b.px(bx + cxx, bodyTop + cy, cl.chkA);
+        else if (cy == 2 || cy == bh) b.px(bx + cxx, bodyTop + cy, cl.chkB);
+      }
+      b.rect(bx, bodyTop + bh - 1, bw, 1, '#4a3626');
+      b.rect(bx, bodyTop, bw - 1, 2, cl.cloak); b.rect(bx, bodyTop + 2, 2, 1, cl.cloakD);
+      b.px(bx + bw - 3, bodyTop + 3, irn ? IRON_D : '#e4e8ee'); b.px(bx + bw - 2, bodyTop + 3, irn ? IRON_M : '#9aa3b0');
+      if (irn) { b.px(bx + 2, bodyTop + bh - 1, IRON_L); b.px(bx + 3, bodyTop + bh - 1, IRON_D); }
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

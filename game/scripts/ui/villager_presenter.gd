@@ -90,6 +90,12 @@ const BRONZE_AGE: Array[String] = [
 	"The wall makes the night feel smaller.",
 	"Someone is hammering, and it is almost a tune.",
 ]
+## Added once the Iron Age has begun.
+const IRON_AGE: Array[String] = [
+	"Iron holds an edge, and a grudge.",
+	"The rampart is a long way round.",
+	"Someone is counting silver, quietly.",
+]
 const ASLEEP: Array[String] = [
 	"Fast asleep.",
 	"Asleep, and dreaming of something.",
@@ -230,6 +236,8 @@ static func _pool(villager: VillagerState, world: WorldState) -> Array[String]:
 	pool.append_array(_lines(BY_PROFESSION.get(villager.profession, [])))
 	if world.era_order >= 2:
 		pool.append_array(BRONZE_AGE)
+	if world.era_order >= 3:
+		pool.append_array(IRON_AGE)
 	pool.append_array(_lines(BY_WEATHER.get(world.weather, [])))
 	return pool
 

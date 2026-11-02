@@ -49,7 +49,7 @@ var _panel_textures: Dictionary = {}
 
 ## The registered factories: era id -> Callable returning a PanelSkin.
 static func skins() -> Dictionary:
-	return {&"cave": cave, &"settled": clay, &"bronze": bronze}
+	return {&"cave": cave, &"settled": clay, &"bronze": bronze, &"iron": iron}
 
 
 static func for_era(era: StringName) -> PanelSkin:
@@ -95,6 +95,23 @@ static func bronze() -> PanelSkin:
 	skin.scroll_track = Color("c8a066")
 	skin.scroll_grabber = Color("8f5a1c")
 	skin.tooltip_fill = Color("e8d2a2")
+	skin._place_pieces()
+	return skin
+
+
+## The Iron Age: a forged dark-iron frame with rust trim round a pale limewashed wall, iron-bound
+## buttons, and a ring-chain under the title. Same atlas layout as the Cave skin.
+static func iron() -> PanelSkin:
+	var skin: PanelSkin = PanelSkin.new()
+	skin.era_id = &"iron"
+	skin.atlas_path = ASSET_DIR + "skin_iron.png"
+	skin.title_color = Color("6a2e14")
+	skin.muted = Color("48443a")
+	skin.day_color = Color("7a4426")
+	skin.button_text_disabled = Color("66665f")
+	skin.scroll_track = Color("bcbab0")
+	skin.scroll_grabber = Color("555d6b")
+	skin.tooltip_fill = Color("e4e2d8")
 	skin._place_pieces()
 	return skin
 

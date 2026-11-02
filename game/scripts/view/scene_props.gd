@@ -17,16 +17,23 @@ extends RefCounted
 ## `alt_of` (an alternative to another prop, which is never shown with it, so they may share
 ## ground), `overlays` (drawn on top of another prop on purpose), `behind` (a backdrop that stands
 ## behind the others, a wall, so they may cover it) and, so an age can simplify what
-## the last one built, `replaced_by` (hidden while that prop is shown), `from_era` (shown only from
+## the last one built, `replaced_by` (hidden while that prop, or any of an array of them, is
+## shown), `from_era` (shown only from
 ## that era order on) and `until_era` (hidden once the world's era order reaches it).
 ## `test_scene_props.gd` checks every one of them. `at_y` is how far the sprite is lifted onto its
 ## lane (see `WorldLayout.BUILDINGS`), and the art's own rows are shifted with it.
+##
+## The cave keeps up with the ages: a prop of `Kind.ALWAYS` waits for nothing the group did, only for
+## its `from_era`, so the age turning is what shows it (never a flag, an achievement or a hint,
+## docs/ages.md P8). The cave-mouth door and the standard on the cliff above it are one piece per age,
+## each replacing the last (`replaced_by`; the Cave Age's pennant shows from the very start).
 
 enum Kind {
 	## Append new kinds at the end.
 	FLAG, ## `key` is a world flag.
 	ACHIEVEMENT, ## `key` is an earned achievement.
 	BUILDING, ## `key` is a completed building id.
+	ALWAYS, ## Waits for nothing but its `from_era`: the cave keeping up with the ages. `key` is unused.
 }
 
 const PROPS: Dictionary = {
@@ -68,7 +75,8 @@ const PROPS: Dictionary = {
 	# flank (`tools/art/settled_camp.js`), so it joins two things.
 	&"low_wall": {
 		"name": "Low wall", "at_x": -384.0, "z": 63, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"low_wall", "behind": true, "replaced_by": &"town_wall",
+		"kind": Kind.FLAG, "key": &"low_wall", "behind": true,
+		"replaced_by": [&"town_wall", &"rampart"],
 	},
 	&"hens": {
 		"name": "Hens", "at_x": -384.0, "at_y": -5, "z": 74, "place": &"west_village",
@@ -112,6 +120,7 @@ const PROPS: Dictionary = {
 	&"town_wall": {
 		"name": "Town wall", "at_x": -384.0, "z": 63, "place": &"west_village",
 		"kind": Kind.FLAG, "key": &"town_wall", "behind": true, "from_era": 2,
+		"replaced_by": &"rampart",
 	},
 	&"flax_beaten": {
 		"name": "Beaten flax", "at_x": -384.0, "at_y": -5, "z": 74, "place": &"west_village",
@@ -196,7 +205,7 @@ const PROPS: Dictionary = {
 	},
 	&"east_sail": {
 		"name": "Trading ship", "at_x": 384.0, "z": 60, "place": &"east_shore",
-		"kind": Kind.FLAG, "key": &"far_shore",
+		"kind": Kind.FLAG, "key": &"far_shore", "replaced_by": &"east_deep_ship",
 	},
 	# What the Bronze Age's roads put on the ground (docs/ages.md): a market, a cart, donkeys, a
 	# hard road, and the boats tied up at the quay in place of the ones afloat in the shallows.
@@ -220,6 +229,7 @@ const PROPS: Dictionary = {
 	&"tally_post": {
 		"name": "Tally post", "at_x": -384.0, "at_y": -3, "z": 67, "place": &"west_market",
 		"kind": Kind.FLAG, "key": &"tally", "from_era": 2, "alt_of": &"market_stalls",
+		"replaced_by": &"writing_post",
 	},
 	# One tidy farmstead for each way of life (the plot, scarecrow and hens; the patch and the pen).
 	&"farmstead_farm": {
@@ -245,6 +255,87 @@ const PROPS: Dictionary = {
 	&"quay_boats": {
 		"name": "Boats at the quay", "at_x": 0.0, "z": 73, "place": &"river_bank",
 		"kind": Kind.BUILDING, "key": &"quay", "from_era": 2,
+	},
+	# What the Iron Age puts on the ground (docs/ages.md, "What Iron tidies"; tools/art/iron_camp.js).
+	# The Bronze wall is redrawn as a rampart, the tally post as a writing post and the trading
+	# ship as a deep-keeled one; the rest is new.
+	&"rampart": {
+		"name": "Rampart", "at_x": -384.0, "z": 63, "place": &"west_village",
+		"kind": Kind.FLAG, "key": &"hill_fort", "behind": true, "from_era": 3,
+	},
+	&"slag_heap": {
+		"name": "Slag heap", "at_x": 0.0, "z": 77, "place": &"cave_yard",
+		"kind": Kind.ACHIEVEMENT, "key": &"first_bloom", "from_era": 3,
+	},
+	&"plough_team": {
+		"name": "Plough team", "at_x": -384.0, "z": 78, "place": &"west_village",
+		"kind": Kind.FLAG, "key": &"iron_share", "from_era": 3,
+	},
+	&"shearing_pen": {
+		"name": "Shearing pen", "at_x": -384.0, "z": 78, "place": &"west_village",
+		"kind": Kind.FLAG, "key": &"iron_shears", "from_era": 3, "alt_of": &"plough_team",
+	},
+	# The coin tray is a small trestle that stands at the market's counter (on top of the stalls
+	# when there are stalls), since the market's ground is full of the cart and the donkeys.
+	&"coin_tray": {
+		"name": "Coin tray", "at_x": -384.0, "z": 68, "place": &"west_market",
+		"kind": Kind.FLAG, "key": &"coin_struck", "from_era": 3, "overlays": &"market_stalls",
+	},
+	# The tally post's bench and cords are gone: a writing post stands at the market's left edge,
+	# beside the stalls or the council ring, with its foot behind the cart.
+	&"writing_post": {
+		"name": "Writing post", "at_x": -384.0, "z": 66, "place": &"west_market",
+		"kind": Kind.FLAG, "key": &"letters", "from_era": 3,
+	},
+	&"standing_stone": {
+		"name": "Standing stone", "at_x": 0.0, "z": 78, "place": &"river_bank",
+		"kind": Kind.FLAG, "key": &"standing_stone", "from_era": 3,
+	},
+	&"east_deep_ship": {
+		"name": "Ship", "at_x": 384.0, "z": 60, "place": &"east_shore",
+		"kind": Kind.FLAG, "key": &"known_abroad", "from_era": 3,
+	},
+	&"east_beacon": {
+		"name": "Beacon", "at_x": 384.0, "z": 77, "place": &"east_shore",
+		"kind": Kind.FLAG, "key": &"beacon_lit", "from_era": 3,
+	},
+	# The cave keeps up with the ages (docs/ages.md B10, point 10; tools/art/settled_camp.js,
+	# bronze_camp.js, iron_camp.js). The door in the mouth is redrawn each age and the standard on
+	# the cliff above it too. Both sit on the cave's face (z 20-22, above the cliff and below
+	# everything else) and are quiet.
+	&"cave_door_settled": {
+		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 1,
+		"replaced_by": [&"cave_door_bronze", &"cave_door_iron"],
+	},
+	&"cave_door_bronze": {
+		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 2, "replaced_by": &"cave_door_iron",
+	},
+	&"cave_door_iron": {
+		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 3,
+	},
+	# The standard on the cliff above the cave: the Cave Age's pennant shows from the start (it is
+	# the cave's own); each later age's standard replaces the one before (an array, so an older
+	# one never comes back when two ages have turned).
+	&"cave_standard_cave": {
+		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 0,
+		"replaced_by": [&"cave_standard_settled", &"cave_standard_bronze", &"cave_standard_iron"],
+	},
+	&"cave_standard_settled": {
+		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 1,
+		"replaced_by": [&"cave_standard_bronze", &"cave_standard_iron"],
+	},
+	&"cave_standard_bronze": {
+		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 2, "replaced_by": &"cave_standard_iron",
+	},
+	&"cave_standard_iron": {
+		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 3,
 	},
 }
 
@@ -299,9 +390,24 @@ static func is_shown_in(props: Dictionary, id: StringName, world: WorldState) ->
 		return false
 	if prop.has("until_era") and world.era_order >= int(prop["until_era"]):
 		return false
-	if prop.has("replaced_by") and is_shown_in(props, prop["replaced_by"], world):
-		return false
+	if prop.has("replaced_by"):
+		for replacer: StringName in replacements_of(prop):
+			if is_shown_in(props, replacer, world):
+				return false
 	return holds(prop["kind"], prop["key"], world)
+
+
+## The props that can take a prop's place: its `replaced_by` is one id, or an array of them (the
+## low wall gives way to the town wall and to the rampart).
+static func replacements_of(prop: Dictionary) -> Array[StringName]:
+	var found: Array[StringName] = []
+	var raw: Variant = prop.get("replaced_by", [])
+	if raw is Array:
+		for id: StringName in raw:
+			found.append(id)
+	else:
+		found.append(raw)
+	return found
 
 
 ## Whether the world holds what a prop of this `kind` and `key` waits for.
@@ -313,6 +419,8 @@ static func holds(kind: Kind, key: StringName, world: WorldState) -> bool:
 			return world.has_achievement(key)
 		Kind.BUILDING:
 			return world.has_building(key)
+		Kind.ALWAYS:
+			return true
 	return false
 
 

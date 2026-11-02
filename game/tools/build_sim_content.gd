@@ -9,6 +9,7 @@ const ROOT: String = "res://resources/sim"
 const CAVE: int = 0
 const SETTLED: int = 1
 const BRONZE: int = 2
+const IRON: int = 3
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -78,11 +79,43 @@ const BRONZE_STORY_DAY: Dictionary = {
 	&"weights": 140, &"smith_stays": 150, &"toll": 170, &"trader": 174, &"goods": 186,
 	&"marked_pots": 228, &"sea_look": 262, &"night_light": 286, &"ringing_stone": 312,
 	&"cracked_mould": 78, &"ruts": 198, &"quay": 204,
+	# The two forks that end the Bronze Age's quiet stretch before the gate opens at day 360.
+	&"red_water": 330, &"long_burn": 346,
 }
 ## Chance per tick of a Bronze Age one-line moment; the earlier ages' lines keep happening too.
 const BRONZE_AMBIENT_CHANCE: float = 0.002
 ## The Bronze Age opens after the Settled Age's five days (8640 ticks).
 const BRONZE_MIN_TICKS: int = 8640
+## Days into the Iron Age before each milestone can happen (docs/ages.md, "Iron Age"): the same pace
+## as the Bronze Age's, five real days. `iron_axe`, `gate_iron`, `press_mark`, `copy_tablet` and
+## `name_stone` are the late roads open to every group.
+const IRON_DAY: Dictionary = {
+	&"first_bloom": 18,
+	&"fuller_harvest": 54,
+	&"iron_axe": 90,
+	&"hill_fort": 108,
+	&"gate_iron": 144,
+	&"silver_by_weight": 162,
+	&"press_mark": 198,
+	&"written_word": 216,
+	&"copy_tablet": 246,
+	&"name_abroad": 252,
+	&"name_stone": 288,
+}
+## Days into the Iron Age when each small story decision becomes possible. The last three (`envoy`,
+## `guest_table`, and the stone with a name before them) lead into the next age.
+const IRON_STORY_DAY: Dictionary = {
+	&"hotter_hearth": 2, &"downwind": 8, &"slow_work": 14, &"slag": 24, &"first_iron": 32,
+	&"nails": 40, &"iron_pot": 66, &"rust": 78, &"frost": 90, &"tin_trader": 98, &"timber": 112,
+	&"fort_name": 120, &"ditch_water": 130, &"bank_crop": 140, &"bank_crop_herd": 140,
+	&"hands": 150, &"coin_face": 170, &"counter": 174, &"bad_silver": 186, &"gate_coin": 198,
+	&"door_name": 228, &"hill_stone": 240, &"words": 262, &"sea_fire": 286, &"named_stone": 312,
+	&"envoy": 330, &"guest_table": 346,
+}
+## Chance per tick of an Iron Age one-line moment; the earlier ages' lines keep happening too.
+const IRON_AMBIENT_CHANCE: float = 0.002
+## The Iron Age opens after the Bronze Age's five days (8640 ticks).
+const IRON_MIN_TICKS: int = 8640
 ## Chance per tick of a small journal line, and how long before the same one can repeat. About one
 ## line every quarter hour of real time across all of them.
 const AMBIENT_CHANCE: float = 0.0045
@@ -118,6 +151,7 @@ func _init() -> void:
 	library.starting_resources = _ints({&"wood": 2, &"food": 12})
 	library.flag_housing = _ints({
 		&"lean_to": 2, &"extra_roofs": 3, &"town_wall": 4, &"palisade": 3, &"dug_in": 2,
+		&"hill_fort": 4,
 	})
 	for era: EraDef in library.eras:
 		_save(era, "%s/eras/%s.tres" % [ROOT, era.id])
@@ -166,7 +200,20 @@ func _eras() -> Array[EraDef]:
 	]
 	bronze.min_ticks_in_previous_era = BRONZE_MIN_TICKS
 	bronze.turn_event = &"the_metals_road"
-	return [cave, settled, bronze]
+	var iron: EraDef = _era(&"iron", "Iron Age", IRON)
+	iron.description = "A harder metal, bigger fields and a fort on the hill: the town is known " \
+			+ "beyond the water."
+	iron.housing = 12
+	iron.intro_text = "The dark stone would not melt in the bronze fire, so the fire was made " \
+			+ "hotter, and a new age began."
+	# The gate: every Bronze milestone, then another five real days (docs/ages.md I1).
+	iron.required_achievements = [
+		&"first_casting", &"bronze_alloy", &"mud_brick_walls", &"wheel_and_road", &"a_town",
+		&"beyond_the_water",
+	]
+	iron.min_ticks_in_previous_era = IRON_MIN_TICKS
+	iron.turn_event = &"a_harder_fire"
+	return [cave, settled, bronze, iron]
 
 
 func _set_starting_group(library: ContentLibrary) -> void:
@@ -227,7 +274,18 @@ func _buildings() -> Array[BuildingDef]:
 	quay.daily_output = _floats({&"food": 0.5})
 	quay.tags = [&"river", &"exposed"]
 	quay.completion_flag = &"quay_built"
-	return [lookout, rack, knapping, hut, field, smithy, post, quay]
+	var bloomery: BuildingDef = _building(&"bloomery", "Bloomery", {&"wood": 18}, 44)
+	bloomery.description = "A tall clay furnace with a pair of bellows: a place to turn red ore " \
+			+ "into iron."
+	bloomery.daily_output = _floats({&"wood": 0.5})
+	bloomery.tags = [&"exposed"]
+	bloomery.completion_achievement = &"first_bloom"
+	bloomery.completion_achievement_title = "The First Bloom"
+	var granary: BuildingDef = _building(&"granary", "Granary", {&"wood": 14}, 40)
+	granary.description = "A raised timber store on stone legs, where the grain keeps dry and the " \
+			+ "mice keep out."
+	granary.daily_output = _floats({&"food": 0.5})
+	return [lookout, rack, knapping, hut, field, smithy, post, quay, bloomery, granary]
 
 
 func _plants() -> Array[PlantDef]:
@@ -276,6 +334,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_ambient_lines())
 	events.append_array(_settled_ambient_lines())
 	events.append_array(_bronze_events())
+	events.append_array(_iron_events())
 	return events
 
 
@@ -4860,7 +4919,8 @@ func _bronze_stories() -> Array[EventDef]:
 		_which_way_the_gate_faces(), _a_name_for_the_place(), _water_against_the_wall(),
 		_stones_for_weights(), _a_smith_who_stays(), _who_owns_the_road(), _who_walks_the_road(),
 		_a_strangers_goods(), _a_name_on_the_pot(), _looking_at_the_sea(), _light_on_the_water(),
-		_a_stone_that_rings(), _a_cracked_mould(), _ruts_in_the_lane(),
+		_a_stone_that_rings(), _a_cracked_mould(), _ruts_in_the_lane(), _red_water(),
+		_fuel_for_the_long_burn(),
 	]
 	return events
 
@@ -5650,6 +5710,1647 @@ func _bronze_ambient_about(
 
 func _bronze_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
 	return _bronze_ambient(event_id, line, [_flag_set(flag)])
+
+
+## ---- The Iron Age (docs/ages.md, "Iron Age") -----------------------------------------------------
+## A harder metal, farming that feeds a bigger town, a fort, coin, writing and a name abroad. Like
+## Bronze: six hidden milestones staged over the age (`IRON_DAY`), each with more than one road and
+## one road open to every group, small forks between them and quiet lines. Every decision is a fork
+## (docs/gameplay.md P13). The turn asks *how* to work the dark stone the Bronze Age's last fork
+## left; later roads read what the group answered in the Bronze Age (the wall, the weights, the
+## tally, the boats). The age has no gate out yet (G7), but its last forks lead into the next one.
+
+const IRON_TITLES: Dictionary = {
+	&"first_bloom": "The First Bloom",
+	&"fuller_harvest": "A Fuller Harvest",
+	&"the_hill_fort": "The Hill-fort",
+	&"silver_by_weight": "Silver by Weight",
+	&"written_word": "The Written Word",
+	&"name_abroad": "A Name Abroad",
+}
+
+
+func _iron_events() -> Array[EventDef]:
+	var events: Array[EventDef] = [_a_harder_fire(), _iron_building_opportunity()]
+	events.append_array(_iron_milestones())
+	events.append_array(_iron_stories())
+	events.append_array(_iron_ambient_lines())
+	return events
+
+
+## The turn from the Bronze Age to the Iron Age. Fired by the era's hidden gate, so the player is
+## never asked whether to go on, only how to work the dark stone. It reads nothing the group may
+## lack: the stone is told about in two quiet lines afterwards.
+func _a_harder_fire() -> EventDef:
+	var event: EventDef = _event(&"a_harder_fire", "A harder fire", &"settlement")
+	event.body = "The dark stone will not melt in the bronze fire, however hot the bellows make it. " \
+			+ "It glows, and sulks, and rings when it is struck, which is more than most stones do."
+	event.choices = _choices([
+		_answer(
+			&"work_it_at_home", "Dig the red mud from the flats, and build a hotter furnace",
+			"The red mud of the river flats was dug out in baskets, and a furnace went up taller "
+			+ "than the smithy, and everyone stood well back from it.",
+			[_set_flag(&"path_bloomery"), _eff(SimEffect.Kind.ADVANCE_ERA, &"iron")],
+		),
+		_answer(
+			&"follow_it_to_the_hills", "Follow the stone back to the dark hills",
+			"A few people walked up into the dark hills with empty sacks, and came back with "
+			+ "full ones, a limp, and a very clear idea of where the stone had come from.",
+			[_set_flag(&"path_ore"), _eff(SimEffect.Kind.ADVANCE_ERA, &"iron")],
+		),
+	])
+	return event
+
+
+func _iron_building_opportunity() -> EventDef:
+	var event: EventDef = _event(&"iron_building_opportunity", "Building in iron", &"settlement")
+	event.body = "The new metal wants a furnace of its own, and the new harvest wants somewhere to go."
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON),
+		_cond(SimCondition.Kind.CONSTRUCTION_IDLE),
+		_cond(SimCondition.Kind.RESOURCE_AT_LEAST, &"wood", 14),
+	])
+	event.chance_per_tick = 0.5
+	event.cooldown_ticks = 24
+	event.choices = _choices([
+		_build_choice(&"build_bloomery", "Bloomery", &"bloomery", 18, 0, IRON_DAY[&"first_bloom"]),
+		_build_choice(&"build_granary", "Granary", &"granary", 14, 0, IRON_DAY[&"first_bloom"]),
+	])
+	return event
+
+
+## Every Iron milestone event: Iron Age, far enough into it, and not yet earned.
+func _iron_milestone(
+	event_id: StringName, title: String, category: StringName, favoured: StringName,
+	era_day: int, milestone: StringName
+) -> EventDef:
+	var event: EventDef = _milestone_event(event_id, title, category, favoured)
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", era_day),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone, 0, true),
+	])
+	return event
+
+
+## One road to an Iron milestone: the answer sets its own flag, may do something else, and earns it.
+func _iron_route(
+	choice_id: StringName, label: String, line: String, flag: StringName,
+	milestone: StringName, extra: Array[SimEffect] = [], needs: Array[SimCondition] = []
+) -> ChoiceDef:
+	var effects: Array[SimEffect] = [_set_flag(flag)]
+	effects.append_array(extra)
+	effects.append(_earn(milestone, IRON_TITLES[milestone]))
+	return _answer(choice_id, label, line, effects, needs)
+
+
+## A decision that is a road to a milestone; `needs` are further requirements on the event.
+func _iron_road(
+	event_id: StringName, title: String, body: String, milestone: StringName, era_day: int,
+	favoured: StringName, answers: Array[ChoiceDef], needs: Array[SimCondition] = [],
+	category: StringName = &"settlement"
+) -> EventDef:
+	var event: EventDef = _iron_milestone(event_id, title, category, favoured, era_day, milestone)
+	event.body = body
+	event.requires.append_array(needs)
+	event.choices = _choices(answers)
+	return event
+
+
+func _iron_milestones() -> Array[EventDef]:
+	var events: Array[EventDef] = []
+	events.append_array(_first_bloom_roads())
+	events.append_array(_fuller_harvest_roads())
+	events.append_array(_hill_fort_roads())
+	events.append_array(_silver_by_weight_roads())
+	events.append_array(_written_word_roads())
+	events.append_array(_name_abroad_roads())
+	return events
+
+
+## The First Bloom. The Bloomery is one road (it earns it on completion); a night's burn is the home
+## path's, a trader with red lumps the ore path's, a smith who comes over the ridge a neighbour's,
+## and hammering a lump of slag is open to every group. The path not taken still gets its road,
+## a little later.
+func _first_bloom_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"first_bloom"]
+	var milestone: StringName = &"first_bloom"
+	return [
+		_first_burn(&"first_burn", day, &"path_bloomery"),
+		_first_burn(&"first_burn_slow", day + 30, &"path_ore"),
+		_iron_road(
+			&"ironsmith_over_the_ridge", "A smith with dark hands",
+			"A smith has come over the ridge whose hands are black to the wrist, and who looks at "
+			+ "the new furnace the way a cook looks at someone else's soup.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"let_them_burn_a_bloom", "Let them burn a bloom in the furnace",
+					"The smith burned a bloom in the furnace overnight, and in the morning "
+					+ "pulled out a grey sponge of iron, and everyone was allowed to hit it.",
+					&"visiting_ironsmith", milestone,
+				),
+				_iron_route(
+					&"copy_their_furnace", "Watch closely, and build the same furnace",
+					"The group watched every move and built the same furnace, a little crooked "
+					+ "and a little prouder, and it drew exactly as well as the original.",
+					&"copied_ironsmith", milestone,
+				),
+			], [_flag_set(&"good_neighbours")]
+		),
+		_iron_road(
+			&"ore_on_the_road", "A trader with red lumps",
+			"A trader on the road has a sack of heavy red lumps and a story about the dark hills, "
+			+ "and says that, with a hot enough fire, they turn into something remarkable.",
+			milestone, day + 12, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"lend_the_furnace", "Lend the trader the furnace for a night",
+					"The furnace was the trader's for a night. By morning there was a lump of grey "
+					+ "iron in the ashes, and the trader was already explaining how it was done.",
+					&"road_ironsmith", milestone,
+				),
+				_iron_route(
+					&"pay_for_the_secret", "Pay in food, and ask to be shown",
+					"Food was paid, and the whole group was shown in an afternoon, and the trader "
+					+ "left with a full belly and an air of having given nothing away.",
+					&"taught_the_bloom", milestone, [_spend(&"food", 6)], [_has(&"food", 6)],
+				),
+			], [_flag_set(&"path_ore")]
+		),
+		_iron_road(
+			&"a_lump_in_the_slag", "A black lump in the slag",
+			"{subject} has found a black lump in the heap of old slag behind the smithy. It is "
+			+ "heavier than it should be, and it does not break.",
+			milestone, day + 36, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"hammer_it_till_it_rings", "Hammer it until it rings",
+					"{subject} hammered it for an afternoon, and it grew from a lump into a bar "
+					+ "and rang like a small, annoyed bell.",
+					&"lump_hammered", milestone,
+				),
+				_iron_route(
+					&"quench_it_and_see", "Heat it, and quench it in the river",
+					"The lump went into the fire red and into the river white, with a noise "
+					+ "like a goose, and came out a good deal harder than it went in.",
+					&"lump_quenched", milestone,
+				),
+			], [], &"character"
+		),
+	]
+
+
+func _first_burn(event_id: StringName, era_day: int, path: StringName) -> EventDef:
+	var milestone: StringName = &"first_bloom"
+	return _iron_road(
+		event_id, "A night's burn",
+		"{subject} has packed the new furnace with red ore and charcoal in layers, and sealed the "
+		+ "top with clay. All it wants now is the bellows, and a very long night.",
+		milestone, era_day, VillagerState.TRAIT_CURIOUS, [
+			_iron_route(
+				&"blow_all_night", "Work the bellows all night, in turns",
+				"The bellows were worked in turns until dawn. When the furnace was broken open "
+				+ "there was a bloom in it, glowing, ugly and exactly what was wanted.",
+				&"bloom_blown", milestone,
+			),
+			_iron_route(
+				&"let_it_burn_down", "Let it burn down on its own, and open it in the morning",
+				"The furnace was left to burn down by itself. In the morning there was a lump in "
+				+ "the ashes, still warm, and {subject} was seen to hug it.",
+				&"bloom_cooled", milestone,
+			),
+		], [_flag_set(path)], &"character"
+	)
+
+
+## A Fuller Harvest (needs the First Bloom). A full granary, an iron share on the farmers' digging
+## stick, iron shears for the herders, or, late and for every group, an iron axe at the pines.
+func _fuller_harvest_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"fuller_harvest"]
+	var milestone: StringName = &"fuller_harvest"
+	return [
+		_iron_road(
+			&"the_first_full_granary", "Up to the rafters",
+			"The granary is nearly full, and the last baskets are being passed up a ladder by "
+			+ "people who are enjoying the problem.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"fill_it_to_the_roof", "Fill it to the roof",
+					"It was filled to the roof, and the door was shut on a heap of grain so large "
+					+ "that the mice held a meeting.",
+					&"granary_full", milestone,
+				),
+				_iron_route(
+					&"leave_it_roomy", "Leave a third of it empty, for the bad year",
+					"A third was left empty, and was looked at all winter with the quiet pride "
+					+ "of people who have been sensible.",
+					&"granary_roomy", milestone,
+				),
+			], [_earned(&"first_bloom"), _cond(SimCondition.Kind.HAS_BUILDING, &"granary")]
+		),
+		_iron_road(
+			&"a_share_of_iron", "A point that does not wear",
+			"The digging sticks wear to a stub by midsummer. {subject} thinks an iron tip would "
+			+ "outlast the field.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"tip_the_stick", "Tip the stick with iron",
+					"The sticks got iron tips, and went through the ground like a knife through "
+					+ "bread, and nobody mentioned the blisters.",
+					&"iron_tipped_sticks", milestone, [_set_flag(&"iron_share")],
+				),
+				_iron_route(
+					&"fit_a_share", "Fit a proper share to a plough",
+					"A share was fitted to the plough, and the ox was introduced to it, and "
+					+ "between them they turned the longest furrow anyone had ever seen.",
+					&"plough_share", milestone, [_spend(&"wood", 6), _set_flag(&"iron_share")],
+					[_has(&"wood", 6)],
+				),
+			], [_earned(&"first_bloom"), _flag_set(&"path_agriculture")], &"character"
+		),
+		_iron_road(
+			&"sharper_shears", "A sharper edge for the flock",
+			"The flock is bigger than the shears can bear. {subject} has been looking at the iron "
+			+ "knife and then at the sheep, and the sheep have noticed.",
+			milestone, day, VillagerState.TRAIT_NATURE_LOVING, [
+				_iron_route(
+					&"iron_shears", "Make iron shears",
+					"Iron shears were made, and the flock was clipped in a morning, and the sheep "
+					+ "went about for days looking surprised and cold.",
+					&"iron_shears_made", milestone, [_set_flag(&"iron_shears")],
+				),
+				_iron_route(
+					&"iron_knife_and_patience", "Keep to a knife, and take it slowly",
+					"The knife was kept sharp and the flock was done sheep by sheep, and the "
+					+ "wool came away cleaner than it ever had.",
+					&"iron_knife_clip", milestone, [_set_flag(&"iron_shears")],
+				),
+			], [_earned(&"first_bloom"), _flag_set(&"path_herding")], &"nature"
+		),
+		_iron_road(
+			&"an_axe_at_the_pines", "The edge of the pines",
+			"The pines come right up to the edge of the field, and an iron axe has made it very "
+			+ "clear that they do not have to.",
+			milestone, IRON_DAY[&"iron_axe"], VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"clear_the_edge", "Clear a strip, and sow it",
+					"A strip of pines came down in a week, and the sown ground grew by a "
+					+ "tenth, and the squirrels moved out in protest.",
+					&"edge_cleared", milestone,
+				),
+				_iron_route(
+					&"burn_the_stumps", "Burn the stumps, and plant between the ashes",
+					"The stumps were burned and the field planted in their ashes, and the first "
+					+ "crop was greener than anything the village had grown.",
+					&"stumps_burned", milestone,
+				),
+			], [_earned(&"first_bloom")]
+		),
+	]
+
+
+## The Hill-fort. The Bronze wall is heightened in the spirit of what it was (a brick wall, a
+## palisade, a ditch), a ring of bank and ditch is open to every group, and, late and for every
+## group, the gate is bound in iron. Each sets `hill_fort`, which a later age reads.
+func _hill_fort_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"hill_fort"]
+	var milestone: StringName = &"the_hill_fort"
+	return [
+		_iron_road(
+			&"raise_the_rampart", "Higher than a ladder",
+			"The mud-brick wall is as high as a ladder is long, and the ladder has proved to be "
+			+ "a bad thing to have been measured against.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"lace_it_with_timber", "Lace the wall with oak timbers",
+					"Oak timbers were laid through the brick every few courses, and the wall "
+					+ "stopped being a wall and became a rampart.",
+					&"rampart_laced", milestone, _hill([_spend(&"wood", 14)]), [_has(&"wood", 14)],
+				),
+				_iron_route(
+					&"bank_it_with_earth", "Heap a bank of earth behind it",
+					"A bank of earth was heaped behind the wall until it could be walked along, "
+					+ "and the sentries learned the pleasure of a view.",
+					&"rampart_banked", milestone, _hill([_spend(&"wood", 8)]), [_has(&"wood", 8)],
+				),
+			], [_flag_set(&"town_wall")]
+		),
+		_iron_road(
+			&"oak_for_the_palisade", "Stakes that stay put",
+			"The palisade leans a little more every winter, and one section has begun to lean "
+			+ "on its neighbour in a way that looks like gossip.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"oak_posts_and_nails", "Replace it with oak posts and iron nails",
+					"Oak posts went in, nailed with long iron nails, and the palisade stood up "
+					+ "straight for the first time and seemed a little embarrassed.",
+					&"palisade_oak", milestone, _hill([_spend(&"wood", 10)]), [_has(&"wood", 10)],
+				),
+				_iron_route(
+					&"nail_the_stakes", "Nail the old stakes together where they lean",
+					"The old stakes were nailed together in pairs, and the palisade stood a good "
+					+ "deal better, and looked exactly as before.",
+					&"palisade_nailed", milestone, _hill(),
+				),
+			], [_flag_set(&"palisade")]
+		),
+		_iron_road(
+			&"deepen_the_ditch", "A ditch to be proud of",
+			"The old ditch has silted until a child could step across it, and a child has.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"dig_it_out", "Dig it out with iron spades",
+					"Iron spades went through the silt like it was cream, and the ditch was "
+					+ "deeper by a man's height before the week was out.",
+					&"ditch_dug_out", milestone, _hill([_spend(&"wood", 8)]), [_has(&"wood", 8)],
+				),
+				_iron_route(
+					&"raise_the_bank_higher", "Throw the spoil up into a bank",
+					"The spoil was thrown up into a bank, and the ditch got deeper as the bank "
+					+ "got higher, which everyone agreed was the proper way round.",
+					&"ditch_banked", milestone, _hill(),
+				),
+			], [_flag_set(&"dug_in")]
+		),
+		_iron_road(
+			&"ring_the_ridge", "The ridge above the town",
+			"Above the town the ridge stands up like an upturned bowl. Somebody has pointed out "
+			+ "that anyone standing on it can see everything, and so can anyone else.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"bank_and_ditch_the_ridge", "Throw a bank and ditch round the top",
+					"A bank and a ditch went round the top of the ridge, and for the first time "
+					+ "the town had somewhere to go when it wanted to feel safe.",
+					&"ridge_ringed", milestone, _hill([_spend(&"wood", 12)]), [_has(&"wood", 12)],
+				),
+				_iron_route(
+					&"a_stockade_on_the_ridge", "Set a stockade along the crest",
+					"A stockade of split oak went along the crest, and from the town below it "
+					+ "looked like a crown on a rather surprised hill.",
+					&"ridge_stockade", milestone, _hill([_spend(&"wood", 10)]), [_has(&"wood", 10)],
+				),
+			]
+		),
+		_iron_road(
+			&"bind_the_gate_in_iron", "A gate that holds",
+			"The gate has been shut and opened so many times that the hinges have started to "
+			+ "complain in two voices.",
+			milestone, IRON_DAY[&"gate_iron"], VillagerState.TRAIT_INDUSTRIOUS, [
+				_iron_route(
+					&"hang_it_in_iron", "Hang it on iron hinges, and bind it with straps",
+					"Iron hinges and straps went on the gate, and it swung shut with a sound like "
+					+ "a very large decision being made.",
+					&"iron_gate", milestone, _hill(),
+				),
+				_iron_route(
+					&"bar_it_with_a_beam", "Bar it with a single great beam",
+					"A single great beam went across the gate, and took four people to lift, "
+					+ "which was agreed to be a feature.",
+					&"barred_gate", milestone, _hill(),
+				),
+			]
+		),
+	]
+
+
+## The effect every road to the Hill-fort shares, which a later age reads as the town's upper part.
+func _hill(more: Array[SimEffect] = []) -> Array[SimEffect]:
+	var effects: Array[SimEffect] = [_set_flag(&"hill_fort")]
+	effects.append_array(more)
+	return effects
+
+
+## Silver by Weight (needs a Fuller Harvest). Silver cut to the town's weights (the stones or the
+## handful, as the Bronze answer went), a stranger's coin copied, or, late and for every group, a
+## mark pressed into a lump. Each sets `coin_struck`.
+func _silver_by_weight_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"silver_by_weight"]
+	var milestone: StringName = &"silver_by_weight"
+	var needs: Array[SimCondition] = [_earned(&"fuller_harvest")]
+	return [
+		_iron_road(
+			&"silver_to_the_stones", "A lump of silver",
+			"A trader has left a lump of silver in payment for a debt, and now the village has a "
+			+ "lump of silver and the problem of what it is worth.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"cut_it_to_the_stones", "Cut it to the weight stones",
+					"The silver was cut into pieces that balanced against the river stones, and "
+					+ "the pieces were stamped so they could not be mistaken for anything else.",
+					&"coin_to_stones", milestone, _coin(),
+				),
+				_iron_route(
+					&"stamp_it_flat", "Beat it flat and stamp the town's mark",
+					"The silver was beaten flat and stamped, and for the first time a thing was "
+					+ "worth what the town said it was worth.",
+					&"coin_stamped", milestone, _coin(),
+				),
+			], _plus(needs, [_flag_set(&"stone_weights")])
+		),
+		_iron_road(
+			&"silver_to_the_hand", "A handful of silver",
+			"A trader has paid in silver, and the village has weighed it, as it weighs everything, "
+			+ "by the handful, and the handful has begun to get larger.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"cut_a_handful", "Cut it into handfuls, and mark each one",
+					"The silver was cut into handfuls, and each one was marked, and the size of a "
+					+ "hand was finally written down in metal.",
+					&"coin_handfuls", milestone, _coin(),
+				),
+				_iron_route(
+					&"stamp_the_hand", "Press a hand into each piece",
+					"A hand was pressed into each soft piece, and the village had a coin that "
+					+ "nobody could argue with, because everyone had been in it.",
+					&"coin_handprint", milestone, _coin(),
+				),
+			], _plus(needs, [_flag_set(&"handful_weights")])
+		),
+		_iron_road(
+			&"copy_a_strangers_coin", "A coin from far away",
+			"A stranger has paid for bread with a small round piece of silver, stamped with a "
+			+ "picture, and the baker has been looking at it all afternoon.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"copy_it_exactly", "Copy it exactly, picture and all",
+					"The coin was copied down to the last scratch, and for a month nobody could "
+					+ "tell the real one from the copy, least of all the stranger.",
+					&"coin_copied", milestone, _coin(),
+				),
+				_iron_route(
+					&"copy_it_smaller", "Copy it a little smaller, with a mark of our own",
+					"The copy was a little smaller and a little more honest, and carried a tiny "
+					+ "mark that the baker could find with her eyes shut.",
+					&"coin_made_small", milestone, _coin(),
+				),
+			], _plus(needs, [_cond(SimCondition.Kind.HAS_BUILDING, &"trading_post")]), &"exploration"
+		),
+		_iron_road(
+			&"a_mark_in_a_lump", "A day's grain",
+			"There is more silver about than there are names for it, and a good deal of grain "
+			+ "changing hands for it. Somebody thinks it should be agreed, once, what it is worth.",
+			milestone, IRON_DAY[&"press_mark"], VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"press_a_mark_in_it", "Press a mark in a lump, and agree its worth",
+					"A mark was pressed into a lump of silver, and it was agreed, loudly, to be "
+					+ "worth a day's grain, and after that it was.",
+					&"coin_lump_marked", milestone, _coin(),
+				),
+				_iron_route(
+					&"keep_a_standard_lump", "Keep a standard lump by the gate",
+					"A single lump was set in a niche by the gate as the standard, and "
+					+ "everything was weighed against it, and it grew shiny from being touched.",
+					&"coin_standard", milestone, _coin(),
+				),
+			], needs
+		),
+	]
+
+
+## The effect every road to Silver by Weight shares: the coin, which a later age reads.
+func _coin(more: Array[SimEffect] = []) -> Array[SimEffect]:
+	var effects: Array[SimEffect] = [_set_flag(&"coin_struck")]
+	effects.append_array(more)
+	return effects
+
+
+## The Written Word (needs Silver by Weight). Signs pressed in clay or cut in a stick, as the
+## Bronze tally went; a name over the gate (needs the Hill-fort); or, late and for every group, a
+## trader's tablet copied sign by sign. Each sets `letters`.
+func _written_word_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"written_word"]
+	var milestone: StringName = &"written_word"
+	var needs: Array[SimCondition] = [_earned(&"silver_by_weight")]
+	return [
+		_iron_road(
+			&"signs_in_the_clay", "A sign for a sound",
+			"The marks on the old clay slabs have begun to be used for the sounds in words, and "
+			+ "nobody is sure who started it.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"press_the_signs", "Press a sign for every sound",
+					"A sign was pressed for every sound the village made, and the first thing "
+					+ "anyone wrote was a name, and then, at once, a complaint.",
+					&"signs_pressed", milestone, _letters(),
+				),
+				_iron_route(
+					&"read_the_slab_aloud", "Read the old slabs aloud, and fit signs to them",
+					"The old slabs were read aloud while someone drew the signs, and for the "
+					+ "first time the tally of last year's grain said something about the year.",
+					&"slabs_read", milestone, _letters(),
+				),
+			], _plus(needs, [_flag_set(&"clay_tablets")]), &"character"
+		),
+		_iron_road(
+			&"signs_on_a_stick", "A sign for a knot",
+			"The keeper of the cords has begun to cut small signs into a stick beside each knot, "
+			+ "so that nobody has to ask her what they mean.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"cut_the_signs", "Cut the signs into the stick",
+					"The signs were cut into a stick, one for every sound, and the stick was "
+					+ "passed round and read by people who had never seen a stick read.",
+					&"signs_cut", milestone, _letters(),
+				),
+				_iron_route(
+					&"read_the_cord_aloud", "Read the cord aloud, and cut as you go",
+					"The cord was read aloud, knot by knot, while someone cut each sound into a "
+					+ "stick, and it took all night and was worth it.",
+					&"cord_read", milestone, _letters(),
+				),
+			], _plus(needs, [_flag_set(&"knot_cords")]), &"character"
+		),
+		_iron_road(
+			&"a_name_over_the_gate", "Over the gate",
+			"The new gate stands with a good deal of blank beam above it, and the town, which "
+			+ "has a name and a tablet, has noticed.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"cut_it_in_the_beam", "Cut it deep in the beam",
+					"The name was cut deep in the beam, and a child was lifted up to touch it, "
+					+ "and read it out, and was applauded.",
+					&"gate_beam_cut", milestone, _letters(),
+				),
+				_iron_route(
+					&"paint_it_in_lime", "Paint it in limewash, large",
+					"The name was painted in limewash, each sign as tall as a child, and could "
+					+ "be read from the far side of the river.",
+					&"gate_lime_painted", milestone, _letters(),
+				),
+			], [_earned(&"the_hill_fort"), _earned(&"silver_by_weight")]
+		),
+		_iron_road(
+			&"copy_the_traders_tablet", "A trader's tablet",
+			"A trader has left a tablet covered in small neat signs, and a very strong "
+			+ "impression that they mean something.",
+			milestone, IRON_DAY[&"copy_tablet"], VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"copy_it_sign_by_sign", "Copy it sign by sign",
+					"The tablet was copied sign by sign, and the copy was checked against it, "
+					+ "and by the end three people could read it aloud, and did.",
+					&"tablet_copied", milestone, _letters(),
+				),
+				_iron_route(
+					&"learn_it_by_heart", "Learn the signs by heart, and write them from memory",
+					"The signs were learned by heart, and written from memory, and only a few "
+					+ "were backwards, and nobody minded.",
+					&"signs_by_heart", milestone, _letters(),
+				),
+			], needs
+		),
+	]
+
+
+## The effect every road to the Written Word shares: letters, which a later age reads.
+func _letters(more: Array[SimEffect] = []) -> Array[SimEffect]:
+	var effects: Array[SimEffect] = [_set_flag(&"letters")]
+	effects.append_array(more)
+	return effects
+
+
+## A Name Abroad (needs Silver by Weight). A boat of goods to the far shore (a planked boat or a
+## reed ship, as the Settled boat went), a ship that asks the name, a rider by the road or, late
+## and for every group, a name cut where travellers will read it. Each sets `known_abroad`, which a
+## later age reads as `far_shore` is read here.
+func _name_abroad_roads() -> Array[EventDef]:
+	var day: int = IRON_DAY[&"name_abroad"]
+	var milestone: StringName = &"name_abroad"
+	var needs: Array[SimCondition] = [_earned(&"silver_by_weight")]
+	return [
+		_iron_road(
+			&"cargo_by_plank_boat", "Goods for the far shore",
+			"The planked boat has been loaded and unloaded so often that it has begun to know "
+			+ "the way, and the load this time is meant for someone who has never seen it.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"sail_it_over", "Sail it over, and ask for the market",
+					"The boat crossed in two days and came home in three, low with strange "
+					+ "goods and high with news, and the far shore had been told the name.",
+					&"cargo_sailed", milestone, _abroad(),
+				),
+				_iron_route(
+					&"send_it_with_a_guide", "Send it with someone who has the words",
+					"The boat went with a guide who had the words, and the market on the far "
+					+ "shore was found at once, and so was a friend.",
+					&"cargo_guided", milestone, _abroad(),
+				),
+			], _plus(needs, [_flag_set(&"dugout_canoe")]), &"exploration"
+		),
+		_iron_road(
+			&"cargo_by_reed_ship", "A cargo for the reed ship",
+			"The reed ship has been dried, re-bound and stacked with goods, and is plainly "
+			+ "waiting for somebody to say where.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_iron_route(
+					&"sail_the_reed_ship", "Sail it over on a fair wind",
+					"The reed ship crossed on a fair wind and came back on a foul one, and "
+					+ "was greeted at the quay as if it had been to the moon.",
+					&"reed_cargo_sailed", milestone, _abroad(),
+				),
+				_iron_route(
+					&"send_it_in_a_string", "Send it in company with the planked boats",
+					"The reed ship went in company, with two others, and the three came home "
+					+ "together, which is the best way to come home.",
+					&"reed_cargo_company", milestone, _abroad(),
+				),
+			], _plus(needs, [_flag_set(&"reed_raft")]), &"exploration"
+		),
+		_iron_road(
+			&"a_ship_asks_the_name", "A ship up the river",
+			"A ship with a deep keel has come up the river, a thing the river was not built for, "
+			+ "and the captain has asked, very politely, what the town is called.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"say_it_slowly", "Say it slowly, and have them say it back",
+					"The name was said slowly, three times, and the captain said it back each "
+					+ "time a little more wrongly, and wrote it down anyway.",
+					&"name_said", milestone, _abroad(),
+				),
+				_iron_route(
+					&"write_it_in_the_sand", "Write it in the sand for them",
+					"The name was written in the sand, and the captain copied it onto a tablet, "
+					+ "and the tide came in on the original.",
+					&"name_written", milestone, _abroad(),
+				),
+			], _plus(needs, [_flag_set(&"far_shore")]), &"exploration"
+		),
+		_iron_road(
+			&"a_rider_on_the_road", "A rider on the hard road",
+			"Someone is riding up the hard road on a horse, which nobody here has seen close "
+			+ "to, and a number of people have taken a step back and a number a step forward.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"ride_out_to_meet_them", "Go out along the road to meet them",
+					"A few went out along the road, and the rider got down and walked the last "
+					+ "mile with them, leading the horse, and asking about the town.",
+					&"rider_met", milestone, _abroad(),
+				),
+				_iron_route(
+					&"wait_at_the_gate", "Wait for them at the gate, with water",
+					"The town waited at the gate with a bucket, and the horse drank first, and "
+					+ "the rider, afterwards, said that she had heard good things.",
+					&"rider_waited", milestone, _abroad(),
+				),
+			], _plus(needs, [_flag_set(&"road_laid")]), &"exploration"
+		),
+		_iron_road(
+			&"a_name_for_the_traveller", "Where the road meets the river",
+			"Travellers keep stopping at the crossing and asking whose town it is, and there is "
+			+ "nothing there to tell them.",
+			milestone, IRON_DAY[&"name_stone"], VillagerState.TRAIT_SOCIAL, [
+				_iron_route(
+					&"cut_the_name_deep", "Cut the name deep in a rock by the crossing",
+					"The name was cut deep in a rock by the crossing, and the first traveller "
+					+ "to read it stood there so long that they were offered a meal.",
+					&"name_cut_deep", milestone, _abroad(),
+				),
+				_iron_route(
+					&"hang_a_painted_board", "Hang a painted board at the crossing",
+					"A painted board went up at the crossing, and was repainted every spring, "
+					+ "and was, to everyone's surprise, quite handsome.",
+					&"name_board", milestone, _abroad(),
+				),
+			], needs
+		),
+	]
+
+
+## The effect every road to the last milestone shares: the town is known abroad, which a later age
+## reads as `far_shore` is read here (docs/ages.md I10).
+func _abroad(more: Array[SimEffect] = []) -> Array[SimEffect]:
+	var effects: Array[SimEffect] = [_set_flag(&"known_abroad")]
+	effects.append_array(more)
+	return effects
+
+
+## `base` and `more`, as one list (a typed array cannot be added to a plain literal).
+func _plus(base: Array[SimCondition], more: Array[SimCondition]) -> Array[SimCondition]:
+	var all: Array[SimCondition] = []
+	all.append_array(base)
+	all.append_array(more)
+	return all
+
+
+## Small story decisions that fill the Iron Age between its milestones, paced by `IRON_STORY_DAY`.
+## Like the Bronze Age's, each has two answers that do something, a journal line each, and a flag a
+## later line or age remembers. The last three lead into the next age (docs/ages.md I10).
+func _iron_story(
+	event_id: StringName, title: String, category: StringName, day_key: StringName, body: String
+) -> EventDef:
+	var event: EventDef = _event(event_id, title, category)
+	event.body = body
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", IRON_STORY_DAY[day_key]),
+	])
+	event.chance_per_tick = STORY_CHANCE
+	event.once = true
+	return event
+
+
+func _iron_story_about(
+	event_id: StringName, title: String, category: StringName, day_key: StringName, body: String,
+	favoured: StringName
+) -> EventDef:
+	var event: EventDef = _iron_story(event_id, title, category, day_key, body)
+	event.needs_subject = true
+	event.subject_requires = _conds([_cond(SimCondition.Kind.SUBJECT_AT_HOME)])
+	event.trait_weights[favoured] = 3.0
+	return event
+
+
+func _iron_stories() -> Array[EventDef]:
+	return [
+		_a_hotter_hearth(), _downwind(), _who_learns_the_slow_work(), _slag(), _the_first_iron(),
+		_nails_over_the_door(), _a_pot_that_does_not_break(), _rust(), _frost_in_the_furnace(),
+		_the_tin_trader(), _timber_for_the_rampart(), _a_name_for_the_fort(),
+		_water_in_the_ditch(), _beans_on_the_bank(), _sheep_on_the_bank(),
+		_hands_for_the_field(), _what_goes_on_the_coin(), _who_counts(), _bad_silver(),
+		_who_pays_at_the_gate(), _a_name_over_the_door(), _stone_from_the_hill(),
+		_strangers_words(), _a_fire_the_sea_can_see(), _a_stone_with_a_name(),
+		_a_rider_with_a_sash(), _a_table_for_strangers(),
+	]
+
+
+func _a_hotter_hearth() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_hotter_hearth", "A hotter hearth", &"settlement", &"hotter_hearth",
+			"The bronze fire was hot, and the iron fire has to be hotter, and everyone has "
+			+ "opinions about where the heat goes."
+		),
+		_answer(
+			&"build_a_tall_furnace", "Build a tall clay furnace",
+			"A tall furnace of clay and stone went up, as high as two people, and drew so hard "
+			+ "that it roared like something in a cave.",
+			[_spend(&"wood", 8), _set_flag(&"tall_furnace")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"dig_it_into_the_bank", "Dig a furnace into the bank",
+			"A furnace was dug into the side of the bank, where the earth held the heat in, and "
+			+ "the smoke came out of the hill as if it were smoking a pipe.",
+			[_set_flag(&"bank_furnace")],
+		),
+	)
+
+
+func _downwind() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"downwind", "Downwind", &"character", &"downwind",
+			"{subject} lives downwind of the furnace, and has begun to describe every dinner as "
+			+ "'a little smoky'.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"move_the_furnace_out", "Move the furnace out of the smoke's way",
+			"The furnace was moved a little way off, and the smoke went the other way, and "
+			+ "{subject}'s dinners tasted of dinner.",
+			[_spend(&"wood", 6), _set_flag(&"furnace_moved")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"ask_everyone_to_keep_clear", "Ask everyone to keep clear on burning days",
+			"Burning days became days when nobody went near the furnace who did not have to, and "
+			+ "a sort of holiday atmosphere, with soot.",
+			[_set_flag(&"burning_days")],
+		),
+	)
+
+
+func _who_learns_the_slow_work() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"who_learns_the_slow_work", "Who learns the slow work", &"character",
+			&"slow_work",
+			"Iron is slow work, and the smith is not getting any younger, and {subject} has "
+			+ "been standing near the furnace a good deal lately, doing nothing in particular.",
+			VillagerState.TRAIT_INDUSTRIOUS
+		),
+		_answer(
+			&"take_an_apprentice", "Take them as an apprentice",
+			"{subject} was taken as an apprentice, and spent the first month carrying "
+			+ "charcoal and the second carrying more.",
+			[_set_flag(&"apprentice_taken")],
+		),
+		_answer(
+			&"every_household_learns", "Let every household learn a little",
+			"Every household learned a little, and a good deal of what they learned was how "
+			+ "much there was to learn.",
+			[_set_flag(&"slow_work_shared")],
+		),
+	)
+
+
+func _slag() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"slag", "Slag", &"settlement", &"slag",
+			"Every burn leaves a heap of black glassy slag behind the furnace, and the heap is "
+			+ "now taller than the furnace."
+		),
+		_answer(
+			&"pave_the_lane_with_it", "Pave the lane with it",
+			"The lane was paved with crushed slag, and glittered after rain, and was slippery "
+			+ "in exactly the places nobody expected.",
+			[_set_flag(&"slag_lane")],
+		),
+		_answer(
+			&"heap_it_behind", "Heap it behind the furnace, and let it grow",
+			"The slag was heaped behind the furnace, and grew, and became a place where the "
+			+ "children went to be dramatic.",
+			[_set_flag(&"slag_heaped")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _the_first_iron() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"the_first_iron", "The first iron", &"settlement", &"first_iron",
+			"There is enough iron for a first thing, and the first thing is a matter of some "
+			+ "debate."
+		),
+		_answer(
+			&"a_knife_for_everyone", "A knife for everyone",
+			"Every household got a knife, and for a week the whole village cut things that did "
+			+ "not need cutting.",
+			[_set_flag(&"iron_knives")],
+		),
+		_answer(
+			&"one_good_axe_head", "One good axe head, for the forest",
+			"One good axe head was made, and was passed from hand to hand, and the pines "
+			+ "retreated with a kind of dignity.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"wood", 6), _set_flag(&"iron_axehead")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _nails_over_the_door() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"nails_over_the_door", "Nails over the door", &"character", &"nails",
+			"Somebody has driven an iron nail into the beam over their door, for luck, and "
+			+ "{subject} has noticed that it is working.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"a_nail_over_every_door", "One nail over every door",
+			"Every door got a nail, and every nail got touched on the way in and out until it "
+			+ "shone like a very small star.",
+			[_set_flag(&"door_nails")],
+		),
+		_answer(
+			&"keep_the_nails_for_timbers", "Keep the nails for the timbers",
+			"The nails were kept for the timbers, where they held the roofs to the walls, and "
+			+ "nobody needed to touch them for luck.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"wood", 3), _set_flag(&"nails_kept")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _a_pot_that_does_not_break() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_pot_that_does_not_break", "A pot that does not break", &"settlement",
+			&"iron_pot",
+			"The clay pots crack in the cold and the iron one has never cracked, and everyone "
+			+ "has been looking at the iron one."
+		),
+		_answer(
+			&"hang_an_iron_cauldron", "Hang an iron cauldron over the fire",
+			"An iron cauldron hung from a hook over the fire, black as a beetle, and the soup "
+			+ "was never quite the same, or at all bad.",
+			[_spend(&"wood", 5), _set_flag(&"iron_cauldron")],
+			[_has(&"wood", 5)],
+		),
+		_answer(
+			&"keep_the_clay_pots", "Keep to the clay pots",
+			"The clay pots were kept, because they were what the soup was used to, and "
+			+ "because the cauldron would cost.",
+			[_set_flag(&"clay_pots_kept")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _rust() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"rust", "Rust", &"settlement", &"rust",
+			"The first tools have started to turn brown at the edges, and nobody can think "
+			+ "what they have done to deserve it."
+		),
+		_answer(
+			&"grease_the_tools", "Grease the tools every evening",
+			"The tools were greased every evening with fat, and the cooking suffered, and the "
+			+ "tools did not.",
+			[_spend(&"food", 3), _set_flag(&"tools_greased")],
+			[_has(&"food", 3)],
+		),
+		_answer(
+			&"keep_them_dry_in_the_cave", "Keep them dry in the cave",
+			"The tools were carried to the cave each night and brought back each morning, and "
+			+ "the walk became part of the day.",
+			[_set_flag(&"tools_in_the_cave")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _frost_in_the_furnace() -> EventDef:
+	var event: EventDef = _iron_story(
+		&"frost_in_the_furnace", "Frost in the furnace", &"settlement", &"frost",
+		"The first hard frost has come, and the furnace is cold at the edges, and iron does "
+		+ "not like a cold furnace."
+	)
+	event.requires.append(_season(Season.WINTER))
+	return _fork(
+		event,
+		_answer(
+			&"keep_it_lit_all_winter", "Keep it lit all winter",
+			"The furnace was kept lit all winter, fed a little at a time, and was the warmest "
+			+ "place in the village and, for that reason, the busiest.",
+			[_spend(&"wood", 10), _set_flag(&"furnace_kept_lit")],
+			[_has(&"wood", 10)],
+		),
+		_answer(
+			&"bank_it_and_wait", "Bank it, and wait for the spring",
+			"The furnace was banked under clay and straw, and sat all winter like a sleeping "
+			+ "animal, and woke up grumpy in the spring.",
+			[_set_flag(&"furnace_banked")],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _the_tin_trader() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"the_tin_trader", "The tin trader", &"settlement", &"tin_trader",
+			"The tin trader is back, with her donkeys and a long face, and has noticed that "
+			+ "she is being asked a good deal less than she used to be."
+		),
+		_answer(
+			&"offer_iron_for_tin", "Offer iron in place of tin",
+			"Iron was offered in place of tin, and the trader looked at it for a long time and "
+			+ "then went away to think about her prices.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"wood", 4), _set_flag(&"iron_for_tin")],
+		),
+		_answer(
+			&"keep_buying_bronze", "Keep buying bronze for the fine work",
+			"Tin was bought for the fine work, a little at a time, and the trader left "
+			+ "happier than she had arrived.",
+			[_spend(&"food", 4), _set_flag(&"bronze_for_fine_work")],
+			[_has(&"food", 4)],
+		),
+		[_earned(&"first_bloom")]
+	)
+
+
+func _timber_for_the_rampart() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"timber_for_the_rampart", "Timber for the rampart", &"settlement", &"timber",
+			"The rampart wants a great deal of timber, and there is not a great deal of "
+			+ "timber about."
+		),
+		_answer(
+			&"oak_from_the_far_wood", "Fell oak in the far wood",
+			"Oak was felled in the far wood and dragged home by every beast the village could "
+			+ "borrow, and the rampart smelled of fresh timber for a year.",
+			[_spend(&"wood", 12), _set_flag(&"far_oak")],
+			[_has(&"wood", 12)],
+		),
+		_answer(
+			&"the_old_gate_timbers", "Use the old gate's timbers",
+			"The old gate's timbers were used, and they carried a great many scratches and one "
+			+ "child's name, which stayed.",
+			[_set_flag(&"old_timbers")],
+		),
+		[_earned(&"the_hill_fort")]
+	)
+
+
+func _a_name_for_the_fort() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"a_name_for_the_fort", "A name for the fort", &"character", &"fort_name",
+			"The strangers on the road have started calling the town 'the fort', and {subject} "
+			+ "feels it deserves better.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"after_the_hill", "After the hill",
+			"The fort was named for the hill, and the hill, for a moment, looked slightly "
+			+ "smug.",
+			[_set_flag(&"fort_named_for_hill")],
+		),
+		_answer(
+			&"after_the_first_family", "After the first family",
+			"The fort was named for the first family to have lived here, and their grandchildren "
+			+ "pretended not to be pleased.",
+			[_set_flag(&"fort_named_for_family")],
+		),
+		[_earned(&"the_hill_fort")]
+	)
+
+
+func _water_in_the_ditch() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"water_in_the_ditch", "Water in the ditch", &"settlement", &"ditch_water",
+			"The deep ditch has filled after the rain, and a frog has moved in, and the question "
+			+ "is whether it should be allowed to."
+		),
+		_answer(
+			&"cut_a_channel", "Cut a channel from the river",
+			"A channel was cut from the river, and the ditch filled to the brim and stayed "
+			+ "full, and the frog was joined by a great many relatives.",
+			[_spend(&"wood", 12), _set_flag(&"ditch_channel")],
+			[_has(&"wood", 12)],
+		),
+		_answer(
+			&"let_it_fill", "Let it fill when it likes",
+			"The ditch filled when it liked and drained when it liked, and was a pond in "
+			+ "spring and a dry gully by autumn.",
+			[_set_flag(&"ditch_left_to_fill")],
+		),
+		[_earned(&"the_hill_fort")]
+	)
+
+
+func _beans_on_the_bank() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"beans_on_the_bank", "Beans on the bank", &"settlement", &"bank_crop",
+			"The bank round the fort is bare earth, and somebody has pointed out that nothing "
+			+ "grows on bare earth except resentment."
+		),
+		_answer(
+			&"plant_the_bank_with_beans", "Plant the bank with beans",
+			"The bank was planted with beans, and in July it was a green wall, and in September "
+			+ "it was dinner.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"bank_beans")],
+		),
+		_answer(
+			&"leave_it_to_the_grass", "Leave it to the grass",
+			"The bank was left to the grass, which came up thick and green and was visited by "
+			+ "every cricket in the valley.",
+			[_set_flag(&"bank_grass")],
+		),
+		[_earned(&"the_hill_fort"), _flag_set(&"path_agriculture")]
+	)
+
+
+func _sheep_on_the_bank() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"sheep_on_the_bank", "Sheep on the bank", &"settlement", &"bank_crop_herd",
+			"The bank round the fort is grass, and the flock has noticed."
+		),
+		_answer(
+			&"graze_the_bank", "Let the flock graze it",
+			"The flock grazed the bank clean, and the bank was never so tidy, and the sheep "
+			+ "looked like a procession.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"bank_grazed")],
+		),
+		_answer(
+			&"keep_the_flock_off", "Keep the flock off it",
+			"The flock was kept off the bank, which grew tall, and nested with larks.",
+			[_set_flag(&"bank_left")],
+		),
+		[_earned(&"the_hill_fort"), _flag_set(&"path_herding")]
+	)
+
+
+func _hands_for_the_field() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"hands_for_the_field", "Hands for the field", &"settlement", &"hands",
+			"The new fields are wide, and there are not enough hands, and a family on the road "
+			+ "has stopped to look at the gate."
+		),
+		_answer(
+			&"take_a_family_in", "Take the family in",
+			"The family was taken in, and given a patch at the edge, and within a month they "
+			+ "had opinions about everything.",
+			[_eff(SimEffect.Kind.ADD_VILLAGER, &"", 1), _set_flag(&"family_taken_in")],
+			[_cond(SimCondition.Kind.HAS_ROOM, &"", 1)],
+		),
+		_answer(
+			&"send_them_on_with_grain", "Send them on with a sack of grain",
+			"The family was sent on with a sack of grain and good wishes, and were seen a "
+			+ "month later a little way down the road, settled and waving.",
+			[_spend(&"food", 4), _set_flag(&"family_sent_on")],
+			[_has(&"food", 4)],
+		),
+		[_earned(&"fuller_harvest")]
+	)
+
+
+func _what_goes_on_the_coin() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"what_goes_on_the_coin", "What goes on the coin", &"settlement", &"coin_face",
+			"Every coin needs a picture, and every household has a view on what it should be."
+		),
+		_answer(
+			&"a_tree", "A tree",
+			"A tree went on the coin, and the tree was recognisably the old pine by the cave, "
+			+ "and the cave was quietly flattered.",
+			[_set_flag(&"coin_tree")],
+		),
+		_answer(
+			&"a_face", "A face",
+			"A face went on the coin, and every household was convinced it was theirs, and the "
+			+ "mint kept very quiet.",
+			[_set_flag(&"coin_face")],
+		),
+		[_earned(&"silver_by_weight")]
+	)
+
+
+func _who_counts() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"who_counts", "Who counts", &"character", &"counter",
+			"The silver has to be counted, and {subject} has been counting it already, out of "
+			+ "habit, in a murmur.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"a_keeper_of_the_count", "Let them keep the count",
+			"{subject} kept the count, in a small room with a small door, and came out with "
+			+ "ink on one finger, and a new look.",
+			[_set_flag(&"keeper_of_the_count")],
+		),
+		_answer(
+			&"count_aloud_together", "Count aloud, all together",
+			"The count was done aloud in the lane, all together, every month, and became the "
+			+ "closest thing the village had to a song.",
+			[_set_flag(&"count_aloud")],
+		),
+		[_earned(&"silver_by_weight")]
+	)
+
+
+func _bad_silver() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"bad_silver", "Bad silver", &"settlement", &"bad_silver",
+			"A coin has turned up that is not quite silver, and everybody agrees it must have "
+			+ "come from someone else."
+		),
+		_answer(
+			&"test_it_on_a_touchstone", "Set up a touchstone by the market",
+			"A black touchstone was set up by the market, and rubbed so bright that it caught "
+			+ "the light, and the trader who first failed it left in a hurry.",
+			[_spend(&"food", 3), _set_flag(&"touchstone")],
+			[_has(&"food", 3)],
+		),
+		_answer(
+			&"trust_the_trader", "Trust the trader's word",
+			"The trader's word was trusted, and the trader was visibly a little hurt, and "
+			+ "honest for the rest of the season.",
+			[_set_flag(&"trusted_the_trader")],
+		),
+		[_earned(&"silver_by_weight")]
+	)
+
+
+func _who_pays_at_the_gate() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"who_pays_at_the_gate", "Who pays at the gate", &"settlement", &"gate_coin",
+			"Now there is coin, the gate has the chance to ask for it, and the gatekeeper has "
+			+ "been thinking about this a great deal."
+		),
+		_answer(
+			&"coin_at_the_gate", "Take a coin from every cart",
+			"A coin was taken from every cart, and the gate became a place where people stood "
+			+ "and had a quiet word with their purses.",
+			[_eff(SimEffect.Kind.ADD_RESOURCE, &"food", 3), _set_flag(&"coin_at_the_gate")],
+		),
+		_answer(
+			&"waive_it_for_neighbours", "Waive it for neighbours",
+			"The gate waved neighbours through, and the neighbours, to the gatekeeper's "
+			+ "surprise, remembered it.",
+			[_set_flag(&"neighbours_waved_through")],
+		),
+		[_earned(&"silver_by_weight")]
+	)
+
+
+func _a_name_over_the_door() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_name_over_the_door", "A name over the door", &"settlement", &"door_name",
+			"The signs are good enough now to put on a door, and every household would like "
+			+ "theirs to be the first."
+		),
+		_answer(
+			&"cut_it_in_wood", "Cut it in the lintel",
+			"Names were cut into lintels, and the carpenter did a thriving trade in curly "
+			+ "letters for a month.",
+			[_set_flag(&"names_in_wood")],
+		),
+		_answer(
+			&"press_it_in_clay", "Press it into a clay plaque",
+			"Names were pressed into clay plaques and set by each door, and the potters "
+			+ "became quietly proud of their alphabet.",
+			[_set_flag(&"names_in_clay")],
+		),
+		[_earned(&"written_word")]
+	)
+
+
+func _stone_from_the_hill() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"stone_from_the_hill", "Stone from the hill", &"settlement", &"hill_stone",
+			"The gate's feet are timber, and timber rots, and the hill above the town is "
+			+ "entirely stone."
+		),
+		_answer(
+			&"wedge_out_blocks", "Wedge out a few blocks with iron, and set them at the gate",
+			"A few blocks were wedged out of the hill with iron and set at the gate's foot, "
+			+ "pale and square, and every passer-by stopped to pat them.",
+			[_spend(&"wood", 10), _set_flag(&"cut_stone")],
+			[_has(&"wood", 10)],
+		),
+		_answer(
+			&"keep_to_timber_and_earth", "Keep to timber and earth",
+			"The gate stayed timber and earth, and was mended every spring, and was, in a sense, "
+			+ "always new.",
+			[_set_flag(&"timber_town")],
+		),
+		[_earned(&"the_hill_fort")]
+	)
+
+
+func _strangers_words() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"strangers_words", "Strangers' words", &"exploration", &"words",
+			"{subject} has been talking with the people from the far shore, in a great many "
+			+ "gestures and a few words, and has begun to dream in both.",
+			VillagerState.TRAIT_CURIOUS
+		),
+		_answer(
+			&"learn_theirs", "Learn their words",
+			"{subject} learned their words, a few every evening, and came to the market one "
+			+ "morning and said something that made a stranger laugh and clap.",
+			[_set_flag(&"learned_words")],
+		),
+		_answer(
+			&"teach_them_ours", "Teach them ours",
+			"{subject} taught them the village's words, and for a month the market was full of "
+			+ "visitors saying 'good morning' at all hours.",
+			[_set_flag(&"taught_words")],
+		),
+		[_flag_set(&"known_abroad")]
+	)
+
+
+func _a_fire_the_sea_can_see() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_fire_the_sea_can_see", "A fire the sea can see", &"settlement", &"sea_fire",
+			"The ships that come to the town come late, and the coast has no light to steer "
+			+ "them by, and the captains have mentioned it."
+		),
+		_answer(
+			&"light_the_headland", "Light a fire on the headland every night",
+			"A fire was built on the headland, and fed every night, and the first ship to "
+			+ "steer by it sent a gift of oil.",
+			[_spend(&"wood", 4), _set_flag(&"beacon_lit")],
+			[_has(&"wood", 4)],
+		),
+		_answer(
+			&"trust_the_stars", "Trust the stars",
+			"The captains were told to trust the stars, and a few did, and the rest were seen "
+			+ "arriving in the morning, looking relieved.",
+			[_set_flag(&"trust_the_stars")],
+		),
+		[_flag_set(&"known_abroad")]
+	)
+
+
+func _a_stone_with_a_name() -> EventDef:
+	return _fork(
+		_iron_story_about(
+			&"a_stone_with_a_name", "A stone with a name", &"exploration", &"named_stone",
+			"{subject} has found a long flat stone at the quarry, and a good deal of "
+			+ "enthusiasm for having something say who we are.",
+			VillagerState.TRAIT_CURIOUS
+		),
+		_answer(
+			&"stand_it_at_the_crossing", "Stand it up at the crossing",
+			"The stone was stood up at the crossing and the name was cut into it, and "
+			+ "travellers stopped to read it with an expression of someone who has arrived.",
+			[_set_flag(&"standing_stone")],
+		),
+		_answer(
+			&"cut_it_over_the_gate", "Cut it into the stone over the gate",
+			"The stone was set over the gate and the name was cut into it, and the gate "
+			+ "was suddenly much more of a gate.",
+			[_set_flag(&"gate_name")],
+		),
+		[_flag_set(&"known_abroad")]
+	)
+
+
+func _a_rider_with_a_sash() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_rider_with_a_sash", "A rider with a sash", &"settlement", &"envoy",
+			"A rider in a bright sash has come up the road with word from beyond the sea: the "
+			+ "town has been talked about, and somebody would like to come and look."
+		),
+		_answer(
+			&"send_a_guide", "Send a guide to meet them on the road",
+			"A guide was sent out to meet the rider, and the two came in together, talking, "
+			+ "and the rider's horse was given the best stall in the village.",
+			[_set_flag(&"envoy_guided")],
+		),
+		_answer(
+			&"wait_at_the_gate_for_them", "Wait for them at the gate",
+			"The village waited at the gate, and the rider arrived a day late, and was "
+			+ "greeted as if she had been exactly on time.",
+			[_set_flag(&"envoy_waited")],
+		),
+		[_flag_set(&"known_abroad")]
+	)
+
+
+func _a_table_for_strangers() -> EventDef:
+	return _fork(
+		_iron_story(
+			&"a_table_for_strangers", "A table for strangers", &"settlement", &"guest_table",
+			"The guests will arrive within a week, and the question of where they will sit is "
+			+ "already causing a great deal of feeling."
+		),
+		_answer(
+			&"lay_a_long_table", "Lay a long table in the lane",
+			"A long table went down the lane, and the whole town sat at it, and the guests were "
+			+ "put in the middle, which was agreed to be the safest place.",
+			[_spend(&"food", 10), _set_flag(&"long_table")],
+			[_has(&"food", 10)],
+		),
+		_answer(
+			&"keep_a_night_watch", "Keep a watch on the gate by night",
+			"A watch was kept on the gate by night, and was friendly, and a little puzzled by "
+			+ "its own friendliness.",
+			[_set_flag(&"night_watch")],
+		),
+		[_flag_set(&"known_abroad")]
+	)
+
+
+## The two forks that end the Bronze Age's quiet stretch before the gate opens (docs/ages.md I2).
+## They expire with the age.
+func _red_water() -> EventDef:
+	var event: EventDef = _bronze_story(
+		&"red_water", "Red water", &"settlement", &"red_water",
+		"The marsh pools have gone a rusty red, and the children are wearing it on their feet "
+		+ "and will not be told."
+	)
+	event.requires.append(_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON, true))
+	return _fork(
+		event,
+		_answer(
+			&"skim_the_scum", "Skim the red scum off the pools into a pot",
+			"The red scum was skimmed into a pot and dried in the sun, and became a red powder "
+			+ "that stained everything and was, for that reason, interesting.",
+			[_set_flag(&"red_scum")],
+		),
+		_answer(
+			&"dig_the_red_mud", "Dig where the mud is thickest",
+			"A pit was dug where the mud was thickest, and filled with red, and the first "
+			+ "person to put a hand in it looked at it for a long time.",
+			[_spend(&"wood", 4), _set_flag(&"red_mud")],
+			[_has(&"wood", 4)],
+		),
+	)
+
+
+func _fuel_for_the_long_burn() -> EventDef:
+	var event: EventDef = _bronze_story(
+		&"fuel_for_the_long_burn", "Fuel for the long burn", &"settlement", &"long_burn",
+		"Whatever is coming will want a great deal more charcoal than the pit has ever made."
+	)
+	event.requires.append(_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON, true))
+	return _fork(
+		event,
+		_answer(
+			&"stack_a_second_pit", "Stack a second charcoal pit",
+			"A second pit was stacked beside the first, and the two burned together under a "
+			+ "single skin of turf, like twins.",
+			[_spend(&"wood", 8), _set_flag(&"second_charcoal_pit")],
+			[_has(&"wood", 8)],
+		),
+		_answer(
+			&"wait_for_a_windy_day", "Wait for a day with a good wind",
+			"A day with a good wind was waited for, and came, and the pit burned as if it had "
+			+ "been listening.",
+			[_set_flag(&"waited_for_wind")],
+		),
+	)
+
+
+## The Iron Age's one-line moments: the age's feel (furnace smoke, sparks, ploughed lines, ramparts,
+## coin, signs, ships), several only after a milestone, a few about a trait and many that remember
+## an answer.
+func _iron_ambient_lines() -> Array[EventDef]:
+	return [
+		_iron_ambient(
+			&"bloom_in_the_ash",
+			"A grey sponge of iron came out of the furnace, glowing, ugly and astonishingly "
+			+ "heavy, and was hit by everyone who could reach it.",
+			[_earned(&"first_bloom")]
+		),
+		_iron_ambient(
+			&"sparks_at_dusk",
+			"Sparks went up from the furnace at dusk in a long orange fountain, and the children "
+			+ "counted them until they lost count.",
+			[_earned(&"first_bloom")]
+		),
+		_iron_ambient(
+			&"smell_of_hot_iron",
+			"The village smelled of charcoal and hot iron for a week, and then stopped noticing.",
+			[_earned(&"first_bloom")]
+		),
+		_iron_ambient(
+			&"grain_up_the_ladder",
+			"The grain went up the granary ladder in baskets, so full that every climber left a "
+			+ "little trail.",
+			[_earned(&"fuller_harvest")]
+		),
+		_iron_ambient(
+			&"a_straight_furrow",
+			"A line of turned earth ran the whole length of the field, so straight that a "
+			+ "stranger took it for a road.",
+			[_earned(&"fuller_harvest")]
+		),
+		_iron_ambient(
+			&"shade_of_the_rampart",
+			"The shadow of the rampart reached the lane by afternoon, and the dogs moved into it.",
+			[_earned(&"the_hill_fort")]
+		),
+		_iron_ambient(
+			&"a_coin_on_a_stone",
+			"Somebody dropped a piece of silver on a stone, and a dozen heads turned at the sound.",
+			[_earned(&"silver_by_weight")]
+		),
+		_iron_ambient(
+			&"signs_in_the_dust",
+			"A child drew the signs in the dust with a stick, and was very cross when somebody "
+			+ "read them out.",
+			[_earned(&"written_word")]
+		),
+		_iron_ambient(
+			&"a_ship_stays_three_days",
+			"A ship put in at dusk and stayed three days, and the village learned some words it "
+			+ "would rather not have.",
+			[_earned(&"name_abroad")]
+		),
+		_iron_ambient_about(
+			&"watching_the_bloom", VillagerState.TRAIT_CURIOUS,
+			"{subject} stood at the furnace until the hammering started, and then stood a little "
+			+ "closer.",
+			[_earned(&"first_bloom")]
+		),
+		_iron_ambient_about(
+			&"trying_the_edge", VillagerState.TRAIT_INDUSTRIOUS,
+			"{subject} tried the new edge on every piece of wood in reach, and was forgiven only "
+			+ "by the firewood pile.",
+			[_earned(&"first_bloom")]
+		),
+		_iron_ambient_about(
+			&"swallows_in_the_rampart", VillagerState.TRAIT_NATURE_LOVING,
+			"{subject} watched swallows nest in the rampart's timbers, and said nothing, and "
+			+ "neither did the swallows.",
+			[_earned(&"the_hill_fort")]
+		),
+		_iron_ambient_about(
+			&"telling_the_coin", VillagerState.TRAIT_SOCIAL,
+			"{subject} told the market that a coin was worth exactly what the market would agree "
+			+ "it was, and was applauded.",
+			[_earned(&"silver_by_weight")]
+		),
+		_iron_remembered(
+			&"dark_stone_blackened", &"dark_stone_tried",
+			"The lump that had blackened in the fire sat by the furnace, and was looked at now "
+			+ "and then like a question."
+		),
+		_iron_remembered(
+			&"bell_stone_by_the_furnace", &"dark_stone_bell",
+			"The bell-stone was taken down from its beam and set beside the furnace. It rang, "
+			+ "now, only when somebody was thinking about it."
+		),
+		_iron_remembered(
+			&"tall_furnace_at_night", &"tall_furnace",
+			"The tall furnace glowed at night like a small, angry sunset."
+		),
+		_iron_remembered(
+			&"smoke_from_the_bank", &"bank_furnace",
+			"Smoke rose out of the bank itself, as if the hill had taken up a pipe."
+		),
+		_iron_remembered(
+			&"knives_at_dinner", &"iron_knives",
+			"Knives came out at every meal, and every one was held up to the light first."
+		),
+		_iron_remembered(
+			&"the_axe_head_goes_round", &"iron_axehead",
+			"The one good axe head went from hand to hand like a borrowed hat."
+		),
+		_iron_remembered(
+			&"touching_the_nail", &"door_nails",
+			"Every door had its nail, and every nail had been touched for luck."
+		),
+		_iron_remembered(
+			&"soup_in_the_cauldron", &"iron_cauldron",
+			"The iron pot hung over the fire all day, and nobody could remember what the soup had "
+			+ "been like before."
+		),
+		_iron_remembered(
+			&"glass_in_the_lane", &"slag_lane",
+			"The lane glittered like wet glass after the rain."
+		),
+		_iron_remembered(
+			&"fresh_oak_on_the_wind", &"far_oak",
+			"The new rampart smelled of fresh oak, and the smell reached the field."
+		),
+		_iron_remembered(
+			&"cut_stone_patted", &"cut_stone",
+			"Cut stone stood at the foot of the gate, pale and square, and was patted by "
+			+ "everyone who passed."
+		),
+		_iron_remembered(
+			&"the_coin_with_a_tree", &"coin_tree",
+			"A small tree was stamped on every coin, and the coin was known all along the road "
+			+ "as the Tree."
+		),
+		_iron_remembered(
+			&"the_coin_with_a_face", &"coin_face",
+			"A face was stamped on every coin, and everyone was sure it was somebody else's."
+		),
+		_iron_remembered(
+			&"the_touchstone_shines", &"touchstone",
+			"The black touchstone by the market had been rubbed so bright that it threw light."
+		),
+		_iron_remembered(
+			&"a_word_in_a_stranger_tongue", &"learned_words",
+			"Someone said good morning in a stranger's tongue, and a dog looked up."
+		),
+		_iron_remembered(
+			&"the_stone_at_the_crossing", &"standing_stone",
+			"The standing stone threw a long shadow across the crossing, and the children "
+			+ "measured themselves against it."
+		),
+		_iron_remembered(
+			&"the_beacon_burns", &"beacon_lit",
+			"The beacon on the headland burned all night, and the sea had somewhere to look."
+		),
+		_iron_remembered(
+			&"the_guests_long_table", &"long_table",
+			"The long table stood in the lane all evening, and the last guest left with a loaf "
+			+ "under each arm."
+		),
+	]
+
+
+## An Iron Age line: only in the age, rarer than the Cave Age's, and only when every one of `needs`
+## holds.
+func _iron_ambient(
+	event_id: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _ambient(event_id, line)
+	event.requires = _conds([_cond(SimCondition.Kind.ERA_AT_LEAST, &"", IRON)])
+	event.requires.append_array(needs)
+	event.chance_per_tick = IRON_AMBIENT_CHANCE
+	return event
+
+
+func _iron_ambient_about(
+	event_id: StringName, trait_name: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _iron_ambient(event_id, line, needs)
+	event.category = &"character"
+	event.needs_subject = true
+	event.subject_requires = _conds([
+		_cond(SimCondition.Kind.SUBJECT_HAS_TRAIT, trait_name),
+		_cond(SimCondition.Kind.SUBJECT_AT_HOME),
+		_cond(SimCondition.Kind.SUBJECT_AWAKE),
+	])
+	return event
+
+
+func _iron_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
+	return _iron_ambient(event_id, line, [_flag_set(flag)])
 
 
 func _build_choice(

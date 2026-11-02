@@ -7,7 +7,9 @@ extends McpTestSuite
 const MAX_OVERLAP: float = 0.25
 ## Props shown on one page with everything unlocked (alternatives and overlays count once).
 const PAGE_BUDGET: Dictionary = {-1: 14, 0: 9, 1: 8}
-const LAST_ERA: int = 2
+const LAST_ERA: int = 3
+## The cave's standard and door shown at once (one of each per age).
+const MAX_CAVE_DRESSING: int = 2
 
 
 func suite_name() -> String:
@@ -190,12 +192,19 @@ func test_a_prop_does_not_stand_on_a_building_unless_it_is_behind_it() -> void:
 func test_no_page_is_crowded_in_any_age_once_everything_is_unlocked() -> void:
 	for era_order: int in range(LAST_ERA + 1):
 		var counted: Dictionary = {}
+		var dressing: int = 0
 		for id: StringName in SceneProps.shown(_everything_unlocked(era_order)):
 			var spec: Dictionary = SceneProps.PROPS[id]
+			if spec["kind"] == SceneProps.Kind.ALWAYS:
+				# The cave's own door and marks sit on the cliff's face, not on the ground the
+				# budget protects; they have their own cap below.
+				dressing += 1
+				continue
 			if spec.has("alt_of") or spec.has("overlays"):
 				continue
 			var page: int = _page_of(id)
 			counted[page] = int(counted.get(page, 0)) + 1
+		assert_true(dressing <= MAX_CAVE_DRESSING, "Age %d: the cave shows %d pieces" % [era_order, dressing])
 		for page: int in counted:
 			assert_true(
 				int(counted[page]) <= int(PAGE_BUDGET.get(page, 0)),
@@ -226,13 +235,186 @@ func test_the_bronze_age_simplifies_what_the_settled_age_scattered() -> void:
 		assert_false(bronze.has(afloat), "%s gives way to the quay and the bridge" % afloat)
 
 
+func test_the_iron_age_redraws_the_wall_the_tally_and_the_ship() -> void:
+	var bronze: Array[StringName] = SceneProps.shown(_everything_unlocked(2))
+	var iron: Array[StringName] = SceneProps.shown(_everything_unlocked(3))
+	for old: StringName in [&"town_wall", &"low_wall", &"tally_post", &"east_sail"]:
+		assert_false(iron.has(old), "%s gives way to the Iron Age's piece" % old)
+	for tidy: StringName in [&"rampart", &"writing_post", &"east_deep_ship"]:
+		assert_false(bronze.has(tidy), "%s waits for the Iron Age" % tidy)
+		assert_true(iron.has(tidy), "%s is the Iron Age's" % tidy)
+	for fresh: StringName in [
+		&"slag_heap", &"plough_team", &"shearing_pen", &"coin_tray", &"standing_stone",
+		&"east_beacon",
+	]:
+		assert_false(bronze.has(fresh), "%s waits for the Iron Age" % fresh)
+		assert_true(iron.has(fresh), "%s is the Iron Age's" % fresh)
+	for kept: StringName in [&"market_stalls", &"council_ring", &"cart", &"donkeys", &"quay_boats"]:
+		assert_true(iron.has(kept), "%s stays in the Iron Age" % kept)
+	for tidy: StringName in [
+		&"potters_yard", &"weavers_row", &"crossing_planks", &"farmstead_farm", &"farmstead_herd",
+	]:
+		assert_true(iron.has(tidy), "The Bronze Age's %s stays" % tidy)
+	for folded: StringName in [
+		&"pots", &"west_kiln", &"clay_pits", &"loom", &"cloth_line", &"west_plot_farm", &"hens",
+		&"west_pen", &"green_stones", &"boat_dugout", &"crossing_stones",
+	]:
+		assert_false(iron.has(folded), "%s stays folded away in the Iron Age" % folded)
+
+
+const CAVE_DOORS: Array[StringName] = [&"cave_door_settled", &"cave_door_bronze", &"cave_door_iron"]
+const CAVE_STANDARDS: Array[StringName] = [
+	&"cave_standard_cave", &"cave_standard_settled", &"cave_standard_bronze", &"cave_standard_iron",
+]
+## The colour of the cave's opening in the cliff art (tools/art/lib.js cliff()).
+const MOUTH_DARK: Color = Color("2a2433")
+## Where the standards' poles stand on the cliff's top edge.
+const STANDARD_POLE_X: int = 26
+
+
+func _empty_world(era_order: int) -> WorldState:
+	var world: WorldState = WorldState.new()
+	world.era_order = era_order
+	return world
+
+
+func test_the_first_age_shows_only_the_caves_own_pennant() -> void:
+	assert_eq(
+		SceneProps.shown(_empty_world(0)), [&"cave_standard_cave"] as Array[StringName],
+		"The Cave Age's cave has its pennant and nothing else"
+	)
+
+
+func test_the_cave_door_is_replaced_each_age() -> void:
+	for id: StringName in SceneProps.shown(_empty_world(0)):
+		assert_false(CAVE_DOORS.has(id), "The Cave Age has no door yet")
+	for era_order: int in range(1, LAST_ERA + 1):
+		var shown: Array[StringName] = SceneProps.shown(_empty_world(era_order))
+		for index: int in CAVE_DOORS.size():
+			assert_eq(
+				shown.has(CAVE_DOORS[index]), index == era_order - 1,
+				"Age %d shows only its own door (%s)" % [era_order, CAVE_DOORS[index]]
+			)
+
+
+func test_the_standard_on_the_cliff_is_replaced_each_age() -> void:
+	for era_order: int in range(LAST_ERA + 1):
+		var shown: Array[StringName] = SceneProps.shown(_empty_world(era_order))
+		for index: int in CAVE_STANDARDS.size():
+			assert_eq(
+				shown.has(CAVE_STANDARDS[index]), index == era_order,
+				"Age %d shows only its own standard (%s)" % [era_order, CAVE_STANDARDS[index]]
+			)
+
+
+func test_the_cave_shows_only_because_the_age_turned() -> void:
+	for era_order: int in range(LAST_ERA + 1):
+		var world: WorldState = _empty_world(era_order)
+		# The standard, then from the first turn a door as well.
+		var expected: int = 1 if era_order == 0 else 2
+		assert_eq(
+			SceneProps.shown(world).size(), expected,
+			"Age %d with nothing earned shows only the cave's own pieces" % era_order
+		)
+		for id: StringName in SceneProps.shown(world):
+			assert_eq(SceneProps.PROPS[id]["kind"], SceneProps.Kind.ALWAYS, "%s waits for nothing" % id)
+
+
+func test_the_cave_door_fits_the_whole_mouth() -> void:
+	var cliff: Image = (load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D).get_image()
+	for era_order: int in range(1, LAST_ERA + 1):
+		var door_id: StringName = CAVE_DOORS[era_order - 1]
+		var door: Image = (load(WorldLayout.piece_path(door_id, era_order)) as Texture2D).get_image()
+		for x: int in range(20, 48):
+			var crown: int = -1
+			for y: int in range(30, 66):
+				if cliff.get_pixel(x, y).is_equal_approx(MOUTH_DARK):
+					crown = y
+					break
+			assert_true(crown >= 0, "Column %d has no opening" % x)
+			assert_true(
+				door.get_pixel(x, crown).a > 0.5,
+				"%s leaves the top of the arch bare at column %d (row %d)" % [door_id, x, crown]
+			)
+		for x: int in [20, 21, 46, 47]:
+			assert_true(door.get_pixel(x, 65).a > 0.5, "%s: a post does not reach the floor at %d" % [door_id, x])
+
+
+func test_the_standards_are_inside_the_skyline() -> void:
+	var cliff: Texture2D = load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D
+	for era_order: int in range(LAST_ERA + 1):
+		var id: StringName = CAVE_STANDARDS[era_order]
+		var texture: Texture2D = load(WorldLayout.piece_path(id, era_order)) as Texture2D
+		var skyline: Skyline = Skyline.new(384, WorldLayout.VIEW_SIZE.y)
+		skyline.add(cliff, 0)
+		skyline.add(texture, 0)
+		var art: Image = texture.get_image()
+		for x: int in art.get_width():
+			for y: int in art.get_height():
+				if art.get_pixel(x, y).a > Skyline.ALPHA_CLICKABLE:
+					assert_true(y >= skyline.tops[x], "%s: (%d, %d) is above the skyline" % [id, x, y])
+		var pole: int = skyline.tops[STANDARD_POLE_X]
+		assert_true(pole < 22, "%s's pole rises above the cliff's edge in the skyline" % id)
+
+
+func test_the_standards_stand_on_the_cliffs_top_and_stay_small() -> void:
+	var cliff: Image = (load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D).get_image()
+	for era_order: int in range(LAST_ERA + 1):
+		var id: StringName = CAVE_STANDARDS[era_order]
+		var art: Image = (load(WorldLayout.piece_path(id, era_order)) as Texture2D).get_image()
+		var used: Rect2i = art.get_used_rect()
+		assert_true(used.size.x <= 12 and used.size.y <= 22, "%s is %s, too big" % [id, used.size])
+		var base: int = -1
+		for y: int in range(art.get_height() - 1, -1, -1):
+			if art.get_pixel(STANDARD_POLE_X, y).a > 0.5:
+				base = y
+				break
+		assert_true(base >= 0, "%s has no pole" % id)
+		assert_true(cliff.get_pixel(STANDARD_POLE_X, base).a > 0.5, "%s does not stand on the rock" % id)
+
+
+func test_the_cave_door_leaves_the_firelight_and_the_gathering_spots_clear() -> void:
+	var fire: Image = (load(WorldLayout.piece_path(&"fire_pit_0", 0)) as Texture2D).get_image()
+	for era_order: int in range(1, LAST_ERA + 1):
+		var door_id: StringName = CAVE_DOORS[era_order - 1]
+		var door: Image = (load(WorldLayout.piece_path(door_id, era_order)) as Texture2D).get_image()
+		for y: int in door.get_height():
+			for x: int in door.get_width():
+				if door.get_pixel(x, y).a <= 0.05:
+					continue
+				var point: Vector2 = Vector2(x, y)
+				assert_false(WorldLayout.FIRE_HIT.has_point(point), "%s covers the fire at %s" % [door_id, point])
+				if x < int(WorldLayout.FIRE_HIT.position.x):
+					assert_true(
+						fire.get_pixel(x, y).a <= 0.05, "%s covers the firelight at %s" % [door_id, point]
+					)
+		var art: Rect2 = _art_rect(door_id, era_order)
+		for spot: Vector2 in WorldLayout.COLD_SPOTS:
+			assert_false(art.has_point(spot), "%s is on the cold spot %s" % [door_id, spot])
+
+
+func test_the_low_wall_gives_way_to_either_wall() -> void:
+	var world: WorldState = _world_with(&"low_wall", 3)
+	assert_true(SceneProps.is_shown(&"low_wall", world))
+	world.flags[&"town_wall"] = true
+	assert_false(SceneProps.is_shown(&"low_wall", world), "The town wall replaces it")
+	assert_true(SceneProps.is_shown(&"town_wall", world))
+	world.flags[&"hill_fort"] = true
+	assert_false(SceneProps.is_shown(&"low_wall", world), "And so does the rampart")
+	assert_false(SceneProps.is_shown(&"town_wall", world), "The rampart redraws the town wall")
+	assert_true(SceneProps.is_shown(&"rampart", world))
+
+
 func test_every_link_between_props_points_at_a_prop() -> void:
 	for id: StringName in SceneProps.ids():
-		for field: String in ["alt_of", "overlays", "replaced_by"]:
-			var spec: Dictionary = SceneProps.PROPS[id]
+		var spec: Dictionary = SceneProps.PROPS[id]
+		for field: String in ["alt_of", "overlays"]:
 			if spec.has(field):
 				assert_true(SceneProps.PROPS.has(spec[field]), "%s: %s is not a prop" % [id, field])
 				assert_true(spec[field] != id, "%s points at itself" % id)
+		for replacer: StringName in SceneProps.replacements_of(spec):
+			assert_true(SceneProps.PROPS.has(replacer), "%s: %s is not a prop" % [id, replacer])
+			assert_true(replacer != id, "%s points at itself" % id)
 
 
 func _world_with(flag: StringName, era_order: int) -> WorldState:

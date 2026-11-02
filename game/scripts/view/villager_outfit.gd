@@ -9,14 +9,18 @@ const FIELD: StringName = &"field"
 const WOVEN: StringName = &"woven"
 const TOWN: StringName = &"town"
 const BRONZE: StringName = &"bronze"
+const CHECKED: StringName = &"checked"
+const IRON: StringName = &"iron"
 
 ## Every outfit, simplest first: each falls back to the one before it if its art is missing.
-const ORDER: Array[StringName] = [FUR, FIELD, WOVEN, TOWN, BRONZE]
+const ORDER: Array[StringName] = [FUR, FIELD, WOVEN, TOWN, BRONZE, CHECKED, IRON]
 
 const SETTLED_ERA: int = 1
 const BRONZE_ERA: int = 2
+const IRON_ERA: int = 3
 const WOVEN_ACHIEVEMENT: StringName = &"woven_cloth"
 const BRONZE_ACHIEVEMENT: StringName = &"first_casting"
+const IRON_ACHIEVEMENT: StringName = &"first_bloom"
 
 ## Where each outfit's sheets live, `<look>.png` inside. The woven tunic keeps its original path.
 const DIRS: Dictionary = {
@@ -25,13 +29,21 @@ const DIRS: Dictionary = {
 	WOVEN: "res://assets/world/settled/villagers/",
 	TOWN: "res://assets/world/bronze/villagers/town/",
 	BRONZE: "res://assets/world/bronze/villagers/fittings/",
+	CHECKED: "res://assets/world/iron/villagers/checked/",
+	IRON: "res://assets/world/iron/villagers/fittings/",
 }
 
 
-## The finest outfit the world has earned: bronze fittings once the first casting is earned in the
-## Bronze Age, town clothes from the turn of that age, woven tunics once the cloth is woven in the
-## Settled Age or later, field clothes from the turn of the Settled Age, else furs.
+## The finest outfit the world has earned: iron fittings once the first bloom is earned in the Iron
+## Age, checked wool from the turn of that age, bronze fittings once the first casting is earned in
+## the Bronze Age or later, town clothes from the turn of the Bronze Age, woven tunics once the
+## cloth is woven in the Settled Age or later, field clothes from the turn of the Settled Age, else
+## furs.
 static func for_world(world: WorldState) -> StringName:
+	if world.era_order >= IRON_ERA:
+		if world.has_achievement(IRON_ACHIEVEMENT):
+			return IRON
+		return CHECKED
 	if world.era_order >= BRONZE_ERA:
 		if world.has_achievement(BRONZE_ACHIEVEMENT):
 			return BRONZE

@@ -35,7 +35,11 @@ func test_a_piece_is_found_in_the_newest_age_that_has_it() -> void:
 		"The Bronze Age redraws it in mud-brick"
 	)
 	assert_true(
-		WorldLayout.piece_path(&"building_hut", 9).contains("/bronze/"),
+		WorldLayout.piece_path(&"building_hut", 3).contains("/iron/"),
+		"The Iron Age redraws it in timber and daub"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_hut", 9).contains("/iron/"),
 		"A later age with no folder yet uses the newest there is"
 	)
 	assert_true(
@@ -47,7 +51,11 @@ func test_a_piece_is_found_in_the_newest_age_that_has_it() -> void:
 		"The Lookout becomes a gate tower in the Bronze Age"
 	)
 	assert_true(
-		WorldLayout.piece_path(&"building_drying_rack", 2).contains("/cave/"),
+		WorldLayout.piece_path(&"building_lookout", 3).contains("/iron/"),
+		"And an iron-bound one in the Iron Age"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_drying_rack", 3).contains("/cave/"),
 		"The Cave Age's memory stays"
 	)
 
@@ -77,9 +85,14 @@ func test_every_building_and_prop_has_art_in_the_age_that_shows_it() -> void:
 
 func test_props_follow_flags() -> void:
 	var sim: Simulation = SimFixture.new_sim()
-	assert_eq(SceneProps.shown(sim.world).size(), 0, "A new world has none")
+	assert_eq(
+		SceneProps.shown(sim.world), [&"cave_standard_cave"] as Array[StringName],
+		"A new world shows only the cave's own pennant"
+	)
 	sim.world.flags[&"path_agriculture"] = true
-	assert_eq(SceneProps.shown(sim.world), [&"west_plot_farm"] as Array[StringName])
+	assert_eq(
+		SceneProps.shown(sim.world), [&"west_plot_farm", &"cave_standard_cave"] as Array[StringName]
+	)
 	sim.world.flags[&"path_herding"] = true
 	var shown: Array[StringName] = SceneProps.shown(sim.world)
 	assert_true(shown.has(&"west_pen") and shown.has(&"west_plot_patch"))
@@ -104,6 +117,12 @@ func test_every_prop_shows_for_its_trigger_and_only_then() -> void:
 		var sim: Simulation = SimFixture.new_sim()
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
 		sim.world.era_order = int(spec.get("from_era", 0))
+		if spec["kind"] == SceneProps.Kind.ALWAYS:
+			sim.world.era_order = int(spec.get("from_era", 0)) - 1
+			assert_false(SceneProps.is_shown(prop_id, sim.world), "%s waits for its age" % prop_id)
+			sim.world.era_order = int(spec.get("from_era", 0))
+			assert_true(SceneProps.is_shown(prop_id, sim.world), "%s shows when its age turns" % prop_id)
+			continue
 		assert_false(SceneProps.is_shown(prop_id, sim.world), "%s starts hidden" % prop_id)
 		match spec["kind"]:
 			SceneProps.Kind.FLAG:
@@ -137,7 +156,9 @@ func test_every_prop_waits_for_something_the_game_can_actually_give() -> void:
 	for prop_id: StringName in SceneProps.ids():
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
 		var key: StringName = spec["key"]
-		if spec["kind"] == SceneProps.Kind.FLAG:
+		if spec["kind"] == SceneProps.Kind.ALWAYS:
+			assert_true(spec.has("from_era"), "%s would show in the first age" % prop_id)
+		elif spec["kind"] == SceneProps.Kind.FLAG:
 			assert_true(flags.has(key), "%s waits for flag %s, which nothing sets" % [prop_id, key])
 		elif spec["kind"] == SceneProps.Kind.ACHIEVEMENT:
 			assert_true(earned.has(key), "%s waits for %s, which nothing grants" % [prop_id, key])
@@ -216,6 +237,13 @@ func test_the_view_shows_props_only_when_the_world_says_so() -> void:
 	sim.advance_era(&"settled")
 	var view: WorldView = _view_for(sim)
 	for prop_id: StringName in view._props:
+		var spec: Dictionary = SceneProps.PROPS[prop_id]
+		if spec["kind"] == SceneProps.Kind.ALWAYS:
+			assert_eq(
+				(view._props[prop_id] as Sprite2D).visible, SceneProps.is_shown(prop_id, sim.world),
+				"%s follows the age alone" % prop_id
+			)
+			continue
 		assert_false((view._props[prop_id] as Sprite2D).visible, "%s starts hidden" % prop_id)
 	var before: String = view._signature
 	sim.world.flags[&"path_herding"] = true
