@@ -527,6 +527,42 @@ func test_the_journal_entries_carry_day_numbers() -> void:
 	assert_eq(entries[0]["day"], 1)
 
 
+func test_a_long_game_does_not_widen_the_journal_past_the_panel() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.world.tick = 1377 * sim.config.ticks_per_day
+	sim.add_journal("The grain went up the granary ladder in baskets.", &"settlement", &"", &"")
+	var panel: PanelHost = PanelHost.new()
+	panel.show_journal(sim)
+	var font: Font = panel.skin().font()
+	var text_width: float = font.get_string_size(
+		"Day 1378", HORIZONTAL_ALIGNMENT_LEFT, -1.0, PanelSkin.FONT_SIZE
+	).x
+	assert_true(text_width > PanelHost.DAY_WIDTH, "A four digit day needs more than the column")
+	var found: bool = false
+	for node: Node in panel.find_children("*", "Label", true, false):
+		var label: Label = node as Label
+		if label.text == "Day 1378":
+			found = true
+			assert_true(label.custom_minimum_size.x >= text_width, "The day column fits its text")
+	assert_true(found, "The journal shows day 1378")
+	var card: Vector2 = panel._card.get_combined_minimum_size()
+	assert_true(card.x <= float(PanelHost.WIDTH), "Day 1378 fits the card, it asks for %d" % card.x)
+	panel.free()
+
+
+func test_a_panel_starts_at_the_width_of_its_frame_after_a_wider_one() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	_decision(sim, &"building_opportunity")
+	var panel: PanelHost = PanelHost.new()
+	panel._card.custom_minimum_size = Vector2(PanelHost.WIDTH + 11, PanelHost.HEIGHT)
+	panel._card.size = Vector2(PanelHost.WIDTH + 11, PanelHost.HEIGHT)
+	panel._card.custom_minimum_size = Vector2(PanelHost.WIDTH, PanelHost.HEIGHT)
+	assert_eq(panel._card.size.x, float(PanelHost.WIDTH + 11), "The card kept the wider size")
+	panel.show_decision(sim)
+	assert_eq(panel._card.size.x, float(PanelHost.WIDTH), "A new panel is as wide as the frame")
+	panel.free()
+
+
 func test_the_panel_rolls_out_from_its_bottom_edge() -> void:
 	var panel: PanelHost = PanelHost.new()
 	panel._set_reveal(60)
