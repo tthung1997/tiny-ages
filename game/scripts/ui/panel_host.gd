@@ -155,8 +155,10 @@ func show_decision(sim: Simulation, index: int = 0) -> void:
 
 func show_journal(sim: Simulation) -> void:
 	_begin(&"journal", "Journal")
-	for entry: Dictionary in JournalPresenter.entries(sim.world):
-		_content.add_child(_journal_row(entry["day"], entry["text"]))
+	var entries: Array[Dictionary] = JournalPresenter.entries(sim.world)
+	var day_width: float = _day_width(entries)
+	for entry: Dictionary in entries:
+		_content.add_child(_journal_row(entry["day"], entry["text"], day_width))
 	_footer_label.text = ""
 
 
@@ -389,6 +391,9 @@ func _begin(new_mode: StringName, title_text: String) -> void:
 	var was_visible: bool = visible
 	var was_open: bool = _open
 	var resized: bool = _apply_height(height_for(new_mode))
+	# A card that grew for wide content keeps its width while hidden, so start every panel
+	# at the width the frame is drawn for.
+	_card.size = Vector2(WIDTH, _height)
 	var already_open: bool = _open and _reveal == _height
 	_open = true
 	visible = true
@@ -490,16 +495,29 @@ func _needs_row(needs: Array[DecisionPresenter.NeedView]) -> Control:
 	return row
 
 
-func _journal_row(day: int, text: String) -> Control:
+## The day column's width: DAY_WIDTH, or wider when a long game has day numbers that need it.
+func _day_width(entries: Array[Dictionary]) -> float:
+	var width: float = DAY_WIDTH
+	var font: Font = _skin.font()
+	for entry: Dictionary in entries:
+		var text: String = "Day %d" % entry["day"]
+		var measured: Vector2 = font.get_string_size(
+			text, HORIZONTAL_ALIGNMENT_LEFT, -1.0, PanelSkin.FONT_SIZE
+		)
+		width = maxf(width, ceilf(measured.x))
+	return width
+
+
+func _journal_row(day: int, text: String, day_width: float = DAY_WIDTH) -> Control:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	var day_label: Label = Label.new()
 	day_label.text = "Day %d" % day
-	day_label.custom_minimum_size = Vector2(DAY_WIDTH, 0)
+	day_label.custom_minimum_size = Vector2(day_width, 0)
 	day_label.add_theme_color_override("font_color", _skin.day_color)
 	row.add_child(day_label)
 	var body: Label = _text(text)
-	body.custom_minimum_size = Vector2(TEXT_WIDTH - DAY_WIDTH - 4.0, 0)
+	body.custom_minimum_size = Vector2(TEXT_WIDTH - day_width - 4.0, 0)
 	row.add_child(body)
 	return row
 
