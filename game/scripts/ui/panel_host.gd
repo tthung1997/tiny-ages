@@ -23,6 +23,8 @@ const HEIGHT: int = PanelSkin.PANEL_HEIGHT
 const HEIGHTS: Dictionary = {&"villager": 112, &"menu": 112}
 const TEXT_WIDTH: float = 352.0
 const DAY_WIDTH: float = 34.0
+## Journal entries shown at a time; the rest are a page away.
+const JOURNAL_PAGE_SIZE: int = 50
 ## The unroll is stepped, to match the pixel art.
 const UNROLL_STEPS: int = 6
 const UNROLL_SECONDS: float = 0.2
@@ -153,13 +155,27 @@ func show_decision(sim: Simulation, index: int = 0) -> void:
 		_show_button(_primary, "Next >", func() -> void: show_decision(sim, index + 1))
 
 
-func show_journal(sim: Simulation) -> void:
+## Shows one page of the journal, newest first. A long game has thousands of entries, and a row
+## for each one would freeze the game while it was built, so the rest is a button away.
+func show_journal(sim: Simulation, page: int = 0) -> void:
+	var total: int = sim.world.journal.size()
+	var last_page: int = maxi(ceili(float(total) / JOURNAL_PAGE_SIZE) - 1, 0)
+	page = clampi(page, 0, last_page)
 	_begin(&"journal", "Journal")
-	var entries: Array[Dictionary] = JournalPresenter.entries(sim.world)
+	var entries: Array[Dictionary] = JournalPresenter.entries(
+		sim.world, JOURNAL_PAGE_SIZE, page * JOURNAL_PAGE_SIZE
+	)
 	var day_width: float = _day_width(entries)
 	for entry: Dictionary in entries:
 		_content.add_child(_journal_row(entry["day"], entry["text"], day_width))
 	_footer_label.text = ""
+	if last_page == 0:
+		return
+	_footer_label.text = "%d of %d" % [page + 1, last_page + 1]
+	if page > 0:
+		_show_button(_secondary, "< Newer", func() -> void: show_journal(sim, page - 1))
+	if page < last_page:
+		_show_button(_primary, "Older >", func() -> void: show_journal(sim, page + 1))
 
 
 ## Shows one villager: their picture, traits and what they are thinking. "Next" walks through
