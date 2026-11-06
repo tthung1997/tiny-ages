@@ -527,6 +527,52 @@ func test_the_journal_entries_carry_day_numbers() -> void:
 	assert_eq(entries[0]["day"], 1)
 
 
+func test_a_long_journal_is_shown_a_page_at_a_time() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var extra: int = PanelHost.JOURNAL_PAGE_SIZE * 2 + 5
+	for index: int in extra:
+		sim.add_journal("Entry %d" % index, &"settlement", &"", &"")
+	var panel: PanelHost = PanelHost.new()
+	panel.show_journal(sim)
+	assert_eq(panel._content.get_child_count(), PanelHost.JOURNAL_PAGE_SIZE, "One page of rows")
+	var texts: PackedStringArray = PackedStringArray()
+	for node: Node in panel.find_children("*", "Label", true, false):
+		texts.append((node as Label).text)
+	assert_true(texts.has("Entry %d" % (extra - 1)), "The newest entry is on the first page")
+	assert_true(panel._primary.visible and panel._primary.text.begins_with("Older"))
+	assert_false(panel._secondary.visible, "Nothing is newer than the first page")
+	panel._primary.pressed.emit()
+	assert_eq(panel._content.get_child_count(), PanelHost.JOURNAL_PAGE_SIZE)
+	assert_true(panel._secondary.visible, "A later page can go back")
+	panel._primary.pressed.emit()
+	assert_eq(panel._content.get_child_count(), 6, "The last page holds the 5 left and the founding line")
+	assert_false(panel._primary.visible, "Nothing is older than the last page")
+	panel._secondary.pressed.emit()
+	assert_eq(panel._content.get_child_count(), PanelHost.JOURNAL_PAGE_SIZE)
+	panel.free()
+
+
+func test_a_short_journal_has_no_paging() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	sim.add_journal("Something happened.", &"settlement", &"", &"")
+	var panel: PanelHost = PanelHost.new()
+	panel.show_journal(sim)
+	assert_false(panel._primary.visible)
+	assert_false(panel._secondary.visible)
+	panel.free()
+
+
+func test_journal_entries_can_skip_the_newest() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	for index: int in 5:
+		sim.add_journal("Entry %d" % index, &"settlement", &"", &"")
+	var entries: Array[Dictionary] = JournalPresenter.entries(sim.world, 2, 1)
+	assert_eq(entries.size(), 2)
+	assert_eq(entries[0]["text"], "Entry 3", "The newest is skipped")
+	assert_eq(entries[1]["text"], "Entry 2")
+	assert_eq(JournalPresenter.entries(sim.world, 0, 100).size(), 0, "Skipping past the end is empty")
+
+
 func test_a_long_game_does_not_widen_the_journal_past_the_panel() -> void:
 	var sim: Simulation = SimFixture.new_sim()
 	sim.world.tick = 1377 * sim.config.ticks_per_day

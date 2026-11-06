@@ -19,9 +19,10 @@ static func line_for(entry: JournalEntry) -> String:
 
 
 ## The same entries as day numbers and texts, newest first, so a panel can style the day apart.
-static func entries(world: WorldState, limit: int = 0) -> Array[Dictionary]:
+## `skip` leaves out that many of the newest, so a long journal can be read a page at a time.
+static func entries(world: WorldState, limit: int = 0, skip: int = 0) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	for index: int in range(world.journal.size() - 1, -1, -1):
+	for index: int in range(world.journal.size() - 1 - maxi(skip, 0), -1, -1):
 		var entry: JournalEntry = world.journal[index]
 		result.append({"day": entry.day + 1, "text": entry.text})
 		if limit > 0 and result.size() >= limit:
