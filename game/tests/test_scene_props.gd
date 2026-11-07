@@ -171,6 +171,20 @@ func test_props_shown_together_do_not_pile_on_each_other() -> void:
 				)
 
 
+func test_the_coin_tray_stands_clear_of_every_market_piece() -> void:
+	var world: WorldState = _everything_unlocked(LAST_ERA)
+	var tray: Rect2 = _art_rect(&"coin_tray", LAST_ERA)
+	assert_true(tray.get_area() > 0.0, "The coin tray has art")
+	for other: StringName in [
+		&"market_stalls", &"council_ring", &"tally_post", &"writing_post", &"cart", &"donkeys",
+	]:
+		var share: float = _overlap_share(tray, _art_rect(other, LAST_ERA))
+		assert_true(
+			share <= 0.0 or not SceneProps.shown(world).has(other),
+			"The coin tray lies on %s (%d%%)" % [other, int(share * 100.0)]
+		)
+
+
 func test_a_prop_does_not_stand_on_a_building_unless_it_is_behind_it() -> void:
 	for era_order: int in range(LAST_ERA + 1):
 		for id: StringName in SceneProps.shown(_everything_unlocked(era_order)):

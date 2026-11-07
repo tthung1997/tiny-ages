@@ -267,11 +267,11 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 		elif SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["east_"]):
 			east_props += 1
 	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size() + west_props)
-	# the sea, the tide's flats, the river's life and its deer, and the east page's props
-	var east_extras: int = 4 + east_props
+	# the sea, the tide's flats, the river's life and its deer, the beacon's light and the east page's props
+	var east_extras: int = 5 + east_props
 	assert_eq(
 		east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + east_extras,
-		"Plus the sea, flats, life, deer and props"
+		"Plus the sea, flats, life, deer, beacon light and props"
 	)
 	assert_eq(view.camera_x(), 0, "Starts on the camp")
 	assert_eq(view.clickable_regions().size(), 2, "An arrow region on each edge")
@@ -304,6 +304,56 @@ func test_the_fire_pit_appears_when_the_fire_is_found() -> void:
 	sim.world.tick = sim.config.tick_for_hour(12)
 	view.update_light()
 	assert_false(view._fire_glow.visible, "No glow in daylight")
+	view.free()
+	window.free()
+
+
+func test_the_beacon_lights_the_night_whether_or_not_the_camp_has_fire() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	sim.world.era_order = 3
+	sim.world.tick = sim.config.tick_for_hour(0)
+	view.on_world_changed()
+	assert_false(view._beacon_glow.visible, "No light on a headland nobody has lit")
+	sim.world.flags[&"beacon_lit"] = true
+	view.on_world_changed()
+	assert_false(sim.world.has_fire(), "The camp has no fire")
+	assert_true(view._beacon_glow.visible, "The beacon burns in the dark")
+	assert_eq(view._beacon_glow.modulate.a, 1.0, "Full light in the dead of night")
+	assert_true(view._beacon_glow.modulate.r > 1.0, "Boosted back past the night's tint")
+	sim.world.tick = sim.config.tick_for_hour(12)
+	view.update_light()
+	assert_false(view._beacon_glow.visible, "No glow in daylight")
+	view.free()
+	window.free()
+
+
+func test_the_beacon_flame_dances_only_while_it_is_lit_and_in_view() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	sim.world.era_order = 3
+	sim.world.tick = sim.config.tick_for_hour(0)
+	var window: DesktopWindow = DesktopWindow.new()
+	var view: WorldView = WorldView.new()
+	view.setup(sim, window)
+	var step: float = WorldLayout.FIRE_FRAME_SECONDS + 0.01
+	view.jump_camera(384.0)
+	view._process(step)
+	assert_eq(view._beacon_frame, 0, "Nothing is lit, nothing to animate")
+	sim.world.flags[&"beacon_lit"] = true
+	view.on_world_changed()
+	view._process(step)
+	assert_eq(view._beacon_frame, 1, "A flame frame passes each interval")
+	var flame: Sprite2D = view._props[WorldLayout.BEACON]
+	assert_true(flame.texture == view._beacon_frames[1], "The flame is redrawn")
+	assert_true(view._beacon_glow.modulate.a < 1.0, "The glow dips with the flame")
+	for _pass: int in WorldLayout.BEACON_FRAMES:
+		view._process(step)
+	assert_eq(view._beacon_frame, 1, "The frames loop")
+	view.jump_camera(0.0)
+	view._process(step)
+	assert_eq(view._beacon_frame, 1, "Looking at the camp, the beacon sleeps")
 	view.free()
 	window.free()
 

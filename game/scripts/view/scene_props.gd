@@ -275,11 +275,11 @@ const PROPS: Dictionary = {
 		"name": "Shearing pen", "at_x": -384.0, "z": 78, "place": &"west_village",
 		"kind": Kind.FLAG, "key": &"iron_shears", "from_era": 3, "alt_of": &"plough_team",
 	},
-	# The coin tray is a small trestle that stands at the market's counter (on top of the stalls
-	# when there are stalls), since the market's ground is full of the cart and the donkeys.
+	# The coin tray is a small trestle in the gap between the market and the weavers' row (the
+	# stalls, the council ring and the tally post all end at x 55), so it lies on none of them.
 	&"coin_tray": {
-		"name": "Coin tray", "at_x": -384.0, "z": 68, "place": &"west_market",
-		"kind": Kind.FLAG, "key": &"coin_struck", "from_era": 3, "overlays": &"market_stalls",
+		"name": "Coin tray", "at_x": -384.0, "z": 68, "place": &"west_village",
+		"kind": Kind.FLAG, "key": &"coin_struck", "from_era": 3,
 	},
 	# The tally post's bench and cords are gone: a writing post stands at the market's left edge,
 	# beside the stalls or the council ring, with its foot behind the cart.

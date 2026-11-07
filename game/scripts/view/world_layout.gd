@@ -54,7 +54,7 @@ const PLACES: Dictionary = {
 	&"cave_yard": Rect2(88, 62, 118, 19),
 	&"river_bank": Rect2(264, 56, 120, 25),
 	&"west_market": Rect2(-384, 36, 56, 45),
-	&"west_village": Rect2(-326, 36, 326, 45),
+	&"west_village": Rect2(-328, 36, 328, 45),
 	&"east_shore": Rect2(384, 40, 384, 41),
 }
 
@@ -120,6 +120,14 @@ const SEA_STATE_PREFIX: Array[String] = ["", "choppy_", "rough_"]
 ## The fire's glow is drawn over everything in the world (villagers included) but under the HUD.
 const FIRE_GLOW: StringName = &"fire_glow"
 const FIRE_GLOW_Z: int = 90
+## The Iron Age beacon's own night light (tools/art/iron_camp.js), a full east page drawn the same
+## way as the fire's glow; it is not a prop and only shows while the beacon is lit.
+const BEACON_GLOW: StringName = &"east_beacon_glow"
+## The beacon's flame has BEACON_FRAMES frames (`east_beacon`, `east_beacon_1..`), swapped on the
+## fire's clock while any of its light is on screen. BEACON_LIGHT_X is the camp x range it lights.
+const BEACON: StringName = &"east_beacon"
+const BEACON_FRAMES: int = 4
+const BEACON_LIGHT_X: Vector2 = Vector2(580.0, 650.0)
 ## The sky bodies: stars, then a sheet of the sun (cell 0) and the moon (cell 1). They sit in front
 ## of the sky and behind the far hills (z -100 and -99), and do not scroll with the world.
 const STARS: StringName = &"stars"
@@ -233,6 +241,11 @@ static func role_sheet_path(profession: StringName) -> String:
 
 static func fire_frame_name(frame: int) -> StringName:
 	return StringName("%s_%d" % [FIRE_PIT, posmod(frame, FIRE_FRAMES)])
+
+
+static func beacon_frame_name(frame: int) -> StringName:
+	var index: int = posmod(frame, BEACON_FRAMES)
+	return BEACON if index == 0 else StringName("%s_%d" % [BEACON, index])
 
 
 static func sea_frame_name(frame: int, state: int = 0) -> StringName:
