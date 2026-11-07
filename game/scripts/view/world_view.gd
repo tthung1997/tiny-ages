@@ -51,6 +51,10 @@ var _flower_sprout: Sprite2D
 var _flower_bloom: Sprite2D
 var _fire_pit: Sprite2D
 var _fire_glow: Sprite2D
+var _beacon_glow: Sprite2D
+var _beacon_frames: Array[Texture2D] = []
+var _beacon_frame: int = 0
+var _beacon_clock: float = 0.0
 var _fire_frames: Array[Texture2D] = []
 var _fire_frame: int = 0
 var _fire_clock: float = 0.0
@@ -181,6 +185,13 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	_fire_glow.material = additive
 	_fire_glow.use_parent_material = false
+	_beacon_glow = _make_piece(
+		WorldLayout.BEACON_GLOW, WorldLayout.FIRE_GLOW_Z, float(WorldLayout.SIDE_PAGES["east_"])
+	)
+	_beacon_glow.material = additive
+	_beacon_glow.use_parent_material = false
+	for frame: int in WorldLayout.BEACON_FRAMES:
+		_beacon_frames.append(_load_piece(WorldLayout.beacon_frame_name(frame), WorldLayout.ERA_DIRS.size() - 1))
 	_ui.layout(float(WorldLayout.VIEW_SIZE.x))
 	_ui.z_index = 1000
 	_ui.pan_requested.connect(func(direction: int) -> void: pan_by(direction * WorldLayout.PAN_STEP))
@@ -267,6 +278,13 @@ func update_light() -> void:
 		1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b,
 		strength * WorldLayout.FIRE_GLOW_FLICKER[_fire_frame]
 	)
+	# The beacon burns on its own, fire in the camp or not, so its light only needs the dark.
+	var night: float = DayNight.night_amount(hour)
+	_beacon_glow.visible = night > 0.0 and SceneProps.is_shown(&"east_beacon", _sim.world)
+	_beacon_glow.modulate = Color(
+		1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b,
+		night * WorldLayout.FIRE_GLOW_FLICKER[_beacon_frame]
+	)
 	_update_sky(hour, tint)
 
 
@@ -305,6 +323,28 @@ func _animate_fire(delta: float) -> void:
 		return
 	_fire_clock = 0.0
 	set_fire_frame(_fire_frame + 1)
+
+
+## The beacon's flame dances on the fire's clock: it sleeps unless the beacon is lit and some of its
+## light is on screen.
+func _animate_beacon(delta: float) -> void:
+	if not SceneProps.is_shown(WorldLayout.BEACON, _sim.world):
+		return
+	var left: float = float(_camera.pixel_x())
+	if left > WorldLayout.BEACON_LIGHT_X.y \
+			or left + float(WorldLayout.VIEW_SIZE.x) < WorldLayout.BEACON_LIGHT_X.x:
+		return
+	_beacon_clock += delta
+	if _beacon_clock < WorldLayout.FIRE_FRAME_SECONDS:
+		return
+	_beacon_clock = 0.0
+	set_beacon_frame(_beacon_frame + 1)
+
+
+func set_beacon_frame(frame: int) -> void:
+	_beacon_frame = posmod(frame, WorldLayout.BEACON_FRAMES)
+	(_props[WorldLayout.BEACON] as Sprite2D).texture = _beacon_frames[_beacon_frame]
+	update_light()
 
 
 func set_fire_frame(frame: int) -> void:
@@ -378,6 +418,7 @@ func _process(delta: float) -> void:
 	if _camera.step(delta):
 		_apply_camera()
 	_animate_fire(delta)
+	_animate_beacon(delta)
 	_animate_sea(delta)
 	_animate_life(delta)
 	_update_hover(delta)

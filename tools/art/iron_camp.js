@@ -15,10 +15,11 @@
 //               a deep thatch), building_lookout / site_lookout (an iron-bound gate tower)
 //   west page   rampart (the Bronze town wall redrawn: oak-laced stone, a palisade and an
 //               iron-bound gate tower, same span x 59..383 and gate x 203..231), plough_team,
-//               shearing_pen (at the farmstead and the sheepfold), coin_tray (a trestle at the
-//               market's counter), writing_post (a tablet on a post at the market's left edge, in
+//               shearing_pen (at the farmstead and the sheepfold), coin_tray (a trestle beside the
+//               market, at the village's edge), writing_post (a tablet on a post at the market's left edge, in
 //               place of the tally post), west_roof_a / west_roof_b (timber-and-daub houses)
-//   east page   east_deep_ship (replaces the trading ship), east_beacon (a fire on a cairn)
+//   east page   east_deep_ship (replaces the trading ship), east_beacon (a fire on a cairn),
+//               east_beacon_1..3 (its other flame frames), east_beacon_glow (its night light, drawn additively by WorldView)
 // Slots are mirrored in game/scripts/view/world_layout.gd (BUILDINGS) and scene_props.gd.
 // Previews: art/reference/iron_camp.png, iron_west.png, iron_east.png.
 seed = 71;
@@ -320,28 +321,22 @@ function shearpen(b) {
   b.line(25, 10, 27, 5, IRL, 1); b.line(27, 10, 25, 5, IRM, 1); b.px(26, 10, IRD); b.px(25, 4, IRD); b.px(27, 4, IRD);
 }
 
-// ---- the coin tray (west page, 22x14) ------------------------------------------------------------------------
-// A small trestle table at the market's counter: a forged anvil with a die and a hammer, a tray heaped
-// with silver coins and a little iron balance.
+// ---- the coin tray (west page, 10x12) ------------------------------------------------------------------------
+// A small trestle table beside the market, in the gap between the stalls (or the council ring, or the
+// tally post: all end at x 55) and the weavers' row (from x 68), so it lies on none of them: a forged
+// anvil with a die and a hammer and a tray heaped with silver coins.
 function cointray(b) {
-  var x;
   // the trestle
-  b.rect(0, 8, 22, 2, OAKL); b.rect(0, 8, 22, 1, OAKH); b.rect(0, 9, 22, 1, OAKD);
-  b.rect(2, 10, 2, 4, OAK); b.rect(18, 10, 2, 4, OAK); b.rect(2, 10, 1, 4, OAKL); b.rect(4, 11, 14, 1, OAKD);
-  // the anvil: a flat iron top with a horn, a narrow waist and a foot; a die and a hammer on it
-  b.rect(0, 5, 8, 1, IRL); b.rect(0, 6, 8, 1, IRM); b.rect(1, 4, 6, 1, IRL); b.rect(3, 7, 3, 1, IRD); b.px(0, 5, IRM); b.px(7, 6, IRD);
-  b.rect(2, 3, 2, 1, IRH); b.px(2, 4, IRM); b.px(3, 4, IRD);
-  b.line(5, 2, 7, 4, OAK, 1); b.rect(4, 1, 3, 2, IRD); b.px(4, 1, IRL);
+  b.rect(0, 8, 10, 2, OAKL); b.rect(0, 8, 10, 1, OAKH); b.rect(0, 9, 10, 1, OAKD);
+  b.rect(1, 10, 2, 2, OAK); b.rect(7, 10, 2, 2, OAK); b.rect(1, 10, 1, 2, OAKL); b.rect(3, 11, 4, 1, OAKD);
+  // the anvil: a flat iron top, a narrow waist; a die and a hammer on it
+  b.rect(0, 5, 5, 1, IRL); b.rect(0, 6, 5, 1, IRM); b.rect(1, 7, 3, 1, IRD); b.px(4, 6, IRD);
+  b.rect(1, 3, 2, 2, IRH); b.px(1, 4, IRM); b.px(2, 4, IRD);
+  b.line(3, 2, 4, 4, OAK, 1); b.rect(3, 1, 2, 1, IRD); b.px(3, 1, IRL);
   // the tray: a shallow oak box and a heap of silver coins
-  b.rect(9, 6, 6, 2, OAK); b.rect(9, 6, 6, 1, OAKH); b.rect(9, 7, 6, 1, OAKD);
-  b.rect(9, 5, 1, 1, OAK); b.rect(14, 5, 1, 1, OAK);
-  b.rect(10, 4, 4, 2, SILVER); b.px(10, 4, SILVERD); b.px(13, 5, SILVERD); b.px(11, 3, SILVER); b.px(12, 3, SILVERD); b.px(12, 2, SILVER);
-  b.px(11, 5, SILVERD); b.px(10, 5, SILVER); b.px(14, 6, SILVER); b.px(9, 4, SILVER);
-  // the balance
-  b.rect(18, 2, 1, 6, IRM); b.px(18, 1, IRL); b.rect(16, 2, 5, 1, IRL); b.px(16, 2, IRD); b.px(20, 2, IRD);
-  b.px(16, 3, CORD); b.px(20, 3, CORD);
-  b.rect(15, 5, 3, 1, IRM); b.rect(19, 4, 3, 1, IRM); b.px(16, 4, SILVER); b.px(20, 3, CORD); b.px(20, 4, IRM);
-  b.rect(17, 7, 3, 1, IRD);
+  b.rect(5, 6, 5, 2, OAK); b.rect(5, 6, 5, 1, OAKH); b.rect(5, 7, 5, 1, OAKD);
+  b.rect(6, 4, 3, 2, SILVER); b.px(6, 4, SILVERD); b.px(8, 5, SILVERD); b.px(7, 3, SILVER); b.px(7, 2, SILVERD);
+  b.px(9, 5, SILVER); b.px(7, 5, SILVERD);
 }
 
 // ---- the writing post (west page, 10x18; the tally post's place at the market's left edge) -------------------------
@@ -418,12 +413,20 @@ function deepship(b) {
 }
 
 // ---- the beacon (east page, 14x26) ------------------------------------------------------------------------------------
-// An iron cage of fire on a cairn of slate stones heaped up on the headland, a thread of smoke above.
-function beacon(b) {
-  var y, hw, x, c;
+// An iron cage of fire on a cairn of slate stones heaped up on the headland, a thread of smoke above. The flame
+// has four frames (the game swaps them like the camp fire's): east_beacon is frame 0, east_beacon_1..3 the others.
+var BEACON_FLAME = [
+  { top: 3, h: 9, cx: 7, ct: 6, ch: 6, tip: [[7, 2, '#f59e2b'], [7, 1, '#e5732b']], sp: [[5, 6, '#f59e2b'], [9, 7, '#e5732b'], [4, 8, '#e5732b']] },
+  { top: 2, h: 10, cx: 7, ct: 5, ch: 7, tip: [[7, 1, '#f59e2b'], [7, 0, '#e5732b']], sp: [[5, 5, '#f59e2b'], [10, 6, '#e5732b'], [3, 8, '#e5732b']] },
+  { top: 3, h: 9, cx: 8, ct: 6, ch: 6, tip: [[8, 2, '#f59e2b'], [9, 1, '#e5732b']], sp: [[5, 7, '#f59e2b'], [9, 6, '#e5732b'], [4, 9, '#e5732b']] },
+  { top: 4, h: 8, cx: 7, ct: 6, ch: 6, tip: [[7, 3, '#f59e2b'], [6, 2, '#e5732b']], sp: [[5, 6, '#f59e2b'], [9, 8, '#e5732b'], [4, 7, '#e5732b']] }
+];
+function beacon(b, f) {
+  var y, hw, x, c, i, fl = BEACON_FLAME[f || 0];
   // flames, tall and orange, a yellow core
-  b.tri(7, 3, 9, 3, '#f59e2b', '#e5732b'); b.tri(7, 6, 6, 2, GLOWL, '#ffe27a'); b.px(7, 2, '#f59e2b'); b.px(7, 1, '#e5732b');
-  b.px(5, 6, '#f59e2b'); b.px(9, 7, '#e5732b'); b.px(4, 8, '#e5732b');
+  b.tri(fl.cx, fl.top, fl.h, 3, '#f59e2b', '#e5732b'); b.tri(7, fl.ct, fl.ch, 2, GLOWL, '#ffe27a');
+  for (i = 0; i < fl.tip.length; i++) b.px(fl.tip[i][0], fl.tip[i][1], fl.tip[i][2]);
+  for (i = 0; i < fl.sp.length; i++) b.px(fl.sp[i][0], fl.sp[i][1], fl.sp[i][2]);
   b.px(8, 0, SMOKE); b.px(9, 0, SMOKEL);
   // the iron basket: a bowl on a post with bars
   b.rect(3, 12, 9, 1, IRM); b.rect(4, 13, 7, 1, IRD); b.rect(5, 14, 5, 1, IRD); b.px(3, 11, IRL); b.px(11, 11, IRL);
@@ -438,6 +441,24 @@ function beacon(b) {
     }
   }
   b.rect(1, 25, 13, 1, SLD);
+}
+
+// ---- the beacon's light (east page, full 384x80) ------------------------------------------------------------------
+// The beacon burns all night, so its own light is a layer: dithered warm bands round the flame, brightest
+// at its heart (no hard-edged core: it reads as a glass box). Semi-transparent orange; the game draws it additively (the night's tint would dim the
+// flame itself) and fades it in as it darkens, only while the beacon is lit. Not a prop: it has no name.
+function beaconglow() {
+  var g = new Buf(W, H), gx, gy, dx, dy, dd, v, a, bi;
+  var bands = [[0.4, 150], [0.65, 100], [0.85, 56], [1.0, 26]];
+  for (gy = 0; gy < H; gy++) for (gx = 0; gx < W; gx++) {
+    dx = (gx - 232) / 30; dy = (gy - 58) / 22; dd = Math.sqrt(dx * dx + dy * dy); v = 0;
+    for (bi = 0; bi < bands.length; bi++) {
+      if (dd < bands[bi][0]) { v = bands[bi][1]; if (bi + 1 < bands.length && bands[bi][0] - dd < 0.07 && ((gx + gy) & 1) == 0) v = bands[bi + 1][1]; break; }
+    }
+    a = (gy * W + gx) * 4;
+    if (v > 0) { g.d[a] = 255; g.d[a + 1] = 154; g.d[a + 2] = 60; g.d[a + 3] = v; }
+  }
+  return g;
 }
 
 // ---- the timber-and-daub houses (the Hut's camp slot, 34x24; the village roofs, 26x19) -------------------------------
@@ -553,11 +574,13 @@ layers.rampart = layerOf([obj(325, 27, 221, 64, rampart, { sh: 0 })]);
 layers.slag_heap = layerOf([obj(17, 9, 195, 77, slagheap, { sh: 0 })]);
 layers.plough_team = layerOf([obj(31, 12, 270, 78, oxplough, { sh: 0 })]);
 layers.shearing_pen = layerOf([obj(28, 12, 337, 78, shearpen, { sh: 0 })]);
-layers.coin_tray = layerOf([obj(22, 14, 44, 67, cointray, { sh: 0 })]);
+layers.coin_tray = layerOf([obj(10, 12, 62, 67, cointray, { sh: 0 })]);
 layers.writing_post = layerOf([obj(10, 18, 6, 65, writingpost, { sh: 0 })]);
 layers.standing_stone = layerOf([obj(10, 12, 282, 79, standingstone, { sh: 0 })]);
 layers.east_deep_ship = layerOf([obj(24, 18, 305, 62, deepship, { sh: 0 })]);
 layers.east_beacon = layerOf([obj(14, 26, 232, 77, beacon, { sh: 0 })]);
+for (var bf = 1; bf < BEACON_FLAME.length; bf++) layers['east_beacon_' + bf] = layerOf([obj(14, 26, 232, 77, (function (n) { return function (b) { beacon(b, n); }; })(bf), { sh: 0 })]);
+layers.east_beacon_glow = beaconglow();
 
 // previews: the camp pieces on a plain meadow, the west ones and the east one apart
 var groups = [
