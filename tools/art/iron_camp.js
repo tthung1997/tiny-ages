@@ -572,8 +572,7 @@ layers.building_granary = layerOf([obj(26, 30, 234, 67, granary, { sh: 0 })]);
 layers.site_granary = layerOf([obj(24, 12, 234, 67, granarysite, { sh: 0 })]);
 layers.rampart = layerOf([obj(325, 27, 221, 64, rampart, { sh: 0 })]);
 layers.slag_heap = layerOf([obj(17, 9, 195, 77, slagheap, { sh: 0 })]);
-layers.plough_team = layerOf([obj(31, 12, 270, 78, oxplough, { sh: 0 })]);
-layers.shearing_pen = layerOf([obj(28, 12, 337, 78, shearpen, { sh: 0 })]);
+layers.shearing_pen = layerOf([obj(28, 12, 267, 78, shearpen, { sh: 0 })]);
 layers.coin_tray = layerOf([obj(10, 12, 62, 67, cointray, { sh: 0 })]);
 layers.writing_post = layerOf([obj(10, 18, 6, 65, writingpost, { sh: 0 })]);
 layers.standing_stone = layerOf([obj(10, 12, 282, 79, standingstone, { sh: 0 })]);
@@ -585,7 +584,7 @@ layers.east_beacon_glow = beaconglow();
 // previews: the camp pieces on a plain meadow, the west ones and the east one apart
 var groups = [
   ['iron_camp', ['building_bloomery', 'site_bloomery', 'building_granary', 'site_granary', 'slag_heap', 'standing_stone', 'building_hut', 'site_hut', 'building_lookout', 'site_lookout']],
-  ['iron_west', ['rampart', 'plough_team', 'shearing_pen', 'coin_tray', 'writing_post', 'west_roof_a', 'west_roof_b']],
+  ['iron_west', ['rampart', 'shearing_pen', 'coin_tray', 'writing_post', 'west_roof_a', 'west_roof_b']],
   ['iron_east', ['east_deep_ship', 'east_beacon'], 'sea']
 ], gi, gj, P, name, x, y;
 for (gi = 0; gi < groups.length; gi++) {
@@ -599,63 +598,3 @@ for (gi = 0; gi < groups.length; gi++) {
 var count = 0;
 for (name in layers) { IMG.putImageData(layers[name].d); SPR.saveAs(GAME + name + '.png'); count++; }
 console.log('iron camp done, ' + count + ' game layers');
-
-// ---- the cave keeps up with the ages (docs/ages.md B10, point 10) ----------------------------------------
-// Drawn last and with no random numbers, so nothing above moves. Camp page, in the mouth of the cave.
-// The opening is the cliff's own (see the note in settled_camp.js): x 20..47, from y 47 at the crown
-// down to the floor at y 65; the firelight (x 26..42, y 58..65) is kept clear, outline included.
-//   cave_door_iron   a limewashed arch that follows the whole opening (a band under its curve, oak
-//                    voussoir ticks, a limewashed jamb each side on a slate plinth), an iron-bound
-//                    plank door standing open against the left jamb and a lantern on an iron hook at
-//                    the crown's right side
-// Replaces the Bronze door (SceneProps replaced_by).
-(function () {
-  var LIME = '#ece6d6', LIMEL = '#f8f4e8', LIMED = '#cfc7b0', LIMES = '#a8a08a';
-  var rb = new Buf(384, 80), door = new Buf(384, 80), x, y, r, ob;
-  function top(cx) { var u = (cx - 34) / (cx < 34 ? 16 : 14); return Math.abs(u) > 1 ? -1 : 65 - Math.round(18 * Math.sqrt(1 - u * u)) + (cx % 5 == 0 ? 1 : 0) - (cx % 7 == 0 ? 1 : 0); }
-  function band(cx) { var t = top(cx); return [t, Math.max(t + 1, Math.min(65, Math.max(top(cx - 1), top(cx + 1)) - 1))]; }
-  function lit(cx, cy) { var fy = cy - 12; return cx >= 26 && cx <= 42 && fy >= 46 && fy <= 53 && ((cx + fy) & 1) == 0 && fy > 46 + Math.abs(cx - 34) / 3; }
-  for (x = 20; x <= 47; x++) {
-    r = band(x);
-    for (y = r[0]; y <= r[1]; y++) rb.px(x, y, y == r[0] ? LIMEL : (y == r[1] ? LIMED : LIME));
-    if (x % 4 == 0) rb.px(x, r[0] + 1, OAK);
-  }
-  for (y = top(20); y <= 65; y++) { rb.px(20, y, LIMEL); rb.px(21, y, y >= 63 ? SLM : LIMED); }
-  for (y = top(47); y <= 65; y++) { rb.px(46, y, y >= 63 ? SLM : LIME); rb.px(47, y, y >= 63 ? SLD : LIMES); }
-  rb.px(48, 65, SLD);
-  rb.px(20, 63, SLL); rb.px(20, 64, SLM); rb.px(20, 65, SLD);
-  // the door, open against the left jamb: planks, an edge, two iron straps and their studs
-  for (y = band(22)[1] + 1; y <= 64; y++) {
-    for (x = 22; x <= 24; x++) {
-      if (y <= band(x)[1]) continue;
-      rb.px(x, y, x == 22 ? OAKH : (x == 23 ? OAKL : OAKD));
-    }
-  }
-  for (y = 57; y <= 62; y += 5) { rb.rect(22, y, 3, 1, IRD); rb.px(22, y, IRL); rb.px(24, y, IRM); }
-  // the lantern on its hook: a cap, a frame round a lit pane, a base
-  y = band(44)[1] + 1;
-  rb.px(44, y, IRM);
-  rb.rect(43, y + 1, 3, 1, IRD); rb.rect(43, y + 2, 3, 3, IRM); rb.px(44, y + 2, '#f59e2b'); rb.px(44, y + 3, '#ffd86a'); rb.px(44, y + 4, '#f59e2b');
-  rb.rect(43, y + 5, 3, 1, IRD);
-  ob = outlined(rb, OUT);
-  for (x = 0; x < 384; x++) for (y = 0; y < 80; y++) if (lit(x, y)) { ob.d[((y + 1) * ob.w + x + 1) * 4 + 3] = 0; }
-  blit(door, ob, -1, -1);
-  IMG.putImageData(door.d); SPR.saveAs(GAME + 'cave_door_iron.png');
-})();
-
-// ---- the standard on the cliff above the cave (docs/ages.md B10, point 10) ---------------------------------------
-// Same pole position as the other ages' standards (x 26, on the cliff's top edge, see settled_camp.js).
-//   cave_standard_iron   an iron-framed banner in slate with an ochre band, hung from a dark iron pole that ends
-//                        in a spear-head finial (x 25..34, y 4..20)
-(function () {
-  var P = 26, SLATE = '#6f7a8c', SLATEL = '#8793a6', OCH = '#b8573a', OCHD = '#8f3f2a', rb = new Buf(384, 80), out = new Buf(384, 80), x, y;
-  rb.rect(P, 8, 1, 16, IRD); rb.px(P, 4, IRL); rb.px(P, 5, IRM); rb.rect(P - 1, 6, 3, 1, IRD); rb.px(P, 7, IRD);
-  rb.rect(P + 1, 8, 8, 1, IRD); rb.rect(P + 1, 19, 8, 1, IRD); rb.rect(P + 8, 8, 1, 12, IRD);
-  for (y = 9; y <= 18; y++) for (x = P + 1; x <= P + 7; x++) rb.px(x, y, x == P + 1 ? SLATEL : SLATE);
-  for (y = 9; y <= 18; y++) { rb.px(P + 4, y, OCH); rb.px(P + 5, y, OCHD); }
-  rb.px(P + 2, 13, OCH); rb.px(P + 3, 13, OCH); rb.px(P + 6, 13, OCHD); rb.px(P + 7, 13, OCHD);
-  rb.px(P + 1, 8, IRL); rb.px(P + 8, 8, IRL); rb.px(P + 1, 19, IRL); rb.px(P + 8, 19, IRL);
-  rb.px(P + 3, 20, IRD); rb.px(P + 5, 20, IRD); rb.px(P + 7, 20, IRD);
-  blit(out, outlined(rb, OUT), -1, -1);
-  IMG.putImageData(out.d); SPR.saveAs(GAME + 'cave_standard_iron.png');
-})();

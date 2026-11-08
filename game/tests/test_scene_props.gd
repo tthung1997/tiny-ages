@@ -7,9 +7,12 @@ extends McpTestSuite
 const MAX_OVERLAP: float = 0.25
 ## Props shown on one page with everything unlocked (alternatives and overlays count once).
 const PAGE_BUDGET: Dictionary = {-1: 14, 0: 9, 1: 8}
-const LAST_ERA: int = 3
-## The cave's standard and door shown at once (one of each per age).
-const MAX_CAVE_DRESSING: int = 2
+## An age may hold more on a page when it is that age's character to (docs/ages.md, flexible density per age):
+## the Classical Age's east shore adds a theatre and a harbour in place of the ship.
+const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}}
+const LAST_ERA: int = 4
+## The cave's own dressing shown at once (the pennant).
+const MAX_CAVE_DRESSING: int = 1
 
 
 func suite_name() -> String:
@@ -214,32 +217,37 @@ func test_no_page_is_crowded_in_any_age_once_everything_is_unlocked() -> void:
 				# budget protects; they have their own cap below.
 				dressing += 1
 				continue
-			if spec.has("alt_of") or spec.has("overlays"):
+			if spec.has("alt_of") or spec.has("overlays") or spec.get("ground", false):
 				continue
 			var page: int = _page_of(id)
 			counted[page] = int(counted.get(page, 0)) + 1
 		assert_true(dressing <= MAX_CAVE_DRESSING, "Age %d: the cave shows %d pieces" % [era_order, dressing])
 		for page: int in counted:
 			assert_true(
-				int(counted[page]) <= int(PAGE_BUDGET.get(page, 0)),
+				int(counted[page]) <= _budget(era_order, page),
 				"Age %d, page %d shows %d props (at most %d)" % [
-					era_order, page, counted[page], PAGE_BUDGET.get(page, 0)
+					era_order, page, counted[page], _budget(era_order, page)
 				]
 			)
+
+
+func _budget(era_order: int, page: int) -> int:
+	var by_era: Dictionary = PAGE_BUDGET_BY_ERA.get(era_order, {})
+	return int(by_era.get(page, PAGE_BUDGET.get(page, 0)))
 
 
 func test_the_bronze_age_simplifies_what_the_settled_age_scattered() -> void:
 	var settled: Array[StringName] = SceneProps.shown(_everything_unlocked(1))
 	var bronze: Array[StringName] = SceneProps.shown(_everything_unlocked(2))
 	for old: StringName in [
-		&"pots", &"west_kiln", &"clay_pits", &"loom", &"cloth_line", &"west_plot_farm",
-		&"west_scarecrow", &"hens", &"west_plot_patch", &"west_pen",
+		&"pots", &"west_kiln", &"clay_pits", &"loom", &"cloth_line",
+		&"hens", &"west_pen",
 	]:
 		assert_true(settled.has(old), "%s stands in the Settled Age" % old)
 		assert_false(bronze.has(old), "%s is folded into a yard in the Bronze Age" % old)
 	for tidy: StringName in [
 		&"potters_yard", &"weavers_row", &"town_wall", &"crossing_planks", &"quay_boats",
-		&"farmstead_farm", &"farmstead_herd",
+		&"farmstead_herd",
 	]:
 		assert_false(settled.has(tidy), "%s waits for the Bronze Age" % tidy)
 		assert_true(bronze.has(tidy), "%s is the Bronze Age's" % tidy)
@@ -258,7 +266,7 @@ func test_the_iron_age_redraws_the_wall_the_tally_and_the_ship() -> void:
 		assert_false(bronze.has(tidy), "%s waits for the Iron Age" % tidy)
 		assert_true(iron.has(tidy), "%s is the Iron Age's" % tidy)
 	for fresh: StringName in [
-		&"slag_heap", &"plough_team", &"shearing_pen", &"coin_tray", &"standing_stone",
+		&"slag_heap", &"shearing_pen", &"coin_tray", &"standing_stone",
 		&"east_beacon",
 	]:
 		assert_false(bronze.has(fresh), "%s waits for the Iron Age" % fresh)
@@ -266,24 +274,25 @@ func test_the_iron_age_redraws_the_wall_the_tally_and_the_ship() -> void:
 	for kept: StringName in [&"market_stalls", &"council_ring", &"cart", &"donkeys", &"quay_boats"]:
 		assert_true(iron.has(kept), "%s stays in the Iron Age" % kept)
 	for tidy: StringName in [
-		&"potters_yard", &"weavers_row", &"crossing_planks", &"farmstead_farm", &"farmstead_herd",
+		&"potters_yard", &"weavers_row", &"crossing_planks", &"farmstead_herd",
 	]:
 		assert_true(iron.has(tidy), "The Bronze Age's %s stays" % tidy)
 	for folded: StringName in [
-		&"pots", &"west_kiln", &"clay_pits", &"loom", &"cloth_line", &"west_plot_farm", &"hens",
+		&"pots", &"west_kiln", &"clay_pits", &"loom", &"cloth_line", &"hens",
 		&"west_pen", &"green_stones", &"boat_dugout", &"crossing_stones",
 	]:
 		assert_false(iron.has(folded), "%s stays folded away in the Iron Age" % folded)
 
 
-const CAVE_DOORS: Array[StringName] = [&"cave_door_settled", &"cave_door_bronze", &"cave_door_iron"]
-const CAVE_STANDARDS: Array[StringName] = [
-	&"cave_standard_cave", &"cave_standard_settled", &"cave_standard_bronze", &"cave_standard_iron",
-]
+const CAVE_PENNANT: StringName = &"cave_standard_cave"
 ## The colour of the cave's opening in the cliff art (tools/art/lib.js cliff()).
 const MOUTH_DARK: Color = Color("2a2433")
-## Where the standards' poles stand on the cliff's top edge.
+## Where the pennant's pole stands on the cliff's top edge.
 const STANDARD_POLE_X: int = 26
+## The signature building's footprint, the cave's own (WorldLandmarks, tools/art/signature_landmarks.js),
+## and where a doorway opens in it: the group gathers there.
+const SIGNATURE_FOOTPRINT: Rect2 = Rect2(0, 10, 102, 58)
+const DOORWAY_X: int = 34
 
 
 func _empty_world(era_order: int) -> WorldState:
@@ -292,120 +301,244 @@ func _empty_world(era_order: int) -> WorldState:
 	return world
 
 
+func _back(era_order: int) -> Image:
+	return (load(WorldLayout.piece_path(&"static_back", era_order)) as Texture2D).get_image()
+
+
 func test_the_first_age_shows_only_the_caves_own_pennant() -> void:
 	assert_eq(
-		SceneProps.shown(_empty_world(0)), [&"cave_standard_cave"] as Array[StringName],
+		SceneProps.shown(_empty_world(0)), [CAVE_PENNANT] as Array[StringName],
 		"The Cave Age's cave has its pennant and nothing else"
 	)
 
 
-func test_the_cave_door_is_replaced_each_age() -> void:
-	for id: StringName in SceneProps.shown(_empty_world(0)):
-		assert_false(CAVE_DOORS.has(id), "The Cave Age has no door yet")
+func test_the_pennant_goes_when_the_cliff_does() -> void:
 	for era_order: int in range(1, LAST_ERA + 1):
-		var shown: Array[StringName] = SceneProps.shown(_empty_world(era_order))
-		for index: int in CAVE_DOORS.size():
-			assert_eq(
-				shown.has(CAVE_DOORS[index]), index == era_order - 1,
-				"Age %d shows only its own door (%s)" % [era_order, CAVE_DOORS[index]]
-			)
-
-
-func test_the_standard_on_the_cliff_is_replaced_each_age() -> void:
-	for era_order: int in range(LAST_ERA + 1):
-		var shown: Array[StringName] = SceneProps.shown(_empty_world(era_order))
-		for index: int in CAVE_STANDARDS.size():
-			assert_eq(
-				shown.has(CAVE_STANDARDS[index]), index == era_order,
-				"Age %d shows only its own standard (%s)" % [era_order, CAVE_STANDARDS[index]]
-			)
+		assert_true(
+			SceneProps.shown(_empty_world(era_order)).is_empty(),
+			"Age %d: a world with nothing earned shows no dressing on the signature building" % era_order
+		)
 
 
 func test_the_cave_shows_only_because_the_age_turned() -> void:
+	for id: StringName in SceneProps.shown(_empty_world(0)):
+		assert_eq(SceneProps.PROPS[id]["kind"], SceneProps.Kind.ALWAYS, "%s waits for nothing" % id)
+
+
+func test_every_age_after_the_cave_draws_its_own_signature_building() -> void:
+	var cave: Image = _back(0)
+	for era_order: int in range(1, LAST_ERA + 1):
+		var age: String = WorldLayout.ERA_DIRS[era_order]
+		var path: String = WorldLayout.piece_path(&"static_back", era_order)
+		assert_true(path.contains("/%s/" % age), "%s draws its own landmark (%s)" % [age, path])
+		var back: Image = _back(era_order)
+		assert_ne(back.get_data(), cave.get_data(), "%s's landmark is not the cave's cliff" % age)
+		for frame: int in WorldLayout.FIRE_FRAMES:
+			var fire_path: String = WorldLayout.piece_path(WorldLayout.fire_frame_name(frame), era_order)
+			assert_true(fire_path.contains("/%s/" % age), "%s has its own fire pit %d" % [age, frame])
+
+
+func test_each_signature_stays_in_the_caves_footprint_and_keeps_the_pine() -> void:
 	for era_order: int in range(LAST_ERA + 1):
-		var world: WorldState = _empty_world(era_order)
-		# The standard, then from the first turn a door as well.
-		var expected: int = 1 if era_order == 0 else 2
-		assert_eq(
-			SceneProps.shown(world).size(), expected,
-			"Age %d with nothing earned shows only the cave's own pieces" % era_order
+		var back: Image = _back(era_order)
+		var building: Rect2i = Rect2i()
+		var x_first: int = back.get_width()
+		var x_last: int = -1
+		var y_first: int = back.get_height()
+		for y: int in back.get_height():
+			for x: int in 150:
+				if back.get_pixel(x, y).a > 0.5:
+					x_first = mini(x_first, x)
+					x_last = maxi(x_last, x)
+					y_first = mini(y_first, y)
+		building = Rect2i(x_first, y_first, x_last - x_first + 1, 66 - y_first)
+		assert_true(
+			SIGNATURE_FOOTPRINT.encloses(Rect2(building)),
+			"Age %d: the signature is drawn at %s, outside %s" % [era_order, building, SIGNATURE_FOOTPRINT]
 		)
-		for id: StringName in SceneProps.shown(world):
-			assert_eq(SceneProps.PROPS[id]["kind"], SceneProps.Kind.ALWAYS, "%s waits for nothing" % id)
+		var kept: Array[StringName] = [&"pine"]
+		if era_order == 0:
+			kept.append(&"mammoth")
+		for landmark: StringName in kept:
+			var solid: bool = false
+			for rect: Rect2 in WorldLandmarks.LANDMARKS[landmark]["rects"]:
+				for y: int in range(int(rect.position.y), int(rect.end.y)):
+					for x: int in range(int(rect.position.x), int(rect.end.x)):
+						if back.get_pixel(x, y).a > 0.5:
+							solid = true
+			assert_true(solid, "Age %d keeps the %s" % [era_order, landmark])
 
 
-func test_the_cave_door_fits_the_whole_mouth() -> void:
-	var cliff: Image = (load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D).get_image()
+func test_the_mammoth_is_the_cave_ages_alone() -> void:
 	for era_order: int in range(1, LAST_ERA + 1):
-		var door_id: StringName = CAVE_DOORS[era_order - 1]
-		var door: Image = (load(WorldLayout.piece_path(door_id, era_order)) as Texture2D).get_image()
-		for x: int in range(20, 48):
-			var crown: int = -1
-			for y: int in range(30, 66):
-				if cliff.get_pixel(x, y).is_equal_approx(MOUTH_DARK):
-					crown = y
-					break
-			assert_true(crown >= 0, "Column %d has no opening" % x)
+		var back: Image = _back(era_order)
+		for rect: Rect2 in WorldLandmarks.LANDMARKS[&"mammoth"]["rects"]:
+			for y: int in range(int(rect.position.y), int(rect.end.y)):
+				for x: int in range(int(rect.position.x), int(rect.end.x)):
+					assert_true(back.get_pixel(x, y).a < 0.5, "Age %d still draws the mammoth at %d,%d" % [era_order, x, y])
+
+
+## The Bloomery stands against the landmark's flank from x 73, so a later age's building ends before it.
+func test_the_signature_leaves_the_flank_to_the_bloomery() -> void:
+	var bloomery_left: int = WorldLayout.BUILDINGS[&"bloomery"]["cx"] - 12
+	for era_order: int in [3, 4]:
+		var back: Image = _back(era_order)
+		var right: int = 0
+		for y: int in 62:
+			for x: int in range(0, 150):
+				if back.get_pixel(x, y).a > 0.5:
+					right = maxi(right, x)
+		# the lone pine stands at x 196+, so the first 150 columns are the building alone (above its shadow)
+		assert_true(right < bloomery_left, "Age %d: the building reaches x %d, under the Bloomery (%d)" % [era_order, right, bloomery_left])
+
+
+func test_each_signature_opens_a_doorway_where_the_group_gathers() -> void:
+	for era_order: int in range(LAST_ERA + 1):
+		var back: Image = _back(era_order)
+		var dark: int = 0
+		for y: int in range(56, 65):
+			var pixel: Color = back.get_pixel(DOORWAY_X, y)
+			if pixel.a > 0.5 and pixel.v < 0.4:
+				dark += 1
+		assert_gt(dark, 4, "Age %d: a doorway stands open at column %d" % [era_order, DOORWAY_X])
+
+
+func test_the_signature_fire_pit_has_no_firelight_in_the_wall() -> void:
+	for era_order: int in range(1, LAST_ERA + 1):
+		for frame: int in WorldLayout.FIRE_FRAMES:
+			var fire: Image = (
+				load(WorldLayout.piece_path(WorldLayout.fire_frame_name(frame), era_order)) as Texture2D
+			).get_image()
+			var used: Rect2i = fire.get_used_rect()
 			assert_true(
-				door.get_pixel(x, crown).a > 0.5,
-				"%s leaves the top of the arch bare at column %d (row %d)" % [door_id, x, crown]
+				float(used.position.x) >= WorldLayout.FIRE_HIT.position.x - 4.0,
+				"Age %d fire %d lights the wall at x %d" % [era_order, frame, used.position.x]
 			)
-		for x: int in [20, 21, 46, 47]:
-			assert_true(door.get_pixel(x, 65).a > 0.5, "%s: a post does not reach the floor at %d" % [door_id, x])
 
 
-func test_the_standards_are_inside_the_skyline() -> void:
-	var cliff: Texture2D = load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D
+func test_the_signature_is_inside_the_skyline() -> void:
 	for era_order: int in range(LAST_ERA + 1):
-		var id: StringName = CAVE_STANDARDS[era_order]
-		var texture: Texture2D = load(WorldLayout.piece_path(id, era_order)) as Texture2D
 		var skyline: Skyline = Skyline.new(384, WorldLayout.VIEW_SIZE.y)
-		skyline.add(cliff, 0)
-		skyline.add(texture, 0)
-		var art: Image = texture.get_image()
-		for x: int in art.get_width():
-			for y: int in art.get_height():
-				if art.get_pixel(x, y).a > Skyline.ALPHA_CLICKABLE:
-					assert_true(y >= skyline.tops[x], "%s: (%d, %d) is above the skyline" % [id, x, y])
-		var pole: int = skyline.tops[STANDARD_POLE_X]
-		assert_true(pole < 22, "%s's pole rises above the cliff's edge in the skyline" % id)
+		skyline.add(load(WorldLayout.piece_path(&"static_back", era_order)) as Texture2D, 0)
+		assert_true(skyline.tops[DOORWAY_X] < 56, "Age %d: the landmark is clickable at the door" % era_order)
 
 
-func test_the_standards_stand_on_the_cliffs_top_and_stay_small() -> void:
-	var cliff: Image = (load(WorldLayout.piece_path(&"static_back", 0)) as Texture2D).get_image()
-	for era_order: int in range(LAST_ERA + 1):
-		var id: StringName = CAVE_STANDARDS[era_order]
-		var art: Image = (load(WorldLayout.piece_path(id, era_order)) as Texture2D).get_image()
-		var used: Rect2i = art.get_used_rect()
-		assert_true(used.size.x <= 12 and used.size.y <= 22, "%s is %s, too big" % [id, used.size])
-		var base: int = -1
-		for y: int in range(art.get_height() - 1, -1, -1):
-			if art.get_pixel(STANDARD_POLE_X, y).a > 0.5:
-				base = y
-				break
-		assert_true(base >= 0, "%s has no pole" % id)
-		assert_true(cliff.get_pixel(STANDARD_POLE_X, base).a > 0.5, "%s does not stand on the rock" % id)
+func test_the_pennant_stands_on_the_cliffs_top_and_stays_small() -> void:
+	var cliff: Image = _back(0)
+	var art: Image = (load(WorldLayout.piece_path(CAVE_PENNANT, 0)) as Texture2D).get_image()
+	var used: Rect2i = art.get_used_rect()
+	assert_true(used.size.x <= 12 and used.size.y <= 22, "The pennant is %s, too big" % used.size)
+	var base: int = -1
+	for y: int in range(art.get_height() - 1, -1, -1):
+		if art.get_pixel(STANDARD_POLE_X, y).a > 0.5:
+			base = y
+			break
+	assert_true(base >= 0, "The pennant has no pole")
+	assert_true(cliff.get_pixel(STANDARD_POLE_X, base).a > 0.5, "The pennant does not stand on the rock")
+
+func test_the_classical_age_folds_the_market_the_well_the_road_and_the_ship() -> void:
+	var iron: Array[StringName] = SceneProps.shown(_everything_unlocked(3))
+	var classical: Array[StringName] = SceneProps.shown(_everything_unlocked(4))
+	for old: StringName in [
+		&"market_stalls", &"council_ring", &"writing_post", &"coin_tray", &"west_well",
+		&"road_camp", &"east_deep_ship", &"east_beacon", &"cart", &"donkeys",
+	]:
+		assert_true(iron.has(old), "%s stands in the Iron Age" % old)
+		assert_false(classical.has(old), "%s is folded into the Classical Age's piece" % old)
+	for fresh: StringName in [
+		&"paved_street", &"water_court", &"market_arcade", &"east_theatre", &"east_harbour",
+	]:
+		assert_false(iron.has(fresh), "%s waits for the Classical Age" % fresh)
+		assert_true(classical.has(fresh), "%s is the Classical Age's" % fresh)
+	for kept: StringName in [&"rampart", &"standing_stone"]:
+		assert_true(classical.has(kept), "%s stays in the Classical Age" % kept)
 
 
-func test_the_cave_door_leaves_the_firelight_and_the_gathering_spots_clear() -> void:
-	var fire: Image = (load(WorldLayout.piece_path(&"fire_pit_0", 0)) as Texture2D).get_image()
-	for era_order: int in range(1, LAST_ERA + 1):
-		var door_id: StringName = CAVE_DOORS[era_order - 1]
-		var door: Image = (load(WorldLayout.piece_path(door_id, era_order)) as Texture2D).get_image()
-		for y: int in door.get_height():
-			for x: int in door.get_width():
-				if door.get_pixel(x, y).a <= 0.05:
-					continue
-				var point: Vector2 = Vector2(x, y)
-				assert_false(WorldLayout.FIRE_HIT.has_point(point), "%s covers the fire at %s" % [door_id, point])
-				if x < int(WorldLayout.FIRE_HIT.position.x):
-					assert_true(
-						fire.get_pixel(x, y).a <= 0.05, "%s covers the firelight at %s" % [door_id, point]
-					)
-		var art: Rect2 = _art_rect(door_id, era_order)
-		for spot: Vector2 in WorldLayout.COLD_SPOTS:
-			assert_false(art.has_point(spot), "%s is on the cold spot %s" % [door_id, spot])
+func test_the_law_pillar_stands_until_the_square_takes_it_in() -> void:
+	var world: WorldState = _empty_world(4)
+	world.achievements.append(&"written_law")
+	assert_true(SceneProps.is_shown(&"law_pillar", world))
+	assert_false(SceneProps.is_shown(&"market_arcade", world), "The square is not earned yet")
+	world.achievements.append(&"the_square")
+	assert_false(SceneProps.is_shown(&"law_pillar", world), "The arcade takes the pillar in")
+	assert_true(SceneProps.is_shown(&"market_arcade", world))
 
+
+func test_a_classical_piece_is_shown_only_for_what_was_earned() -> void:
+	for row: Array in [
+		[&"paved_street", &"paved_streets"], [&"water_court", &"water_from_afar"],
+		[&"law_pillar", &"written_law"], [&"market_arcade", &"the_square"],
+		[&"east_theatre", &"lamp_and_stage"], [&"east_harbour", &"wider_world"],
+	]:
+		var world: WorldState = _empty_world(4)
+		assert_false(SceneProps.is_shown(row[0], world), "%s waits for %s" % [row[0], row[1]])
+		world.achievements.append(row[1])
+		assert_true(SceneProps.is_shown(row[0], world))
+		assert_false(SceneProps.is_shown(row[0], _world_with(&"x", 3)), "...and for the age")
+
+
+func test_the_granary_takes_the_racks_ground_and_never_stands_on_the_field() -> void:
+	var world: WorldState = _empty_world(3)
+	var rack: BuildingState = BuildingState.new()
+	rack.def_id = &"drying_rack"
+	rack.complete = true
+	world.buildings.append(rack)
+	assert_true(WorldLayout.building_shown(&"drying_rack", world))
+	var granary: BuildingState = BuildingState.new()
+	granary.def_id = &"granary"
+	granary.complete = false
+	world.buildings.append(granary)
+	assert_false(WorldLayout.building_shown(&"drying_rack", world), "The site already stands on its ground")
+	granary.complete = true
+	assert_false(WorldLayout.building_shown(&"drying_rack", world), "The granary takes its place")
+	assert_true(WorldLayout.building_shown(&"granary", world))
+	var field: Rect2 = _used_rect(&"building_field", 3, WorldLayout.building_offset(&"field"))
+	var store: Rect2 = _used_rect(&"building_granary", 3, WorldLayout.building_offset(&"granary"))
+	assert_false(field.intersects(store), "The granary %s stands on the field %s" % [store, field])
+
+
+func test_the_theatre_stands_on_the_back_lane_and_the_harbour_touches_the_shore() -> void:
+	var theatre: Rect2 = _art_rect(&"east_theatre", 4)
+	assert_true(absf(theatre.end.y - float(WorldLayout.BACK_LANE)) <= 2.0, "The theatre's foot is %s" % theatre.end.y)
+	var harbour: Rect2 = _art_rect(&"east_harbour", 4)
+	# The beach ends at about x 622 (the east page's x 238); the mole starts there and runs out to sea.
+	assert_true(
+		harbour.position.x >= 384.0 + 225.0 and harbour.position.x <= 384.0 + 250.0,
+		"The harbour starts at %s, not at the shore" % harbour.position.x
+	)
+
+
+func test_the_paved_street_runs_from_the_west_edge_to_the_bridge() -> void:
+	var world: WorldState = _empty_world(4)
+	world.achievements.append(&"paved_streets")
+	var pieces: Array[StringName] = [
+		&"paved_street_market", &"paved_street_west", &"paved_street_hall", &"paved_street",
+		&"paved_street_bank",
+	]
+	var rects: Array[Rect2] = []
+	for id: StringName in pieces:
+		assert_true(SceneProps.is_shown(id, world), "%s is shown with the streets" % id)
+		assert_true(SceneProps.PROPS[id].get("ground", false), "%s lies flat on the ground" % id)
+		rects.append(_art_rect(id, 4))
+	assert_true(rects[0].position.x <= -383.0, "It starts at the west edge: %s" % rects[0].position.x)
+	assert_true(rects[4].end.x >= 300.0, "It reaches the bridge: %s" % rects[4].end.x)
+	for i: int in range(rects.size() - 1):
+		assert_true(absf(rects[i].end.x - rects[i + 1].position.x) <= 1.0, "A gap in the street after %s" % pieces[i])
+
+
+func test_the_lighthouse_takes_the_beacons_place_and_the_market_takes_the_cart() -> void:
+	var world: WorldState = _empty_world(4)
+	for flag: StringName in [&"beacon_lit", &"cart", &"donkeys"]:
+		world.flags[flag] = true
+	assert_true(SceneProps.is_shown(&"east_beacon", world), "The beacon burns until the harbour is built")
+	assert_true(SceneProps.is_shown(&"cart", world))
+	world.achievements.append_array([&"wider_world", &"the_square"])
+	assert_false(SceneProps.is_shown(&"east_beacon", world), "The lighthouse lights the shore")
+	assert_false(SceneProps.is_shown(&"cart", world), "The arcade takes in the cart")
+	assert_false(SceneProps.is_shown(&"donkeys", world))
+	var glow: String = WorldLayout.piece_path(WorldLayout.BEACON_GLOW, 4)
+	assert_true(glow.contains("/classical/"), "The lighthouse has its own night light")
+	assert_true(WorldLayout.piece_path(WorldLayout.BEACON_GLOW, 3).contains("/iron/"))
 
 func test_the_low_wall_gives_way_to_either_wall() -> void:
 	var world: WorldState = _world_with(&"low_wall", 3)

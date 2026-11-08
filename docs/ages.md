@@ -176,7 +176,7 @@ How Bronze prepares for it, without building any of it:
 7. **No tree in front of a house.** The west page's pines used to stand on any row, so a house or the cloth line beside one was drawn over a tree whose trunk stood lower (it looked as if it floated). Now every pine of the west page stands behind the village, on the back rows (`tools/art/cave_pages.js`); only stumps, bushes, rocks and the fallen log are on the front rows.
 8. **The wall connects two things**: the low wall (and the Bronze town wall, with its gate tower) runs behind the village from the forest's edge to the cave's flank, with a gate in the middle, instead of floating over the roofs.
 9. **The east spit has work on it**: salt pans (`salt`), a shell heap (`shellfish_gathered`), a driftwood stack (`driftwood_gathered`) and tide baskets (`tide_baskets`), each by the flag that says it was done; and the clay pots stand in front of the cave mouth (`cave_mouth` place), not in the village.
-10. **The cave keeps up with the ages.** The cave itself never changed, so each age leaves a quiet trace on it, with no journal line, sound or flash (P8, P12): a **door in the mouth** that follows the whole arch, one piece per age, each replacing the last (a lashed timber frame with a reed mat; a mud-brick arch with a copper oil lamp; a limewashed arch with an iron-bound door standing open and a lantern), and a **standard on the cliff above**, one piece per age, each replacing the last (a hide pennant on a bone-knobbed pole; a woven banner; a bronze disc with a red tail; an iron-framed slate banner). The pennant is the cave's own and shows from the first day; the rest show from the turn of their age. They wait for nothing the group did, only for the age (`SceneProps.Kind.ALWAYS` with `from_era`; a replaced piece lists every later one in `replaced_by` so none comes back), so a world with nothing earned shows exactly these; the door keeps the firelight and the gathering spots clear (a test checks the pixels). The `cave_mouth` place takes in the opening from its crown (y 46) down, `cave_cliff` is the top of the cliff (the standards stand on its edge, so they are inside the skyline and the click region), and the cave's own pieces are not counted in the per-page budget (they have their own cap). Art: `cave_strip.js` and the end of `settled_camp.js`, `bronze_camp.js` and `iron_camp.js`.
+10. **One signature building per age, not a cave that keeps up.** The cave's whole landmark (the rock included) is replaced at each turn by that age's own building in the same footprint (longhouse, gatehouse, hill-fort hall, civic hall: see "Classical Age", "One signature building per age"), drawn into each age's own `static_back` and `fire_pit_*` pieces rather than added as props. The old cave-mouth doors and cliff standards are retired; the Cave Age's pennant is the only dressing left and goes with the cliff (`until_era` 1). It shows because the age turned, never for anything the group did (P8, P12). Art: `tools/art/signature_landmarks.js`.
 
 **What Bronze tidies** (built; art `tools/art/bronze_camp.js`):
 
@@ -370,38 +370,8 @@ Twenty-seven forks (two answers that each do something, a journal line each, a f
 
 ### Looking ahead: the Classical Age
 
-Direction only (G7; not built and not drawn, and it can change), but designed now so the Iron Age's milestones lead somewhere (the lesson of B9). The age after Iron is the **Classical Age**: real-world turning points are the city, public life, written law, stone building, water brought in, learning and a stage, and a world of other cities. It is *not* a new game: an `EraDef` whose `required_achievements` are the Iron six and whose gate is those six plus **8640 ticks**, a turn, content and art.
+Built: see "Classical Age" below. The Iron Age's six milestones are its gate (C1), and each handed it something: iron for the chisel and the wedge (`cut_stone`), a surplus that feeds a bigger town, the hill-fort as the upper town, coin and a seal, writing as written law, and `known_abroad` as the outward look.
 
-**The turn: *A seat at the table*** (working name). The strangers who asked the town's name (`known_abroad`, which every road to milestone 6 sets) send word: the town is big enough to be asked to be a city. Both answers advance the age, as the earlier turns did, and set its path:
-
-- **Keep our own ways** (`path_assembly`): the town gathers at the standing stone and agrees how to live. The home road: law, a square, a council.
-- **Take a place among theirs** (`path_league`): the town sends for the far shore's laws and joins its web of cities. The far road: ships, envoys, a harbour.
-
-Neither is a penalty or a conquest (P13): the age is open-ended, and neither answer is "worse". The turn must read well with none of the optional Iron flags set; it only *remembers* them in quiet lines (`standing_stone` or `gate_name`, `learned_words` or `taught_words`, the coin's tree or face, `envoy_guided` or `envoy_waited`).
-
-**What each Iron milestone hands over.**
-
-| Iron milestone | What the Classical Age takes from it |
-|---|---|
-| 1. The First Bloom | Iron is the tool metal: the chisel and the wedge that make stone building possible (with the *Stone from the hill* fork, `cut_stone`) |
-| 2. A Fuller Harvest | A surplus that can feed people who do not farm (a bigger `max_villagers`, a market that is more than a stall) |
-| 3. The Hill-fort | A citadel to build a town below: `hill_fort` is the *upper town* of a city |
-| 4. Silver by Weight | Coin makes a market, a treasury and a toll that is more than food: the coin's tree (a town) or face (a chief) colours how the age's own lines talk about rule |
-| 5. The Written Word | Law that is written, and the first books: `letters` is a precondition of the age's law and learning milestones |
-| 6. A Name Abroad | The outward look: `known_abroad` is what the turn reads, and the far shore is where the age's last milestone goes |
-
-**Milestones, sketched** (six, each with several roads and one open to every group, days spaced like `BRONZE_DAY`; names and roads are to be designed when the age is, not now):
-
-| # | Milestone | Real-world turning point | Reads |
-|---|---|---|---|
-| 1 | **Paved Streets** | A laid-out town, stone building | `cut_stone` or `timber_town`, `road_laid` |
-| 2 | **Water from Afar** | Aqueducts, drains, public baths | `well_dug` or `well_carriers` (Settled answers), the river answers |
-| 3 | **The Law** | Written law and courts | `letters`, the coin's face or tree, `toll` / `open_road` |
-| 4 | **The Square** | The agora or forum: public life | `market_day`, `council`, `standing_stone` or `gate_name`, `long_table` |
-| 5 | **The Lamp and the Stage** | Learning, theatre, a festival of the whole town | `learned_words` or `taught_words`, the `festival` answer, `letters` |
-| 6 | **The Wider World** | Long roads and a harbour of many ships (the outlook; sets a flag for the age after) | `path_assembly` or `path_league`, `quay_built` or the Beacon, `known_abroad` |
-
-**Needs of the age, noted early so they are not a surprise.** Another outfit pair and a Classical panel skin; the Iron buildings stay and the town grows around them (G4); a `max_villagers` step (probably 36); and, again, a catch-up measurement before adding another age (I11).
 
 ### Catch-up cost
 
@@ -413,8 +383,9 @@ Launch catch-up is `advance_real_time(now)`: exact, capped at `max_catch_up_tick
 | Settled | 505 | 817 |
 | Bronze | 556 | 848 |
 | Iron | 625 | 937 |
+| Classical | 740-790 | 970-1090 |
 
-Iron costs about 12% more than Bronze, so a full year of catch-up (the cap, 8760 ticks) is about 11 s on a small world and was about 10 s in Bronze. It is exact and nothing was changed to save time. Every Iron event sets `ERA_AT_LEAST` and `ERA_DAYS_AT_LEAST`, so `EventDef.may_be_open` drops it without touching the world. If a later age goes over budget, the exact options are an *upper* era gate in `may_be_open` for events that expire with their age, and skipping `_roll_new_event` while no decision slot is free and no ambient event can fire. A coarser step would break the "catch-up equals ticking" guarantee (I11) and is not proposed.
+Iron costs about 12% more than Bronze, so a full year of catch-up (the cap, 8760 ticks) is about 11 s on a small world and was about 10 s in Bronze. It is exact and nothing was changed to save time. Every Iron event sets `ERA_AT_LEAST` and `ERA_DAYS_AT_LEAST`, so `EventDef.may_be_open` drops it without touching the world. If a later age goes over budget, the exact options are an *upper* era gate in `may_be_open` for events that expire with their age (built with the Classical Age: a negated `ERA_AT_LEAST` now skips an event once its age has passed), and skipping `_roll_new_event` while no decision slot is free and no ambient event can fire. The Classical Age's row is a small step on Iron's, within run-to-run noise of about 15%. A coarser step would break the "catch-up equals ticking" guarantee (I11) and is not proposed.
 
 ### What is built
 
@@ -423,7 +394,7 @@ Iron costs about 12% more than Bronze, so a full year of catch-up (the cap, 8760
 - **People and panels**: the checked wool and iron fittings (`iron_villagers.js`), the Iron panel skin (`ui_skin_iron.js`: a dark iron frame with rust trim round a pale limewashed wall) and six medals (`ui_achievements.js`).
 - **World art**: `tools/art/iron_camp.js` → `game/assets/world/iron/` (see "What Iron tidies").
 
-**Still to do**: the Classical Age (see "Looking ahead"). Everything the Iron Age designed is built; it has no gate out, as G7 says, and the three forks that lead into the next age are in.
+**Still to do**: nothing planned. Everything the Iron Age designed is built, and the Classical Age ("Classical Age") is built on it; the Iron Age itself still has no gate-out of its own beyond the Classical six, as G7 says.
 
 ### Open questions
 
@@ -434,7 +405,94 @@ Settled with the project owner as recommended, and built:
 3. **28 villagers** (catch-up measured above).
 4. **No Scribe profession** for now (I4).
 
-Still open: the working names (*A harder fire*, `path_bloomery` / `path_ore`, and the Classical turn *A seat at the table*, `path_assembly` / `path_league`) and the Classical Age's milestone roads, which are designed with that age.
+Still open: the working names (*A harder fire*, `path_bloomery` / `path_ore`).
+
+## Classical Age
+
+Status: **built (issue #40): the sim, the milestones, the forks, the signature buildings, the world art, the clothes, the UI skin and the medals.** It follows the earlier ages' shape (G6, G7, P13) and stands on what the Iron Age left (I10). What is new is **streets, water brought in, written law, a square, learning and a stage, and a wider world of other cities**. Days are *days into the Classical Age* (`ERA_DAYS_AT_LEAST`; 72 days is a real day). The age is open-ended (G7): it has no gate out, and what comes after it is only a direction ("Medieval: the direction").
+
+### Decisions
+
+| # | Decision | Why |
+|---|---|---|
+| C1 | **The gate** is the six Iron milestones (`first_bloom`, `fuller_harvest`, `the_hill_fort`, `silver_by_weight`, `written_word`, `name_abroad`) and **8640 ticks (5 real days)**. The turn, **A seat at the table** (`a_seat_at_the_table`), asks *how* the town takes its place among cities, not whether: *keep our own ways* (`path_assembly`) or *take a place among theirs* (`path_league`). Both advance the age; neither is a penalty or a conquest. | Same pace from age to age; the hidden gate stays hidden (P8). The turn reads nothing a group may lack. |
+| C2 | **No new building.** The age adds no standalone building slot; its milestones put *pieces* on the world, and each piece folds older ones into a tidier whole (`replaced_by`: the market stalls, the council ring, the writing post and the coin tray become one **market arcade**; the well becomes a **water court**; the camp's road is **paved**; the deep-keeled ship gives way to a **harbour**). Two more pieces are new places: a **theatre** and an inscribed **law pillar** that the arcade later takes in. | A world that only ever adds things gets crowded and unreadable. The town gets denser in what it *is*, and the building a milestone earns still counts for its sim benefits and history (nothing saved changes). |
+| C3 | **One signature building per age** (see "One signature building per age"): the whole cave landmark, rock included, is replaced at each turn by that age's own building in the same footprint. | The landmark is what the eye reads first; an age should be recognisable from it alone. |
+| C4 | **Representative villagers, not a census**, with a profile per age (see "How many people the strip shows"). | Crowding hurts both feel and cost; an empty strip is boring. Balance is per age, not one rule. |
+| C5 | **Medieval is the direction, not a build** ("Medieval: the direction"). The sixth milestone's roads all set `towns_connected`, which a later age reads as `known_abroad` is read here. | Open-ended; nothing is ever "finished", and the next age is not invented later. |
+
+### The turn: *A seat at the table*
+
+Opens when the gate is met. The strangers who asked the town's name (`known_abroad`, which every Iron road to the last milestone sets) send word that the town is big enough to be a city. The group answers how; either answer sets `path_assembly` or `path_league`, which decides which road to each milestone is offered first (the other path's road is simply not asked; every milestone also has a road for every group). The three Iron overture forks (*A stone with a name*, *A rider with a sash*, *A table for strangers*) stop being asked once the age turns.
+
+### Milestones
+
+Six hidden achievements staged over the age (G6), one table, `CLASSICAL_DAY`, in `tools/build_sim_content.gd`. Each has more than one road; a later road is open to every group (it asks for the age, its day and an earlier milestone, nothing a group may lack); every answer on every road earns it and sets its own flag.
+
+| # | Milestone | Real-world turning point | Roads (a road is a fork; both answers earn it) | From day | On screen |
+|---|---|---|---|---|---|
+| 1 | **Paved Streets** (`paved_streets`) | A laid-out town | Dressed stone for a town that cut its own (`cut_stone`): broad slabs (10 wood) or small setts; stone meeting timber (`timber_town`): edge the lane (8 wood) or pave the courtyards; every group, from day 54: pave every doorstep or lay a common walk | 18 | The street is paved from the west edge to the bridge, in five flat pieces, one per place it crosses (`paved_street_market`, `_west`, `_hall`, the yard's `paved_street`, `_bank`; `ground`, so a page's budget does not count them) |
+| 2 | **Water from Afar** (`water_from_afar`) | Aqueducts, cisterns, baths | The old well grown (`well_dug`): a vaulted cistern (10 wood) or a channel from it; water by the carriers (`well_carriers`): arches from the spring (12 wood) or a low covered channel; every group, from day 90: roofs feeding a basin or a lined ditch | 54 | A water court in place of the well |
+| 3 | **The Law** (`written_law`, needs 1) | Written law and courts | Assembly: agreements cut in stone or kept by rotating readers; league: a neighbour's code adapted or a charter of what the towns owe; every group, from day 144: promises recorded in stone or kept on tablets | 108 | A law pillar at the market's edge |
+| 4 | **The Square** (`the_square`, needs 3) | The agora or forum | The market grown (`market_day`): awnings and a paved floor (8 wood) or a shared meal day; the council seated (`council`): open meetings or hearings by turns; every group, from day 198: a colonnade or an open paved court | 162 | A market arcade takes in the stalls, the ring, the post and the tray; the finer outfit |
+| 5 | **The Lamp and the Stage** (`lamp_and_stage`, needs 4) | Learning, theatre, a festival of the whole town | Their words kept (`learned_words`): a library (8 wood) or a school; ours taught (`taught_words`): a primer or a teaching court; the festival grown (`festival`): a stage (8 wood) or storytelling in the court; every group, from day 246: a reading bench or an open teaching table | 216 | A theatre on the far bank |
+| 6 | **The Wider World** (`wider_world`, needs 4 and 2; sets `towns_connected`) | Long roads and a harbour of many ships | Assembly: host visiting towns or exchange delegates; league: link the harbour towns or keep the shared roads; every group, from day 288: craftspeople on the road or the circuit of markets | 252 | A harbour with a lighthouse in place of the ship |
+
+- **P13 holds.** Each road is a fork, no pass answer, and a cost sits on one answer only where the other is not simply better. `test_sim_classical.gd` fires every answer on every road, and plays the age on both paths accepting everything and passing on each question twice first, with none of the Iron answers to lean on.
+- **Why these six.** Law needs streets to be read in; the square needs law; learning needs a place to meet; and the wider world needs a square to receive in and water to feed the town's guests. Water stands alone, so a group that goes straight to water, or to the square, tells a different age (G2).
+
+### Between the milestones
+
+Twenty-one forks (`_classical_stories`, paced by `CLASSICAL_STORY_DAY`, each with a flag a later line remembers) and 34 ambient lines (`CLASSICAL_AMBIENT_CHANCE`; twelve after a milestone, four about a trait, and eighteen remembering an answer). The last three look toward what a later age could inherit and promise nothing: *Who keeps the water running* (a steward for each neighbourhood, or a craft of the water), *A book for the journey* (a copying room, or teachers who carry their lessons) and *When the market returns* (a rota written into a charter the towns share, or a meal at each).
+
+### One signature building per age
+
+The camp's landmark is the same footprint every age (a 100x54 piece with its foot on row 66, x 0..99, an entrance near x 34); the age turning swaps the whole building, rock and all (`static_back` in each age's art folder, drawn by `tools/art/signature_landmarks.js`, with its own `fire_pit_*` frames because the Cave Age's has firelight inside the cave's mouth).
+
+| Age | Signature building | Reads as |
+|---|---|---|
+| Cave | The cave (a cliff with a mouth, handprints, ivy) | Sheltered by the landscape |
+| Settled | Longhouse | A long thatched hall of posts and daub: people have chosen to stay |
+| Bronze | Gatehouse | Mud-brick towers round a bronze-capped arch: the settlement becomes a town |
+| Iron | Hill-fort hall | A slate footing, timber and limewash, an iron-bound door between palisade ends |
+| Classical | Civic hall | A limestone porch of columns under a terracotta pediment, a tiled hall beside it |
+
+It shows because the age turned, never because of a flag, an achievement or a hint (P8). The Cave Age's pennant goes with the cliff; the later ages' doors and standards are retired (the signature has its own entrance and banner: the Bronze gatehouse's bronze disc, the Iron hall's slate banner, the Classical hall's red banner on its pediment; the longhouse has none). **The Bloomery stands against its flank** (x 73 to 97), so the Iron hall and the Classical hall end before x 73 and the Bronze gatehouse before x 91 (a test checks it); **the mammoth is the Cave Age's alone** (a later age draws only the lone pine); and the **Classical fire is a bronze brazier** on the camp fire's spot (the glow, the flicker and the gathering place are the same). **The lighthouse replaces the beacon** (the harbour hides `east_beacon` and its night light is `east_beacon_glow` in the Classical folder, which takes the beacon's by name), and **the arcade takes in the cart and the donkeys**. **Farming is the Field's alone**: the farmers' sown plot, scarecrow, farmstead and plough team are gone (they drew the same thing as the Field, on another page and row), the Field stands on the back lane with the other buildings, in the west village against the hall's flank where the plot and farmstead were (`WorldLayout.BUILDINGS`, its camp art moved 269 px west), and `path_agriculture` shows nothing of its own; herders keep their pen, sheepfold and shearing pen (moved 70 px west to make room) and lose the garden patch, which was a second farming piece. The hens leave the village when the Bronze Age turns. The Granary takes the Drying Rack's ground (`WorldLayout.BUILDING_FOLDED_INTO`: the view hides the rack while a granary stands or goes up, the sim keeps both), so a field and a store never stand on each other. Hover names it for its age (`WorldLandmarks.SIGNATURE_NAMES`). Medieval can repurpose it as a guild or stewardship hall, and a modern age as a civic building in a dense block: those are directions, not assets.
+
+### How many people the strip shows
+
+A villager **stands for** the settlement's people; it does not count them. Each age has a profile on its `EraDef` (`max_villagers`, `food_need_scale`, `food_yield_scale`, `wood_yield_scale`), applied by `Simulation`: a later age's villager eats more and brings in more, so the balance, not the head count, is what an age tunes. These are tuning profiles for five ages, not a rule for every future one.
+
+| Age | Base housing | Ceiling | Eats | Forages and hunts | Cuts wood |
+|---|---|---|---|---|---|
+| Cave | 4 | 6 | x1.0 | x1.0 | x1.0 |
+| Settled | 6 | 8 | x1.15 | x1.15 | x1.1 |
+| Bronze | 8 | 10 | x1.3 | x1.3 | x1.2 |
+| Iron | 10 | 12 | x1.5 | x1.5 | x1.35 |
+| Classical | 14 | 14 | x1.7 | x1.7 | x1.5 |
+
+- **The ceiling gates arrivals only** (`WorldState.room()` is the age's housing held to it): nobody already in the group is removed, an older save with more people keeps them all, and `SimConfig.max_villagers` (14) stays the global safety net for `add_villager`. A new world still starts with three.
+- **Base housing sits under the ceiling** so a hut, a lean-to, a wall or the hill-fort still make room, up to the ceiling.
+- **Foraging keeps pace with eating** (a test checks it), so no age is starved or flooded; the buildings' own output is not scaled. Measured with `tools/sim_timeline.gd -- 1 1900` (a bot answering at once): stock hovers at about 40 of each across the first four ages and ends the Classical Age at 140 wood and 25 to 40 food.
+- **Density is per age, not a count rule.** Early ages are sparse (a few separate places far apart), later ages join up (a market under one roof, a paved street, a harbour). The page budget in `test_scene_props.gd` is a baseline, and the Classical east shore holds one more piece (a theatre and a harbour in place of a ship).
+
+### Medieval: the direction
+
+Not built (G7). It inherits **stewardship, guilds, preserved learning and travelling markets**: the water court and the arcade become a guild's and a charter's places; the library and school become scriptoria and apprenticeships; the harbour and the market circuit become travelling fairs. Its gate would be the Classical six plus `towns_connected` for the outlook, and the three overture forks' flags (`water_stewards` / `water_craft`, `copying_room` / `travelling_teachers`, `market_charter` / `market_hospitality`) are what its turn would remember. Nothing collapses and nothing is conquered.
+
+### What is built
+
+- **Sim** (`tools/build_sim_content.gd`, then re-run it to regenerate `resources/sim/`): the Classical `EraDef` (order 4, housing 14, gate and turn as C1), the turn, 19 milestone roads, 21 forks, 34 lines, the profiles above, and the three Iron lead-in forks no longer asked once the age turns. Engine changes: the per-age profile fields on `EraDef`, `WorldState.villager_limit` and a clamped `room()`, `FoodSystem.ration_per_tick(…, need_scale)`, the scales in `VillagerSystem`, `ContentLibrary.validate()` checks, and `EventDef.may_be_open` also skipping an event whose negated `ERA_AT_LEAST` (it ended with its age) can no longer be met.
+- **Tests**: `test_sim_classical.gd`, and the per-age cases in `test_sim_population.gd`, `test_scene_props.gd`, `test_villager_outfit.gd`, `test_hover.gd`, `test_achievements.gd` and `test_ui.gd`.
+- **People and panels**: linen and a banded civic mantle (`classical_villagers.js`; the first from the turn, the second once the Square is earned), the Classical panel skin (`ui_skin_classical.js`: limestone beams, fluted columns, a Greek key, terracotta tiles) and six medals (`ui_achievements.js`).
+- **World art**: `tools/art/classical_camp.js` and `signature_landmarks.js` → `game/assets/world/classical/` and each earlier age's folder (`static_back`, `fire_pit_*`).
+- **Catch-up**: about 740-790 ms per 20 game days on a 3-villager world and 970-1090 ms on 14 (Iron: 640-690 and 950). Run to run noise is around 15%, so this is a small step on the earlier ones (the Iron Age was 625 ms). A full year of catch-up (the cap) is about 14 s on a small world. The upper era gate is in; a coarser step would break "catch-up equals ticking" and is not proposed.
+
+### Open questions
+
+- The working names (*A seat at the table*, `path_assembly` / `path_league`) are in; none is final.
+- Whether the Classical Age needs a gate out before a Medieval one is designed (G7 says no).
+- Whether the ceilings (6, 8, 10, 12, 14) feel right on screen is for a person to judge: look at a developed world in each age (`--era=`, `--earn=`, `--flag=`, `--shot=`), sparse and busy, day and night.
 
 ## Candidate ages (for reference)
 
@@ -444,7 +502,7 @@ Still open: the working names (*A harder fire*, `path_bloomery` / `path_ore`, an
 | 2. Settled | Farming, herding, pottery, weaving | Huts, fields, pens, storage (reuses much of the current farm/tent art) |
 | 3. Bronze | Metal, trade, walls, first towns (proposed: "Bronze Age: design proposal") | Mud-brick, workshops, roads, boats |
 | 4. Iron | A harder metal, farming for bigger towns, a fort, coin, writing, a name abroad (proposed: "Iron Age") | Forts, granaries, bloomeries, ships |
-| 5. Classical | Cities, law, stone building, water, learning, a wider world (direction: "Looking ahead: the Classical Age", under the Iron Age) | Paved streets, a square, aqueducts |
+| 5. Classical | Streets, water brought in, written law, a square, learning and a stage, a wider world (built: "Classical Age") | Paved streets, an arcade, a water court, a theatre, a harbour |
 | 6+ | Medieval and later | Out of scope for now |
 
 Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a horizon only. Not yet confirmed.

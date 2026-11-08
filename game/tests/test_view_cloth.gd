@@ -32,6 +32,11 @@ func _dress_for(sim: Simulation, outfit: StringName) -> void:
 		VillagerOutfit.IRON:
 			sim.world.era_order = 3
 			sim.world.achievements.append(&"first_bloom")
+		VillagerOutfit.LINEN:
+			sim.world.era_order = 4
+		VillagerOutfit.CIVIC:
+			sim.world.era_order = 4
+			sim.world.achievements.append(&"the_square")
 
 
 func test_the_view_starts_in_furs() -> void:

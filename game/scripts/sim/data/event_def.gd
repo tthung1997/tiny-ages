@@ -37,6 +37,9 @@ var _gates_built: bool = false
 var _gate_day: int = 0
 var _gate_era: int = 0
 var _gate_era_day: int = 0
+## The age from which an event can no longer be open (a negated ERA_AT_LEAST: "only before this
+## age"), or a very large number. Ages only move forward, so it never opens again once passed.
+var _gate_era_before: int = 1000000
 
 
 func is_decision() -> bool:
@@ -44,20 +47,25 @@ func is_decision() -> bool:
 
 
 ## A cheap test the event system runs first: false means a day, age or days-into-the-age
-## requirement is certainly not met yet, so the other conditions need not be looked at. These
-## only ever grow with time, which is what makes it safe to skip on them.
+## requirement is certainly not met yet (or, for an event that ends with its age, no longer
+## can be), so the other conditions need not be looked at. Each only ever moves one way with
+## time, which is what makes it safe to skip on them.
 func may_be_open(day: int, era_order: int, era_day: int) -> bool:
 	if not _gates_built:
 		_build_gates()
-	return day >= _gate_day and era_order >= _gate_era and era_day >= _gate_era_day
+	return day >= _gate_day and era_order >= _gate_era and era_day >= _gate_era_day \
+			and era_order < _gate_era_before
 
 
 func _build_gates() -> void:
 	_gate_day = 0
 	_gate_era = 0
 	_gate_era_day = 0
+	_gate_era_before = 1000000
 	for condition: SimCondition in requires:
 		if condition.negate:
+			if condition.kind == SimCondition.Kind.ERA_AT_LEAST:
+				_gate_era_before = mini(_gate_era_before, condition.amount)
 			continue
 		match condition.kind:
 			SimCondition.Kind.DAYS_AT_LEAST:

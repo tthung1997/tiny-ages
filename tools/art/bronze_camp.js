@@ -731,8 +731,7 @@ layers.market_stalls = layerOf([obj(38, 17, 36, 70, market, { sh: 0, z: 72 })]);
 layers.cart = layerOf([obj(24, 15, 15, 79, cart, { sh: 0 })]);
 layers.donkeys = layerOf([obj(22, 12, 41, 80, donkeypair, { sh: 0, raw: true, z: 79 })]);
 layers.road_camp = roadstrip();
-layers.farmstead_farm = layerOf([obj(60, 22, 278, 79, farmstead, { sh: 0, z: 79 })]);
-layers.farmstead_herd = layerOf([obj(62, 22, 350, 79, herdstead, { sh: 0, z: 78 })]);
+layers.farmstead_herd = layerOf([obj(62, 22, 280, 79, herdstead, { sh: 0, z: 78 })]);
 layers.council_ring = layerOf([obj(44, 16, 32, 69, councilring, { sh: 0, z: 72 })]);
 layers.tally_post = layerOf([obj(44, 19, 32, 72, tallypost, { sh: 0, z: 72 })]);
 layers.building_quay = layerOf([obj(40, 13, 338, 72, quay, { sh: 0 })]);
@@ -752,7 +751,7 @@ var groups = [
   ['bronze_trade_sites', ['site_lookout', 'site_quay'], 'river'],
   ['bronze_trade_west', ['market_stalls', 'cart', 'donkeys', 'weavers_row', 'west_roof_b']],
   ['bronze_trade_east', ['east_crossing_planks'], 'eastriver'],
-  ['bronze_farmsteads', ['town_wall', 'potters_yard', 'farmstead_farm', 'farmstead_herd']],
+  ['bronze_farmsteads', ['town_wall', 'potters_yard', 'farmstead_herd']],
   ['bronze_council', ['council_ring']],
   ['bronze_tally', ['tally_post']]
 ], gi, gj, P, name, x, y;
@@ -770,58 +769,3 @@ for (gi = 0; gi < groups.length; gi++) {
 var count = 0;
 for (name in layers) { IMG.putImageData(layers[name].d); SPR.saveAs(GAME + name + '.png'); count++; }
 console.log('bronze camp done, ' + count + ' game layers');
-
-// ---- the cave keeps up with the ages (docs/ages.md B10, point 10) ----------------------------------------
-// Drawn last and with no random numbers, so nothing above moves. Camp page, in the mouth of the cave.
-// The opening is the cliff's own (see the note in settled_camp.js): x 20..47, from y 47 at the crown
-// down to the floor at y 65; the firelight (x 26..42, y 58..65) is kept clear, outline included.
-//   cave_door_bronze   a mud-brick arch that follows the whole opening (a band of bricks under its curve
-//                      and a brick jamb each side down to the floor), open, with a small copper oil lamp
-//                      hanging on a chain from the crown's right side
-// Replaces the Settled door (SceneProps replaced_by).
-(function () {
-  var B1 = '#d9b47c', B2 = '#cfa86f', B3 = '#e2be88', BL = '#ecd2a0', BD = '#b88f5c', BM = '#a07848';
-  var CU = '#d9782f', CUL = '#f2a65a', CUD = '#a24f22', GL = '#f59e2b', GLL = '#ffd86a', CHN = '#6f6c78';
-  var rb = new Buf(384, 80), door = new Buf(384, 80), x, y, r, ob, pal = [B1, B2, B3];
-  function top(cx) { var u = (cx - 34) / (cx < 34 ? 16 : 14); return Math.abs(u) > 1 ? -1 : 65 - Math.round(18 * Math.sqrt(1 - u * u)) + (cx % 5 == 0 ? 1 : 0) - (cx % 7 == 0 ? 1 : 0); }
-  function band(cx) { var t = top(cx); return [t, Math.max(t + 1, Math.min(65, Math.max(top(cx - 1), top(cx + 1)) - 1))]; }
-  function lit(cx, cy) { var fy = cy - 12; return cx >= 26 && cx <= 42 && fy >= 46 && fy <= 53 && ((cx + fy) & 1) == 0 && fy > 46 + Math.abs(cx - 34) / 3; }
-  function brick(bx, by) { return (by % 3 == 2 || (bx + (Math.floor(by / 3) % 2) * 2) % 4 == 0) ? BD : pal[(bx * 7 + by * 13) % 3]; }
-  for (x = 20; x <= 47; x++) {
-    r = band(x);
-    for (y = r[0]; y <= r[1]; y++) rb.px(x, y, y == r[0] ? BL : (y == r[1] ? BM : brick(x, y)));
-  }
-  for (y = top(20); y <= 65; y++) { rb.px(20, y, BL); rb.px(21, y, brick(21, y)); }
-  for (y = top(47); y <= 65; y++) { rb.px(46, y, brick(46, y)); rb.px(47, y, BM); }
-  rb.px(48, 65, BM);
-  for (y = 3; y < 65; y += 3) { if (y > top(20)) rb.px(20, y, BD); if (y > top(47)) rb.px(47, y, BD); }
-  rb.px(44, band(44)[1] + 1, CHN); rb.px(44, band(44)[1] + 2, CHN); rb.px(44, band(44)[1] + 3, CHN); // the lamp's chain
-  y = band(44)[1] + 4;
-  rb.rect(43, y, 3, 2, CU); rb.px(43, y, CUL); rb.px(44, y, CUL); rb.px(45, y + 2, CUD); // a copper dish
-  rb.px(42, y, CU); rb.px(42, y - 1, GL); rb.px(42, y - 2, GLL); // its spout and flame
-  ob = outlined(rb, OUT);
-  for (x = 0; x < 384; x++) for (y = 0; y < 80; y++) if (lit(x, y)) { ob.d[((y + 1) * ob.w + x + 1) * 4 + 3] = 0; }
-  blit(door, ob, -1, -1);
-  IMG.putImageData(door.d); SPR.saveAs(GAME + 'cave_door_bronze.png');
-})();
-
-// ---- the standard on the cliff above the cave (docs/ages.md B10, point 10) ---------------------------------------
-// Same pole position as the other ages' standards (x 26, on the cliff's top edge, see settled_camp.js).
-//   cave_standard_bronze   a bronze disc on a dark timber pole (x 22..28, y 4..10) with a red cloth tail
-//                          streaming to the right (x 27..32, y 11..14)
-(function () {
-  var P = 26, TIM = '#6a4529', TIML = '#8a5a36', BR = '#d9a23a', BRL = '#f7d56a', BRD = '#9a6a1f', RED = '#c0504a', REDD = '#8f3a2d';
-  var rb = new Buf(384, 80), out = new Buf(384, 80), x, y, d, dx, y0, len;
-  rb.rect(P, 11, 1, 13, TIM); rb.rect(P, 11, 1, 3, TIML);
-  for (y = 4; y <= 10; y++) for (x = P - 3; x <= P + 3; x++) {
-    d = Math.sqrt((x - P) * (x - P) + (y - 7) * (y - 7));
-    if (d <= 3.6) rb.px(x, y, d > 2.7 ? BRD : BR);
-  }
-  rb.px(P - 1, 6, BRL); rb.px(P - 2, 6, BRL); rb.px(P - 1, 5, BRL); rb.px(P, 7, BRL); rb.px(P + 1, 8, BRD);
-  for (dx = 1; dx <= 6; dx++) {
-    y0 = 11 + Math.round(Math.sin(dx * 0.8) * 1.2); len = 3 - (dx > 4 ? 1 : 0) - (dx > 5 ? 1 : 0);
-    for (y = 0; y < len; y++) rb.px(P + dx, y0 + y, y == len - 1 && len > 1 ? REDD : RED);
-  }
-  blit(out, outlined(rb, OUT), -1, -1);
-  IMG.putImageData(out.d); SPR.saveAs(GAME + 'cave_standard_bronze.png');
-})();

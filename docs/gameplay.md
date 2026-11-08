@@ -26,7 +26,7 @@ placeholder and does not yet follow these decisions; see "What this changes".
   food to share. Everyone eats the same, but only foragers and hunters make food and they share the
   ground, so a bigger group has to spend more of its days on food; running short only moves what villagers do (more foraging, less wood and building), never
   hurts anyone. When the camp is full, a fork eases it: build out, or a family leaves to live
-  elsewhere (nobody dies). Population is the clearest progress signal on a tiny strip.
+  elsewhere (nobody dies). Population is the clearest progress signal on a tiny strip. **A villager stands for the settlement's people; it is not a head count.** Each age has its own profile (a ceiling on arrivals, and what a villager eats and brings in), so later ages read as larger without drawing every person, and nobody already in the group is ever removed (docs/ages.md, "How many people the strip shows").
 - **P6 Fire is found, not given.** The first age starts without fire: the cave is cold and dark at
   night. Finding and keeping fire is the first major milestone, reached in roughly the first hour.
 - **P7 Achievements drive the ages.** One system: an achievement records something that happened,

@@ -51,6 +51,12 @@ key = &"known_abroad"
 
 [sub_resource type="Resource" id="Resource_geuau"]
 script = ExtResource("3_og7g0")
+kind = 8
+amount = 4
+negate = true
+
+[sub_resource type="Resource" id="Resource_xei2b"]
+script = ExtResource("3_og7g0")
 kind = 7
 
 [resource]
@@ -59,9 +65,9 @@ id = &"a_stone_with_a_name"
 title = "A stone with a name"
 body = "{subject} has found a long flat stone at the quarry, and a good deal of enthusiasm for having something say who we are."
 category = &"exploration"
-requires = Array[ExtResource("3_og7g0")]([SubResource("Resource_4maqj"), SubResource("Resource_mlr86"), SubResource("Resource_pdxeg")])
+requires = Array[ExtResource("3_og7g0")]([SubResource("Resource_4maqj"), SubResource("Resource_mlr86"), SubResource("Resource_pdxeg"), SubResource("Resource_geuau")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_og7g0")]([SubResource("Resource_geuau")])
+subject_requires = Array[ExtResource("3_og7g0")]([SubResource("Resource_xei2b")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })

@@ -9,8 +9,17 @@ extends RefCounted
 ##
 ## `source` is the layer whose pixels must be opaque under the pointer (`&""` takes the whole
 ## rectangle, for small things that move). `z` is the draw order, like `SceneProps`.
+##
+## The `cave` landmark is the camp's signature building (docs/ages.md, "One signature building per
+## age"): the same footprint every age, a different building, so its name follows the age
+## (`SIGNATURE_NAMES`, by era order) while its id and rectangle stay.
 
 const EAST_X: float = 384.0
+const WEST_X: float = 318.0
+## What the camp's big landmark is called in each age, by era order.
+const SIGNATURE_NAMES: Array[String] = [
+	"The cave", "Longhouse", "Gatehouse", "Hill-fort hall", "Civic hall",
+]
 
 const LANDMARKS: Dictionary = {
 	&"cave": {
@@ -24,11 +33,15 @@ const LANDMARKS: Dictionary = {
 		"rects": [Rect2(215, 36, 42, 28)],
 	},
 	&"fish": {
-		"name": "Fish", "z": 71, "source": &"",
+		"name": "Fish", "z": 68, "source": &"",
 		"rects": [
 			Rect2(EAST_X + 15, 61, 11, 6), Rect2(EAST_X + 42, 68, 11, 6),
 			Rect2(EAST_X + 28, 74, 11, 6), Rect2(EAST_X + 55, 64, 11, 6),
 			Rect2(EAST_X + 9, 71, 11, 6),
+			# The camp page's half of the river (the same fish, laid at WEST_X).
+			Rect2(WEST_X + 15, 61, 11, 6), Rect2(WEST_X + 42, 68, 11, 6),
+			Rect2(WEST_X + 28, 74, 11, 6), Rect2(WEST_X + 55, 64, 11, 6),
+			Rect2(WEST_X + 9, 71, 11, 6),
 		],
 	},
 	&"egrets": {
@@ -44,7 +57,9 @@ static func ids() -> Array[StringName]:
 	return found
 
 
-static func name_of(id: StringName) -> String:
+static func name_of(id: StringName, era_order: int = 0) -> String:
+	if id == &"cave":
+		return SIGNATURE_NAMES[clampi(era_order, 0, SIGNATURE_NAMES.size() - 1)]
 	return String(LANDMARKS[id]["name"])
 
 

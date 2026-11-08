@@ -49,7 +49,10 @@ var _panel_textures: Dictionary = {}
 
 ## The registered factories: era id -> Callable returning a PanelSkin.
 static func skins() -> Dictionary:
-	return {&"cave": cave, &"settled": clay, &"bronze": bronze, &"iron": iron}
+	return {
+		&"cave": cave, &"settled": clay, &"bronze": bronze, &"iron": iron,
+		&"classical": classical,
+	}
 
 
 static func for_era(era: StringName) -> PanelSkin:
@@ -112,6 +115,23 @@ static func iron() -> PanelSkin:
 	skin.scroll_track = Color("bcbab0")
 	skin.scroll_grabber = Color("555d6b")
 	skin.tooltip_fill = Color("e4e2d8")
+	skin._place_pieces()
+	return skin
+
+
+## The Classical Age: pale limestone beams and fluted columns round a plastered cream wall, a Greek
+## key under the title, terracotta-tile buttons and an amphora. Same atlas layout as the Cave skin.
+static func classical() -> PanelSkin:
+	var skin: PanelSkin = PanelSkin.new()
+	skin.era_id = &"classical"
+	skin.atlas_path = ASSET_DIR + "skin_classical.png"
+	skin.title_color = Color("8a3f24")
+	skin.muted = Color("584d3a")
+	skin.day_color = Color("9a5430")
+	skin.button_text_disabled = Color("7a7466")
+	skin.scroll_track = Color("d8ccb0")
+	skin.scroll_grabber = Color("b86a42")
+	skin.tooltip_fill = Color("f0e8d4")
 	skin._place_pieces()
 	return skin
 

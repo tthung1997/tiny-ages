@@ -11,16 +11,20 @@ const TOWN: StringName = &"town"
 const BRONZE: StringName = &"bronze"
 const CHECKED: StringName = &"checked"
 const IRON: StringName = &"iron"
+const LINEN: StringName = &"linen"
+const CIVIC: StringName = &"civic"
 
 ## Every outfit, simplest first: each falls back to the one before it if its art is missing.
-const ORDER: Array[StringName] = [FUR, FIELD, WOVEN, TOWN, BRONZE, CHECKED, IRON]
+const ORDER: Array[StringName] = [FUR, FIELD, WOVEN, TOWN, BRONZE, CHECKED, IRON, LINEN, CIVIC]
 
 const SETTLED_ERA: int = 1
 const BRONZE_ERA: int = 2
 const IRON_ERA: int = 3
+const CLASSICAL_ERA: int = 4
 const WOVEN_ACHIEVEMENT: StringName = &"woven_cloth"
 const BRONZE_ACHIEVEMENT: StringName = &"first_casting"
 const IRON_ACHIEVEMENT: StringName = &"first_bloom"
+const CIVIC_ACHIEVEMENT: StringName = &"the_square"
 
 ## Where each outfit's sheets live, `<look>.png` inside. The woven tunic keeps its original path.
 const DIRS: Dictionary = {
@@ -31,15 +35,22 @@ const DIRS: Dictionary = {
 	BRONZE: "res://assets/world/bronze/villagers/fittings/",
 	CHECKED: "res://assets/world/iron/villagers/checked/",
 	IRON: "res://assets/world/iron/villagers/fittings/",
+	LINEN: "res://assets/world/classical/villagers/linen/",
+	CIVIC: "res://assets/world/classical/villagers/civic/",
 }
 
 
-## The finest outfit the world has earned: iron fittings once the first bloom is earned in the Iron
-## Age, checked wool from the turn of that age, bronze fittings once the first casting is earned in
-## the Bronze Age or later, town clothes from the turn of the Bronze Age, woven tunics once the
-## cloth is woven in the Settled Age or later, field clothes from the turn of the Settled Age, else
-## furs.
+## The finest outfit the world has earned: the civic mantle once the Square is earned in the
+## Classical Age, linen from the turn of that age, iron fittings once the first bloom is earned in
+## the Iron Age, checked wool from the turn of that age, bronze fittings once the first casting is
+## earned in the Bronze Age or later, town clothes from the turn of the Bronze Age, woven tunics once
+## the cloth is woven in the Settled Age or later, field clothes from the turn of the Settled Age,
+## else furs.
 static func for_world(world: WorldState) -> StringName:
+	if world.era_order >= CLASSICAL_ERA:
+		if world.has_achievement(CIVIC_ACHIEVEMENT):
+			return CIVIC
+		return LINEN
 	if world.era_order >= IRON_ERA:
 		if world.has_achievement(IRON_ACHIEVEMENT):
 			return IRON

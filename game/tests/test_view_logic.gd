@@ -156,7 +156,7 @@ func test_nobody_is_sent_to_stand_behind_a_building() -> void:
 func test_buildings_stand_on_the_back_lane_with_the_cave() -> void:
 	var last: int = WorldLayout.ERA_DIRS.size() - 1
 	for building_id: StringName in [
-		&"hut", &"drying_rack", &"smithy", &"trading_post", &"bloomery", &"granary",
+		&"hut", &"field", &"drying_rack", &"smithy", &"trading_post", &"bloomery", &"granary",
 	]:
 		var slot: Dictionary = WorldLayout.BUILDINGS[building_id]
 		assert_eq(int(slot["foot"]), WorldLayout.BACK_LANE, "%s's foot" % building_id)
@@ -183,6 +183,10 @@ func test_no_building_covers_another_by_more_than_a_quarter() -> void:
 		for j: int in range(i + 1, ids.size()):
 			var a: Rect2 = rects[ids[i]]
 			var b: Rect2 = rects[ids[j]]
+			# A building the view folds into another shares its ground on purpose: only one shows.
+			if WorldLayout.BUILDING_FOLDED_INTO.get(ids[i], &"") == ids[j] \
+					or WorldLayout.BUILDING_FOLDED_INTO.get(ids[j], &"") == ids[i]:
+				continue
 			var common: float = a.intersection(b).get_area()
 			var share: float = common / minf(a.get_area(), b.get_area())
 			assert_true(share <= 0.25, "%s and %s cover each other (%d%%)" % [
@@ -194,7 +198,7 @@ func test_every_prop_that_is_a_building_or_a_yard_is_on_the_back_lane() -> void:
 	var last: int = WorldLayout.ERA_DIRS.size() - 1
 	for prop_id: StringName in [
 		&"west_roof_a", &"west_roof_b", &"west_kiln", &"potters_yard", &"weavers_row",
-		&"farmstead_farm", &"farmstead_herd", &"west_pen",
+		&"farmstead_herd", &"west_pen",
 	]:
 		var path: String = WorldLayout.piece_path(prop_id, last)
 		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()

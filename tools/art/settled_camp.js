@@ -378,9 +378,7 @@ layers.site_hut = layerOf([obj(HUTSITE[0], HUTSITE[1], HUTSITE[2], HUTSITE[3], H
 layers.building_field = layerOf([obj(FIELD[0], FIELD[1], FIELD[2], FIELD[3], FIELD[4], { sh: FIELD[5] })]);
 layers.site_field = layerOf([obj(FIELDSITE[0], FIELDSITE[1], FIELDSITE[2], FIELDSITE[3], FIELDSITE[4], { sh: FIELDSITE[5] })]);
 // west page props: page-local x = world x + 384
-layers.west_plot_farm = layerOf([obj(58, 12, 276, 78, sownplot, { z: 55 })]);
-layers.west_plot_patch = layerOf([obj(26, 9, 276, 78, patch, { z: 55 })]);
-layers.west_pen = layerOf([obj(56, 22, 354, 77, pen, { sh: 0 })]);
+layers.west_pen = layerOf([obj(56, 22, 284, 77, pen, { sh: 0 })]);
 // what the answers put on the ground: camp page first, then the west page (page-local x)
 layers.pots = layerOf([obj(18, 10, 212, 79, pots, { sh: 8 })]);
 layers.cloth_line = layerOf([obj(40, 17, 80, 75, clothline, { sh: 0 })]);
@@ -392,7 +390,6 @@ layers.green_stones = layerOf([obj(14, 8, 106, 79, greenstones, { sh: 6 })]);
 layers.hens = layerOf([obj(20, 8, 156, 79, hens, { sh: 0 })]);
 layers.west_kiln = layerOf([obj(26, 26, 234, 78, kiln, { sh: 12 })]);
 layers.west_well = layerOf([obj(16, 17, 196, 78, well, { sh: 8 })]);
-layers.west_scarecrow = layerOf([obj(12, 18, 276, 76, scarecrow, { sh: 4 })]);
 layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
 layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
 // the river (camp page; the weir is on the east page, page-local x)
@@ -419,67 +416,3 @@ SPR.saveAs(DIR + 'art/reference/settled_camp.png');
 var count = 0;
 for (name in layers) { IMG.putImageData(layers[name].d); SPR.saveAs(GAME + name + '.png'); count++; }
 console.log('settled camp done, ' + count + ' game layers');
-
-// ---- the cave keeps up with the ages (docs/ages.md B10, point 10) ----------------------------------------
-// Drawn last and with no random numbers, so nothing above moves. Camp page, in the mouth of the cave.
-// The opening is the cliff's own (lib.js cliff(), its top row in column x is 65 - round(18 *
-// sqrt(1 - u^2)) with u = (x - 34) / 16 left of the middle and / 14 right of it, +1 when x % 5 == 0,
-// -1 when x % 7 == 0): x 20..47, from y 47 at the crown down to the floor at y 65. The firelight is
-// the dither at x 26..42, y 58..65 (cave_strip.js firelit) and is kept clear, outline included.
-//   cave_door_settled   a timber frame that follows the whole arch (a band under its curve and a post
-//                       each side down to the floor, lashed with cord) and a woven reed mat draped from
-//                       its top left corner, so the fire shows to the right of it
-// Shown from the turn of the age (SceneProps Kind.ALWAYS); each age's door replaces the last.
-(function () {
-  var WD = '#8a5a36', WDL = '#a6703f', WDD = '#5a3a22', MAT = '#c9b24a', MATL = '#e6d878', MATD = '#a8923a', CORDC = '#f0e4c0';
-  var rb = new Buf(384, 80), door = new Buf(384, 80), x, y, r, ob, xr;
-  function top(cx) { var u = (cx - 34) / (cx < 34 ? 16 : 14); return Math.abs(u) > 1 ? -1 : 65 - Math.round(18 * Math.sqrt(1 - u * u)) + (cx % 5 == 0 ? 1 : 0) - (cx % 7 == 0 ? 1 : 0); }
-  function band(cx) { var t = top(cx); return [t, Math.max(t + 1, Math.min(65, Math.max(top(cx - 1), top(cx + 1)) - 1))]; }
-  function lit(cx, cy) { var fy = cy - 12; return cx >= 26 && cx <= 42 && fy >= 46 && fy <= 53 && ((cx + fy) & 1) == 0 && fy > 46 + Math.abs(cx - 34) / 3; }
-  for (x = 20; x <= 47; x++) {
-    r = band(x);
-    for (y = r[0]; y <= r[1]; y++) rb.px(x, y, y == r[0] ? WDL : (y == r[1] ? WDD : WD));
-  }
-  for (y = top(20); y <= 65; y++) { rb.px(20, y, WDL); rb.px(21, y, WD); }
-  for (y = top(47); y <= 65; y++) { rb.px(46, y, WD); rb.px(47, y, WDD); }
-  rb.px(48, 65, WDD);
-  for (x = 24; x < 47; x += 9) { r = band(x); rb.px(x, r[0], CORDC); rb.px(x, r[0] + 1, CORDC); }
-  for (y = 50; y <= 64; y++) {
-    xr = 24 + Math.max(0, Math.floor((57 - y) * 0.7));
-    for (x = 22; x <= xr; x++) {
-      if (y <= band(x)[1]) continue;
-      if (y == 64 && x % 2 == 1) continue; // a ragged hem
-      rb.px(x, y, (x % 4 == 1) ? MATL : ((y % 2 == 0 && x % 2 == 0) ? MATD : MAT));
-    }
-    if (xr >= 22 && y > band(xr)[1]) rb.px(xr, y, MATD);
-  }
-  for (x = 24; x <= 30; x += 3) rb.px(x, band(x)[1] + 1, CORDC); // ties along the top edge
-  ob = outlined(rb, OUT);
-  for (x = 0; x < 384; x++) for (y = 0; y < 80; y++) if (lit(x, y)) { ob.d[((y + 1) * ob.w + x + 1) * 4 + 3] = 0; }
-  blit(door, ob, -1, -1);
-  IMG.putImageData(door.d); SPR.saveAs(GAME + 'cave_door_settled.png');
-})();
-
-// ---- the standard on the cliff above the cave (docs/ages.md B10, point 10) ---------------------------------------
-// One small standard per age, each replacing the last (the Cave Age's pennant is drawn in cave_strip.js).
-// The pole stands at x 26 on the cliff's top edge (the rock there is at y 22..23) over the left half of the
-// mouth, and the cloth flies to the right over open air: the cliff's top is solid, so every pixel is inside
-// the skyline (Skyline takes the highest opaque pixel of each column, props included).
-//   cave_standard_settled   a woven banner hung from a cross-bar: wool-coloured with red zig-zag stripes
-//                           and a wheat ear (x 26..35, y 7..19)
-(function () {
-  var P = 26, WD = '#8a5a36', WDL = '#a6703f', FIELD = '#d9cdb0', FIELDD = '#b8a984', RED = '#c0504a', REDD = '#8f3a2d';
-  var CORDC = '#f0e4c0', GOLD = '#e6c84a', GREEN = '#8fb843', rb = new Buf(384, 80), out = new Buf(384, 80), x, y;
-  rb.rect(P, 8, 1, 16, WD); rb.rect(P, 7, 10, 1, WDL); rb.px(P, 7, WD); rb.px(P + 9, 7, WD);
-  for (y = 8; y <= 18; y++) for (x = P + 1; x <= P + 8; x++) rb.px(x, y, x == P + 8 ? FIELDD : FIELD);
-  for (x = P + 1; x <= P + 8; x++) {
-    rb.px(x, 9 + (x % 2), RED);
-    if (x != P + 4) rb.px(x, 17 + (x % 2), x % 2 ? REDD : RED);
-    if (x % 2 == 0) rb.px(x, 19, FIELDD);
-  }
-  rb.px(P + 4, 12, GOLD); rb.px(P + 3, 13, GOLD); rb.px(P + 5, 13, GOLD); rb.px(P + 3, 14, GOLD); rb.px(P + 5, 14, GOLD);
-  rb.px(P + 4, 14, GOLD); rb.px(P + 4, 15, GREEN); rb.px(P + 4, 16, GREEN);
-  rb.px(P + 1, 8, CORDC); rb.px(P + 8, 8, CORDC);
-  blit(out, outlined(rb, OUT), -1, -1);
-  IMG.putImageData(out.d); SPR.saveAs(GAME + 'cave_standard_settled.png');
-})();

@@ -23,10 +23,10 @@ extends RefCounted
 ## `test_scene_props.gd` checks every one of them. `at_y` is how far the sprite is lifted onto its
 ## lane (see `WorldLayout.BUILDINGS`), and the art's own rows are shifted with it.
 ##
-## The cave keeps up with the ages: a prop of `Kind.ALWAYS` waits for nothing the group did, only for
-## its `from_era`, so the age turning is what shows it (never a flag, an achievement or a hint,
-## docs/ages.md P8). The cave-mouth door and the standard on the cliff above it are one piece per age,
-## each replacing the last (`replaced_by`; the Cave Age's pennant shows from the very start).
+## The signature building: a prop of `Kind.ALWAYS` waits for nothing the group did, only for its
+## `from_era` (never a flag, an achievement or a hint, docs/ages.md P8). Only the Cave Age's pennant
+## is one now; each later age's big landmark replaces the cave's cliff itself and is drawn into
+## `static_back`, not a prop.
 
 enum Kind {
 	## Append new kinds at the end.
@@ -39,15 +39,6 @@ enum Kind {
 const PROPS: Dictionary = {
 	# The village at the forest's edge (west page): the Settled Age's houses, plot, pen, kiln, well
 	# and the crafts around them.
-	&"west_plot_farm": {
-		"name": "Sown plot", "at_x": -384.0, "at_y": -4, "z": 55, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"path_agriculture", "replaced_by": &"farmstead_farm",
-	},
-	&"west_plot_patch": {
-		"name": "Garden patch", "at_x": -384.0, "at_y": -4, "z": 55, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"path_herding", "alt_of": &"west_plot_farm",
-		"replaced_by": &"farmstead_herd",
-	},
 	&"west_pen": {
 		"name": "Goat pen", "at_x": -384.0, "at_y": -10, "z": 67, "place": &"west_village",
 		"kind": Kind.FLAG, "key": &"path_herding", "replaced_by": &"farmstead_herd",
@@ -80,7 +71,7 @@ const PROPS: Dictionary = {
 	},
 	&"hens": {
 		"name": "Hens", "at_x": -384.0, "at_y": -5, "z": 74, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"hens", "replaced_by": &"farmstead_farm",
+		"kind": Kind.FLAG, "key": &"hens", "until_era": 2,
 	},
 	&"west_kiln": {
 		"name": "Kiln", "at_x": -384.0, "at_y": -12, "z": 67, "place": &"west_village",
@@ -88,12 +79,7 @@ const PROPS: Dictionary = {
 	},
 	&"west_well": {
 		"name": "Well", "at_x": -384.0, "at_y": -5, "z": 74, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"well_dug",
-	},
-	&"west_scarecrow": {
-		"name": "Scarecrow", "at_x": -384.0, "at_y": -4, "z": 73, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"scarecrow", "overlays": &"west_plot_farm",
-		"replaced_by": &"farmstead_farm",
+		"kind": Kind.FLAG, "key": &"well_dug", "replaced_by": &"water_court",
 	},
 	&"west_roof_a": {
 		"name": "Village roof", "at_x": -384.0, "at_y": -6, "z": 67, "place": &"west_village",
@@ -205,7 +191,8 @@ const PROPS: Dictionary = {
 	},
 	&"east_sail": {
 		"name": "Trading ship", "at_x": 384.0, "z": 60, "place": &"east_shore",
-		"kind": Kind.FLAG, "key": &"far_shore", "replaced_by": &"east_deep_ship",
+		"kind": Kind.FLAG, "key": &"far_shore",
+		"replaced_by": [&"east_deep_ship", &"east_harbour"],
 	},
 	# What the Bronze Age's roads put on the ground (docs/ages.md): a market, a cart, donkeys, a
 	# hard road, and the boats tied up at the quay in place of the ones afloat in the shallows.
@@ -219,38 +206,36 @@ const PROPS: Dictionary = {
 	},
 	&"market_stalls": {
 		"name": "Market stalls", "at_x": -384.0, "at_y": -3, "z": 67, "place": &"west_market",
-		"kind": Kind.FLAG, "key": &"market_day", "from_era": 2,
+		"kind": Kind.FLAG, "key": &"market_day", "from_era": 2, "replaced_by": &"market_arcade",
 	},
 	# The other two roads to a town share the market's spot: only one was ever taken.
 	&"council_ring": {
 		"name": "Council ring", "at_x": -384.0, "at_y": -3, "z": 67, "place": &"west_market",
 		"kind": Kind.FLAG, "key": &"council", "from_era": 2, "alt_of": &"market_stalls",
+		"replaced_by": &"market_arcade",
 	},
 	&"tally_post": {
 		"name": "Tally post", "at_x": -384.0, "at_y": -3, "z": 67, "place": &"west_market",
 		"kind": Kind.FLAG, "key": &"tally", "from_era": 2, "alt_of": &"market_stalls",
-		"replaced_by": &"writing_post",
+		"replaced_by": [&"writing_post", &"market_arcade"],
 	},
 	# One tidy farmstead for each way of life (the plot, scarecrow and hens; the patch and the pen).
-	&"farmstead_farm": {
-		"name": "Farmstead", "at_x": -384.0, "at_y": -12, "z": 67, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"path_agriculture", "from_era": 2,
-	},
 	&"farmstead_herd": {
 		"name": "Sheepfold", "at_x": -384.0, "at_y": -12, "z": 67, "place": &"west_village",
 		"kind": Kind.FLAG, "key": &"path_herding", "from_era": 2,
 	},
 	&"cart": {
 		"name": "Cart", "at_x": -384.0, "at_y": -2, "z": 77, "place": &"west_market",
-		"kind": Kind.FLAG, "key": &"cart", "from_era": 2,
+		"kind": Kind.FLAG, "key": &"cart", "from_era": 2, "replaced_by": &"market_arcade",
 	},
 	&"donkeys": {
 		"name": "Donkeys", "at_x": -384.0, "at_y": -2, "z": 77, "place": &"west_market",
-		"kind": Kind.FLAG, "key": &"donkeys", "from_era": 2,
+		"kind": Kind.FLAG, "key": &"donkeys", "from_era": 2, "replaced_by": &"market_arcade",
 	},
 	&"road_camp": {
 		"name": "Road", "at_x": 0.0, "z": 54, "place": &"cave_yard",
 		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true,
+		"replaced_by": &"paved_street",
 	},
 	&"quay_boats": {
 		"name": "Boats at the quay", "at_x": 0.0, "z": 73, "place": &"river_bank",
@@ -267,25 +252,22 @@ const PROPS: Dictionary = {
 		"name": "Slag heap", "at_x": 0.0, "z": 77, "place": &"cave_yard",
 		"kind": Kind.ACHIEVEMENT, "key": &"first_bloom", "from_era": 3,
 	},
-	&"plough_team": {
-		"name": "Plough team", "at_x": -384.0, "z": 78, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"iron_share", "from_era": 3,
-	},
 	&"shearing_pen": {
 		"name": "Shearing pen", "at_x": -384.0, "z": 78, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"iron_shears", "from_era": 3, "alt_of": &"plough_team",
+		"kind": Kind.FLAG, "key": &"iron_shears", "from_era": 3,
 	},
 	# The coin tray is a small trestle in the gap between the market and the weavers' row (the
 	# stalls, the council ring and the tally post all end at x 55), so it lies on none of them.
 	&"coin_tray": {
 		"name": "Coin tray", "at_x": -384.0, "z": 68, "place": &"west_village",
-		"kind": Kind.FLAG, "key": &"coin_struck", "from_era": 3,
+		"kind": Kind.FLAG, "key": &"coin_struck", "from_era": 3, "replaced_by": &"market_arcade",
 	},
 	# The tally post's bench and cords are gone: a writing post stands at the market's left edge,
 	# beside the stalls or the council ring, with its foot behind the cart.
 	&"writing_post": {
 		"name": "Writing post", "at_x": -384.0, "z": 66, "place": &"west_market",
 		"kind": Kind.FLAG, "key": &"letters", "from_era": 3,
+		"replaced_by": [&"law_pillar", &"market_arcade"],
 	},
 	&"standing_stone": {
 		"name": "Standing stone", "at_x": 0.0, "z": 78, "place": &"river_bank",
@@ -293,49 +275,64 @@ const PROPS: Dictionary = {
 	},
 	&"east_deep_ship": {
 		"name": "Ship", "at_x": 384.0, "z": 60, "place": &"east_shore",
-		"kind": Kind.FLAG, "key": &"known_abroad", "from_era": 3,
+		"kind": Kind.FLAG, "key": &"known_abroad", "from_era": 3, "replaced_by": &"east_harbour",
 	},
 	&"east_beacon": {
 		"name": "Beacon", "at_x": 384.0, "z": 77, "place": &"east_shore",
-		"kind": Kind.FLAG, "key": &"beacon_lit", "from_era": 3,
+		"kind": Kind.FLAG, "key": &"beacon_lit", "from_era": 3, "replaced_by": &"east_harbour",
 	},
-	# The cave keeps up with the ages (docs/ages.md B10, point 10; tools/art/settled_camp.js,
-	# bronze_camp.js, iron_camp.js). The door in the mouth is redrawn each age and the standard on
-	# the cliff above it too. Both sit on the cave's face (z 20-22, above the cliff and below
-	# everything else) and are quiet.
-	&"cave_door_settled": {
-		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 1,
-		"replaced_by": [&"cave_door_bronze", &"cave_door_iron"],
-	},
-	&"cave_door_bronze": {
-		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 2, "replaced_by": &"cave_door_iron",
-	},
-	&"cave_door_iron": {
-		"name": "Cave door", "at_x": 0.0, "z": 20, "place": &"cave_mouth",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 3,
-	},
-	# The standard on the cliff above the cave: the Cave Age's pennant shows from the start (it is
-	# the cave's own); each later age's standard replaces the one before (an array, so an older
-	# one never comes back when two ages have turned).
+	# The Cave Age's own pennant, on the cliff above the cave: it shows from the first day and goes
+	# when the age turns, because the cliff itself is replaced by the next age's signature building
+	# (`static_back` in each age's art folder, docs/ages.md, "One signature building per age").
 	&"cave_standard_cave": {
 		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 0,
-		"replaced_by": [&"cave_standard_settled", &"cave_standard_bronze", &"cave_standard_iron"],
+		"kind": Kind.ALWAYS, "key": &"", "from_era": 0, "until_era": 1,
 	},
-	&"cave_standard_settled": {
-		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 1,
-		"replaced_by": [&"cave_standard_bronze", &"cave_standard_iron"],
+	# The Classical Age (docs/ages.md, "Classical Age"): what its milestones put on the ground. Each
+	# one folds older pieces into a tidier whole (`replaced_by` on the old ones), so the town gets
+	# denser in what it is, not just in how many things it has. Art: tools/art/classical_camp.js.
+	# The street runs from the west edge to the bridge. It is one road in five pieces, one per place it
+	# crosses; it is flat on the ground (`ground`), so it is not counted in a page's budget.
+	&"paved_street_market": {
+		"name": "Paved street", "at_x": -384.0, "z": 54, "place": &"west_market",
+		"kind": Kind.ACHIEVEMENT, "key": &"paved_streets", "from_era": 4, "behind": true, "ground": true,
 	},
-	&"cave_standard_bronze": {
-		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 2, "replaced_by": &"cave_standard_iron",
+	&"paved_street_west": {
+		"name": "Paved street", "at_x": -384.0, "z": 54, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"paved_streets", "from_era": 4, "behind": true, "ground": true,
 	},
-	&"cave_standard_iron": {
-		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
-		"kind": Kind.ALWAYS, "key": &"", "from_era": 3,
+	&"paved_street_hall": {
+		"name": "Paved street", "at_x": 0.0, "z": 54, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"paved_streets", "from_era": 4, "behind": true, "ground": true,
+	},
+	&"paved_street": {
+		"name": "Paved street", "at_x": 0.0, "z": 54, "place": &"cave_yard",
+		"kind": Kind.ACHIEVEMENT, "key": &"paved_streets", "from_era": 4, "behind": true, "ground": true,
+	},
+	&"paved_street_bank": {
+		"name": "Paved street", "at_x": 0.0, "z": 54, "place": &"river_bank",
+		"kind": Kind.ACHIEVEMENT, "key": &"paved_streets", "from_era": 4, "behind": true, "ground": true,
+	},
+	&"water_court": {
+		"name": "Water court", "at_x": -384.0, "z": 74, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"water_from_afar", "from_era": 4,
+	},
+	&"law_pillar": {
+		"name": "Law pillar", "at_x": -384.0, "z": 66, "place": &"west_market",
+		"kind": Kind.ACHIEVEMENT, "key": &"written_law", "from_era": 4,
+		"replaced_by": &"market_arcade",
+	},
+	&"market_arcade": {
+		"name": "Market arcade", "at_x": -384.0, "z": 67, "place": &"west_market",
+		"kind": Kind.ACHIEVEMENT, "key": &"the_square", "from_era": 4,
+	},
+	&"east_theatre": {
+		"name": "Theatre", "at_x": 384.0, "z": 67, "place": &"east_shore",
+		"kind": Kind.ACHIEVEMENT, "key": &"lamp_and_stage", "from_era": 4,
+	},
+	&"east_harbour": {
+		"name": "Harbour", "at_x": 384.0, "z": 60, "place": &"east_shore",
+		"kind": Kind.ACHIEVEMENT, "key": &"wider_world", "from_era": 4,
 	},
 }
 

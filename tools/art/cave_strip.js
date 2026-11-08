@@ -148,8 +148,8 @@ console.log('cave world done, ' + count + ' game layers');
 // Drawn last and with no random numbers (and its own piece, so every layer above is byte-identical). The Cave Age's
 // standard: a hide pennant on a wooden pole with a bone knob, tied on with sinew (x 25..35, y 5..23). The pole stands at
 // x 26 on the cliff's top edge (the rock there is at y 22..23) over the left half of the mouth and the pennant flies to
-// the right over open air; the cliff's top is solid, so every pixel is inside the skyline. Later ages redraw it in
-// their own scripts under their own names (cave_standard_settled, _bronze, _iron).
+// the right over open air; the cliff's top is solid, so every pixel is inside the skyline. It goes with the cliff
+// when the Settled Age turns: later ages draw their own signature building (signature_landmarks.js).
 (function () {
   var P = 26, WD = '#8a5a36', BONE = '#e8e0c8', BONED = '#cfc7ae', HL = '#c58f50', HIDE = '#a8703f', HD = '#7a4c28', SP = '#5a3a22', SIN = '#f0e4c0';
   var rb = new Buf(W, H), out = new Buf(W, H), dx, y, h;

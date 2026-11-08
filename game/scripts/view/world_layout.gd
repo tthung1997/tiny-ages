@@ -8,7 +8,7 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## Art folders by era order. A piece is found by looking from the current age back to the first, so
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
-const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron"]
+const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron", "classical"]
 ## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
 ## Role overlays (an apron, a pack) drawn over any villager, one sheet per profession.
@@ -51,7 +51,7 @@ const PLACES: Dictionary = {
 	&"cave_mouth": Rect2(0, 46, 88, 35),
 	# The top of the cave's cliff, above the mouth: the standard stands on its edge (tools/art).
 	&"cave_cliff": Rect2(0, 0, 88, 40),
-	&"cave_yard": Rect2(88, 62, 118, 19),
+	&"cave_yard": Rect2(88, 62, 176, 19),
 	&"river_bank": Rect2(264, 56, 120, 25),
 	&"west_market": Rect2(-384, 36, 56, 45),
 	&"west_village": Rect2(-328, 36, 328, 45),
@@ -70,7 +70,9 @@ const BUILDINGS: Dictionary = {
 	&"drying_rack": {"cx": 138, "foot": 67, "z": 67, "at": Vector2(6, -4)},
 	&"knapping_spot": {"cx": 160, "foot": 76, "z": 75, "at": Vector2(0, -3)},
 	&"hut": {"cx": 268, "foot": 67, "z": 67, "at": Vector2(0, -4)},
-	&"field": {"cx": 228, "foot": 74, "z": 55, "at": Vector2(0, -4)},
+	# The Field stands on the back lane against the hall's flank in the west village, where the farmers'
+	# plot and farmstead used to be (its art was drawn at the camp, x 201..251, so it is moved 269 west).
+	&"field": {"cx": -41, "foot": 67, "z": 67, "at": Vector2(-269, -11)},
 	# The Bronze Age's workshops stand on the back lane in the cave yard: the smithy beside the
 	# rack (west of the lone pine, whose trunk would cover it), the trading post where the road
 	# comes in from the west.
@@ -82,8 +84,11 @@ const BUILDINGS: Dictionary = {
 	# against the cave's flank, beside the Smithy's yard, and the Granary, a raised store on
 	# staddles, in front of the mammoth so the animal shows between its legs.
 	&"bloomery": {"cx": 85, "foot": 67, "z": 67, "at": Vector2(0, 0)},
-	&"granary": {"cx": 234, "foot": 67, "z": 67, "at": Vector2(0, -1)},
+	&"granary": {"cx": 138, "foot": 67, "z": 67, "at": Vector2(-96, -1)},
 }
+## A building the view hides while another stands (or is going up) on its ground: the Granary takes
+## the Drying Rack's place, so a field and a store do not stand on each other. The sim keeps both.
+const BUILDING_FOLDED_INTO: Dictionary = {&"drying_rack": &"granary"}
 const FLOWER_Z: int = 73
 
 const CAVE_DOOR: Vector2 = Vector2(40.0, 78.0)
@@ -128,6 +133,8 @@ const BEACON_GLOW: StringName = &"east_beacon_glow"
 const BEACON: StringName = &"east_beacon"
 const BEACON_FRAMES: int = 4
 const BEACON_LIGHT_X: Vector2 = Vector2(580.0, 650.0)
+## The lighthouse that takes the beacon's place in the Classical Age (its harbour), and the camp x range it lights.
+const LIGHTHOUSE_LIGHT_X: Vector2 = Vector2(650.0, 730.0)
 ## The sky bodies: stars, then a sheet of the sun (cell 0) and the moon (cell 1). They sit in front
 ## of the sky and behind the far hills (z -100 and -99), and do not scroll with the world.
 const STARS: StringName = &"stars"
@@ -186,8 +193,14 @@ const FLATS_Z: int = -94
 const LIFE_FRAMES: int = 3
 const DEER_FRAMES: int = 2
 const LIFE_FRAME_SECONDS: float = 0.9
-const LIFE_X: Vector2 = Vector2(384.0, 500.0)
-const LIFE_Z: int = 71
+## The fish also rise on the camp page's half of the river: the first LIFE_WEST_WIDTH columns of each frame,
+## laid at LIFE_WEST_X and a frame ahead, so the two halves are not in step. They are drawn under the
+## crossing (z 70), the deer (on the far bank) over it.
+const LIFE_X: Vector2 = Vector2(318.0, 500.0)
+const LIFE_WEST_X: float = 318.0
+const LIFE_WEST_WIDTH: int = 66
+const LIFE_Z: int = 68
+const DEER_Z: int = 72
 
 
 ## Whether the group has laid a way over the river.
@@ -265,6 +278,18 @@ static func piece_path(layer: StringName, era_order: int) -> String:
 
 static func spot(spots: Array[Vector2], index: int) -> Vector2:
 	return spots[posmod(index, spots.size())]
+
+
+## Whether the view draws a completed building: it does unless a building that takes its ground
+## (`BUILDING_FOLDED_INTO`) stands or is going up.
+static func building_shown(building_id: StringName, world: WorldState) -> bool:
+	if not world.has_building(building_id):
+		return false
+	var successor: StringName = BUILDING_FOLDED_INTO.get(building_id, &"")
+	if successor == &"":
+		return true
+	var site: BuildingState = world.constructing()
+	return not (world.has_building(successor) or (site != null and site.def_id == successor))
 
 
 ## How far a building's art is moved from where it was drawn (its `at`), in camp pixels.

@@ -1,6 +1,6 @@
 // @open art/reference/ui_achievements.png
-// @canvas 560x20
-// The achievement icons, one 560x20 sheet of 28 round medals (20x20 each, in the order of
+// @canvas 680x20
+// The achievement icons, one 680x20 sheet of 34 round medals (20x20 each, in the order of
 // AchievementPresenter.ICON_ORDER, then a plain rosette for any achievement without its own)
 // -> art/reference/ui_achievements.png and game/assets/ui/achievements.png. The cell order is
 // mirrored in game/scripts/ui/achievement_presenter.gd; append new icons at the end.
@@ -174,10 +174,56 @@ function longship(g) { // name_abroad: a deep-keeled ship under a square sail, a
   for (var x = 0; x < 12; x++) g.px(x, 11, (x % 4 < 2) ? '#4a9ac8' : '#8fbfe0');
 }
 
+// ---- the Classical Age (issue #40) ------------------------------------------------------------
+var LS = '#e6dcc4', LSL = '#f6efdc', LSD = '#a89c80', TC = '#c0623a', TCL = '#e08a58', TCD = '#8a3f24';
+function pavedStreets(g) { // paved_streets: dressed paving stones laid in rows
+  var rows = [[0, 3], [3, 4], [7, 3], [10, 2]];
+  for (var r = 0; r < 4; r++) for (var c = 0; c < 3; c++) {
+    var w = 4, x0 = (r % 2) * 2 + c * 4 - 1;
+    g.rect(Math.max(x0, 0), 1 + r * 3, Math.min(w, 12 - Math.max(x0, 0)) - (x0 < 0 ? 0 : 0), 2, (r + c) % 2 ? '#b4aea0' : '#9c9688');
+    g.px(Math.max(x0, 0), 1 + r * 3, '#d0cabc');
+  }
+  g.rect(0, 11, 12, 1, '#6f6a5e');
+}
+function aqueduct(g) { // water_from_afar: arches carrying a channel of water
+  g.rect(0, 2, 12, 2, '#4a9ac8'); g.rect(0, 2, 12, 1, '#8fbfe0');
+  g.rect(0, 4, 12, 7, LS); g.rect(0, 4, 12, 1, LSL); g.rect(0, 10, 12, 1, LSD);
+  for (var a = 0; a < 3; a++) {
+    var cx = 2 + a * 4;
+    g.rect(cx - 1, 7, 3, 4, '#5a4a38'); g.px(cx - 1, 6, '#5a4a38'); g.px(cx + 1, 6, '#5a4a38'); g.px(cx, 5, '#5a4a38');
+  }
+  g.px(11, 5, '#4a9ac8'); g.px(11, 6, '#8fbfe0');
+}
+function law(g) { // written_law: a scroll with lines of writing and a red seal
+  g.rect(2, 1, 8, 9, '#f6efdc'); g.rect(2, 1, 8, 1, '#ffffff'); g.rect(2, 9, 8, 1, '#d8cdb0');
+  g.ell(2, 5, 1.2, 4.6, '#d8cdb0'); g.ell(10, 5, 1.2, 4.6, '#d8cdb0'); g.ell(2, 5, 0.6, 4, LSL); g.ell(10, 5, 0.6, 4, LSL);
+  for (var l = 0; l < 4; l++) g.rect(4, 2 + l * 2, l % 2 ? 4 : 5, 1, '#6a5a3a');
+  g.ell(8, 9, 2, 2, '#c43a34'); g.ell(8, 9, 1, 1, '#e8504a'); g.px(6, 10, '#c43a34'); g.px(10, 10, '#c43a34');
+}
+function square(g) { // the_square: a colonnade under a pediment
+  g.tri(6, 0, 4, 6, LSL, LS); g.rect(0, 3, 12, 1, LSD);
+  g.rect(0, 4, 12, 1, LS);
+  for (var c = 0; c < 4; c++) { var x = 1 + c * 3; g.rect(x, 5, 2, 5, LS); g.rect(x, 5, 1, 5, LSL); g.rect(x + 1, 5, 1, 5, LSD); }
+  g.rect(0, 10, 12, 1, LSD); g.rect(0, 11, 12, 1, '#8a8068');
+  g.px(6, 2, TC);
+}
+function lamp(g) { // lamp_and_stage: an oil lamp with its flame
+  g.ell(6, 8, 4.4, 2.6, TC); g.ell(5, 7.4, 2.6, 1.2, TCL); g.rect(1, 8, 2, 1, TCD);
+  g.rect(9, 7, 3, 1, TCD); g.px(11, 6, TCD); g.rect(4, 5, 3, 2, TCD);
+  g.ell(6, 4, 1.6, 2.2, '#f59a3a'); g.ell(6, 4.6, 0.9, 1.3, '#ffe27a'); g.px(6, 1, '#f59a3a'); g.px(6, 2, '#f59a3a');
+  g.rect(3, 10, 6, 1, TCD);
+}
+function triremeSail(g) { // wider_world: a ship under oars, towns on either shore
+  g.rect(6, 0, 1, 7, WOOD); g.tri(6, 0, 6, 4, '#f3e9d2', '#c0623a');
+  g.rect(1, 6, 10, 2, '#5a3a26'); g.rect(1, 6, 10, 1, '#8a5a36'); g.px(0, 5, '#8a5a36'); g.px(11, 5, '#8a5a36');
+  g.line(2, 8, 0, 10, WOOD, 1); g.line(5, 8, 4, 11, WOOD, 1); g.line(8, 8, 9, 11, WOOD, 1); g.line(10, 8, 11, 10, WOOD, 1);
+  for (var x = 0; x < 12; x++) g.px(x, 11 - (x % 4 < 2 ? 0 : 1), (x % 4 < 2) ? '#4a9ac8' : '#8fbfe0');
+}
 var GLYPHS = [fire, stoneTools, food, stories, group, garden, roof, harvest, clay, cloth, village,
   greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail,
-  bloom, shareSheaf, hillFort, weighedCoin, tablet, longship, rosette];
-var SHEET = new Buf(560, 20);
+  bloom, shareSheaf, hillFort, weighedCoin, tablet, longship,
+  pavedStreets, aqueduct, law, square, lamp, triremeSail, rosette];
+var SHEET = new Buf(680, 20);
 for (var i = 0; i < GLYPHS.length; i++) {
   var medal = new Buf(18, 18);
   medal.ell(8.5, 8.5, 8.6, 8.6, RIM); medal.ell(8.5, 8.5, 7.2, 7.2, CREAM);

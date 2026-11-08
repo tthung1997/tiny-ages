@@ -68,6 +68,8 @@ var _flats: Sprite2D
 var _flats_sets: Array = []
 var _flats_step: int = 0
 var _life: Sprite2D
+var _life_west: Sprite2D
+var _life_west_frames: Array[Texture2D] = []
 var _life_frames: Array[Texture2D] = []
 var _life_frame: int = 0
 var _life_clock: float = 0.0
@@ -148,13 +150,20 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 			flats_frames.append(_load_art(WorldLayout.flats_frame_name(step, frame)))
 		_flats_sets.append(flats_frames)
 	_life = _make_sprite(WorldLayout.life_frame_name(0), WorldLayout.LIFE_Z, east_x)
-	_deer = _make_sprite(WorldLayout.deer_frame_name(0), WorldLayout.LIFE_Z + 1, east_x)
+	_deer = _make_sprite(WorldLayout.deer_frame_name(0), WorldLayout.DEER_Z, east_x)
+	_life_west = _make_sprite(WorldLayout.life_frame_name(0), WorldLayout.LIFE_Z, WorldLayout.LIFE_WEST_X)
 	for frame: int in WorldLayout.LIFE_FRAMES:
 		_life_frames.append(_load_art(WorldLayout.life_frame_name(frame)))
+		var half: AtlasTexture = AtlasTexture.new()
+		half.atlas = _life_frames[frame]
+		half.region = Rect2(0, 0, WorldLayout.LIFE_WEST_WIDTH, WorldLayout.VIEW_SIZE.y)
+		_life_west_frames.append(half)
+	_life_west.texture = _life_west_frames[1]
 	for frame: int in WorldLayout.DEER_FRAMES:
 		_deer_frames.append(_load_art(WorldLayout.deer_frame_name(frame)))
 	for layer: StringName in WorldLayout.STATIC_Z:
 		var camp_layer: Sprite2D = _make_sprite(layer, WorldLayout.STATIC_Z[layer])
+		camp_layer.set_meta(&"layer", layer)
 		_static_layers.append(camp_layer)
 		_landmark_sources[layer] = camp_layer
 	for prefix: String in WorldLayout.SIDE_PAGES:
@@ -163,6 +172,7 @@ func setup(sim: Simulation, window: DesktopWindow) -> void:
 				StringName(prefix + layer), WorldLayout.STATIC_Z[layer],
 				float(WorldLayout.SIDE_PAGES[prefix])
 			)
+			side.set_meta(&"layer", StringName(prefix + layer))
 			_static_layers.append(side)
 	for building_id: StringName in WorldLayout.BUILDINGS:
 		var z: int = WorldLayout.BUILDINGS[building_id]["z"]
@@ -280,7 +290,7 @@ func update_light() -> void:
 	)
 	# The beacon burns on its own, fire in the camp or not, so its light only needs the dark.
 	var night: float = DayNight.night_amount(hour)
-	_beacon_glow.visible = night > 0.0 and SceneProps.is_shown(&"east_beacon", _sim.world)
+	_beacon_glow.visible = night > 0.0 and _east_light_shown()
 	_beacon_glow.modulate = Color(
 		1.0 / tint.r, 1.0 / tint.g, 1.0 / tint.b,
 		night * WorldLayout.FIRE_GLOW_FLICKER[_beacon_frame]
@@ -328,17 +338,25 @@ func _animate_fire(delta: float) -> void:
 ## The beacon's flame dances on the fire's clock: it sleeps unless the beacon is lit and some of its
 ## light is on screen.
 func _animate_beacon(delta: float) -> void:
-	if not SceneProps.is_shown(WorldLayout.BEACON, _sim.world):
+	if not _east_light_shown():
 		return
+	var lit_x: Vector2 = WorldLayout.LIGHTHOUSE_LIGHT_X \
+			if SceneProps.is_shown(&"east_harbour", _sim.world) else WorldLayout.BEACON_LIGHT_X
 	var left: float = float(_camera.pixel_x())
-	if left > WorldLayout.BEACON_LIGHT_X.y \
-			or left + float(WorldLayout.VIEW_SIZE.x) < WorldLayout.BEACON_LIGHT_X.x:
+	if left > lit_x.y or left + float(WorldLayout.VIEW_SIZE.x) < lit_x.x:
 		return
 	_beacon_clock += delta
 	if _beacon_clock < WorldLayout.FIRE_FRAME_SECONDS:
 		return
 	_beacon_clock = 0.0
 	set_beacon_frame(_beacon_frame + 1)
+
+
+## The east shore's light: the beacon from the Iron Age, and from the Classical Age the lighthouse of
+## the harbour, which takes its place (and its night light, `east_beacon_glow` in the Classical folder).
+func _east_light_shown() -> bool:
+	return SceneProps.is_shown(&"east_beacon", _sim.world) \
+			or SceneProps.is_shown(&"east_harbour", _sim.world)
 
 
 func set_beacon_frame(frame: int) -> void:
@@ -399,6 +417,7 @@ func _animate_life(delta: float) -> void:
 	_life_clock = 0.0
 	_life_frame += 1
 	_life.texture = _life_frames[posmod(_life_frame, WorldLayout.LIFE_FRAMES)]
+	_life_west.texture = _life_west_frames[posmod(_life_frame + 1, WorldLayout.LIFE_FRAMES)]
 	_deer.texture = _deer_frames[posmod(floori(float(_life_frame) / 2.0), WorldLayout.DEER_FRAMES)]
 
 
@@ -551,7 +570,8 @@ func _landmark_hit(id: StringName, point: Vector2) -> HoverHit:
 	):
 		return null
 	return HoverHit.make(
-		StringName("landmark:%s" % id), WorldLandmarks.name_of(id), WorldLandmarks.z_of(id)
+		StringName("landmark:%s" % id), WorldLandmarks.name_of(id, _sim.world.era_order),
+		WorldLandmarks.z_of(id)
 	)
 
 
@@ -679,7 +699,7 @@ func _refresh_props() -> void:
 		_retexture_pieces()
 	var site: BuildingState = world.constructing()
 	for building_id: StringName in _buildings:
-		(_buildings[building_id] as Sprite2D).visible = world.has_building(building_id)
+		(_buildings[building_id] as Sprite2D).visible = WorldLayout.building_shown(building_id, world)
 		(_sites[building_id] as Sprite2D).visible = site != null and site.def_id == building_id
 	for prop_id: StringName in _props:
 		(_props[prop_id] as Sprite2D).visible = SceneProps.is_shown(prop_id, world)
@@ -839,10 +859,23 @@ func _load_piece(layer: StringName, era_order: int) -> Texture2D:
 func _retexture_pieces() -> void:
 	for group: Dictionary in [_buildings, _sites, _props]:
 		for key: StringName in group:
-			var sprite: Sprite2D = group[key]
-			var layer: StringName = sprite.get_meta(&"layer")
-			if not WorldLayout.piece_path(layer, _art_era).is_empty():
-				sprite.texture = _load_piece(layer, _art_era)
+			_retexture(group[key])
+	for sprite: Sprite2D in _static_layers:
+		_retexture(sprite)
+	_retexture(_beacon_glow)
+	# The camp's signature building comes with its own fire pit: the Cave Age's has the firelight
+	# in the cave's mouth, which would show through a wall.
+	for frame: int in WorldLayout.FIRE_FRAMES:
+		var layer: StringName = WorldLayout.fire_frame_name(frame)
+		if not WorldLayout.piece_path(layer, _art_era).is_empty():
+			_fire_frames[frame] = _load_piece(layer, _art_era)
+	_fire_pit.texture = _fire_frames[_fire_frame]
+
+
+func _retexture(sprite: Sprite2D) -> void:
+	var layer: StringName = sprite.get_meta(&"layer")
+	if not WorldLayout.piece_path(layer, _art_era).is_empty():
+		sprite.texture = _load_piece(layer, _art_era)
 
 
 ## A piece of the sky, in the clip but not in the scrolling world, so it stays put as you pan.
@@ -901,7 +934,7 @@ func _rebuild_skyline() -> void:
 	for sprite: Sprite2D in _props.values():
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite), false, int(sprite.position.y))
-	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit, _life, _deer]:
+	for sprite: Sprite2D in [_flower_sprout, _flower_bloom, _fire_pit, _life, _life_west, _deer]:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
 	_window.set_skyline(skyline.tops)
