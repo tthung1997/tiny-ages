@@ -179,14 +179,21 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
   `SETTLED_STORY_DAY`, `SETTLED_AMBIENT_CHANCE`, with `_settled_story`, `_settled_ambient` and
   friends, and the Bronze Age the same with `BRONZE_DAY`, `BRONZE_STORY_DAY`,
   `BRONZE_AMBIENT_CHANCE`, `_bronze_road` (a decision that earns a milestone), `_route`,
-  `_bronze_story` and `_bronze_ambient`, and the Iron Age with `IRON_DAY`, `IRON_STORY_DAY`,
-  `IRON_AMBIENT_CHANCE`, `_iron_road`, `_iron_route`, `_iron_story` and `_iron_ambient`. A
+  `_bronze_story` and `_bronze_ambient`, the Iron Age with `IRON_DAY`, `IRON_STORY_DAY`,
+  `IRON_AMBIENT_CHANCE`, `_iron_road`, `_iron_route`, `_iron_story` and `_iron_ambient`, and the Classical
+  Age with `CLASSICAL_DAY`, `CLASSICAL_STORY_DAY`, `CLASSICAL_AMBIENT_CHANCE`, `_classical_road`,
+  `_classical_route`, `_classical_story` and `_classical_ambient`. A
   milestone gets more than one road and one road open to
   every group; the Settled Age's gate out is its six milestones plus 8640 ticks and *The metal's
   road* (`path_smithing` / `path_trading`) opens the Bronze Age, and the Bronze Age's gate out is
   its six plus 8640 ticks and *A harder fire* (`path_bloomery` / `path_ore`) opens the Iron Age.
-  The Iron Age has no gate out; its last forks (*A stone with a name*, *A rider with a sash*, *A
-  table for strangers*) lead into the Classical Age, which is only a direction (`docs/ages.md`). `VillagerSystem.PROFESSION_BIAS`
+  The Iron Age's last forks (*A stone with a name*, *A rider with a sash*, *A
+  table for strangers*) lead into the Classical Age: its six plus 8640 ticks and *A seat at the table*
+  (`path_assembly` / `path_league`) open it. The Classical Age has no gate out (a Medieval Age is only a
+  direction, `docs/ages.md`) and adds no building. **Each age has a profile on its `EraDef`** (`max_villagers`,
+  `food_need_scale`, `food_yield_scale`, `wood_yield_scale`; `PROFILES` in the builder): a villager stands for the
+  settlement's people, not a head count, so the ceiling only gates arrivals (`WorldState.room()`) and nobody is
+  ever removed; a later age's villager eats and brings in more. `VillagerSystem.PROFESSION_BIAS`
   lets a Forager, Smith or Trader tilt (never assign) a villager's day. A story decision is `_story`/`_story_about` plus `_answer` choices (two answers, both
   harmless, a journal line each, a flag for later lines); a quiet moment is `_ambient`,
   `_ambient_about` (a trait) or `_remembered` (a flag). Costs are a `_has` requirement plus
@@ -220,7 +227,7 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   tidier piece (`replaced_by`), retire them (`until_era`) or hold one back (`from_era`), and
   `test_scene_props.gd` checks containment, overlaps and a per-page budget in every age (docs/ages.md
   B10). Villagers wear one outfit per age and milestone (`VillagerOutfit`: fur, field clothes,
-  woven tunic, town clothes, bronze fittings, checked wool, iron fittings; `WorldLayout.villager_sheet_path(look, outfit)`), and a profession adds an overlay over the body (`WorldLayout.role_sheet_path`, `VillagerActor.set_role`; `tools/art/role_overlays.js`).
+  woven tunic, town clothes, bronze fittings, checked wool, iron fittings, linen, civic mantle; `WorldLayout.villager_sheet_path(look, outfit)`), and a profession adds an overlay over the body (`WorldLayout.role_sheet_path`, `VillagerActor.set_role`; `tools/art/role_overlays.js`).
 - **The world is wider than the viewport** (decision A8). Everything lives in "camp pixels":
   the camp page is x 0..384, the world runs from `WorldLayout.WORLD_LEFT` (−384) to
   `WORLD_RIGHT` (768), and the viewport shows one 384 px page. `WorldView` keeps a scrolling
@@ -237,8 +244,8 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   like they fish, cut reeds and gather shellfish (`VillagerPlanner._plan_forage`: view-only, the
   sim only knows `forage`). `RiverLife` (deer by the hour) and `TideLook` (how bare the flats
   are) are pure and tested; fish and birds are `east_life_*` frames swapped on a slow clock that
-  sleeps off-screen, the flats an overlay in three steps (`TideLook.flats_step`) whose foam frames swap with the sea.
-- **The cave keeps up with the ages**: a door in the cave mouth and a standard on the cliff above it (one piece per age, each replacing the last) are `SceneProps` of `Kind.ALWAYS`, shown from `from_era` (the Cave Age's pennant from the start) and never because of something earned, so the hidden gate stays hidden; the door follows the whole arch and keeps clear of the firelight (a test checks it), and the art is in `cave_strip.js` and at the end of `settled_camp.js`, `bronze_camp.js` and `iron_camp.js`.
+  sleeps off-screen (the fish also rise on the camp page's half of the river: the first 66 columns of each frame laid at x 318, a frame ahead, under the crossing, `WorldLayout.LIFE_WEST_X`), the flats an overlay in three steps (`TideLook.flats_step`) whose foam frames swap with the sea.
+- **One signature building per age, not a cave that keeps up** (`docs/ages.md`, "Classical Age"): the camp's landmark (the cave's footprint, 100x54, foot row 66, entrance near x 34) is replaced whole at each turn: a cave, a longhouse, a gatehouse, a hill-fort hall, a civic hall. It is drawn into each age's own `static_back` and `fire_pit_*` pieces (`tools/art/signature_landmarks.js`; `WorldView` retextures static layers and the fire frames when the age turns), shown only because the age turned, and named for its age on hover (`WorldLandmarks.SIGNATURE_NAMES`). The Cave Age's pennant (`cave_standard_cave`, `until_era` 1) is the only dressing left. A new age redraws the landmark in the same footprint with its own fire pit (no firelight inside the cave's mouth); a test checks the footprint, the doorway and the pine beside it (the mammoth is the Cave Age's alone). **Keep it clear of the Bloomery's flank (x 73 and up)** and fold a building into another with `WorldLayout.BUILDING_FOLDED_INTO` rather than letting two stand on one ground.
 - **Clickable region across the scroll**: `WorldView` builds a world-wide `Skyline` and the
   `DesktopWindow` reads the slice in view (`set_skyline`, `set_scroll`); the arrows and HUD
   are `set_extra_regions` so they stay clickable. Anything drawn must be inside that polygon
@@ -271,7 +278,7 @@ The view only reads `WorldState`; it never changes it, and the sim never knows i
   `tools/art/weather.js`): in strip and corner mode the whole viewport joins the click region while
   they fall (`WorldView.covers_sky`), because Windows only draws inside it. A drought and a tornado are
   events, journal lines and decisions with no visuals. Look at it with `--season=` and `--weather=`.
-- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_river cave_villagers cave_celestial cave_stars settled_camp settled_villagers bronze_camp bronze_villagers iron_camp iron_villagers weather ui_seasons ui_skin_bronze ui_skin_iron ui_achievements`,
+- Art regenerates with `python tools/art/bundle.py --run cave_strip cave_pages cave_river cave_villagers cave_celestial cave_stars settled_camp settled_villagers bronze_camp bronze_villagers iron_camp iron_villagers classical_camp signature_landmarks classical_villagers weather ui_seasons ui_skin_bronze ui_skin_iron ui_skin_classical ui_achievements`,
   then `--import` and commit the `.import` files.
 - Dev flags for `scenes/main.tscn` are listed in `scripts/game/game.gd` (`--new`, `--nosave`,
   `--days=N`, `--manual`, `--bot`, `--speed=`, `--cam=`, `--panel=`, `--shot=`, `--era=`,
@@ -307,7 +314,7 @@ separate from the save; launch flags override them). The sim withdraws a decisio
 where each piece sits in its atlas (`tools/art/ui_skin_<hide|clay>.js`). To add an age: draw the
 atlas (same layout as the existing ones), add a factory to `PanelSkin.skins()`; `Game` swaps the
 skin on `era_advanced`, and an age without one uses the Cave skin (Cave: hide; Settled: timber
-and clay; Bronze: mud-brick and hammered bronze; Iron: a dark iron frame round limewash). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
+and clay; Bronze: mud-brick and hammered bronze; Iron: a dark iron frame round limewash; Classical: limestone and fluted columns round plaster). The panel's art height is `PanelSkin.PANEL_HEIGHT` and must match the
 atlas. The font (`assets/fonts/PixelifySans.ttf`, OFL, licence beside it) is set with no
 antialiasing; sizes should stay at 12 (titles use the bold weight). Dev flags for looking at
 panels: `--panel=decision|journal|away|villager|menu|stores|settings`, `--manual`, `--fire`,

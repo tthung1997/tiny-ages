@@ -10,6 +10,7 @@ const CAVE: int = 0
 const SETTLED: int = 1
 const BRONZE: int = 2
 const IRON: int = 3
+const CLASSICAL: int = 4
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -116,6 +117,36 @@ const IRON_STORY_DAY: Dictionary = {
 const IRON_AMBIENT_CHANCE: float = 0.002
 ## The Iron Age opens after the Bronze Age's five days (8640 ticks).
 const IRON_MIN_TICKS: int = 8640
+## Days into the Classical Age before each milestone can happen (docs/ages.md, "Classical Age"): the
+## same pace as the Iron Age's, five real days. `shared_steps`, `rain_basin`, `promises`, `shade`,
+## `reading_bench` and `teachers_abroad` are the late roads open to every group.
+const CLASSICAL_DAY: Dictionary = {
+	&"paved_streets": 18,
+	&"shared_steps": 54,
+	&"water_from_afar": 54,
+	&"rain_basin": 90,
+	&"written_law": 108,
+	&"promises": 144,
+	&"the_square": 162,
+	&"shade": 198,
+	&"lamp_and_stage": 216,
+	&"reading_bench": 246,
+	&"wider_world": 252,
+	&"teachers_abroad": 288,
+}
+## Days into the Classical Age when each small story decision becomes possible. The last three look
+## ahead to what a later age could inherit (docs/ages.md, "Medieval: the direction").
+const CLASSICAL_STORY_DAY: Dictionary = {
+	&"guest_ground": 2, &"street_turns": 8, &"mason_apprentice": 14, &"paving_rain": 24,
+	&"courtyard": 32, &"baths": 66, &"channel_keepers": 72, &"shaded_basin": 84,
+	&"readers": 114, &"seal": 126, &"newcomers": 138, &"lamplight": 168, &"craft_visitors": 178,
+	&"book_copy": 222, &"play": 232, &"teaching": 242, &"harbour_signal": 266,
+	&"words_home": 278, &"water_keepers": 312, &"journey_book": 326, &"market_returns": 340,
+}
+## Chance per tick of a Classical Age one-line moment; the earlier ages' lines keep happening too.
+const CLASSICAL_AMBIENT_CHANCE: float = 0.002
+## The Classical Age opens after the Iron Age's five days (8640 ticks).
+const CLASSICAL_MIN_TICKS: int = 8640
 ## Chance per tick of a small journal line, and how long before the same one can repeat. About one
 ## line every quarter hour of real time across all of them.
 const AMBIENT_CHANCE: float = 0.0045
@@ -175,10 +206,10 @@ func _init() -> void:
 func _eras() -> Array[EraDef]:
 	var cave: EraDef = _era(&"cave", "Cave Age", CAVE)
 	cave.description = "Hunter-gatherers sheltering in a cave, living by fire and flint."
-	cave.housing = 6
+	cave.housing = 4
 	var settled: EraDef = _era(&"settled", "Settled Age", SETTLED)
 	settled.description = "Farming and herding: people stay in one place and shape the land."
-	settled.housing = 8
+	settled.housing = 6
 	settled.intro_text = "The group stayed by the field, and a new way of living began."
 	# The hidden gate (docs/ages.md): every milestone, then a minimum of about five real days
 	# (8640 ticks at 50 real seconds each). The player is never shown any of this.
@@ -191,7 +222,7 @@ func _eras() -> Array[EraDef]:
 	settled.turn_event = &"seeds_of_a_new_life"
 	var bronze: EraDef = _era(&"bronze", "Bronze Age", BRONZE)
 	bronze.description = "Metal, roads and walls: villages grow into towns and look over the sea."
-	bronze.housing = 10
+	bronze.housing = 8
 	bronze.intro_text = "The green stone changed what the fire could do, and a new age began."
 	# The gate: every Settled milestone, then another five real days (docs/ages.md B1).
 	bronze.required_achievements = [
@@ -203,7 +234,7 @@ func _eras() -> Array[EraDef]:
 	var iron: EraDef = _era(&"iron", "Iron Age", IRON)
 	iron.description = "A harder metal, bigger fields and a fort on the hill: the town is known " \
 			+ "beyond the water."
-	iron.housing = 12
+	iron.housing = 10
 	iron.intro_text = "The dark stone would not melt in the bronze fire, so the fire was made " \
 			+ "hotter, and a new age began."
 	# The gate: every Bronze milestone, then another five real days (docs/ages.md I1).
@@ -213,7 +244,45 @@ func _eras() -> Array[EraDef]:
 	]
 	iron.min_ticks_in_previous_era = IRON_MIN_TICKS
 	iron.turn_event = &"a_harder_fire"
-	return [cave, settled, bronze, iron]
+	var classical: EraDef = _era(&"classical", "Classical Age", CLASSICAL)
+	classical.description = "Streets, water brought in, written law and a square: the town has " \
+			+ "become a city among cities."
+	classical.housing = 14
+	classical.intro_text = "The strangers asked for a seat at the table, and the town became a " \
+			+ "city, and a new age began."
+	# The gate: every Iron milestone, then another five real days (docs/ages.md, "Classical Age").
+	classical.required_achievements = [
+		&"first_bloom", &"fuller_harvest", &"the_hill_fort", &"silver_by_weight",
+		&"written_word", &"name_abroad",
+	]
+	classical.min_ticks_in_previous_era = CLASSICAL_MIN_TICKS
+	classical.turn_event = &"a_seat_at_the_table"
+	_set_profiles([cave, settled, bronze, iron, classical])
+	return [cave, settled, bronze, iron, classical]
+
+
+## What each age's villagers stand for (docs/ages.md, "How many people the strip shows"). A villager
+## represents the settlement's people rather than counting them, so the ceiling stays small enough
+## to read and cheap to run, and a later age's villager eats and brings in more to make up for it.
+## `housing` is the age's own room; the ceiling is how far buildings and answers may stretch it.
+## These are tuning profiles for the five ages, not rules for every future one.
+const PROFILES: Array[Dictionary] = [
+	{"id": &"cave", "limit": 6, "need": 1.0, "food": 1.0, "wood": 1.0},
+	{"id": &"settled", "limit": 8, "need": 1.15, "food": 1.15, "wood": 1.1},
+	{"id": &"bronze", "limit": 10, "need": 1.3, "food": 1.3, "wood": 1.2},
+	{"id": &"iron", "limit": 12, "need": 1.5, "food": 1.5, "wood": 1.35},
+	{"id": &"classical", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
+]
+
+
+func _set_profiles(eras: Array[EraDef]) -> void:
+	for era: EraDef in eras:
+		for profile: Dictionary in PROFILES:
+			if profile["id"] == era.id:
+				era.max_villagers = int(profile["limit"])
+				era.food_need_scale = float(profile["need"])
+				era.food_yield_scale = float(profile["food"])
+				era.wood_yield_scale = float(profile["wood"])
 
 
 func _set_starting_group(library: ContentLibrary) -> void:
@@ -335,6 +404,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_settled_ambient_lines())
 	events.append_array(_bronze_events())
 	events.append_array(_iron_events())
+	events.append_array(_classical_events())
 	return events
 
 
@@ -7059,7 +7129,7 @@ func _a_stone_with_a_name() -> EventDef:
 			+ "was suddenly much more of a gate.",
 			[_set_flag(&"gate_name")],
 		),
-		[_flag_set(&"known_abroad")]
+		[_flag_set(&"known_abroad"), _not_yet_classical()]
 	)
 
 
@@ -7082,7 +7152,7 @@ func _a_rider_with_a_sash() -> EventDef:
 			+ "greeted as if she had been exactly on time.",
 			[_set_flag(&"envoy_waited")],
 		),
-		[_flag_set(&"known_abroad")]
+		[_flag_set(&"known_abroad"), _not_yet_classical()]
 	)
 
 
@@ -7106,7 +7176,7 @@ func _a_table_for_strangers() -> EventDef:
 			+ "its own friendliness.",
 			[_set_flag(&"night_watch")],
 		),
-		[_flag_set(&"known_abroad")]
+		[_flag_set(&"known_abroad"), _not_yet_classical()]
 	)
 
 
@@ -7351,6 +7421,1319 @@ func _iron_ambient_about(
 
 func _iron_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
 	return _iron_ambient(event_id, line, [_flag_set(flag)])
+
+
+## ---- The Classical Age (docs/ages.md, "Classical Age") ------------------------------------------
+## Streets, water brought in, written law, a square, learning and a stage, and a wider world. Like
+## Iron: six hidden milestones staged over the age (`CLASSICAL_DAY`), each with more than one road
+## and one road open to every group, small forks between them and quiet lines. Every decision is a
+## fork (docs/gameplay.md P13). The turn asks *how* the town takes its place among cities; the
+## roads read what the group answered in the Iron Age, but only the guaranteed flags (`letters`,
+## `hill_fort`, `coin_struck`, `known_abroad`) are ever required. The age has no gate out (G7);
+## its last forks only look toward what a later age could inherit.
+
+const CLASSICAL_TITLES: Dictionary = {
+	&"paved_streets": "Paved Streets",
+	&"water_from_afar": "Water from Afar",
+	&"written_law": "The Law",
+	&"the_square": "The Square",
+	&"lamp_and_stage": "The Lamp and the Stage",
+	&"wider_world": "The Wider World",
+}
+
+
+func _classical_events() -> Array[EventDef]:
+	var events: Array[EventDef] = [_a_seat_at_the_table()]
+	events.append_array(_classical_milestones())
+	events.append_array(_classical_stories())
+	events.append_array(_classical_ambient_lines())
+	return events
+
+
+## An Iron fork that only matters while the Iron Age lasts: it is not asked once the next age opens.
+func _not_yet_classical() -> SimCondition:
+	return _cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL, true)
+
+
+## The turn from the Iron Age to the Classical Age. Fired by the era's hidden gate, so the player is
+## never asked whether to go on, only how the town takes its seat. It reads nothing the group may
+## lack: the Iron answers are remembered in quiet lines afterwards.
+func _a_seat_at_the_table() -> EventDef:
+	var event: EventDef = _event(&"a_seat_at_the_table", "A seat at the table", &"settlement")
+	event.body = "The strangers who asked the town's name have sent word: the town is big " \
+			+ "enough now to be asked to be a city, with a seat at the table of cities, and a " \
+			+ "great deal of discussion about who sits where."
+	event.choices = _choices([
+		_answer(
+			&"keep_our_own_ways", "Gather at the stone, and agree how we mean to live",
+			"The whole town gathered where everyone could see, and agreed, over a long afternoon "
+			+ "and a longer evening, how they meant to live, and the strangers were asked to "
+			+ "listen and found they did not mind.",
+			[_set_flag(&"path_assembly"), _eff(SimEffect.Kind.ADVANCE_ERA, &"classical")],
+		),
+		_answer(
+			&"take_a_place_among_theirs", "Send for their laws, and take a place among theirs",
+			"A ship went out for the far shore's laws, and came back with a great deal of "
+			+ "writing and a few people who wanted to see how the town did it, and the town "
+			+ "was a city before the ink was dry.",
+			[_set_flag(&"path_league"), _eff(SimEffect.Kind.ADVANCE_ERA, &"classical")],
+		),
+	])
+	return event
+
+
+## Every Classical milestone event: Classical Age, far enough into it, and not yet earned.
+func _classical_milestone(
+	event_id: StringName, title: String, category: StringName, favoured: StringName,
+	era_day: int, milestone: StringName
+) -> EventDef:
+	var event: EventDef = _milestone_event(event_id, title, category, favoured)
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", era_day),
+		_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone, 0, true),
+	])
+	return event
+
+
+## One road to a Classical milestone: the answer sets its own flag, may do something else, and
+## earns it.
+func _classical_route(
+	choice_id: StringName, label: String, line: String, flag: StringName,
+	milestone: StringName, extra: Array[SimEffect] = [], needs: Array[SimCondition] = []
+) -> ChoiceDef:
+	var effects: Array[SimEffect] = [_set_flag(flag)]
+	effects.append_array(extra)
+	effects.append(_earn(milestone, CLASSICAL_TITLES[milestone]))
+	return _answer(choice_id, label, line, effects, needs)
+
+
+## A decision that is a road to a milestone; `needs` are further requirements on the event.
+func _classical_road(
+	event_id: StringName, title: String, body: String, milestone: StringName, era_day: int,
+	favoured: StringName, answers: Array[ChoiceDef], needs: Array[SimCondition] = [],
+	category: StringName = &"settlement"
+) -> EventDef:
+	var event: EventDef = _classical_milestone(
+		event_id, title, category, favoured, era_day, milestone
+	)
+	event.body = body
+	event.requires.append_array(needs)
+	event.choices = _choices(answers)
+	return event
+
+
+func _classical_milestones() -> Array[EventDef]:
+	var events: Array[EventDef] = []
+	events.append_array(_paved_streets_roads())
+	events.append_array(_water_from_afar_roads())
+	events.append_array(_written_law_roads())
+	events.append_array(_the_square_roads())
+	events.append_array(_lamp_and_stage_roads())
+	events.append_array(_wider_world_roads())
+	return events
+
+
+## Paved Streets. Dressed stone for a town that cut its own (`cut_stone`), stone against timber for
+## one that did not (`timber_town`), and, late and for every group, the doorsteps and a common walk.
+func _paved_streets_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"paved_streets"]
+	var milestone: StringName = &"paved_streets"
+	return [
+		_classical_road(
+			&"stone_for_the_street", "Stone for the street",
+			"The masons who cut the hill's stone have noticed that the lane is still mud, and "
+			+ "have offered, with the air of people making a casual remark, to do something about it.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_classical_route(
+					&"lay_broad_slabs", "Lay broad slabs down the middle",
+					"Broad slabs went down the middle of the lane, and the first wet morning "
+					+ "everyone walked up and down it for no reason except that their feet were dry.",
+					&"streets_slabbed", milestone, [_spend(&"wood", 10)], [_has(&"wood", 10)],
+				),
+				_classical_route(
+					&"lay_small_setts", "Set small stones close, in curves",
+					"Small stones were set close in curves, a whole street of them, and a mason "
+					+ "was seen kneeling in the lane in the evening, admiring it.",
+					&"streets_setted", milestone,
+				),
+			], [_flag_set(&"cut_stone")]
+		),
+		_classical_road(
+			&"timber_meets_stone", "Timber meets stone",
+			"The town has always been timber, and the street is the one place where timber "
+			+ "does not last, and there is a pile of good stone at the quarry.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_classical_route(
+					&"stone_along_the_lane", "Edge the lane in stone, and leave the middle",
+					"The lane was edged in stone, and the middle was left to be walked firm, "
+					+ "and the town agreed that it looked like a street at last.",
+					&"lane_edged", milestone, [_spend(&"wood", 8)], [_has(&"wood", 8)],
+				),
+				_classical_route(
+					&"pave_the_courtyards", "Pave the courtyards between the houses first",
+					"The courtyards between the houses were paved before the lane was, so that "
+					+ "every household had a dry place to stand and complain about the lane.",
+					&"courtyards_paved", milestone,
+				),
+			], [_flag_set(&"timber_town")]
+		),
+		_classical_road(
+			&"shared_doorsteps", "Doorsteps",
+			"Every house has a doorstep of some kind, and no two of them agree, and the lane "
+			+ "has begun to look like an argument.",
+			milestone, CLASSICAL_DAY[&"shared_steps"], VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"pave_every_step", "Pave every doorstep alike",
+					"Every doorstep was paved alike, and the lane stopped looking like an "
+					+ "argument and started looking like a town.",
+					&"doorsteps_paved", milestone,
+				),
+				_classical_route(
+					&"lay_a_common_walk", "Lay a common walk past all the doors",
+					"A common walk was laid past all the doors, and the doorsteps were left to "
+					+ "their owners, and the walk made the whole lane look finished.",
+					&"common_walk", milestone,
+				),
+			]
+		),
+	]
+
+
+## Water from Afar. A well grown into a cistern or a channel (`well_dug`), a spring brought in on
+## arches or in a covered channel (`well_carriers`), and, late and for every group, the rain.
+func _water_from_afar_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"water_from_afar"]
+	var milestone: StringName = &"water_from_afar"
+	return [
+		_classical_road(
+			&"the_old_well_grows", "The old well",
+			"The well is deep and cold and reliable, and the town has outgrown it, and a long "
+			+ "queue has begun to form at it each morning.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_classical_route(
+					&"deepen_into_a_cistern", "Deepen it into a cistern with a vaulted roof",
+					"The well was widened and deepened and roofed in stone, and the first "
+					+ "bucket drawn from the cistern was passed round like a prize.",
+					&"cistern_dug", milestone, [_spend(&"wood", 10)], [_has(&"wood", 10)],
+				),
+				_classical_route(
+					&"lead_a_channel_from_it", "Lead a channel out from it into the lane",
+					"A narrow channel was led out from the well along the lane, and children "
+					+ "followed the first trickle of water all the way to the end.",
+					&"well_channel", milestone,
+				),
+			], [_flag_set(&"well_dug")], &"nature"
+		),
+		_classical_road(
+			&"water_by_the_carriers", "Water by the carriers",
+			"The water-carriers have carried water to the town for years, and have begun to "
+			+ "mention, in passing, how far the spring is, and how heavy a bucket is.",
+			milestone, day, VillagerState.TRAIT_INDUSTRIOUS, [
+				_classical_route(
+					&"raise_arches_from_the_spring", "Raise arches and bring the spring in",
+					"Arches marched down from the spring toward the town, one a day, and the "
+					+ "carriers stood under them and looked up, slightly lost.",
+					&"spring_arches", milestone, [_spend(&"wood", 12)], [_has(&"wood", 12)],
+				),
+				_classical_route(
+					&"lay_a_covered_channel", "Lay a low covered channel along the ground",
+					"A covered channel was laid along the ground from the spring, so quiet "
+					+ "that on the first day half the town stood over it listening.",
+					&"covered_channel", milestone,
+				),
+			], [_flag_set(&"well_carriers")], &"nature"
+		),
+		_classical_road(
+			&"rain_into_a_basin", "Rain into a basin",
+			"It rains a great deal, and none of it is kept, and a few people have begun to "
+			+ "look upward in a speculative way.",
+			milestone, CLASSICAL_DAY[&"rain_basin"], VillagerState.TRAIT_NATURE_LOVING, [
+				_classical_route(
+					&"roofs_feed_a_basin", "Let the roofs feed a stone basin",
+					"The roofs were set to feed a stone basin, and after the next rain it "
+					+ "was full, and a heron came and stood in it with an owner's air.",
+					&"roof_basin", milestone,
+				),
+				_classical_route(
+					&"line_a_ditch", "Line the old ditch with clay and fill it",
+					"The old ditch was lined with clay and filled, and became, almost "
+					+ "overnight, the place where everyone met.",
+					&"lined_channel", milestone,
+				),
+			], [], &"nature"
+		),
+	]
+
+
+## The Law (needs Paved Streets). Agreements cut in stone or kept by readers for a town that gathered
+## (`path_assembly`), a neighbour's code or a charter for a town that joined (`path_league`), and,
+## late and for every group, the promises people already make to each other.
+func _written_law_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"written_law"]
+	var milestone: StringName = &"written_law"
+	var needs: Array[SimCondition] = [_earned(&"paved_streets")]
+	return [
+		_classical_road(
+			&"words_for_the_household", "What the households agreed",
+			"The town agreed a great deal in one long afternoon, and has begun to disagree "
+			+ "about what it agreed, and the writing is the obvious answer.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"cut_the_agreements", "Cut the agreements into stone, where all can read",
+					"The agreements were cut into a wall of stone in the square, and a small "
+					+ "crowd gathered to check that they were as they remembered.",
+					&"agreements_cut", milestone,
+				),
+				_classical_route(
+					&"appoint_readers", "Appoint readers, by turns, to say them aloud",
+					"Readers were appointed by turns, and each took the job very seriously, "
+					+ "and one added a pause that everyone now expects.",
+					&"rotating_readers", milestone,
+				),
+			], _plus(needs, [_flag_set(&"path_assembly")]), &"character"
+		),
+		_classical_road(
+			&"a_neighbours_code", "A neighbour's code",
+			"The far shore's laws are long and thorough, and some of them are plainly meant "
+			+ "for a different sort of town, and somebody has to choose.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"adapt_their_code", "Adapt their code to the town's ways",
+					"The code was adapted line by line, and a good many lines were crossed out "
+					+ "with a flourish, and the town found it liked its own handwriting.",
+					&"code_adapted", milestone,
+				),
+				_classical_route(
+					&"write_a_charter", "Write a charter of what the towns owe each other",
+					"A charter was written of what the towns owed each other, and signed by "
+					+ "people who had never seen each other, and it held.",
+					&"charter_written", milestone,
+				),
+			], _plus(needs, [_flag_set(&"path_league")]), &"character"
+		),
+		_classical_road(
+			&"a_promise_worth_keeping", "A promise worth keeping",
+			"People have always made promises to each other, and most were kept, and the few "
+			+ "that were not are remembered in great detail.",
+			milestone, CLASSICAL_DAY[&"promises"], VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"record_it_in_stone", "Record the promises in stone, in the square",
+					"The promises were recorded in stone, and the first person to break one "
+					+ "was gently walked to the stone and asked to read it.",
+					&"promises_in_stone", milestone,
+				),
+				_classical_route(
+					&"keep_it_on_tablets", "Keep them on tablets, in the care of a keeper",
+					"The promises were kept on tablets, and a keeper was found who loved "
+					+ "tablets, and the town made a note never to lose her.",
+					&"promises_on_tablets", milestone,
+				),
+			], needs
+		),
+	]
+
+
+## The Square (needs The Law). The market that grew (`market_day`), the council that needs somewhere to
+## sit (`council`), and, late and for every group, shade and a place to meet.
+func _the_square_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"the_square"]
+	var milestone: StringName = &"the_square"
+	var needs: Array[SimCondition] = [_earned(&"written_law")]
+	return [
+		_classical_road(
+			&"the_market_grows", "The market grows",
+			"The market day has outgrown the lane it began in, and the stalls have begun to "
+			+ "spill into the street, and the street has opinions.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"stalls_under_awnings", "Give the stalls awnings and a paved floor",
+					"The stalls were given awnings and a paved floor, and the market became a "
+					+ "place with a roof of coloured cloth that glowed on bright days.",
+					&"awning_market", milestone, [_spend(&"wood", 8)], [_has(&"wood", 8)],
+				),
+				_classical_route(
+					&"a_shared_meal_day", "Make the market day a day of shared meals",
+					"The market day became a day when everyone brought a dish, and a table "
+					+ "ran down the middle of the market, and nobody left hungry.",
+					&"shared_meal_day", milestone,
+				),
+			], _plus(needs, [_flag_set(&"market_day")])
+		),
+		_classical_road(
+			&"where_the_council_sits", "Where the council sits",
+			"The council meets in whatever place is dry, and has twice been rained on in the "
+			+ "middle of a decision, and has noticed the pattern.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"open_the_meeting_to_all", "Open the meetings to anyone who comes",
+					"The meetings were opened to anyone who came, and the first one was so "
+					+ "crowded that the roof of a nearby house was used as a gallery.",
+					&"open_meeting", milestone,
+				),
+				_classical_route(
+					&"hold_hearings_by_turns", "Hold hearings by turns, with a bench for each",
+					"Hearings were held by turns, with a bench for each, and a person was "
+					+ "found whose job was to say when a turn was over.",
+					&"hearing_turns", milestone,
+				),
+			], _plus(needs, [_flag_set(&"council")])
+		),
+		_classical_road(
+			&"a_shaded_place", "A shaded place",
+			"The middle of the town is a hot, bare, busy place, and everyone meets in it, and "
+			+ "nobody lingers.",
+			milestone, CLASSICAL_DAY[&"shade"], VillagerState.TRAIT_NATURE_LOVING, [
+				_classical_route(
+					&"raise_a_colonnade", "Raise a colonnade along one side",
+					"A colonnade was raised along one side, and by noon the whole town was "
+					+ "in its shade, and by evening so were the dogs.",
+					&"colonnade", milestone,
+				),
+				_classical_route(
+					&"pave_an_open_court", "Pave an open court, and plant it",
+					"An open court was paved and planted with a few trees, which were "
+					+ "watered by a rota and admired by everyone.",
+					&"paved_court", milestone,
+				),
+			], needs
+		),
+	]
+
+
+## The Lamp and the Stage (needs The Square). Strangers' words kept (`learned_words`) or taught
+## (`taught_words`), a festival of the whole town (`festival`), and, late and for every group, a
+## bench to read on and a table to learn at.
+func _lamp_and_stage_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"lamp_and_stage"]
+	var milestone: StringName = &"lamp_and_stage"
+	var needs: Array[SimCondition] = [_earned(&"the_square")]
+	return [
+		_classical_road(
+			&"their_words_in_ink", "Their words, in ink",
+			"The words of the far shore, learned a few at a time, are now long enough to want "
+			+ "writing down, and somebody has to decide where they should live.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"keep_them_in_a_library", "Keep them in a room with shelves",
+					"A room was set aside, with shelves, and a lamp that was lit each evening, "
+					+ "and a rule about not eating near the shelves.",
+					&"library_kept", milestone, [_spend(&"wood", 8)], [_has(&"wood", 8)],
+				),
+				_classical_route(
+					&"teach_them_in_a_school", "Teach them to children, in a school",
+					"A school was begun, with a few benches and a teacher who was both "
+					+ "patient and wrong about a number of things, and the children loved it.",
+					&"school_started", milestone,
+				),
+			], _plus(needs, [_flag_set(&"learned_words")]), &"character"
+		),
+		_classical_road(
+			&"ours_for_their_ears", "Ours, for their ears",
+			"The visitors have learned the town's words, and are asking whether they could "
+			+ "have them written down, and the town has realised that it could.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"write_ours_for_visitors", "Write a primer of the town's words",
+					"A primer of the town's words was written, with pictures, and the first "
+					+ "copy was borrowed and returned with two pages of questions.",
+					&"primer_written", milestone,
+				),
+				_classical_route(
+					&"host_a_teaching_court", "Host a court where anyone may come and learn",
+					"A court was set aside where anyone might come and learn, and it was so "
+					+ "full on the first day that the lesson moved outside.",
+					&"teaching_court", milestone,
+				),
+			], _plus(needs, [_flag_set(&"taught_words")]), &"character"
+		),
+		_classical_road(
+			&"a_festival_for_the_whole_town", "A festival for the whole town",
+			"The festival has become too large for the lane it was held in, and has gathered "
+			+ "so many songs that the older ones have begun to be forgotten.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"build_a_stage", "Build a stage, so that everyone can see",
+					"A stage of planks went up, and the first thing anyone did on it was "
+					+ "stand still in silence, to see how it felt.",
+					&"stage_built", milestone, [_spend(&"wood", 8)], [_has(&"wood", 8)],
+				),
+				_classical_route(
+					&"tell_it_in_the_court", "Tell it in the court, one voice at a time",
+					"The stories were told in the court, one voice at a time, with the rest "
+					+ "seated in rings, and the best teller was carried home.",
+					&"told_in_court", milestone,
+				),
+			], _plus(needs, [_flag_set(&"festival")])
+		),
+		_classical_road(
+			&"a_bench_for_reading", "A bench for reading",
+			"A lot has been written, and nobody has anywhere comfortable to read it, and a few "
+			+ "people have begun to read standing up, reproachfully.",
+			milestone, CLASSICAL_DAY[&"reading_bench"], VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"a_reading_bench", "Put a long bench under the colonnade or a tree",
+					"A long bench was put in the shade, and was occupied from morning to "
+					+ "evening by people reading very slowly, and nodding.",
+					&"reading_bench", milestone,
+				),
+				_classical_route(
+					&"an_open_teaching_table", "Set out a table where anyone may ask",
+					"A table was set out with a lamp and a few tablets, and anyone might sit "
+					+ "and ask, and the questions were better than the answers.",
+					&"teaching_table", milestone,
+				),
+			], needs, &"character"
+		),
+	]
+
+
+## The Wider World (needs The Square and Water from Afar). Visiting towns hosted or delegates
+## exchanged for a town that gathered, harbours linked or roads kept for one that joined, and, late
+## and for every group, craftspeople on the road. Each sets `towns_connected`, which a later age
+## reads as `far_shore` and `known_abroad` were read here.
+func _wider_world_roads() -> Array[EventDef]:
+	var day: int = CLASSICAL_DAY[&"wider_world"]
+	var milestone: StringName = &"wider_world"
+	var needs: Array[SimCondition] = [_earned(&"the_square"), _earned(&"water_from_afar")]
+	return [
+		_classical_road(
+			&"visitors_at_the_gate", "Visitors at the gate",
+			"More towns than one have heard that the town has a square and a law, and some "
+			+ "of their people have turned up at the gate with the air of having been invited.",
+			milestone, day, VillagerState.TRAIT_SOCIAL, [
+				_classical_route(
+					&"host_the_visiting_towns", "Host the visiting towns, a few days each",
+					"Visiting towns were hosted in turn, a few days each, and the town learned "
+					+ "how many ways there are of cooking the same bean.",
+					&"hosts_welcomed", milestone, _connected(),
+				),
+				_classical_route(
+					&"exchange_delegates", "Exchange delegates, who live in each other's homes",
+					"Delegates were exchanged, and lived in each other's houses for a season, "
+					+ "and came home with new words for the weather.",
+					&"delegates_exchanged", milestone, _connected(),
+				),
+			], _plus(needs, [_flag_set(&"path_assembly")]), &"exploration"
+		),
+		_classical_road(
+			&"the_web_of_towns", "The web of towns",
+			"The towns that share the far shore's laws have begun to ask the town to hold up "
+			+ "its end of things, in a friendly way, with a great many ships.",
+			milestone, day, VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"link_the_harbour_towns", "Link the harbours, with lights and a shared tide-table",
+					"The harbours were linked, with lights on every headland and a shared "
+					+ "table of the tides, and a ship from three towns away arrived on time.",
+					&"harbours_linked", milestone, _connected(),
+				),
+				_classical_route(
+					&"keep_the_shared_roads", "Keep the shared roads, a stretch each",
+					"The roads between the towns were shared out, a stretch each, and the town "
+					+ "took its stretch very seriously, and mended it in the first week.",
+					&"shared_roads", milestone, _connected(),
+				),
+			], _plus(needs, [_flag_set(&"path_league")]), &"exploration"
+		),
+		_classical_road(
+			&"craftspeople_on_the_road", "Craftspeople on the road",
+			"The town's craftspeople are better than they were, and have begun to be asked "
+			+ "for, in other towns, by name.",
+			milestone, CLASSICAL_DAY[&"teachers_abroad"], VillagerState.TRAIT_CURIOUS, [
+				_classical_route(
+					&"send_teachers_abroad", "Send some to teach for a season, and come home",
+					"Some of the craftspeople went abroad for a season to teach, and came "
+					+ "home with their hands slightly changed and a good many apprentices.",
+					&"teachers_abroad", milestone, _connected(),
+				),
+				_classical_route(
+					&"join_the_market_circuit", "Join the circuit of markets, a day at each",
+					"The town joined the circuit of markets, a day at each, and the carts "
+					+ "went round in a great slow wheel that nobody had planned.",
+					&"market_circuit", milestone, _connected(),
+				),
+			], needs, &"exploration"
+		),
+	]
+
+
+## The effect every road to the last milestone shares: the towns are connected, which a later age
+## reads as `known_abroad` is read here.
+func _connected(more: Array[SimEffect] = []) -> Array[SimEffect]:
+	var effects: Array[SimEffect] = [_set_flag(&"towns_connected")]
+	effects.append_array(more)
+	return effects
+
+
+## Small story decisions that fill the Classical Age between its milestones, paced by
+## `CLASSICAL_STORY_DAY`. Like the Iron Age's, each has two answers that do something, a journal line
+## each, and a flag a later line remembers. The last three look toward what a later age could inherit.
+func _classical_story(
+	event_id: StringName, title: String, category: StringName, day_key: StringName, body: String
+) -> EventDef:
+	var event: EventDef = _event(event_id, title, category)
+	event.body = body
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", CLASSICAL_STORY_DAY[day_key]),
+	])
+	event.chance_per_tick = STORY_CHANCE
+	event.once = true
+	return event
+
+
+func _classical_story_about(
+	event_id: StringName, title: String, category: StringName, day_key: StringName, body: String,
+	favoured: StringName
+) -> EventDef:
+	var event: EventDef = _classical_story(event_id, title, category, day_key, body)
+	event.needs_subject = true
+	event.subject_requires = _conds([_cond(SimCondition.Kind.SUBJECT_AT_HOME)])
+	event.trait_weights[favoured] = 3.0
+	return event
+
+
+func _classical_stories() -> Array[EventDef]:
+	return [
+		_where_guests_meet(), _who_sweeps_the_streets(), _a_masons_apprentice(),
+		_rain_on_the_paving(), _whose_courtyard(), _the_bathhouse(), _who_keeps_the_channel(),
+		_a_shaded_basin(), _whose_words_are_read(), _a_seal_for_the_charter(),
+		_newcomers_and_the_agreements(), _by_daylight_or_lamplight(), _visiting_craftspeople(),
+		_a_visiting_book(), _a_play(), _where_to_teach(), _a_harbour_signal(), _words_brought_home(),
+		_who_keeps_the_water_running(), _a_book_for_the_journey(), _when_the_market_returns(),
+	]
+
+
+func _where_guests_meet() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"where_guests_meet", "Where guests meet", &"settlement", &"guest_ground",
+			"The town is a city now, and guests arrive daily, and nobody has agreed where "
+			+ "they should be received."
+		),
+		_answer(
+			&"receive_them_at_the_gate", "Receive them in the court inside the gate",
+			"Guests were received in the court inside the gate, under the old hill-fort's "
+			+ "wall, and were visibly impressed by it, and by being offered a seat.",
+			[_set_flag(&"guests_at_the_gate")],
+		),
+		_answer(
+			&"receive_them_at_the_lane_end", "Receive them at the end of the lane, by the water",
+			"Guests were received where the lane met the water, and were handed a cup before "
+			+ "they were asked their business, which turned out to be a very good order.",
+			[_set_flag(&"guests_at_the_water")],
+		),
+	)
+
+
+func _who_sweeps_the_streets() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"who_sweeps_the_streets", "Who sweeps the first streets", &"character",
+			&"street_turns",
+			"A street that is paved is a street that can be swept, and {subject} has noticed "
+			+ "that nobody has said who sweeps it.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"neighbours_take_turns", "Let the neighbours take turns, a day each",
+			"The neighbours took turns, a day each, and the sweeping was done with a great "
+			+ "deal of conversation and not much sweeping.",
+			[_set_flag(&"street_turns")],
+		),
+		_answer(
+			&"share_to_a_sweeper", "Give a share of food to someone who will do it every day",
+			"Someone was found who would sweep every day for a share of food, and the lane "
+			+ "became so clean that people began to remove their shoes.",
+			[_spend(&"food", 3), _set_flag(&"street_sweeper")],
+			[_has(&"food", 3)],
+		),
+		[_earned(&"paved_streets")]
+	)
+
+
+func _a_masons_apprentice() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"a_masons_apprentice", "A mason's apprentice", &"character", &"mason_apprentice",
+			"{subject} has been following the masons about, handing them things before they "
+			+ "ask, and has begun to explain to others how the stone wants to be cut.",
+			VillagerState.TRAIT_INDUSTRIOUS
+		),
+		_answer(
+			&"take_them_on", "Take them on as the masons' apprentice",
+			"{subject} became the masons' apprentice, and for the first month did nothing "
+			+ "but sweep, and for the second month, polish, and was happier than anyone.",
+			[_set_flag(&"mason_apprentice")],
+		),
+		_answer(
+			&"every_household_learns_stone", "Let every household learn a little stonework",
+			"Every household learned a little stonework, mostly how not to drop a block on a "
+			+ "foot, and the town's doorsteps improved sharply.",
+			[_set_flag(&"stonework_shared")],
+		),
+	)
+
+
+func _rain_on_the_paving() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"rain_on_the_paving", "Rain on the paving", &"nature", &"paving_rain",
+			"The first heavy rain on the new paving made a river of the lane, which was "
+			+ "paved, and so ran very fast."
+		),
+		_answer(
+			&"cut_a_gutter", "Cut a gutter along the lane's edge",
+			"A gutter was cut along the lane's edge, and the next rain ran neatly into it, "
+			+ "and the children floated sticks down it, and held races.",
+			[_spend(&"wood", 6), _set_flag(&"street_gutters")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"let_it_run_to_the_water", "Let it run, and tilt the lane toward the river",
+			"The lane was tilted toward the river a little more each week, and the rain "
+			+ "learned the way, and the lane was dry by noon.",
+			[_set_flag(&"street_tilted")],
+		),
+		[_earned(&"paved_streets")]
+	)
+
+
+func _whose_courtyard() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"whose_courtyard", "Whose courtyard stays open", &"character", &"courtyard",
+			"The paved courtyard between the houses has become the best place in town, and "
+			+ "{subject} has noticed that the weavers want a roof over it, and the children do not.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"keep_it_open", "Keep it open to the sky",
+			"The courtyard was kept open to the sky, and the children were let in at once, and "
+			+ "the weavers took their looms out on bright days and said it was an improvement.",
+			[_set_flag(&"courtyard_open")],
+		),
+		_answer(
+			&"roof_it_for_the_weavers", "Roof one half of it for the weavers",
+			"One half was roofed for the weavers, and the other left open, and the children "
+			+ "were seen to be playing under the roof and not the sky, to everyone's surprise.",
+			[_spend(&"wood", 6), _set_flag(&"courtyard_roofed")],
+			[_has(&"wood", 6)],
+		),
+		[_earned(&"paved_streets")]
+	)
+
+
+func _the_bathhouse() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"the_bathhouse", "Warm water", &"settlement", &"baths",
+			"Water is coming into the town, and the question of what to do with it has "
+			+ "become, overnight, a matter of strong feeling."
+		),
+		_answer(
+			&"raise_a_bathhouse", "Raise a bathhouse by the basin, for everyone",
+			"A bathhouse went up by the basin, with a hot room and a cool one, and the whole "
+			+ "town went in on the first evening and came out looking amazed.",
+			[_spend(&"wood", 12), _set_flag(&"bathhouse")],
+			[_has(&"wood", 12)],
+		),
+		_answer(
+			&"heat_water_at_home", "Let each household heat its own water",
+			"Every household heated its own water, and the smoke of a hundred little fires "
+			+ "went up on bath day, and the whole town smelled of herbs.",
+			[_set_flag(&"home_baths")],
+		),
+		[_earned(&"water_from_afar")]
+	)
+
+
+func _who_keeps_the_channel() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"who_keeps_the_channel", "Who keeps the channel clear", &"character",
+			&"channel_keepers",
+			"The water runs, and leaves collect in it, and {subject} has been seen fishing "
+			+ "them out in a martyred way.",
+			VillagerState.TRAIT_INDUSTRIOUS
+		),
+		_answer(
+			&"a_keeper_by_turns", "A keeper by turns, a month each",
+			"A keeper was named by turns, a month each, and the channel was never clearer, "
+			+ "and each keeper's month was remembered for its particular leaf.",
+			[_set_flag(&"channel_turns")],
+		),
+		_answer(
+			&"every_house_clears_its_own", "Every house clears its own stretch",
+			"Every house cleared its own stretch, and the stretches were kept with different "
+			+ "degrees of care, and the town ran a friendly competition.",
+			[_set_flag(&"channel_stretches")],
+		),
+		[_earned(&"water_from_afar")]
+	)
+
+
+func _a_shaded_basin() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"a_shaded_basin", "A place by the basin", &"nature", &"shaded_basin",
+			"The basin is the coolest place in town, and the whole town has noticed, and "
+			+ "there is nowhere to sit."
+		),
+		_answer(
+			&"plant_it_with_shade", "Plant it round with shade trees",
+			"Shade trees were planted round the basin, and for a few years looked like "
+			+ "twigs, and then, suddenly, like a grove.",
+			[_set_flag(&"basin_trees")],
+		),
+		_answer(
+			&"build_it_a_bench", "Set a bench of stone beside it",
+			"A bench of stone was set beside the basin, and was occupied from the first "
+			+ "morning, and a small queue formed for the best end.",
+			[_spend(&"wood", 4), _set_flag(&"basin_bench")],
+			[_has(&"wood", 4)],
+		),
+		[_earned(&"water_from_afar")]
+	)
+
+
+func _whose_words_are_read() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"whose_words_are_read", "Whose words are read aloud", &"character", &"readers",
+			"The written laws are read aloud, and {subject} has noticed that the voice that "
+			+ "reads them shapes how they sound.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"the_clearest_voice", "Let the clearest voice read, always",
+			"The clearest voice was asked to read, and read so well that people came from "
+			+ "other streets to listen, and some of them even heard the laws.",
+			[_set_flag(&"one_reader")],
+		),
+		_answer(
+			&"everyone_reads_a_line", "Let everyone read a line, in turn",
+			"Everyone read a line in turn, and the laws were read with a variety of voices, "
+			+ "and a child read the longest word and was applauded.",
+			[_set_flag(&"everyone_reads")],
+		),
+		[_earned(&"written_law")]
+	)
+
+
+func _a_seal_for_the_charter() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"a_seal_for_the_charter", "A seal for the charter", &"settlement", &"seal",
+			"The laws have been written, and a great many of them need a mark to show that "
+			+ "they are the town's, and somebody has suggested the old coin."
+		),
+		_answer(
+			&"the_trees_seal", "Cut the seal as a tree",
+			"The seal was cut as a tree, and the first law sealed with it was a law about "
+			+ "trees, which was thought to be funny.",
+			[_set_flag(&"seal_tree")],
+		),
+		_answer(
+			&"the_faces_seal", "Cut the seal as a face",
+			"The seal was cut as a face, and the first law sealed with it was one about "
+			+ "faces, and nobody thought it was funny at all.",
+			[_set_flag(&"seal_face")],
+		),
+		[_earned(&"written_law")]
+	)
+
+
+func _newcomers_and_the_agreements() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"newcomers_and_the_agreements", "Newcomers and the agreements", &"settlement",
+			&"newcomers",
+			"New people keep arriving along the road, and the town's laws are not theirs, "
+			+ "and someone has asked how long the old ones have to wait to be read."
+		),
+		_answer(
+			&"read_them_at_the_gate", "Read the town's words to them at the gate",
+			"The town's words were read to every newcomer at the gate, in a voice that grew "
+			+ "weary and warm, and the newcomers listened with great seriousness.",
+			[_set_flag(&"read_at_the_gate")],
+		),
+		_answer(
+			&"give_them_a_neighbour", "Give each newcomer a neighbour to explain it",
+			"Every newcomer was given a neighbour, who explained the laws at some length "
+			+ "and with some editing, and the neighbours became fast friends.",
+			[_set_flag(&"neighbour_guides")],
+		),
+		[_earned(&"written_law")]
+	)
+
+
+func _by_daylight_or_lamplight() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"by_daylight_or_lamplight", "By daylight or by lamplight", &"settlement",
+			&"lamplight",
+			"The square is busy all day, and the evening is when people have time to meet, "
+			+ "and the council has been asked whether it ought to sit later."
+		),
+		_answer(
+			&"meet_by_daylight", "Meet by daylight, when the square is full",
+			"The council kept to daylight, when the square was full, and decisions were "
+			+ "made in the presence of a great many onlookers, who sometimes helped.",
+			[_set_flag(&"daylight_meetings")],
+		),
+		_answer(
+			&"meet_by_lamplight", "Meet by lamplight, when the day's work is done",
+			"The council met by lamplight, with the day's work done, and a good many people "
+			+ "arrived with their dinners, and the meetings ran long and warm.",
+			[_spend(&"wood", 4), _set_flag(&"lamplight_meetings")],
+			[_has(&"wood", 4)],
+		),
+		[_earned(&"the_square")]
+	)
+
+
+func _visiting_craftspeople() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"visiting_craftspeople", "Room for visiting craftspeople", &"character",
+			&"craft_visitors",
+			"Craftspeople from other towns are asking for room in the square, and {subject} "
+			+ "has noticed that the square is the one place that cannot grow.",
+			VillagerState.TRAIT_INDUSTRIOUS
+		),
+		_answer(
+			&"give_them_the_colonnade", "Give them a bay each, in the colonnade",
+			"Each visiting craftsperson was given a bay in the colonnade, and the square "
+			+ "filled with the sound of other towns' tools.",
+			[_set_flag(&"colonnade_crafts")],
+		),
+		_answer(
+			&"give_them_a_yard", "Give them a yard behind the square",
+			"A yard behind the square was cleared for them, and a gate made, and it became "
+			+ "the place where people went to see things being made.",
+			[_spend(&"wood", 6), _set_flag(&"craft_yard")],
+			[_has(&"wood", 6)],
+		),
+		[_earned(&"the_square")]
+	)
+
+
+func _a_visiting_book() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"a_visiting_book", "A visiting book", &"character", &"book_copy",
+			"A traveller has left a book behind, overnight, with a note asking that it be "
+			+ "looked after, and {subject} has already read the first page and is not sleeping.",
+			VillagerState.TRAIT_CURIOUS
+		),
+		_answer(
+			&"copy_the_book", "Copy it, page by page, before it goes on",
+			"The book was copied, page by page, by lamplight, and the copy was bound in "
+			+ "leather and set on the shelf with great ceremony.",
+			[_spend(&"food", 3), _set_flag(&"book_copied")],
+			[_has(&"food", 3)],
+		),
+		_answer(
+			&"gather_the_towns_stories", "Gather the town's own stories instead, and bind those",
+			"The town's own stories were gathered and bound, and the first reader found a "
+			+ "story about their grandmother and had to sit down.",
+			[_set_flag(&"stories_bound")],
+		),
+		[_earned(&"lamp_and_stage")]
+	)
+
+
+func _a_play() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"a_play", "A play", &"settlement", &"play",
+			"Someone has proposed a play, with parts for everyone, and the only question is "
+			+ "what it is about."
+		),
+		_answer(
+			&"a_play_about_the_cave", "A play about the cave, and the first fire",
+			"The play about the cave was performed by people dressed in furs, and a very "
+			+ "small person was a mammoth, and was the best thing in it.",
+			[_set_flag(&"play_cave")],
+		),
+		_answer(
+			&"a_play_about_the_voyage", "A play about the first ship across",
+			"The play about the voyage was performed with a ship made of chairs, and the "
+			+ "audience leaned with it in every wave.",
+			[_set_flag(&"play_voyage")],
+		),
+		[_earned(&"lamp_and_stage")]
+	)
+
+
+func _where_to_teach() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"where_to_teach", "Where to teach", &"character", &"teaching",
+			"{subject} has begun to teach whoever comes, and has noticed that they teach "
+			+ "better in one sort of place than another.",
+			VillagerState.TRAIT_SOCIAL
+		),
+		_answer(
+			&"teach_in_a_workshop", "Teach in the workshop, with hands full",
+			"The teaching moved into the workshop, where a lesson came with a task, and by "
+			+ "the end of the month a dozen people could do the thing.",
+			[_set_flag(&"teach_in_workshops")],
+		),
+		_answer(
+			&"teach_in_the_court", "Teach in the open court, with everyone listening",
+			"The teaching stayed in the court, where everyone could hear, and a crowd "
+			+ "formed, and the lessons were attended by people who had no business learning.",
+			[_set_flag(&"teach_in_the_court")],
+		),
+		[_earned(&"lamp_and_stage")]
+	)
+
+
+func _a_harbour_signal() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"a_harbour_signal", "A sign for the ships", &"settlement", &"harbour_signal",
+			"The ships that arrive are many now, and have nothing to tell them which is the "
+			+ "town's harbour, apart from the smell of bread."
+		),
+		_answer(
+			&"raise_a_tall_mark", "Raise a tall white mark on the headland",
+			"A tall white mark was raised on the headland, and could be seen from far out, "
+			+ "and captains began to describe the town as 'the one with the pillar'.",
+			[_spend(&"wood", 6), _set_flag(&"tall_mark")],
+			[_has(&"wood", 6)],
+		),
+		_answer(
+			&"fly_a_cloth", "Fly a coloured cloth from the old gate",
+			"A coloured cloth was flown from the old gate, and was visible only on windy "
+			+ "days, and the captains learned to read it.",
+			[_set_flag(&"cloth_signal")],
+		),
+		[_earned(&"wider_world")]
+	)
+
+
+func _words_brought_home() -> EventDef:
+	return _fork(
+		_classical_story_about(
+			&"words_brought_home", "Words brought home", &"exploration", &"words_home",
+			"{subject} has come back from the other towns with a head full of words that "
+			+ "nobody at home has, and a worrying tendency to use them.",
+			VillagerState.TRAIT_CURIOUS
+		),
+		_answer(
+			&"write_the_words_down", "Write them down, with what they mean",
+			"The new words were written down, with what they meant, and the town's word-list "
+			+ "grew by a page, and then, in an unfortunate week, by three.",
+			[_set_flag(&"words_written")],
+		),
+		_answer(
+			&"let_them_spread", "Let them spread by use, and see which stay",
+			"The new words were let spread by use, and some stayed, and some did not, and "
+			+ "the ones that stayed turned out to be the rude ones.",
+			[_set_flag(&"words_spread")],
+		),
+		[_earned(&"wider_world")]
+	)
+
+
+## The last three look toward what a later age could inherit (docs/ages.md, "Medieval: the
+## direction"): who keeps the water running, what travels with a book, and what a market's return
+## is owed. They promise nothing; they only set a flag.
+func _who_keeps_the_water_running() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"who_keeps_the_water_running", "Who keeps the water running", &"settlement",
+			&"water_keepers",
+			"The water has run for a long time now, and people have begun to ask who will "
+			+ "keep it running when the ones who built it are old."
+		),
+		_answer(
+			&"stewards_by_neighbourhood", "Name a steward for every neighbourhood",
+			"A steward was named for every neighbourhood, and each took up a staff and the "
+			+ "job, and the water ran as it always had, only with more opinions.",
+			[_set_flag(&"water_stewards")],
+		),
+		_answer(
+			&"a_craft_of_the_water", "Let those who build the channels form a craft",
+			"The builders of the channels formed a craft, with its own tools and its own "
+			+ "habits, and took on apprentices from the first week.",
+			[_set_flag(&"water_craft")],
+		),
+		[_earned(&"water_from_afar")]
+	)
+
+
+func _a_book_for_the_journey() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"a_book_for_the_journey", "A book for the journey", &"settlement", &"journey_book",
+			"The books are good and heavy, and the people who travel have begun to ask for "
+			+ "one that can go with them."
+		),
+		_answer(
+			&"a_copying_room", "Set a room aside where books are copied",
+			"A room was set aside where books were copied, and a smell of ink and warm "
+			+ "wax settled over it, and nobody was allowed to hurry.",
+			[_set_flag(&"copying_room")],
+		),
+		_answer(
+			&"travelling_teachers", "Train teachers who carry their lessons with them",
+			"Teachers were trained to carry their lessons with them, and set off in pairs "
+			+ "with satchels, and returned with more lessons than they had left with.",
+			[_set_flag(&"travelling_teachers")],
+		),
+		[_earned(&"lamp_and_stage")]
+	)
+
+
+func _when_the_market_returns() -> EventDef:
+	return _fork(
+		_classical_story(
+			&"when_the_market_returns", "When the market returns", &"settlement",
+			&"market_returns",
+			"The markets of the other towns come round on a rota, and the town's own comes "
+			+ "round on its own, and someone has asked how the rota should be shared."
+		),
+		_answer(
+			&"a_shared_charter", "Write the rota into a charter the towns share",
+			"The rota was written into a charter, and signed by all the towns, and the market "
+			+ "days fell into a kind of music.",
+			[_set_flag(&"market_charter")],
+		),
+		_answer(
+			&"hospitality_on_the_round", "Host each market with a meal, and stay as friends",
+			"Each market was met with a meal, and the visitors stayed as friends, and the "
+			+ "rota was kept by custom and kindness.",
+			[_set_flag(&"market_hospitality")],
+		),
+		[_earned(&"the_square")]
+	)
+
+
+## The Classical Age's one-line moments: the age's feel (paving, water, the square, lamps, ships),
+## several only after a milestone, a few about a trait and many that remember an answer.
+func _classical_ambient_lines() -> Array[EventDef]:
+	return [
+		_classical_ambient(
+			&"feet_on_the_paving",
+			"The first dry morning on the new paving, the whole town walked up and down it "
+			+ "for no reason, listening to its own feet.",
+			[_earned(&"paved_streets")]
+		),
+		_classical_ambient(
+			&"a_cart_on_the_stones",
+			"A cart went down the paved lane with a noise like a small thunderstorm, and "
+			+ "everyone came to the doors to see who had made it.",
+			[_earned(&"paved_streets")]
+		),
+		_classical_ambient(
+			&"water_in_the_morning",
+			"The water came down the channel at dawn, so clear that the town's reflection "
+			+ "ran along it upside-down.",
+			[_earned(&"water_from_afar")]
+		),
+		_classical_ambient(
+			&"children_at_the_basin",
+			"The children floated bark boats on the basin until the water ran off them, and "
+			+ "then, in a stunned silence, they started again.",
+			[_earned(&"water_from_afar")]
+		),
+		_classical_ambient(
+			&"the_law_read_at_noon",
+			"A line of the law was read aloud at noon in the square, and a small crowd "
+			+ "nodded as if it had been said about them personally.",
+			[_earned(&"written_law")]
+		),
+		_classical_ambient(
+			&"a_dispute_settled",
+			"Two neighbours argued over a fence, and went to the readers, and came home "
+			+ "talking, and the fence was moved a hand's breadth.",
+			[_earned(&"written_law")]
+		),
+		_classical_ambient(
+			&"noon_in_the_square",
+			"At noon the square was full of people, none of whom had a reason to be there "
+			+ "except the square.",
+			[_earned(&"the_square")]
+		),
+		_classical_ambient(
+			&"pigeons_on_the_stones",
+			"Pigeons walked about the square with a proprietary air, and took off all at "
+			+ "once when a child ran at them, and landed in the same place.",
+			[_earned(&"the_square")]
+		),
+		_classical_ambient(
+			&"a_lamp_in_the_window",
+			"A lamp burned late in a window of the learning room, and a second joined it, "
+			+ "and a third, and the street was lit in the oddest way.",
+			[_earned(&"lamp_and_stage")]
+		),
+		_classical_ambient(
+			&"a_line_forgotten",
+			"A player forgot a line on the stage, and the whole audience supplied it, in "
+			+ "unison, and the play went on better than before.",
+			[_earned(&"lamp_and_stage")]
+		),
+		_classical_ambient(
+			&"a_ship_from_three_towns",
+			"A ship came in carrying people from three towns who had never met, and they "
+			+ "walked up the lane together arguing cheerfully about directions.",
+			[_earned(&"wider_world")]
+		),
+		_classical_ambient(
+			&"a_letter_arrived",
+			"A letter arrived from a town nobody had heard of, written in a hand so careful "
+			+ "that it was read three times before anyone noticed what it said.",
+			[_earned(&"wider_world")]
+		),
+		_classical_ambient_about(
+			&"a_mason_admiring",
+			VillagerState.TRAIT_INDUSTRIOUS,
+			"{subject} stood at the end of the paved lane at dusk and looked along it, and "
+			+ "looked for some time, and did not say what for."
+		),
+		_classical_ambient_about(
+			&"a_listener_at_the_court",
+			VillagerState.TRAIT_SOCIAL,
+			"{subject} sat in the court in the evening and listened to people arguing "
+			+ "politely, and seemed to find it better than any song."
+		),
+		_classical_ambient_about(
+			&"a_reader_at_the_lamp",
+			VillagerState.TRAIT_CURIOUS,
+			"{subject} was found at the lamp long after everyone else had gone to bed, "
+			+ "reading something with a faintly alarmed expression."
+		),
+		_classical_ambient_about(
+			&"a_walker_by_the_channel",
+			VillagerState.TRAIT_NATURE_LOVING,
+			"{subject} walked along the channel at dawn, and told the water, quietly, where "
+			+ "it was going."
+		),
+		_classical_remembered(
+			&"slabs_in_the_rain", &"streets_slabbed",
+			"Rain ran off the broad slabs in sheets, and the lane gleamed, and a child "
+			+ "wrote a name on it with a wet finger."
+		),
+		_classical_remembered(
+			&"setts_at_dusk", &"streets_setted",
+			"The small stones of the street caught the last of the light in a thousand "
+			+ "little curves, and a visitor stopped to stare at the ground."
+		),
+		_classical_remembered(
+			&"cistern_echo", &"cistern_dug",
+			"A child leaned into the cistern and called, and the cistern called back a "
+			+ "good deal more deeply, and the child ran."
+		),
+		_classical_remembered(
+			&"arches_at_sunset", &"spring_arches",
+			"The arches stood in a long gold line at sunset, and somebody counted them aloud, "
+			+ "and got a different number each time."
+		),
+		_classical_remembered(
+			&"the_agreement_stone", &"agreements_cut",
+			"Someone ran a finger down a line of the agreements in the stone, slowly, as if "
+			+ "tracing a road."
+		),
+		_classical_remembered(
+			&"the_charter_copied", &"charter_written",
+			"A copy of the charter was carried to a far town, and read aloud there, and "
+			+ "somebody said it sounded very like home."
+		),
+		_classical_remembered(
+			&"awnings_in_the_wind", &"awning_market",
+			"The market awnings filled in the wind like sails, and the stalls beneath them "
+			+ "tugged gently at their pegs."
+		),
+		_classical_remembered(
+			&"the_open_meeting", &"open_meeting",
+			"The meeting was so open that a goat wandered in and was asked its view, to "
+			+ "general approval."
+		),
+		_classical_remembered(
+			&"the_library_lamp", &"library_kept",
+			"The library lamp was lit, and a very small boy was found asleep on the lowest "
+			+ "shelf, with a scroll for a pillow."
+		),
+		_classical_remembered(
+			&"the_first_night_on_the_stage", &"stage_built",
+			"The first night on the stage, a stranger in the crowd wept at the right moment, "
+			+ "and was thanked."
+		),
+		_classical_remembered(
+			&"the_harbour_lights", &"harbours_linked",
+			"The linked harbours lit their lamps in turn along the coast at dusk, and the "
+			+ "town watched the line of light go out to sea."
+		),
+		_classical_remembered(
+			&"the_market_wheel", &"market_circuit",
+			"The cart that had gone round the circuit of markets came home with a bell on it "
+			+ "that nobody had put there, and a story to go with the bell."
+		),
+		_classical_remembered(
+			&"the_seal_in_the_wax", &"seal_tree",
+			"The seal with the tree was pressed into the wax, and the tree came out so clear "
+			+ "that a leaf could be counted."
+		),
+		_classical_remembered(
+			&"the_bathhouse_steam", &"bathhouse",
+			"Steam rose from the bathhouse into the evening, and the whole street smelled of "
+			+ "warm stone and a little of thyme."
+		),
+		_classical_remembered(
+			&"the_standing_stone_seen_again", &"standing_stone",
+			"The standing stone at the crossing was found to be wearing a garland, and no "
+			+ "one would say who had put it there."
+		),
+		_classical_remembered(
+			&"the_gate_name_in_the_light", &"gate_name",
+			"The name over the gate caught the evening sun, and its letters stood out in "
+			+ "gold, and a child read them off, one by one, with pride."
+		),
+		_classical_remembered(
+			&"the_long_table_again", &"long_table",
+			"Somebody laid the long table in the square for no reason, and by evening the "
+			+ "whole town was sitting at it."
+		),
+		_classical_remembered(
+			&"the_guide_remembered", &"envoy_guided",
+			"The guide who had met the first rider on the road was asked to meet the next "
+			+ "one, and set off with a pleased look and a better cloak."
+		),
+	]
+
+
+## A Classical Age line: only in the age, rarer than the earlier ages', and only when every one of
+## `needs` holds.
+func _classical_ambient(
+	event_id: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _ambient(event_id, line)
+	event.requires = _conds([_cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL)])
+	event.requires.append_array(needs)
+	event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
+	return event
+
+
+func _classical_ambient_about(
+	event_id: StringName, trait_name: StringName, line: String, needs: Array[SimCondition] = []
+) -> EventDef:
+	var event: EventDef = _classical_ambient(event_id, line, needs)
+	event.category = &"character"
+	event.needs_subject = true
+	event.subject_requires = _conds([
+		_cond(SimCondition.Kind.SUBJECT_HAS_TRAIT, trait_name),
+		_cond(SimCondition.Kind.SUBJECT_AT_HOME),
+		_cond(SimCondition.Kind.SUBJECT_AWAKE),
+	])
+	return event
+
+
+func _classical_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
+	return _classical_ambient(event_id, line, [_flag_set(flag)])
 
 
 func _build_choice(

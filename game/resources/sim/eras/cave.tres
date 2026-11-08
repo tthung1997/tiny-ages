@@ -7,3 +7,5 @@ script = ExtResource("1_f2cps")
 id = &"cave"
 display_name = "Cave Age"
 description = "Hunter-gatherers sheltering in a cave, living by fire and flint."
+housing = 4
+max_villagers = 6

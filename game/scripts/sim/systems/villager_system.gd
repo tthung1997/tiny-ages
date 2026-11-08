@@ -57,8 +57,8 @@ func step(sim: Simulation) -> void:
 		working.append(villager)
 	var foragers: int = _count(working, VillagerState.ACTIVITY_FORAGE)
 	var hunters: int = _count(working, VillagerState.ACTIVITY_HUNT)
-	var food_rate: float = sim.food_multiplier()
-	var wood_rate: float = sim.wood_multiplier()
+	var food_rate: float = sim.food_multiplier() * sim.food_yield_scale()
+	var wood_rate: float = sim.wood_multiplier() * sim.wood_yield_scale()
 	for villager: VillagerState in working:
 		_work(sim, villager, foragers, hunters, food_rate, wood_rate)
 

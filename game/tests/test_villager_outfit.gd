@@ -27,6 +27,10 @@ func test_each_world_wears_what_it_has_earned() -> void:
 		[3, [], VillagerOutfit.CHECKED],
 		[3, [&"first_casting"], VillagerOutfit.CHECKED],
 		[3, [&"first_bloom"], VillagerOutfit.IRON],
+		[4, [], VillagerOutfit.LINEN],
+		[4, [&"first_bloom"], VillagerOutfit.LINEN],
+		[4, [&"paved_streets"], VillagerOutfit.LINEN],
+		[4, [&"the_square"], VillagerOutfit.CIVIC],
 	]
 	for item: Array in cases:
 		var earned: Array[StringName] = []
@@ -42,6 +46,7 @@ func test_an_achievement_means_nothing_before_its_age() -> void:
 		VillagerOutfit.for_world(_world(1, [&"woven_cloth", &"first_casting"])),
 		VillagerOutfit.WOVEN
 	)
+	assert_eq(VillagerOutfit.for_world(_world(3, [&"the_square"])), VillagerOutfit.CHECKED)
 
 
 func test_a_new_world_wears_furs() -> void:
@@ -52,7 +57,7 @@ func test_the_outfits_get_finer_as_the_world_does() -> void:
 	var seen: Array[StringName] = []
 	var steps: Array = [
 		[0, []], [1, []], [1, [&"woven_cloth"]], [2, []], [2, [&"first_casting"]],
-		[3, []], [3, [&"first_bloom"]],
+		[3, []], [3, [&"first_bloom"]], [4, []], [4, [&"the_square"]],
 	]
 	for step: Array in steps:
 		var earned: Array[StringName] = []
@@ -83,6 +88,8 @@ func test_sheet_paths_sit_in_each_outfits_own_folder() -> void:
 	assert_true(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.CHECKED).contains("/iron/"))
 	var iron: String = WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.IRON)
 	assert_true(iron.contains("/iron/villagers/fittings/"))
+	assert_true(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.LINEN).contains("/classical/villagers/linen/"))
+	assert_true(WorldLayout.villager_sheet_path(&"mira", VillagerOutfit.CIVIC).contains("/classical/villagers/civic/"))
 
 
 func test_the_outfits_are_drawn_differently() -> void:
@@ -91,7 +98,7 @@ func test_the_outfits_are_drawn_differently() -> void:
 		var sheet: Texture2D = load(WorldLayout.villager_sheet_path(&"mira", outfit)) as Texture2D
 		var image: Image = sheet.get_image()
 		seen[image.get_data().hex_encode()] = outfit
-	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "Seven outfits, seven different sheets")
+	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "Nine outfits, nine different sheets")
 
 
 func test_an_unknown_look_wears_miras_clothes_in_the_same_outfit() -> void:

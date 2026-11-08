@@ -130,6 +130,11 @@ PAL.checkedTheo = palWith(PAL.clothTheo, { shirt: '#bba66c', shirtD: '#968350', 
 PAL.checkedWren = palWith(PAL.clothWren, { shirt: '#a9b1bb', shirtD: '#868e9a', chkA: '#566a8a', chkB: '#b8903f', cloak: '#6f7e72', cloakD: '#566456', pants: '#4a4f58' });
 var BRONZE = '#d9a23a', BRONZE_L = '#f7d56a', BRONZE_D = '#9a6a1f';
 var IRON_D = '#2c313b', IRON_M = '#555d6b', IRON_L = '#9aa5b5';
+// Classical Age linen (use with outfit: 'linen' | 'civic'): `shirt` is the pale tunic, `trim` its hem
+// band, `cloak` and `cloakD` the mantle draped over one shoulder.
+PAL.linenMira = palWith(PAL.clothMira, { shirt: '#efe6d0', shirtD: '#cbbf9f', trim: '#b8402f', cloak: '#7c4a68', cloakD: '#5a3450' });
+PAL.linenTheo = palWith(PAL.clothTheo, { shirt: '#e8e0c8', shirtD: '#c4baa0', trim: '#2f5f8a', cloak: '#4f6e8f', cloakD: '#3a5270' });
+PAL.linenWren = palWith(PAL.clothWren, { shirt: '#eee6cc', shirtD: '#c9c0a2', trim: '#3f7a4a', cloak: '#c9953a', cloakD: '#a07428' });
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
@@ -160,13 +165,16 @@ function vil(o) {
     if (wk == 3) h2 = lh - 1;
     var ofit = o.outfit, field = ofit == 'field', brz = ofit == 'fittings', town = ofit == 'town' || brz;
     var irn = ofit == 'iron', chk = ofit == 'checked' || irn;
+    var civ = ofit == 'civic', lin = ofit == 'linen' || civ;
     var sole = o.fur ? '#5a4636' : '#4a3224';
     if (field) { legc = SKD; sole = '#c98a6a'; }
     if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
     if (chk) sole = '#7a5a3a';
+    if (lin) { legc = SKD; sole = '#8a5a36'; }
     function leg(x, h) {
       b.rect(x, legTop - dy, lw, h - 1 + dy, legc); b.rect(x, legTop + h - 1, lw + 1, 1, sole);
       if (town) b.rect(x, legTop - dy, lw, 1, '#9a7448'); // boot cuff
+      if (lin) b.px(x + 1, legTop + h - 2, '#c9a06a'); // a sandal strap
       if (chk) { // a laced shoe, studded with iron on the finer outfit
         b.px(x + 1, legTop + h - 1, '#e8dcb8');
         if (irn) { b.px(x, legTop + h - 1, IRON_L); b.px(x + 2, legTop + h - 1, IRON_L); }
@@ -231,6 +239,13 @@ function vil(o) {
       b.rect(bx, bodyTop, bw - 1, 2, cl.cloak); b.rect(bx, bodyTop + 2, 2, 1, cl.cloakD);
       b.px(bx + bw - 3, bodyTop + 3, irn ? IRON_D : '#e4e8ee'); b.px(bx + bw - 2, bodyTop + 3, irn ? IRON_M : '#9aa3b0');
       if (irn) { b.px(bx + 2, bodyTop + bh - 1, IRON_L); b.px(bx + 3, bodyTop + bh - 1, IRON_D); }
+    }
+    if (lin) { // Classical: a pale linen tunic to the knee with a coloured hem band and a cord belt, a mantle draped over one shoulder
+      b.rect(bx, bodyTop, bw, bh + 1, cl.shirt);
+      b.rect(bx, bodyTop + bh, bw, 1, cl.trim);
+      b.rect(bx, bodyTop + bh - 2, bw, 1, '#d9c9a0'); b.px(bx + bw - 2, bodyTop + bh - 1, '#d9c9a0');
+      b.rect(bx, bodyTop, bw - 1, 2, cl.cloak); b.rect(bx, bodyTop + 2, 2, 2, cl.cloak); b.px(bx + 1, bodyTop + 4, cl.cloakD);
+      if (civ) { b.rect(bx, bodyTop + 1, bw - 1, 1, cl.trim); b.px(bx + bw - 3, bodyTop + 2, BRONZE_L); b.px(bx + bw - 3, bodyTop + 3, BRONZE_D); }
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

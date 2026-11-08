@@ -39,8 +39,16 @@ func test_a_piece_is_found_in_the_newest_age_that_has_it() -> void:
 		"The Iron Age redraws it in timber and daub"
 	)
 	assert_true(
-		WorldLayout.piece_path(&"building_hut", 9).contains("/iron/"),
+		WorldLayout.piece_path(&"building_hut", 4).contains("/classical/"),
+		"The Classical Age redraws it as a plastered stone house"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_hut", 9).contains("/classical/"),
 		"A later age with no folder yet uses the newest there is"
+	)
+	assert_true(
+		WorldLayout.piece_path(&"building_lookout", 4).contains("/iron/"),
+		"A slot the Classical Age leaves alone keeps the Iron Age's piece"
 	)
 	assert_true(
 		WorldLayout.piece_path(&"building_lookout", 1).contains("/cave/"),
@@ -91,11 +99,12 @@ func test_props_follow_flags() -> void:
 	)
 	sim.world.flags[&"path_agriculture"] = true
 	assert_eq(
-		SceneProps.shown(sim.world), [&"west_plot_farm", &"cave_standard_cave"] as Array[StringName]
+		SceneProps.shown(sim.world), [&"cave_standard_cave"] as Array[StringName],
+		"Farming is the Field's to show, not a prop's"
 	)
 	sim.world.flags[&"path_herding"] = true
 	var shown: Array[StringName] = SceneProps.shown(sim.world)
-	assert_true(shown.has(&"west_pen") and shown.has(&"west_plot_patch"))
+	assert_true(shown.has(&"west_pen"))
 	assert_false(SceneProps.is_shown(&"no_such_prop", sim.world))
 
 
@@ -176,7 +185,7 @@ func test_a_played_settled_age_fills_the_world_with_what_the_group_did() -> void
 		bot.answer_all(sim)
 	var shown: Array[StringName] = SceneProps.shown(sim.world)
 	assert_true(shown.size() >= 8, "Only %d props after a whole age: %s" % [shown.size(), shown])
-	for expected: StringName in [&"west_plot_farm", &"pots", &"cloth_line", &"west_roof_a"]:
+	for expected: StringName in [&"pots", &"cloth_line", &"west_roof_a"]:
 		assert_true(shown.has(expected), "%s should have appeared" % expected)
 
 
@@ -249,8 +258,6 @@ func test_the_view_shows_props_only_when_the_world_says_so() -> void:
 	sim.world.flags[&"path_herding"] = true
 	view.on_world_changed()
 	assert_true((view._props[&"west_pen"] as Sprite2D).visible)
-	assert_true((view._props[&"west_plot_patch"] as Sprite2D).visible)
-	assert_false((view._props[&"west_plot_farm"] as Sprite2D).visible)
 	assert_true(view._signature != before, "The click region is rebuilt for the new pieces")
 	_free(view)
 

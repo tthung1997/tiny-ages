@@ -304,8 +304,9 @@ func test_the_hill_fort_gives_room() -> void:
 	assert_eq(sim.world.housing, before + 4)
 
 
-func test_the_town_may_grow_to_twenty_eight() -> void:
-	assert_eq(SimFixture.load_config().max_villagers, 28)
+func test_the_town_may_grow_to_twelve_before_the_next_age() -> void:
+	assert_eq(_gate().max_villagers, 12)
+	assert_eq(SimFixture.load_config().max_villagers, 14)
 
 
 func test_the_late_forks_set_the_flags_the_world_shows() -> void:

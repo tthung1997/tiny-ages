@@ -182,6 +182,21 @@ func test_a_landmark_is_named_where_it_is_drawn() -> void:
 	view.free()
 
 
+func test_the_signature_building_is_named_for_its_age() -> void:
+	var view: WorldView = _view()
+	view.jump_camera(0.0)
+	var layer: Sprite2D = view._landmark_sources[&"static_back"]
+	for era_order: int in WorldLandmarks.SIGNATURE_NAMES.size():
+		view._sim.world.era_order = era_order
+		view._refresh_props()
+		var spot: Vector2 = _solid_spot(layer, WorldLandmarks.LANDMARKS[&"cave"]["rects"][0])
+		var hit: HoverHit = view.thing_at(spot)
+		assert_true(hit != null and hit.key == &"landmark:cave", "Age %d: the landmark is hovered" % era_order)
+		if hit != null:
+			assert_eq(hit.text, WorldLandmarks.SIGNATURE_NAMES[era_order])
+	view.free()
+
+
 func test_the_fish_are_named_across_their_rectangles() -> void:
 	var view: WorldView = _view()
 	view.jump_camera(384.0)

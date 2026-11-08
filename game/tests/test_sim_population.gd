@@ -32,6 +32,76 @@ func test_everyone_eats_the_same_whatever_the_size_of_the_group() -> void:
 		assert_true(absf(share - per_tick) < 0.00001, "%d villagers eat %f each" % [size, share])
 
 
+func test_a_later_ages_villager_eats_and_brings_in_more() -> void:
+	var content: ContentLibrary = SimFixture.load_content()
+	var config: SimConfig = SimFixture.load_config()
+	var last_limit: int = 0
+	var last_need: float = 0.0
+	var last_food: float = 0.0
+	var last_wood: float = 0.0
+	for era: EraDef in content.eras:
+		assert_gt(era.max_villagers, last_limit - 1, "%s holds at least as many as the age before" % era.id)
+		assert_true(era.max_villagers <= config.max_villagers, "%s is inside the safety net" % era.id)
+		assert_true(era.housing <= era.max_villagers, "%s: housing is stretched to the ceiling" % era.id)
+		assert_gt(era.food_need_scale, last_need - 0.001, "%s eats at least as much per villager" % era.id)
+		assert_gt(era.food_yield_scale, last_food - 0.001, "%s forages at least as well" % era.id)
+		assert_gt(era.wood_yield_scale, last_wood - 0.001, "%s cuts at least as well" % era.id)
+		# What a villager eats and brings in grow together, so no age is starved or flooded.
+		assert_true(
+			absf(era.food_yield_scale - era.food_need_scale) < 0.001,
+			"%s: foraging keeps pace with eating" % era.id
+		)
+		last_limit = era.max_villagers
+		last_need = era.food_need_scale
+		last_food = era.food_yield_scale
+		last_wood = era.wood_yield_scale
+	assert_eq(content.get_era(&"cave").max_villagers, 6)
+	assert_eq(content.get_era(&"classical").max_villagers, 14)
+	var scaled: float = FoodSystem.ration_per_tick(4, config, 1.5)
+	assert_true(absf(scaled - FoodSystem.ration_per_tick(4, config) * 1.5) < 0.00001)
+
+
+func test_the_simulation_reads_the_scales_of_the_current_age() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	assert_eq(sim.food_need_scale(), 1.0)
+	sim.advance_era(&"settled")
+	var settled: EraDef = sim.content.get_era(&"settled")
+	assert_eq(sim.food_need_scale(), settled.food_need_scale)
+	assert_eq(sim.food_yield_scale(), settled.food_yield_scale)
+	assert_eq(sim.wood_yield_scale(), settled.wood_yield_scale)
+	assert_eq(sim.world.villager_limit, settled.max_villagers)
+
+
+func test_the_cave_ages_buildings_and_answers_cannot_stretch_past_the_ceiling() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var ceiling: int = sim.content.get_era(&"cave").max_villagers
+	sim.world.flags[&"lean_to"] = true
+	sim.world.flags[&"extra_roofs"] = true
+	sim.world.flags[&"town_wall"] = true
+	sim.refresh_housing()
+	assert_gt(sim.world.housing, ceiling, "The answers would give more room than the age allows")
+	while sim.world.room() > 0:
+		sim.add_villager()
+	assert_eq(sim.world.villagers.size(), ceiling, "...but the age's ceiling holds")
+
+
+func test_a_group_over_its_ceiling_keeps_everyone_and_waits_for_room() -> void:
+	var sim: Simulation = SimFixture.new_sim()
+	var ceiling: int = sim.content.get_era(&"cave").max_villagers
+	for _newcomer: int in ceiling + 3 - sim.world.villagers.size():
+		sim.add_villager()
+	var names: Array[StringName] = []
+	for villager: VillagerState in sim.world.villagers:
+		names.append(villager.id)
+	assert_gt(sim.world.villagers.size(), ceiling)
+	assert_eq(sim.world.room(), 0, "No negative room")
+	sim.advance_ticks(DAY * 3)
+	for id: StringName in names:
+		assert_true(sim.world.find_villager(id) != null, "%s is still here" % id)
+	sim.advance_era(&"settled")
+	assert_eq(sim.world.villagers.size(), names.size(), "The turn removes nobody")
+
+
 func test_foragers_share_the_ground_and_only_foragers() -> void:
 	var config: SimConfig = SimFixture.load_config()
 	assert_eq(VillagerSystem.shared_ground(0, config), 1.0)

@@ -313,6 +313,7 @@ func refresh_housing() -> void:
 		if world.has_flag(flag):
 			total += content.flag_housing[flag]
 	world.housing = total
+	world.villager_limit = era.max_villagers if era != null else config.max_villagers
 	if world.building_tags.size() != content.buildings.size():
 		world.building_tags.clear()
 		for def: BuildingDef in content.buildings:
@@ -358,6 +359,23 @@ func food_multiplier() -> float:
 func wood_multiplier() -> float:
 	var def: WeatherDef = current_weather()
 	return def.wood_multiplier if def != null else 1.0
+
+
+## The current age's economy scales (EraDef): what a villager eats and what they bring in by
+## foraging, hunting and cutting wood, against the base rates. 1.0 if the age is unknown.
+func food_need_scale() -> float:
+	var era: EraDef = content.get_era(world.era)
+	return era.food_need_scale if era != null else 1.0
+
+
+func food_yield_scale() -> float:
+	var era: EraDef = content.get_era(world.era)
+	return era.food_yield_scale if era != null else 1.0
+
+
+func wood_yield_scale() -> float:
+	var era: EraDef = content.get_era(world.era)
+	return era.wood_yield_scale if era != null else 1.0
 
 
 ## Weather breaks one completed building that carries `tag` (any if empty), picked with the

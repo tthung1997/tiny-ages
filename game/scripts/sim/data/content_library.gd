@@ -105,6 +105,11 @@ func validate() -> PackedStringArray:
 		if orders.has(era.order):
 			problems.append("era '%s' reuses order %d" % [era.id, era.order])
 		orders[era.order] = true
+		if era.max_villagers < starting_villager_count:
+			problems.append("era '%s' holds fewer villagers than a new group starts with" % era.id)
+		var next: EraDef = next_era(era.order)
+		if next != null and next.max_villagers < era.max_villagers:
+			problems.append("era '%s' holds fewer villagers than the age before it" % next.id)
 	for event: EventDef in events:
 		var where: String = "event '%s'" % event.id
 		if event.chance_per_tick <= 0.0 and not _is_scheduled_target(event.id):

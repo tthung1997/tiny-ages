@@ -67,6 +67,9 @@ const FRACTION_SCALE: float = 1000000.0
 ## How many villagers the camp holds. Derived from the age, the buildings and the answers the
 ## group gave, and kept up to date by Simulation.refresh_housing; it is never saved.
 var housing: int = 0
+## The age's ceiling on the group's size (EraDef.max_villagers), kept up to date alongside
+## `housing` and never saved.
+var villager_limit: int = 1000
 ## What weather can reach, by building definition: def id to its tags (BuildingDef.tags). Derived
 ## from the content like `housing`, kept up to date by Simulation.refresh_housing, never saved.
 var building_tags: Dictionary = {}
@@ -161,9 +164,11 @@ func has_achievement(key: StringName) -> bool:
 	return achievements.has(key)
 
 
-## How many more villagers the camp has room for; negative when over.
+## How many more villagers the camp has room for: its housing, held to the age's ceiling. Never
+## negative, so a group that is over its ceiling (an older save) keeps everyone and simply has no
+## room for more.
 func room() -> int:
-	return housing - villagers.size()
+	return maxi(mini(housing, villager_limit) - villagers.size(), 0)
 
 
 func new_id(prefix: String) -> StringName:
