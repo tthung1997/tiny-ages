@@ -232,10 +232,32 @@ const PROPS: Dictionary = {
 		"name": "Donkeys", "at_x": -384.0, "at_y": -2, "z": 77, "place": &"west_market",
 		"kind": Kind.FLAG, "key": &"donkeys", "from_era": 2, "replaced_by": &"market_arcade",
 	},
+	# The Bronze Age's road runs from the west edge to the bridge in five flat pieces, one per place it
+	# crosses (as the Classical street does, which replaces each in turn).
+	&"road_market": {
+		"name": "Road", "at_x": -384.0, "z": 54, "place": &"west_market",
+		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true, "ground": true,
+		"replaced_by": &"paved_street_market",
+	},
+	&"road_west": {
+		"name": "Road", "at_x": -384.0, "z": 54, "place": &"west_village",
+		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true, "ground": true,
+		"replaced_by": &"paved_street_west",
+	},
+	&"road_hall": {
+		"name": "Road", "at_x": 0.0, "z": 54, "place": &"cave_mouth",
+		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true, "ground": true,
+		"replaced_by": &"paved_street_hall",
+	},
 	&"road_camp": {
 		"name": "Road", "at_x": 0.0, "z": 54, "place": &"cave_yard",
-		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true,
+		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true, "ground": true,
 		"replaced_by": &"paved_street",
+	},
+	&"road_bank": {
+		"name": "Road", "at_x": 0.0, "z": 54, "place": &"river_bank",
+		"kind": Kind.FLAG, "key": &"road_laid", "from_era": 2, "behind": true, "ground": true,
+		"replaced_by": &"paved_street_bank",
 	},
 	&"quay_boats": {
 		"name": "Boats at the quay", "at_x": 0.0, "z": 73, "place": &"river_bank",
@@ -287,6 +309,74 @@ const PROPS: Dictionary = {
 	&"cave_standard_cave": {
 		"name": "Standard", "at_x": 0.0, "z": 22, "place": &"cave_cliff",
 		"kind": Kind.ALWAYS, "key": &"", "from_era": 0, "until_era": 1,
+	},
+	# Decor: the bushes, rocks, stumps and driftwood the world is dressed with. Each is its own piece
+	# (`"decor": true`, kind `ALWAYS`, always shown) in a prop space like any prop, and ranked below every
+	# prop (`LanePieces`, rank 5), so the first thing hidden when props need the room. Art: tools/art/
+	# cave_strip.js and cave_pages.js (`decor_camp_<n>`, `west_decor_<n>`, `east_decor_<n>`).
+	&"decor_camp_0": {
+		"name": "Rocks", "at_x": 0.0, "z": 72, "place": &"cave_yard", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"decor_camp_1": {
+		"name": "Rocks", "at_x": 0.0, "z": 72, "place": &"cave_yard", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_0": {
+		"name": "Stump", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_1": {
+		"name": "Stump", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_2": {
+		"name": "Fallen log", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_3": {
+		"name": "Bush", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_4": {
+		"name": "Bush", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_5": {
+		"name": "Bush", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_6": {
+		"name": "Rocks", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"west_decor_7": {
+		"name": "Rocks", "at_x": -384.0, "z": 72, "place": &"west_village", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_0": {
+		"name": "Rocks", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_1": {
+		"name": "Rocks", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_2": {
+		"name": "Bush", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_3": {
+		"name": "Bush", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_4": {
+		"name": "Driftwood", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
+	},
+	&"east_decor_5": {
+		"name": "Driftwood", "at_x": 384.0, "z": 72, "place": &"east_shore", "decor": true,
+		"kind": Kind.ALWAYS, "key": &"",
 	},
 	# The Classical Age (docs/ages.md, "Classical Age"): what its milestones put on the ground. Each
 	# one folds older pieces into a tidier whole (`replaced_by` on the old ones), so the town gets
@@ -342,6 +432,11 @@ static func ids() -> Array[StringName]:
 	for id: StringName in PROPS:
 		found.append(id)
 	return found
+
+
+## Whether a prop is decor (a bush, a rock): always shown, the first thing hidden for room.
+static func is_decor(id: StringName) -> bool:
+	return PROPS.get(id, {}).get("decor", false)
 
 
 static func z_of(id: StringName) -> int:
@@ -421,10 +516,11 @@ static func holds(kind: Kind, key: StringName, world: WorldState) -> bool:
 	return false
 
 
-## Every prop the world currently shows.
+## Every prop the world currently shows, but for decor: a bush or a rock is always there and is no
+## prop the group earned (see `is_decor`).
 static func shown(world: WorldState) -> Array[StringName]:
 	var found: Array[StringName] = []
 	for id: StringName in PROPS:
-		if is_shown(id, world):
+		if not is_decor(id) and is_shown(id, world):
 			found.append(id)
 	return found

@@ -206,11 +206,27 @@ reproducible from a seed. Never put node or scene-tree code in it; the view read
 
 ### The world view (`game/scripts/view/`)
 
-The view only reads `WorldState`; it never changes it, and the sim never knows it exists.
-`Game` calls `WorldView.on_world_changed()` after the sim advances.
+The view only reads `WorldState`, with one exception: `LanePlacer` records where it put each piece
+(`WorldState.lane_spaces`, `lane_order`), which the sim never reads. The sim never knows the view
+exists. `Game` calls `WorldView.on_world_changed()` after the sim advances.
 
+- **Buildings and props stand in reserved spaces on their lane** (issue #50, `docs/ages.md` V14).
+  `LaneSpaces` cuts both lanes into 28 px spaces 4 px apart, the prop lane offset by half a pitch so props
+  stand between buildings (terrain by zone, which are across the river; the same spaces in every
+  age); `LanePieces.TABLE` says each piece's lane,
+  how many spaces it takes, what it may stand on and its rank (1 headline, 2 need, 3 answer, 4
+  flavour, 5 decor: the bushes and rocks are pieces too, hidden first); `LanePlacer` puts what the
+  world shows in the free run nearest the hall, keeps it
+  there, and when a lane is full hides the lowest rank (never 1 or 2). Props on the ground and shore
+  all stand on one row, `WorldLayout.PROP_FOOT`, above the lane people walk. **A new building or prop
+  needs a `LanePieces.TABLE` entry** (or a place in `LanePieces.BACKDROP` if it is continuous
+  scenery) and art that fits its spaces: `test_lane_spaces.gd` checks both, and that every age has
+  room for ranks 1 and 2. Do not write an x for a piece: `WorldView` slides its sprite so the art
+  sits in the middle of its spaces, and hover, the click region, sites and villagers' spots
+  (`LaneLayout`, passed to `VillagerPlanner.plan`) all read the same layout.
 - Every art piece (`game/assets/world/<age>/*.png`) is a full 384×80 transparent sprite.
-  Most are drawn already at their final position, so placing one is `position = (0, 0)`; the rest
+  Most are drawn already at their final position (`BUILDINGS[id]["at"]` and `SceneProps` `at_x` are
+  where they were drawn, and what a backdrop piece keeps); the rest
   are *lifted* onto their lane (`BUILDINGS[id]["at"]`, `SceneProps` `at_y`, a plain sprite offset).
   Draw order is z = the foot row (see `WorldLayout`). **Three lanes**: buildings stand on the back lane
   (`WorldLayout.BACK_LANE`, foot row 67, the cave's base), small props on the mid lane (feet 72-76),

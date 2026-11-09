@@ -123,6 +123,8 @@ func test_props_can_follow_achievements_and_buildings() -> void:
 
 func test_every_prop_shows_for_its_trigger_and_only_then() -> void:
 	for prop_id: StringName in SceneProps.ids():
+		if SceneProps.is_decor(prop_id):
+			continue # decor is always there
 		var sim: Simulation = SimFixture.new_sim()
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
 		sim.world.era_order = int(spec.get("from_era", 0))
@@ -165,6 +167,8 @@ func test_every_prop_waits_for_something_the_game_can_actually_give() -> void:
 	for prop_id: StringName in SceneProps.ids():
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
 		var key: StringName = spec["key"]
+		if SceneProps.is_decor(prop_id):
+			continue
 		if spec["kind"] == SceneProps.Kind.ALWAYS:
 			assert_true(spec.has("from_era"), "%s would show in the first age" % prop_id)
 		elif spec["kind"] == SceneProps.Kind.FLAG:
@@ -247,6 +251,14 @@ func test_the_view_shows_props_only_when_the_world_says_so() -> void:
 	var view: WorldView = _view_for(sim)
 	for prop_id: StringName in view._props:
 		var spec: Dictionary = SceneProps.PROPS[prop_id]
+		if SceneProps.is_decor(prop_id):
+			# Always there, if the lane has a space for it.
+			assert_true(SceneProps.is_shown(prop_id, sim.world))
+			assert_eq(
+				(view._props[prop_id] as Sprite2D).visible, view._layout.is_placed(prop_id),
+				"%s is drawn when it has a space" % prop_id
+			)
+			continue
 		if spec["kind"] == SceneProps.Kind.ALWAYS:
 			assert_eq(
 				(view._props[prop_id] as Sprite2D).visible, SceneProps.is_shown(prop_id, sim.world),

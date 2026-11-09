@@ -29,7 +29,7 @@ const WHEEL_STEP: float = 48.0
 ## static prop layers each has (drawn by tools/art/cave_pages.js).
 const SIDE_PAGES: Dictionary = {"west_": -384, "east_": 384}
 const SIDE_STATIC: Dictionary = {
-	"west_": [&"static_back", &"static_mid"], "east_": [&"static_mid"],
+	"west_": [&"static_back", &"static_mid"], "east_": [&"static_back", &"static_mid"],
 }
 
 ## Villager sheet cells are 28x30; the feet are at (14, 28) inside a cell.
@@ -63,8 +63,16 @@ const PLACES: Dictionary = {
 ## foot row is `BACK_LANE` (the cave's base), where every building stands; the mid lane (foot rows
 ## 72-76) for what is smaller than a building; and the front lane (75-79) where people walk. The art
 ## is drawn with the first pieces on the bottom rows, so a piece is lifted onto its lane by `at`
-## (dx, dy: how far its sprite is moved), and `cx`, `foot` and `z` are where it ends up.
+## (dx, dy: how far its sprite is moved), and `cx`, `foot` and `z` are where it ends up. `cx` and the
+## dx of `at` are only where the art was drawn: the view stands each building in the spaces
+## `LanePlacer` gives it (`LaneSpaces`, issue #50) and slides the sprite there.
 const BACK_LANE: int = 67
+## Where the prop lane's pieces stand: one bottom row for every prop on the ground and the shore,
+## whatever row each was drawn on, a little above the front lane where villagers walk (75 to 79) so
+## nobody is hidden behind one (these pieces draw at `PROP_FOOT - 1` at most). The water court and
+## the clay pots stood on it before the lanes. (Boats and the river's pieces keep their rows: they
+## stand in the water.)
+const PROP_FOOT: int = 75
 const BUILDINGS: Dictionary = {
 	&"lookout": {"cx": 300, "foot": 66, "z": 66, "at": Vector2(0, 0)},
 	&"drying_rack": {"cx": 138, "foot": 67, "z": 67, "at": Vector2(6, -4)},
@@ -89,6 +97,9 @@ const BUILDINGS: Dictionary = {
 ## A building the view hides while another stands (or is going up) on its ground: the Granary takes
 ## the Drying Rack's place, so a field and a store do not stand on each other. The sim keeps both.
 const BUILDING_FOLDED_INTO: Dictionary = {&"drying_rack": &"granary"}
+## A building the view stops drawing when an age arrives, because what it was for is done another
+## way: the knapping spot made stone tools, and the Bronze Age has metal. The sim keeps it.
+const BUILDING_RETIRED_IN: Dictionary = {&"knapping_spot": 2}
 const FLOWER_Z: int = 73
 
 const CAVE_DOOR: Vector2 = Vector2(40.0, 78.0)
@@ -285,6 +296,8 @@ static func spot(spots: Array[Vector2], index: int) -> Vector2:
 static func building_shown(building_id: StringName, world: WorldState) -> bool:
 	if not world.has_building(building_id):
 		return false
+	if world.era_order >= int(BUILDING_RETIRED_IN.get(building_id, 1 << 30)):
+		return false
 	var successor: StringName = BUILDING_FOLDED_INTO.get(building_id, &"")
 	if successor == &"":
 		return true
@@ -298,9 +311,11 @@ static func building_offset(building_id: StringName) -> Vector2:
 	return slot.get("at", Vector2.ZERO)
 
 
-## Where a villager stands to work on a building site.
-static func build_spot(building_id: StringName, index: int) -> Vector2:
+## Where a villager stands to work on a building site, in front of it. `center_x` is where the
+## building stands (`LaneLayout.center_x`), its home slot if not given.
+static func build_spot(building_id: StringName, index: int, center_x: float = NAN) -> Vector2:
 	var slot: Dictionary = BUILDINGS.get(building_id, {})
-	var center_x: float = float(slot.get("cx", 150))
+	if is_nan(center_x):
+		center_x = float(slot.get("cx", 150))
 	var foot: float = float(slot.get("foot", 70))
 	return Vector2(center_x - 10.0 - float(posmod(index, 3)) * 7.0, minf(foot + 3.0, 79.0))
