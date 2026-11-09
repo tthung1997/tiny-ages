@@ -28,9 +28,13 @@ static func spread(plans: Array[VillagerPlan]) -> void:
 		placed.append(plan)
 
 
-## `slot` is the villager's index, used to spread people over the available spots.
+## `slot` is the villager's index, used to spread people over the available spots. `layout` is where
+## the view put each building and prop (`LanePlacer`): the smith, the trader and the builders go
+## where their building or the market stands, not where it was drawn first. Without one, the
+## pieces are where they were drawn.
 func plan(
-	villager: VillagerState, world: WorldState, config: SimConfig, slot: int
+	villager: VillagerState, world: WorldState, config: SimConfig, slot: int,
+	layout: LaneLayout = null
 ) -> VillagerPlan:
 	var result: VillagerPlan = VillagerPlan.new()
 	if villager.is_away():
@@ -44,7 +48,7 @@ func plan(
 		return result
 	match villager.activity:
 		VillagerState.ACTIVITY_GATHER_WOOD:
-			if not _plan_smith(result, villager, world, slot):
+			if not _plan_smith(result, villager, world, slot, layout):
 				result.target = WorldLayout.spot(WorldLayout.WOOD_SPOTS, slot)
 				result.pose = &"chop"
 				result.focus_x = WorldLayout.CHOP_X
@@ -55,16 +59,16 @@ func plan(
 			result.pose = &"spear"
 			result.focus_x = WorldLayout.HUNT_X
 		VillagerState.ACTIVITY_SOCIALIZE:
-			if not _plan_trader(result, villager, world, config, slot):
+			if not _plan_trader(result, villager, world, config, slot, layout):
 				if world.has_fire():
 					result.target = WorldLayout.spot(WorldLayout.SOCIAL_SPOTS, slot)
 					result.focus_x = WorldLayout.FIRE_X
 				else:
 					_plan_cold_camp(result, slot)
 		VillagerState.ACTIVITY_BUILD:
-			_plan_build(result, world, slot)
+			_plan_build(result, world, slot, layout)
 		VillagerState.ACTIVITY_WANDER:
-			if _plan_trader(result, villager, world, config, slot):
+			if _plan_trader(result, villager, world, config, slot, layout):
 				return result
 			result.wander = true
 			var range_x: Vector2 = WorldLayout.wander_range(world)
@@ -78,35 +82,66 @@ func plan(
 
 
 ## A Smith with a Smithy to work at hammers in front of it instead of cutting wood in the forest
-## (in the sim it is still wood for the hearth; the view only shows where it is spent).
+## (in the sim it is still wood for the hearth; the view only shows where it is spent). The spots
+## were written for the Smithy's home, so they move with it.
 func _plan_smith(
-	result: VillagerPlan, villager: VillagerState, world: WorldState, slot: int
+	result: VillagerPlan, villager: VillagerState, world: WorldState, slot: int,
+	layout: LaneLayout
 ) -> bool:
 	if villager.profession != &"smith" or not world.has_building(&"smithy"):
 		return false
-	result.target = WorldLayout.spot(WorldLayout.SMITHY_SPOTS, slot)
+	var home: float = float(WorldLayout.BUILDINGS[&"smithy"]["cx"])
+	var moved: float = _moved(layout, &"smithy", home)
+	if is_nan(moved):
+		return false
+	result.target = WorldLayout.spot(WorldLayout.SMITHY_SPOTS, slot) + Vector2(moved - home, 0.0)
 	result.pose = &"hammer"
-	result.focus_x = float(WorldLayout.BUILDINGS[&"smithy"]["cx"])
+	result.focus_x = moved
 	return true
+
+
+## Where a building stands: the middle of its spaces, or its home with no layout, or NAN if the
+## view has no space for it (so nobody goes there).
+static func _moved(layout: LaneLayout, key: StringName, home: float) -> float:
+	if layout == null:
+		return home
+	return layout.center_x(key, NAN)
+
+
+## Where the market stands: the arcade once there is one, else the stalls; the home spot with no
+## layout, NAN if neither is in a space.
+static func _market_x(layout: LaneLayout) -> float:
+	if layout == null:
+		return WorldLayout.MARKET_X
+	for key: StringName in LanePieces.MARKET_KEYS:
+		if layout.is_placed(key):
+			return layout.center_x(key)
+	return NAN
 
 
 ## A Trader walks the road: to the market once there is one, and to the Trading Post, on
 ## alternate days, instead of wandering at random.
 func _plan_trader(
-	result: VillagerPlan, villager: VillagerState, world: WorldState, config: SimConfig, slot: int
+	result: VillagerPlan, villager: VillagerState, world: WorldState, config: SimConfig, slot: int,
+	layout: LaneLayout
 ) -> bool:
 	if villager.profession != &"trader":
 		return false
-	var market: bool = world.has_flag(&"market_day")
-	var post: bool = world.has_building(&"trading_post")
+	var post_home: float = float(WorldLayout.BUILDINGS[&"trading_post"]["cx"])
+	var post_x: float = _moved(layout, &"trading_post", post_home)
+	var market_x: float = _market_x(layout)
+	var market: bool = world.has_flag(&"market_day") and not is_nan(market_x)
+	var post: bool = world.has_building(&"trading_post") and not is_nan(post_x)
 	if not market and not post:
 		return false
 	if market and (not post or posmod(config.day_of(world.tick) + slot, 2) == 0):
-		result.target = WorldLayout.spot(WorldLayout.MARKET_SPOTS, slot)
-		result.focus_x = WorldLayout.MARKET_X
+		result.target = WorldLayout.spot(WorldLayout.MARKET_SPOTS, slot) \
+				+ Vector2(market_x - WorldLayout.MARKET_X, 0.0)
+		result.focus_x = market_x
 	else:
-		result.target = WorldLayout.spot(WorldLayout.POST_SPOTS, slot)
-		result.focus_x = float(WorldLayout.BUILDINGS[&"trading_post"]["cx"])
+		result.target = WorldLayout.spot(WorldLayout.POST_SPOTS, slot) \
+				+ Vector2(post_x - post_home, 0.0)
+		result.focus_x = post_x
 	return true
 
 
@@ -163,12 +198,15 @@ func _plan_cold_camp(result: VillagerPlan, slot: int) -> void:
 	result.focus_x = WorldLayout.COLD_X
 
 
-func _plan_build(result: VillagerPlan, world: WorldState, slot: int) -> void:
+func _plan_build(result: VillagerPlan, world: WorldState, slot: int, layout: LaneLayout) -> void:
 	var site: BuildingState = world.constructing()
 	if site == null:
 		_plan_hearth(result, world, slot)
 		return
-	result.target = WorldLayout.build_spot(site.def_id, slot)
-	result.pose = &"hammer"
 	var slot_data: Dictionary = WorldLayout.BUILDINGS.get(site.def_id, {})
-	result.focus_x = float(slot_data.get("cx", result.target.x + 10.0))
+	var center: float = float(slot_data.get("cx", 150))
+	if layout != null:
+		center = layout.center_x(site.def_id, center)
+	result.target = WorldLayout.build_spot(site.def_id, slot, center)
+	result.pose = &"hammer"
+	result.focus_x = center if slot_data.has("cx") else result.target.x + 10.0

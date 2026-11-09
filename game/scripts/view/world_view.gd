@@ -45,6 +45,7 @@ var _static_layers: Array[Sprite2D] = []
 var _buildings: Dictionary = {}
 var _sites: Dictionary = {}
 var _props: Dictionary = {}
+var _layout: LaneLayout = LaneLayout.new()
 var _art_era: int = -1
 var _outfit: StringName = VillagerOutfit.FUR
 var _flower_sprout: Sprite2D
@@ -341,7 +342,8 @@ func _animate_beacon(delta: float) -> void:
 	if not _east_light_shown():
 		return
 	var lit_x: Vector2 = WorldLayout.LIGHTHOUSE_LIGHT_X \
-			if SceneProps.is_shown(&"east_harbour", _sim.world) else WorldLayout.BEACON_LIGHT_X
+			if _light_carrier() == &"east_harbour" else WorldLayout.BEACON_LIGHT_X
+	lit_x += Vector2(_light_shift(), _light_shift())
 	var left: float = float(_camera.pixel_x())
 	if left > lit_x.y or left + float(WorldLayout.VIEW_SIZE.x) < lit_x.x:
 		return
@@ -354,9 +356,9 @@ func _animate_beacon(delta: float) -> void:
 
 ## The east shore's light: the beacon from the Iron Age, and from the Classical Age the lighthouse of
 ## the harbour, which takes its place (and its night light, `east_beacon_glow` in the Classical folder).
+## It only burns while its piece has a space and is drawn.
 func _east_light_shown() -> bool:
-	return SceneProps.is_shown(&"east_beacon", _sim.world) \
-			or SceneProps.is_shown(&"east_harbour", _sim.world)
+	return _light_carrier() != &""
 
 
 func set_beacon_frame(frame: int) -> void:
@@ -697,12 +699,24 @@ func _refresh_props() -> void:
 	if world.era_order != _art_era:
 		_art_era = world.era_order
 		_retexture_pieces()
+	_layout = LanePlacer.place(world)
 	var site: BuildingState = world.constructing()
 	for building_id: StringName in _buildings:
-		(_buildings[building_id] as Sprite2D).visible = WorldLayout.building_shown(building_id, world)
-		(_sites[building_id] as Sprite2D).visible = site != null and site.def_id == building_id
+		var placed: bool = _layout.is_placed(building_id)
+		var building: Sprite2D = _buildings[building_id]
+		var building_site: Sprite2D = _sites[building_id]
+		building.visible = placed and WorldLayout.building_shown(building_id, world)
+		building_site.visible = placed and site != null and site.def_id == building_id
+		_seat(building, building_id)
+		_seat(building_site, building_id)
 	for prop_id: StringName in _props:
-		(_props[prop_id] as Sprite2D).visible = SceneProps.is_shown(prop_id, world)
+		var prop: Sprite2D = _props[prop_id]
+		prop.visible = SceneProps.is_shown(prop_id, world) and _layout.is_drawn(prop_id)
+		prop.position = _prop_pos(prop_id)
+		prop.z_index = SceneProps.z_of(prop_id)
+		if LanePieces.is_on_prop_foot(LanePieces.key_of(prop_id)) and _layout.is_placed(LanePieces.key_of(prop_id)):
+			prop.z_index = mini(prop.z_index, WorldLayout.PROP_FOOT - 1)
+	_seat_light()
 	var planted: bool = not world.plants.is_empty()
 	var bloomed: bool = planted and world.plants[0].flowered
 	_flower_sprout.visible = planted and not bloomed
@@ -712,6 +726,60 @@ func _refresh_props() -> void:
 	if signature != _signature:
 		_signature = signature
 		_rebuild_skyline()
+
+
+## Puts a building's art in the middle of its spaces, if it has some (and on the prop foot row if
+## it is a prop-lane piece, like the knapping spot).
+func _seat(sprite: Sprite2D, building_id: StringName) -> void:
+	if not _layout.is_placed(building_id):
+		return
+	var art: Rect2i = LanePieces.art_rect(sprite.get_meta(&"layer"), _art_era)
+	if art.size.x > 0:
+		sprite.position.x = _layout.sprite_x(building_id, art)
+		if LanePieces.is_on_prop_foot(building_id):
+			sprite.position.y = float(WorldLayout.PROP_FOOT - (art.end.y - 1))
+			sprite.z_index = mini(sprite.z_index, WorldLayout.PROP_FOOT - 1)
+
+
+## Where a prop's sprite goes: the middle of its spaces, on the prop foot row if it is on one; an
+## overlay (the dyed cloth) moves with the piece under it; backdrop stays where it was drawn.
+func _prop_pos(prop_id: StringName) -> Vector2:
+	var home: Vector2 = Vector2(SceneProps.at_x_of(prop_id), SceneProps.at_y_of(prop_id))
+	var spec: Dictionary = SceneProps.PROPS[prop_id]
+	if spec.has("overlays"):
+		var base: StringName = spec["overlays"]
+		var base_home: Vector2 = Vector2(SceneProps.at_x_of(base), SceneProps.at_y_of(base))
+		return _prop_pos(base) - base_home + home
+	var key: StringName = LanePieces.key_of(prop_id)
+	if LanePieces.has(prop_id) and _layout.is_placed(key):
+		var art: Rect2i = LanePieces.art_rect(prop_id, _art_era)
+		if art.size.x > 0:
+			var y: float = home.y
+			if LanePieces.is_on_prop_foot(key):
+				y = float(WorldLayout.PROP_FOOT - (art.end.y - 1))
+			return Vector2(_layout.sprite_x(key, art), y)
+	return home
+
+
+## The east shore's night light is drawn with its piece, so it moves with the piece it belongs to:
+## the harbour's lighthouse once there is a harbour, else the beacon.
+func _light_carrier() -> StringName:
+	for id: StringName in [&"east_harbour", &"east_beacon"]:
+		if (_props[id] as Sprite2D).visible:
+			return id
+	return &""
+
+
+## How far the east shore's light has moved from where its art was drawn.
+func _light_shift() -> float:
+	var carrier: StringName = _light_carrier()
+	if carrier == &"":
+		return 0.0
+	return (_props[carrier] as Sprite2D).position.x - SceneProps.at_x_of(carrier)
+
+
+func _seat_light() -> void:
+	_beacon_glow.position.x = float(WorldLayout.SIDE_PAGES["east_"]) + _light_shift()
 
 
 ## The season's palette on the scrolling world, and the few pieces it adds (snow, blossom,
@@ -766,7 +834,7 @@ func _refresh_actors() -> void:
 			_actors.erase(id)
 	var plans: Array[VillagerPlan] = []
 	for slot: int in world.villagers.size():
-		plans.append(_planner.plan(world.villagers[slot], world, _sim.config, slot))
+		plans.append(_planner.plan(world.villagers[slot], world, _sim.config, slot, _layout))
 	VillagerPlanner.spread(plans)
 	for slot: int in world.villagers.size():
 		var villager: VillagerState = world.villagers[slot]
@@ -907,10 +975,11 @@ func _shape_signature() -> String:
 	var parts: PackedStringArray = PackedStringArray()
 	parts.append(str(_art_era))
 	for building_id: StringName in _buildings:
-		parts.append("b" if (_buildings[building_id] as Sprite2D).visible else "-")
-		parts.append("s" if (_sites[building_id] as Sprite2D).visible else "-")
+		for sprite: Sprite2D in [_buildings[building_id], _sites[building_id]]:
+			parts.append("b%d" % int(sprite.position.x) if sprite.visible else "-")
 	for prop_id: StringName in _props:
-		parts.append("o" if (_props[prop_id] as Sprite2D).visible else "-")
+		var prop: Sprite2D = _props[prop_id]
+		parts.append("o%d" % int(prop.position.x) if prop.visible else "-")
 	parts.append("f" if _flower_sprout.visible else "-")
 	parts.append("F" if _flower_bloom.visible else "-")
 	parts.append("p" if _fire_pit.visible else "-")

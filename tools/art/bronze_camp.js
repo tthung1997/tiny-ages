@@ -432,24 +432,25 @@ function donkeypair(b) {
   blit(b, outlined(rear, OUT), 9, 0); blit(b, outlined(front, OUT), 0, 0);
 }
 
-// ---- the road (camp page, a flat backdrop strip, 118x4) ---------------------------------------------
-// A laid stone road: a pale curb along the top, two courses of flat paving stones with dark joints (the
+// ---- the road (a flat backdrop strip, 4 rows, one piece per place it crosses) ---------------------------
+// The road runs from the west edge to the bridge like the Classical street that replaces it (five
+// pieces: road_market and road_west on the west page, road_hall, road_camp and road_bank on the
+// camp page). A laid stone road: a pale curb along the top, two courses of flat paving stones with dark joints (the
 // lower course offset), worn wheel ruts and a dark gutter along the bottom. The game draws it behind
 // everything, so it runs under the buildings; it is pale against the grass and flat, with no outline.
-function roadstrip() {
-  var B = new Buf(W, H), x, y, x0 = 88, x1 = 206, st, len, k, c, rut, tones = { 77: ['#d6cfb9', '#e0d9c3', '#cdc6b0'], 78: ['#bdb6a0', '#c6bfa9', '#b3ac96'] };
-  function inRut(px) { return (px >= 104 && px < 150) || (px >= 158 && px < 200); }
+function roadstrip(x0, x1) {
+  var B = new Buf(W, H), x, y, st, len, k, c, rut, tones = { 77: ['#d6cfb9', '#e0d9c3', '#cdc6b0'], 78: ['#bdb6a0', '#c6bfa9', '#b3ac96'] };
+  function inRut(px) { return (px % 96) >= 16 && (px % 96) < 62; }
   for (x = x0; x < x1; x++) {
-    if (x >= x0 + 3 && x < x1 - 3) B.px(x, 76, (x % 9 == 4) ? '#bdb59d' : '#ebe5d0');
-    B.px(x, 79, (x < x0 + 2 || x >= x1 - 2) ? '#8a867a' : ((x * 5) % 11 < 2 ? '#8e9ea4' : '#6f6c60'));
+    B.px(x, 76, (x % 9 == 4) ? '#bdb59d' : '#ebe5d0');
+    B.px(x, 79, ((x * 5) % 11 < 2 ? '#8e9ea4' : '#6f6c60'));
   }
   for (y = 77; y <= 78; y++) {
-    st = 0; x = x0 + (y == 78 ? 3 : 0) - (y == 78 ? 0 : 0);
+    st = 0; x = x0 + (y == 78 ? 3 : 0);
     while (x < x1) {
       len = 5 + ((x * 7 + y * 3) % 3); k = ((x + y * 5) % 3);
       for (c = 0; c < len && x + c < x1; c++) {
-        if (x + c < x0 + (y == 77 ? 2 : 0) || x + c >= x1 - (y == 77 ? 2 : 0)) continue;
-        rut = y == 78 ? inRut(x + c) : ((x + c >= 108 && x + c < 128) || (x + c >= 168 && x + c < 188));
+        rut = y == 78 ? inRut(x + c) : ((x + c) % 96 >= 20 && (x + c) % 96 < 40) || ((x + c) % 96 >= 72 && (x + c) % 96 < 92);
         B.px(x + c, y, c == len - 1 ? (y == 77 ? '#7d7868' : '#6e6a5c') : (rut ? (y == 78 ? '#9d968c' : '#c2bba6') : tones[y][k]));
       }
       x += len;
@@ -730,7 +731,11 @@ layers.east_sail = layerOf([obj(18, 16, 305, 61, sailship, { sh: 0 })]);
 layers.market_stalls = layerOf([obj(38, 17, 36, 70, market, { sh: 0, z: 72 })]);
 layers.cart = layerOf([obj(24, 15, 15, 79, cart, { sh: 0 })]);
 layers.donkeys = layerOf([obj(22, 12, 41, 80, donkeypair, { sh: 0, raw: true, z: 79 })]);
-layers.road_camp = roadstrip();
+layers.road_market = roadstrip(0, 56);
+layers.road_west = roadstrip(56, 384);
+layers.road_hall = roadstrip(0, 88);
+layers.road_camp = roadstrip(88, 264);
+layers.road_bank = roadstrip(264, 304);
 layers.farmstead_herd = layerOf([obj(62, 22, 280, 79, herdstead, { sh: 0, z: 78 })]);
 layers.council_ring = layerOf([obj(44, 16, 32, 69, councilring, { sh: 0, z: 72 })]);
 layers.tally_post = layerOf([obj(44, 19, 32, 72, tallypost, { sh: 0, z: 72 })]);

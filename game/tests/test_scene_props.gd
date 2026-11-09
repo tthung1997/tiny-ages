@@ -598,3 +598,60 @@ func test_a_prop_waits_for_its_era() -> void:
 	}
 	assert_false(SceneProps.is_shown_in(props, &"later", _world_with(&"a", 1)))
 	assert_true(SceneProps.is_shown_in(props, &"later", _world_with(&"a", 2)))
+
+
+const ROAD: Array[StringName] = [
+	&"road_market", &"road_west", &"road_hall", &"road_camp", &"road_bank",
+]
+const STREET: Array[StringName] = [
+	&"paved_street_market", &"paved_street_west", &"paved_street_hall", &"paved_street",
+	&"paved_street_bank",
+]
+
+
+func test_the_road_runs_from_the_west_edge_to_the_bridge_and_the_street_takes_it_in() -> void:
+	var world: WorldState = _empty_world(2)
+	assert_false(SceneProps.is_shown(&"road_camp", world), "No road until it is laid")
+	world.flags[&"road_laid"] = true
+	var covered: Dictionary = {}
+	for id: StringName in ROAD:
+		assert_true(SceneProps.is_shown(id, world), "%s is laid" % id)
+		var art: Rect2 = _art_rect(id, 2)
+		for x: int in range(int(art.position.x), int(art.end.x)):
+			covered[x] = true
+	for x: int in range(WorldLayout.WORLD_LEFT, int(WorldLayout.CROSSING_X.x)):
+		assert_true(covered.has(x), "The road is missing at x %d" % x)
+	# Each stretch of road gives way to the Classical street over the same ground.
+	world.era_order = 4
+	world.achievements.append(&"paved_streets")
+	for index: int in ROAD.size():
+		assert_false(SceneProps.is_shown(ROAD[index], world), "%s is paved over" % ROAD[index])
+		assert_true(SceneProps.is_shown(STREET[index], world))
+		assert_true(
+			_art_rect(ROAD[index], 2).position.x <= _art_rect(STREET[index], 4).position.x + 1.0
+			and _art_rect(ROAD[index], 2).end.x >= _art_rect(STREET[index], 4).end.x - 1.0,
+			"%s is under %s" % [ROAD[index], STREET[index]]
+		)
+
+
+func test_the_spits_trees_stand_in_a_row_behind_what_is_built_there() -> void:
+	assert_true(WorldLayout.SIDE_STATIC["east_"].has(&"static_back"), "The east page has a back layer")
+	assert_true(int(WorldLayout.STATIC_Z[&"static_back"]) < WorldLayout.BACK_LANE - 5)
+	var back: Image = (load("res://assets/world/cave/east_static_back.png") as Texture2D).get_image()
+	var mid: Image = (load("res://assets/world/cave/east_static_mid.png") as Texture2D).get_image()
+	var trees: int = back.get_used_rect().size.x
+	assert_gt(trees, 60, "The pines and palms are drawn")
+	# Nothing in front of the buildings is taller than the reeds and bushes any more: no tree crowns.
+	var tallest: int = 80
+	for x: int in mid.get_width():
+		for y: int in 80:
+			if mid.get_pixel(x, y).a > 0.05:
+				tallest = mini(tallest, y)
+				break
+	assert_gt(tallest, 40, "The front layer keeps only low things (its top is row %d)" % tallest)
+	# The tree crowns stay clear of the building lane's feet (they are behind, not in front).
+	var feet: int = 0
+	for x: int in back.get_width():
+		for y: int in range(WorldLayout.BACK_LANE, 80):
+			feet += 1 if back.get_pixel(x, y).a > 0.05 else 0
+	assert_eq(feet, 0, "No tree trunk reaches the building lane's foot row")

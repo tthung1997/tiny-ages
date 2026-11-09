@@ -235,6 +235,7 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 	view.setup(sim, window)
 	var west: int = 0
 	var east: int = 0
+	var props: int = 0
 	for node: Node in view.find_children("*", "Sprite2D", true, false):
 		var sprite: Sprite2D = node as Sprite2D
 		if sprite.texture == null and not sprite.visible:
@@ -242,36 +243,22 @@ func test_the_view_builds_three_pages_and_pans() -> void:
 		assert_true(sprite.texture != null, "Every piece has art")
 		if sprite.texture is AtlasTexture or sprite.texture is ImageTexture:
 			continue # weather, wreckage and season pieces are not page art
+		if sprite.has_meta(&"layer") and SceneProps.PROPS.has(sprite.get_meta(&"layer")):
+			props += 1 # a prop stands wherever the lane spaces put it, not on its page
+			continue
 		if sprite.position.x == float(WorldLayout.SIDE_PAGES["west_"]):
-			var prop_piece: bool = sprite.has_meta(&"layer") \
-					and SceneProps.PROPS.has(sprite.get_meta(&"layer"))
-			if not prop_piece:
-				assert_true(
-					sprite.texture.resource_path.contains("west_"), "West page art on the west"
-				)
+			assert_true(sprite.texture.resource_path.contains("west_"), "West page art on the west")
 			west += 1
 		elif sprite.position.x == float(WorldLayout.SIDE_PAGES["east_"]):
-			var east_prop: bool = sprite.has_meta(&"layer") \
-					and SceneProps.PROPS.has(sprite.get_meta(&"layer"))
-			if not east_prop:
-				assert_true(
-					sprite.texture.resource_path.contains("east_"), "East page art on the east"
-				)
+			assert_true(sprite.texture.resource_path.contains("east_"), "East page art on the east")
 			east += 1
 	var backdrop: int = WorldLayout.BACKDROP.size()
-	var west_props: int = 0
-	var east_props: int = 0
-	for prop_id: StringName in SceneProps.ids():
-		if SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["west_"]):
-			west_props += 1
-		elif SceneProps.at_x_of(prop_id) == float(WorldLayout.SIDE_PAGES["east_"]):
-			east_props += 1
-	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size() + west_props)
-	# the sea, the tide's flats, the river's life and its deer, the beacon's light and the east page's props
-	var east_extras: int = 5 + east_props
+	assert_eq(props, SceneProps.ids().size(), "Every prop has its piece")
+	assert_eq(west, backdrop + WorldLayout.SIDE_STATIC["west_"].size())
+	# the sea, the tide's flats, the river's life and its deer, and the beacon's light
 	assert_eq(
-		east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + east_extras,
-		"Plus the sea, flats, life, deer, beacon light and props"
+		east, backdrop + WorldLayout.SIDE_STATIC["east_"].size() + 5,
+		"Plus the sea, flats, life, deer and beacon light"
 	)
 	assert_eq(view.camera_x(), 0, "Starts on the camp")
 	assert_eq(view.clickable_regions().size(), 2, "An arrow region on each edge")

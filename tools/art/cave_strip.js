@@ -67,8 +67,11 @@ function layerOf(list) { var b = new Buf(W, H); list.sort(function (p, q) { retu
 
 // always-present
 var backProps = [obj(100, 54, 50, 66, cliff, { sh: 34 }), obj(16, 26, 204, 65, pine, { sh: 6 }), obj(42, 28, 236, 64, mammoth, { sh: 17 })];
-var midProps = [obj(12, 8, 198, 71, bush, { sh: 5 }),
-  obj(10, 6, 30, 76, rocks, { sh: 4 }), obj(10, 6, 250, 76, rocks, { sh: 4 }), obj(10, 6, 120, 78, rocks, { sh: 4 })];
+var midProps = [obj(12, 8, 198, 71, bush, { sh: 5 }), obj(10, 6, 30, 76, rocks, { sh: 4 })];
+// Decor the game can take away when props need the room (ranked below every prop, scripts/view/lane_pieces.gd):
+// each is its own piece (decor_camp_<n>, SceneProps), stands at the middle of a building space (x = 118 + 28 k),
+// clear of the joins where props go.
+var decorProps = [obj(10, 6, 258, 76, rocks, { sh: 4 }), obj(10, 6, 118, 78, rocks, { sh: 4 })];
 // the fire pit only exists once the fire is found (state-driven, like a building)
 // warm light cast by the fire at night: dithered bands round the pit and a small pool in the cave
 // mouth. Semi-transparent warm orange; the game draws it additively, fading it in as it darkens.
@@ -112,6 +115,7 @@ for (var id in SLOTS) {
   layerFiles['building_' + id] = layerOf([obj(sl[0], sl[1], sl[2], sl[3], sl[4], { sh: sl[5] })]);
   layerFiles['site_' + id] = layerOf([obj(SITE[0], SITE[1], sl[2], sl[3], buildsite, { sh: 8 })]);
 }
+for (i = 0; i < decorProps.length; i++) layerFiles['decor_camp_' + i] = layerOf([decorProps[i]]);
 layerFiles.flower_sprout = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], sprout, { sh: 3 })]);
 layerFiles.flower_bloom = layerOf([obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 })]);
 for (i = 0; i < FLAMES.length; i++) layerFiles['fire_pit_' + i] = firelit(layerOf([obj(FIREPIT[0], FIREPIT[1], FIREPIT[2], FIREPIT[3], flameFn(i), { sh: 8 })]));
@@ -125,7 +129,7 @@ var people = [
   obj(27, 27, 180, 77, vil({ pal: PAL.furTan, fur: true, role: 'gatherer', pose: 'walk', f: 1, hair: 'bun' }), { sh: 5 }),
   obj(27, 27, 214, 79, vil({ pal: PAL.furOchre, fur: true, stone: true, pose: 'spear', hair: 'tuft' }), { sh: 5 }),
   obj(27, 27, 300, 44, vil({ pal: PAL.furBrown, fur: true, hair: 'short', pose: 'idle' }), { z: 68 })];
-var all = backProps.concat(midProps, people, [obj(FIREPIT[0], FIREPIT[1], FIREPIT[2], FIREPIT[3], firepit, { sh: 8 })]);
+var all = backProps.concat(midProps, decorProps, people, [obj(FIREPIT[0], FIREPIT[1], FIREPIT[2], FIREPIT[3], firepit, { sh: 8 })]);
 for (id in SLOTS) { sl = SLOTS[id]; if (id != 'field') all.push(obj(sl[0], sl[1], sl[2], sl[3], sl[4], { sh: sl[5] })); }
 all.push(obj(FLOWER[0], FLOWER[1], FLOWER[2], FLOWER[3], strangeflower, { sh: 5 }));
 var FG = layerOf(all);

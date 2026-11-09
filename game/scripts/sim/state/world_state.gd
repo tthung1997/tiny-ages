@@ -64,6 +64,14 @@ const FRACTION_SCALE: float = 1000000.0
 
 @export var next_id: int = 1
 
+@export_group("View")
+## Where the view put each piece (`LanePlacer`): a piece's key to the first space it stands in, and
+## the order the keys were first shown, which says which of two pieces of a rank is newer. The sim
+## never reads either; they are saved so a piece keeps its space from one launch to the next. A
+## save without them is placed again by the same rules.
+@export var lane_spaces: Dictionary[StringName, int] = {}
+@export var lane_order: Array[StringName] = []
+
 ## How many villagers the camp holds. Derived from the age, the buildings and the answers the
 ## group gave, and kept up to date by Simulation.refresh_housing; it is never saved.
 var housing: int = 0

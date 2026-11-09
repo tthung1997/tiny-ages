@@ -11,7 +11,7 @@
 // Previews: art/reference/cave_west.png, cave_east.png. Game assets (game/assets/world/cave/),
 // each a full 384x80 transparent PNG:
 //   west_<layer>, east_<layer>   sky, far_hills, near_hills, trees, ground
-//   west_static_back/_mid, east_static_mid   always-present props (back is behind villagers)
+//   west_static_back/_mid, east_static_back/_mid   always-present props (back is behind villagers)
 //   east_sea_0.._2   the sea alone (transparent elsewhere) in three surf and swell phases; the
 //                    game swaps them over east_ground, which carries phase 0 itself
 //   east_sea_choppy_0.._2, east_sea_rough_0.._2   the same water in rougher sea states (rain and
@@ -30,6 +30,18 @@ function drawObj(buf, ob) { // shadow, then the outlined sprite
   blit(buf, outlined(tb, OUT), ob.x - 1, ob.y - 1);
 }
 function layerOf(list) { var b = new Buf(W, H); list.sort(function (p, q) { return p.fy - q.fy; }); for (var k = 0; k < list.length; k++) drawObj(b, list[k]); return b; }
+// Decor (stumps, bushes, rocks) is placed by the game in a prop space like any prop; this only picks where
+// each piece is drawn at home (near the middle of a building space, x = -358 + 28 k).
+function snapDecor(list, off) {
+  var taken = {}, k, n, ob;
+  for (var i = 0; i < list.length; i++) {
+    ob = list[i];
+    k = Math.round((ob.cx + off + 358) / 28);
+    for (n = 0; taken[k]; n++) k += (n % 2 == 0 ? 1 : -1) * (n + 1);
+    taken[k] = true;
+    ob.cx = -358 + 28 * k - off; ob.x = ob.cx - Math.floor(ob.w / 2);
+  }
+}
 
 // ---- shared pieces, in the camp's palette -----------------------------------------------
 var skyCols = ['#86b4d6', '#9cc4de', '#b4d4e6', '#cde2ee', '#e4eef3'];
@@ -99,9 +111,12 @@ function westPage() {
     if (px >= 52) foot = 56 + (k % 4) * 2; else if (foot > 66) foot -= 12;
     backP.push(obj(16, 26, px, foot, pine, { sh: 6 }));
   }
-  midP.push(obj(10, 8, 318, 77, stump, { sh: 4 }), obj(10, 8, 262, 75, stump, { sh: 4 }), obj(18, 7, 158, 76, fallenlog, { sh: 6 }),
+  var decor = [obj(10, 8, 318, 77, stump, { sh: 4 }), obj(10, 8, 262, 75, stump, { sh: 4 }), obj(18, 7, 158, 76, fallenlog, { sh: 6 }),
     obj(12, 8, 96, 76, bush, { sh: 5 }), obj(12, 8, 212, 77, bush, { sh: 5 }), obj(12, 8, 346, 77, bush, { sh: 5 }),
-    obj(10, 6, 128, 78, rocks, { sh: 4 }), obj(10, 6, 288, 79, rocks, { sh: 4 }));
+    obj(10, 6, 128, 78, rocks, { sh: 4 }), obj(10, 6, 288, 79, rocks, { sh: 4 })];
+  snapDecor(decor, -384);
+  // Each piece of decor is its own layer (west_decor_<n>): the game can take it away when props need the room.
+  for (i = 0; i < decor.length; i++) L['decor_' + i] = layerOf([decor[i]]);
   L.static_back = layerOf(backP);
   L.static_mid = layerOf(midP);
   return L;
@@ -230,22 +245,27 @@ function eastPage() {
   for (var st = 0; st < SEA_STATES.length; st++) {
     for (i = 0; i < SEA_FRAMES; i++) { L['sea_' + SEA_STATES[st] + i] = new Buf(W, H); paintSea(L['sea_' + SEA_STATES[st] + i], i, swells, st); }
   }
-  // props: reeds on the river bank, a pine and bush on the grass, palms and driftwood on the sand
-  var midP = [], onSand = { sh: 4, shc: '#bfae83' }, reedTops = [];
+  // props: reeds on the river bank, a bush and rocks on the grass, driftwood on the sand; the pines
+  // and palms stand in a row behind everything (`static_back`, like the west forest), never in front
+  // of what the group builds on the spit.
+  var midP = [], backP = [], onSand = { sh: 4, shc: '#bfae83' }, reedTops = [];
   for (i = 0; i < 8; i++) {
     y = 58 + Math.floor(rnd() * 20);
     var rx = riverEdge(y) + 3 + Math.floor(rnd() * 8);
     midP.push(obj(8, 13, rx, y + 2, reeds, { sh: 3 }));
     reedTops.push({ x: rx - 4, top: y + 2 - 13 }); // the clump's top-left, for the birds
   }
-  midP.push(obj(10, 6, 96, 72, rocks, { sh: 4 }), obj(10, 6, 134, 76, rocks, { sh: 4 }),
-    obj(16, 26, 104, 66, pine, { sh: 5 }), obj(16, 26, 128, 77, pine, { sh: 5 }),
-    obj(12, 8, 156, 71, bush, { sh: 5 }), obj(12, 8, shoreEdge(75) - 52, 75, bush, { sh: 5 }));
-  var palmAt = [[60, 26], [72, 28], [67, 8]];
-  for (i = 0; i < palmAt.length; i++) midP.push(obj(22, 24, shoreEdge(palmAt[i][0]) - palmAt[i][1], palmAt[i][0], palm, onSand));
-  midP.push(obj(11, 4, shoreEdge(64) - 6, 64, driftwood, { sh: 3, shc: '#bfae83' }),
-    obj(11, 4, shoreEdge(75) - 7, 75, driftwood, { sh: 3, shc: '#bfae83', flip: true }),
-    obj(10, 6, shoreEdge(77) - 18, 77, rocks, onSand));
+  var decor = [obj(10, 6, 96, 72, rocks, { sh: 4 }), obj(10, 6, 134, 76, rocks, { sh: 4 }),
+    obj(12, 8, 156, 71, bush, { sh: 5 }), obj(12, 8, shoreEdge(75) - 52, 75, bush, { sh: 5 }),
+    obj(11, 4, shoreEdge(64) - 6, 64, driftwood, { sh: 3, shc: '#bfae83' }),
+    obj(11, 4, shoreEdge(75) - 7, 75, driftwood, { sh: 3, shc: '#bfae83', flip: true })];
+  snapDecor(decor, 384);
+  for (i = 0; i < decor.length; i++) L['decor_' + i] = layerOf([decor[i]]);
+  var pineAt = [[100, 58], [118, 56], [136, 60], [154, 62]];
+  for (i = 0; i < pineAt.length; i++) backP.push(obj(16, 26, pineAt[i][0], pineAt[i][1], pine, { sh: 5 }));
+  var palmAt = [[58, 26], [60, 28], [59, 8]];
+  for (i = 0; i < palmAt.length; i++) backP.push(obj(22, 24, shoreEdge(palmAt[i][0]) - palmAt[i][1], palmAt[i][0], palm, onSand));
+  L.static_back = layerOf(backP);
   L.static_mid = layerOf(midP);
   riverLife(L, reedTops);
   tideFlats(L);
@@ -337,6 +357,7 @@ function flatsFrame(frac, f) {
 function composite(L) {
   var C = new Buf(W, H), stack = [L.sky, L.far_hills, L.near_hills, L.trees, L.ground, L.static_back, L.static_mid];
   for (var i = 0; i < stack.length; i++) if (stack[i]) blit(C, stack[i], 0, 0);
+  for (var key in L) if (key.indexOf('decor_') == 0) blit(C, L[key], 0, 0);
   return C;
 }
 var west = westPage(), east = eastPage();
