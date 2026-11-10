@@ -143,6 +143,9 @@ const BEACON_GLOW: StringName = &"east_beacon_glow"
 ## fire's clock while any of its light is on screen. BEACON_LIGHT_X is the camp x range it lights.
 const BEACON: StringName = &"east_beacon"
 const BEACON_FRAMES: int = 4
+## The age (an index in ERA_DIRS) whose `east_beacon_glow` is drawn round the beacon. The Classical
+## folder has a glow of the same name drawn round the lighthouse, which is not where the beacon is.
+const BEACON_ERA: int = 3
 const BEACON_LIGHT_X: Vector2 = Vector2(580.0, 650.0)
 ## The lighthouse that takes the beacon's place in the Classical Age (its harbour), and the camp x range it lights.
 const LIGHTHOUSE_LIGHT_X: Vector2 = Vector2(650.0, 730.0)

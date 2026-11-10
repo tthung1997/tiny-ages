@@ -1159,3 +1159,54 @@ func test_the_east_lights_move_with_their_piece() -> void:
 		"The night light is drawn with the beacon, so it moves with it"
 	)
 	view.free()
+
+
+func test_the_desktop_light_is_cut_off_above_the_skyline() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	sim.world.era_order = 4
+	sim.world.tick = sim.config.tick_for_hour(0)
+	sim.world.flags[&"beacon_lit"] = true
+	sim.world.achievements.append(&"wider_world")
+	var view: WorldView = _view(sim)
+	view.set_full_scene(false)
+	view.on_world_changed()
+	var image: Image = view._beacon_glow.texture.get_image()
+	var origin: int = int(view._beacon_glow.position.x) - WorldLayout.WORLD_LEFT
+	var lit: int = 0
+	var leaked: int = 0
+	for x: int in image.get_width():
+		for y: int in image.get_height():
+			if image.get_pixel(x, y).a <= 0.0:
+				continue
+			lit += 1
+			if y < view._skyline_tops[origin + x]:
+				leaked += 1
+	assert_gt(lit, 0, "The light still shines on what is drawn")
+	assert_eq(leaked, 0, "No light above the skyline, where the desktop shows through")
+	view.set_full_scene(true)
+	assert_true(
+		view._beacon_glow.texture.resource_path.contains("/classical/"),
+		"The opaque window has its sky back, so the whole light"
+	)
+	view.free()
+
+
+func test_a_beacon_still_standing_in_the_classical_age_keeps_its_own_light() -> void:
+	var sim: Simulation = SimFixture.new_sim(1, false)
+	sim.world.era_order = 4
+	sim.world.tick = sim.config.tick_for_hour(0)
+	sim.world.flags[&"beacon_lit"] = true
+	var view: WorldView = _view(sim)
+	assert_true(view._props[&"east_beacon"].visible, "No harbour yet, so the beacon still burns")
+	assert_true(
+		view._beacon_glow.texture.resource_path.contains("/iron/"),
+		"Its light is the one drawn round the beacon, not the lighthouse's"
+	)
+	sim.world.achievements.append(&"wider_world")
+	view.on_world_changed()
+	assert_true(view._props[&"east_harbour"].visible, "The harbour is built")
+	assert_true(
+		view._beacon_glow.texture.resource_path.contains("/classical/"),
+		"The lighthouse takes the light with the place"
+	)
+	view.free()
