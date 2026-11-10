@@ -53,6 +53,9 @@ var _flower_bloom: Sprite2D
 var _fire_pit: Sprite2D
 var _fire_glow: Sprite2D
 var _beacon_glow: Sprite2D
+var _glow_key: String = ""
+var _skyline_tops: PackedInt32Array = PackedInt32Array()
+var _skyline_stamp: int = 0
 var _beacon_frames: Array[Texture2D] = []
 var _beacon_frame: int = 0
 var _beacon_clock: float = 0.0
@@ -221,6 +224,7 @@ func set_full_scene(full: bool) -> void:
 			sprite.visible = shown
 	if _sim != null:
 		_weather.apply(_sim.world, _full_scene)
+		_seat_light()
 		update_light()
 
 
@@ -778,8 +782,40 @@ func _light_shift() -> float:
 	return (_props[carrier] as Sprite2D).position.x - SceneProps.at_x_of(carrier)
 
 
+## The glow is drawn for the piece that carries it: the beacon's own light until the harbour's
+## lighthouse takes its place, so a beacon still standing in the Classical Age keeps its own.
+## On the desktop there is no sky and Windows draws only inside the click region, so the light is
+## cut off above the skyline; otherwise it would show in the columns the icons add to the region.
 func _seat_light() -> void:
+	var carrier: StringName = _light_carrier()
+	if carrier == &"":
+		return
+	var era: int = WorldLayout.BEACON_ERA if carrier == &"east_beacon" else _art_era
 	_beacon_glow.position.x = float(WorldLayout.SIDE_PAGES["east_"]) + _light_shift()
+	var key: String = "%s|%d|%d|%s|%d" % [
+		carrier, era, int(_beacon_glow.position.x), _full_scene, _skyline_stamp
+	]
+	if key == _glow_key:
+		return
+	_glow_key = key
+	var texture: Texture2D = _load_piece(WorldLayout.BEACON_GLOW, era)
+	_beacon_glow.texture = texture if _full_scene else _above_skyline_cleared(texture)
+
+
+## A copy of a full-page light with everything above the skyline cleared. The light's columns are
+## the world's columns from where the glow sprite stands.
+func _above_skyline_cleared(texture: Texture2D) -> Texture2D:
+	var image: Image = texture.get_image()
+	image.convert(Image.FORMAT_RGBA8)
+	var origin: int = int(_beacon_glow.position.x) - WorldLayout.WORLD_LEFT
+	for x: int in image.get_width():
+		var column: int = origin + x
+		var top: int = image.get_height()
+		if column >= 0 and column < _skyline_tops.size():
+			top = mini(_skyline_tops[column], top)
+		for y: int in top:
+			image.set_pixel(x, y, Color(0.0, 0.0, 0.0, 0.0))
+	return ImageTexture.create_from_image(image)
 
 
 ## The season's palette on the scrolling world, and the few pieces it adds (snow, blossom,
@@ -930,7 +966,7 @@ func _retexture_pieces() -> void:
 			_retexture(group[key])
 	for sprite: Sprite2D in _static_layers:
 		_retexture(sprite)
-	_retexture(_beacon_glow)
+	# The east light's glow is chosen by `_seat_light`, which knows what carries it.
 	# The camp's signature building comes with its own fire pit: the Cave Age's has the firelight
 	# in the cave's mouth, which would show through a wall.
 	for frame: int in WorldLayout.FIRE_FRAMES:
@@ -1007,6 +1043,9 @@ func _rebuild_skyline() -> void:
 		if sprite.visible:
 			skyline.add(sprite.texture, _world_column(sprite))
 	_window.set_skyline(skyline.tops)
+	_skyline_tops = skyline.tops
+	_skyline_stamp += 1
+	_seat_light()
 
 
 ## A sprite's left edge as a column of the whole world (which starts at WORLD_LEFT).
