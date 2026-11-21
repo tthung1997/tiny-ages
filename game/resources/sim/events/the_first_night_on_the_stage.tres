@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_dw3om"]
 script = ExtResource("3_ddixw")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_jsv02"]
+script = ExtResource("3_ddixw")
 key = &"stage_built"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_7v2ww")
 id = &"the_first_night_on_the_stage"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_ddixw")]([SubResource("Resource_jkqak"), SubResource("Resource_dw3om")])
+requires = Array[ExtResource("3_ddixw")]([SubResource("Resource_jkqak"), SubResource("Resource_dw3om"), SubResource("Resource_jsv02")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_8ox24")]([SubResource("Resource_may57")])

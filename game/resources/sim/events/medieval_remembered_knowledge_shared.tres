@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_sas3u"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_vot5b"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_u1omi"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_lcs65"]
+
+[sub_resource type="Resource" id="Resource_we42h"]
+script = ExtResource("2_vot5b")
+text = "A copy arrived from a town that had never seen the first book."
+
+[sub_resource type="Resource" id="Resource_3bmo5"]
+script = ExtResource("3_u1omi")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_ggvfa"]
+script = ExtResource("3_u1omi")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_qnkuq"]
+script = ExtResource("3_u1omi")
+key = &"knowledge_shared"
+
+[resource]
+script = ExtResource("4_lcs65")
+id = &"medieval_remembered_knowledge_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_u1omi")]([SubResource("Resource_3bmo5"), SubResource("Resource_ggvfa"), SubResource("Resource_qnkuq")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_vot5b")]([SubResource("Resource_we42h")])

@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_aap73"]
 script = ExtResource("3_fsc5l")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_2x410"]
+script = ExtResource("3_fsc5l")
 kind = 9
 key = &"water_from_afar"
 
@@ -24,7 +30,7 @@ script = ExtResource("4_od25u")
 id = &"children_at_the_basin"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_fsc5l")]([SubResource("Resource_242mm"), SubResource("Resource_aap73")])
+requires = Array[ExtResource("3_fsc5l")]([SubResource("Resource_242mm"), SubResource("Resource_aap73"), SubResource("Resource_2x410")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_a6by2")]([SubResource("Resource_v7t0n")])

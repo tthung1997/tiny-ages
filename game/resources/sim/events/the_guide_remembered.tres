@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_mst0k"]
 script = ExtResource("3_jpp1q")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_3w1hr"]
+script = ExtResource("3_jpp1q")
 key = &"envoy_guided"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_674o2")
 id = &"the_guide_remembered"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_jpp1q")]([SubResource("Resource_aujr5"), SubResource("Resource_mst0k")])
+requires = Array[ExtResource("3_jpp1q")]([SubResource("Resource_aujr5"), SubResource("Resource_mst0k"), SubResource("Resource_3w1hr")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_b30xn")]([SubResource("Resource_bbgck")])

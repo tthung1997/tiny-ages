@@ -1,5 +1,5 @@
-// @open art/reference/ui_achievements.png
-// @canvas 680x20
+// @open tools/art/dist/ui_achievements_canvas.png
+// @canvas 800x20
 // The achievement icons, one 680x20 sheet of 34 round medals (20x20 each, in the order of
 // AchievementPresenter.ICON_ORDER, then a plain rosette for any achievement without its own)
 // -> art/reference/ui_achievements.png and game/assets/ui/achievements.png. The cell order is
@@ -219,11 +219,42 @@ function triremeSail(g) { // wider_world: a ship under oars, towns on either sho
   g.line(2, 8, 0, 10, WOOD, 1); g.line(5, 8, 4, 11, WOOD, 1); g.line(8, 8, 9, 11, WOOD, 1); g.line(10, 8, 11, 10, WOOD, 1);
   for (var x = 0; x < 12; x++) g.px(x, 11 - (x % 4 < 2 ? 0 : 1), (x % 4 < 2) ? '#4a9ac8' : '#8fbfe0');
 }
+function tendedBasin(g) {
+  g.rect(1, 6, 10, 4, '#7c8f91'); g.rect(2, 6, 8, 2, '#62a5c8');
+  g.rect(3, 3, 5, 1, '#69777a'); g.rect(3, 3, 1, 3, '#69777a');
+  g.rect(7, 4, 1, 2, '#91c9df'); g.rect(2, 9, 8, 1, '#b4a384');
+}
+function guildTools(g) {
+  g.rect(1, 7, 10, 2, '#a46b3e'); g.rect(2, 9, 1, 2, '#6a4326');
+  g.rect(9, 9, 1, 2, '#6a4326'); g.line(4, 2, 7, 7, '#754e31', 2);
+  g.rect(2, 1, 5, 2, '#677484'); g.px(3, 1, '#aebdc4');
+}
+function keptCharter(g) {
+  g.rect(2, 2, 8, 8, '#d9b279'); g.rect(3, 3, 6, 6, '#f1db9d');
+  g.rect(4, 4, 4, 1, '#927045'); g.rect(4, 6, 3, 1, '#927045');
+  g.ell(8, 8, 1.5, 1.5, '#a64a3b');
+}
+function boundBook(g) {
+  g.rect(2, 2, 8, 8, '#8f483b'); g.rect(3, 3, 6, 5, '#b76451');
+  g.rect(3, 9, 6, 1, '#e5cc92'); g.rect(4, 4, 4, 2, '#edca79');
+}
+function fairStall(g) {
+  g.rect(2, 4, 1, 6, '#7d5435'); g.rect(9, 4, 1, 6, '#7d5435');
+  g.rect(1, 3, 10, 3, '#a74b43'); g.rect(3, 3, 2, 3, '#f0d499');
+  g.rect(7, 3, 2, 3, '#f0d499'); g.rect(2, 8, 8, 2, '#a87842');
+}
+function sharedPages(g) {
+  g.rect(1, 4, 7, 6, '#9d794b'); g.rect(2, 4, 5, 5, '#e2c784');
+  g.rect(4, 1, 7, 7, '#b69461'); g.rect(5, 1, 5, 6, '#f4e0a9');
+  g.rect(6, 3, 3, 1, '#926742'); g.rect(6, 5, 3, 1, '#926742');
+}
+
 var GLYPHS = [fire, stoneTools, food, stories, group, garden, roof, harvest, clay, cloth, village,
   greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail,
   bloom, shareSheaf, hillFort, weighedCoin, tablet, longship,
-  pavedStreets, aqueduct, law, square, lamp, triremeSail, rosette];
-var SHEET = new Buf(680, 20);
+  pavedStreets, aqueduct, law, square, lamp, triremeSail,
+  tendedBasin, guildTools, keptCharter, boundBook, fairStall, sharedPages, rosette];
+var SHEET = new Buf(GLYPHS.length * 20, 20);
 for (var i = 0; i < GLYPHS.length; i++) {
   var medal = new Buf(18, 18);
   medal.ell(8.5, 8.5, 8.6, 8.6, RIM); medal.ell(8.5, 8.5, 7.2, 7.2, CREAM);
@@ -232,6 +263,6 @@ for (var i = 0; i < GLYPHS.length; i++) {
   blit(SHEET, outlined(medal, OUT), i * 20, 0);
 }
 
-IMG.putImageData(SHEET.d); SPR.save();
+IMG.putImageData(SHEET.d); SPR.saveAs(DIR + 'art/reference/ui_achievements.png');
 SPR.saveAs(DIR + 'game/assets/ui/achievements.png');
 console.log('ui achievements done');

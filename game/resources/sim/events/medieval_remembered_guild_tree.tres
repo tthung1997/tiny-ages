@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_kqu2u"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_wa5u3"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_wp0c5"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_a0q7s"]
+
+[sub_resource type="Resource" id="Resource_d3og1"]
+script = ExtResource("2_wa5u3")
+text = "An apprentice found the tree mark on a plane and knew where to return it."
+
+[sub_resource type="Resource" id="Resource_d0xnp"]
+script = ExtResource("3_wp0c5")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_mhijw"]
+script = ExtResource("3_wp0c5")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_n4a8o"]
+script = ExtResource("3_wp0c5")
+key = &"guild_tree"
+
+[resource]
+script = ExtResource("4_a0q7s")
+id = &"medieval_remembered_guild_tree"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_wp0c5")]([SubResource("Resource_d0xnp"), SubResource("Resource_mhijw"), SubResource("Resource_n4a8o")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_wa5u3")]([SubResource("Resource_d3og1")])

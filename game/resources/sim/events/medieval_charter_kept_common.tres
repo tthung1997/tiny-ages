@@ -1,0 +1,85 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_3cfa8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_626th"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_mv6cr"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_251uq"]
+
+[sub_resource type="Resource" id="Resource_6mego"]
+script = ExtResource("2_626th")
+kind = 1
+key = &"medieval_charter_kept_common_1"
+
+[sub_resource type="Resource" id="Resource_h0c48"]
+script = ExtResource("2_626th")
+kind = 10
+key = &"charter_kept"
+text = "A Charter Kept"
+
+[sub_resource type="Resource" id="Resource_jsghb"]
+script = ExtResource("2_626th")
+text = "The charter went up beneath the porch, out of the rain and within reach of a reader."
+
+[sub_resource type="Resource" id="Resource_rm7gs"]
+script = ExtResource("1_3cfa8")
+id = &"medieval_charter_kept_common_1"
+label = "Put a single charter on display"
+effects = Array[ExtResource("2_626th")]([SubResource("Resource_6mego"), SubResource("Resource_h0c48"), SubResource("Resource_jsghb")])
+
+[sub_resource type="Resource" id="Resource_f4vkm"]
+script = ExtResource("2_626th")
+kind = 1
+key = &"medieval_charter_kept_common_3"
+
+[sub_resource type="Resource" id="Resource_12uwo"]
+script = ExtResource("2_626th")
+kind = 10
+key = &"charter_kept"
+text = "A Charter Kept"
+
+[sub_resource type="Resource" id="Resource_e5ie1"]
+script = ExtResource("2_626th")
+text = "A new voice read the charter each time; someone brought a bench for the listeners."
+
+[sub_resource type="Resource" id="Resource_ulovs"]
+script = ExtResource("1_3cfa8")
+id = &"medieval_charter_kept_common_3"
+label = "Read the charter aloud in turn"
+effects = Array[ExtResource("2_626th")]([SubResource("Resource_f4vkm"), SubResource("Resource_12uwo"), SubResource("Resource_e5ie1")])
+
+[sub_resource type="Resource" id="Resource_d0oww"]
+script = ExtResource("3_mv6cr")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_xc4xm"]
+script = ExtResource("3_mv6cr")
+kind = 11
+amount = 162
+
+[sub_resource type="Resource" id="Resource_d5gig"]
+script = ExtResource("3_mv6cr")
+kind = 9
+key = &"charter_kept"
+negate = true
+
+[sub_resource type="Resource" id="Resource_50o46"]
+script = ExtResource("3_mv6cr")
+kind = 9
+key = &"water_in_trust"
+
+[sub_resource type="Resource" id="Resource_n4d5e"]
+script = ExtResource("3_mv6cr")
+kind = 9
+key = &"guild_bench"
+
+[resource]
+script = ExtResource("4_251uq")
+id = &"medieval_charter_kept_common"
+title = "A Charter Kept"
+body = "The old promises still matter. How do we make them easy to find and easy to share?"
+category = &"settlement"
+requires = Array[ExtResource("3_mv6cr")]([SubResource("Resource_d0oww"), SubResource("Resource_xc4xm"), SubResource("Resource_d5gig"), SubResource("Resource_50o46"), SubResource("Resource_n4d5e")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_3cfa8")]([SubResource("Resource_rm7gs"), SubResource("Resource_ulovs")])

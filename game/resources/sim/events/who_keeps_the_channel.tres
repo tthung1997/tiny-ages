@@ -42,15 +42,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_uludt"]
 script = ExtResource("3_vcndj")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_qtm6p"]
+script = ExtResource("3_vcndj")
 kind = 11
 amount = 72
 
-[sub_resource type="Resource" id="Resource_qtm6p"]
+[sub_resource type="Resource" id="Resource_1tb54"]
 script = ExtResource("3_vcndj")
 kind = 9
 key = &"water_from_afar"
 
-[sub_resource type="Resource" id="Resource_1tb54"]
+[sub_resource type="Resource" id="Resource_dhipy"]
 script = ExtResource("3_vcndj")
 kind = 7
 
@@ -59,9 +65,9 @@ script = ExtResource("4_o4wuf")
 id = &"who_keeps_the_channel"
 title = "Who keeps the channel clear"
 body = "The water runs, and leaves collect in it, and {subject} has been seen fishing them out in a martyred way."
-requires = Array[ExtResource("3_vcndj")]([SubResource("Resource_nf0qu"), SubResource("Resource_uludt"), SubResource("Resource_qtm6p")])
+requires = Array[ExtResource("3_vcndj")]([SubResource("Resource_nf0qu"), SubResource("Resource_uludt"), SubResource("Resource_qtm6p"), SubResource("Resource_1tb54")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_vcndj")]([SubResource("Resource_1tb54")])
+subject_requires = Array[ExtResource("3_vcndj")]([SubResource("Resource_dhipy")])
 trait_weights = Dictionary[StringName, float]({
 &"industrious": 3.0
 })

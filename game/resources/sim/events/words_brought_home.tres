@@ -42,15 +42,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_x0dwx"]
 script = ExtResource("3_xlm4c")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_gpu5g"]
+script = ExtResource("3_xlm4c")
 kind = 11
 amount = 278
 
-[sub_resource type="Resource" id="Resource_gpu5g"]
+[sub_resource type="Resource" id="Resource_jdwyg"]
 script = ExtResource("3_xlm4c")
 kind = 9
 key = &"wider_world"
 
-[sub_resource type="Resource" id="Resource_jdwyg"]
+[sub_resource type="Resource" id="Resource_4vqmf"]
 script = ExtResource("3_xlm4c")
 kind = 7
 
@@ -60,9 +66,9 @@ id = &"words_brought_home"
 title = "Words brought home"
 body = "{subject} has come back from the other towns with a head full of words that nobody at home has, and a worrying tendency to use them."
 category = &"exploration"
-requires = Array[ExtResource("3_xlm4c")]([SubResource("Resource_anwd0"), SubResource("Resource_x0dwx"), SubResource("Resource_gpu5g")])
+requires = Array[ExtResource("3_xlm4c")]([SubResource("Resource_anwd0"), SubResource("Resource_x0dwx"), SubResource("Resource_gpu5g"), SubResource("Resource_jdwyg")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_xlm4c")]([SubResource("Resource_jdwyg")])
+subject_requires = Array[ExtResource("3_xlm4c")]([SubResource("Resource_4vqmf")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })

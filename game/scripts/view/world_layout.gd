@@ -8,7 +8,7 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## Art folders by era order. A piece is found by looking from the current age back to the first, so
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
-const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron", "classical"]
+const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron", "classical", "medieval"]
 ## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
 ## Role overlays (an apron, a pack) drawn over any villager, one sheet per profession.
@@ -99,7 +99,7 @@ const BUILDINGS: Dictionary = {
 const BUILDING_FOLDED_INTO: Dictionary = {&"drying_rack": &"granary"}
 ## A building the view stops drawing when an age arrives, because what it was for is done another
 ## way: the knapping spot made stone tools, and the Bronze Age has metal. The sim keeps it.
-const BUILDING_RETIRED_IN: Dictionary = {&"knapping_spot": 2}
+const BUILDING_RETIRED_IN: Dictionary = {&"knapping_spot": 2, &"lookout": 5}
 const FLOWER_Z: int = 73
 
 const CAVE_DOOR: Vector2 = Vector2(40.0, 78.0)

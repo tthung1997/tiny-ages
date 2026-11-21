@@ -272,7 +272,7 @@ const PROPS: Dictionary = {
 	},
 	&"slag_heap": {
 		"name": "Slag heap", "at_x": 0.0, "z": 77, "place": &"cave_yard",
-		"kind": Kind.ACHIEVEMENT, "key": &"first_bloom", "from_era": 3,
+		"kind": Kind.ACHIEVEMENT, "key": &"first_bloom", "from_era": 3, "until_era": 5,
 	},
 	&"shearing_pen": {
 		"name": "Shearing pen", "at_x": -384.0, "z": 78, "place": &"west_village",
@@ -406,6 +406,7 @@ const PROPS: Dictionary = {
 	&"water_court": {
 		"name": "Water court", "at_x": -384.0, "z": 74, "place": &"west_village",
 		"kind": Kind.ACHIEVEMENT, "key": &"water_from_afar", "from_era": 4,
+		"replaced_by": &"tended_water_court",
 	},
 	&"law_pillar": {
 		"name": "Law pillar", "at_x": -384.0, "z": 66, "place": &"west_market",
@@ -415,14 +416,54 @@ const PROPS: Dictionary = {
 	&"market_arcade": {
 		"name": "Market arcade", "at_x": -384.0, "z": 67, "place": &"west_market",
 		"kind": Kind.ACHIEVEMENT, "key": &"the_square", "from_era": 4,
+		"replaced_by": &"guild_arcade",
 	},
 	&"east_theatre": {
 		"name": "Theatre", "at_x": 384.0, "z": 67, "place": &"east_shore",
 		"kind": Kind.ACHIEVEMENT, "key": &"lamp_and_stage", "from_era": 4,
+		"replaced_by": &"east_travellers_hall",
 	},
 	&"east_harbour": {
 		"name": "Harbour", "at_x": 384.0, "z": 60, "place": &"east_shore",
 		"kind": Kind.ACHIEVEMENT, "key": &"wider_world", "from_era": 4,
+		"replaced_by": &"east_fair_wharf",
+	},
+	&"tended_water_court": {
+		"name": "Tended Water Court", "at_x": -384.0, "z": 74, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"water_in_trust", "from_era": 5,
+		"alt_of": &"water_court",
+	},
+	&"guild_arcade": {
+		"name": "Guild Arcade", "at_x": -384.0, "z": 67, "place": &"west_market",
+		"kind": Kind.ACHIEVEMENT, "key": &"guild_bench", "from_era": 5,
+		"alt_of": &"market_arcade", "replaced_by": &"guild_arcade_fair",
+	},
+	&"guild_arcade_fair": {
+		"name": "Guild Arcade", "at_x": -384.0, "z": 67, "place": &"west_market",
+		"kind": Kind.ACHIEVEMENT, "key": &"fair_on_the_road", "from_era": 5,
+		"alt_of": &"market_arcade",
+	},
+	&"stewardship_charter": {
+		"name": "Charter of the towns", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"charter_kept", "from_era": 5,
+	},
+	&"scriptorium": {
+		"name": "Scriptorium & Apprentice House", "at_x": -384.0, "z": 66,
+		"place": &"west_village", "kind": Kind.ACHIEVEMENT, "key": &"common_book", "from_era": 5,
+	},
+	&"east_fair_wharf": {
+		"name": "Fair Wharf", "at_x": 384.0, "z": 60, "place": &"east_shore",
+		"kind": Kind.ACHIEVEMENT, "key": &"fair_on_the_road", "from_era": 5,
+		"alt_of": &"east_harbour",
+	},
+	&"east_travellers_hall": {
+		"name": "Travellers' Hall", "at_x": 384.0, "z": 67, "place": &"east_shore",
+		"kind": Kind.ACHIEVEMENT, "key": &"round_of_towns", "from_era": 5,
+		"alt_of": &"east_theatre", "requires_crossing": true,
+	},
+	&"stewardship_pages": {
+		"name": "Books for the road", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"round_of_towns", "from_era": 5,
 	},
 }
 
@@ -475,6 +516,16 @@ static func is_shown(id: StringName, world: WorldState) -> bool:
 
 ## `is_shown` over any table of props (so the rules can be tested without a real one).
 static func is_shown_in(props: Dictionary, id: StringName, world: WorldState) -> bool:
+	if not _unlocked(props, id, world):
+		return false
+	for replacer: StringName in replacements_of(props[id]):
+		# A new variant can hide a replacer without undoing the original consolidation.
+		if _unlocked(props, replacer, world):
+			return false
+	return true
+
+
+static func _unlocked(props: Dictionary, id: StringName, world: WorldState) -> bool:
 	if not props.has(id):
 		return false
 	var prop: Dictionary = props[id]
@@ -482,10 +533,8 @@ static func is_shown_in(props: Dictionary, id: StringName, world: WorldState) ->
 		return false
 	if prop.has("until_era") and world.era_order >= int(prop["until_era"]):
 		return false
-	if prop.has("replaced_by"):
-		for replacer: StringName in replacements_of(prop):
-			if is_shown_in(props, replacer, world):
-				return false
+	if prop.get("requires_crossing", false) and not WorldLayout.crossing_open(world):
+		return false
 	return holds(prop["kind"], prop["key"], world)
 
 

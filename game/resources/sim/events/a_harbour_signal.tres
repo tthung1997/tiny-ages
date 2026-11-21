@@ -55,10 +55,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_eykoq"]
 script = ExtResource("3_vvg8u")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_ugh72"]
+script = ExtResource("3_vvg8u")
 kind = 11
 amount = 266
 
-[sub_resource type="Resource" id="Resource_ugh72"]
+[sub_resource type="Resource" id="Resource_fujm3"]
 script = ExtResource("3_vvg8u")
 kind = 9
 key = &"wider_world"
@@ -69,7 +75,7 @@ id = &"a_harbour_signal"
 title = "A sign for the ships"
 body = "The ships that arrive are many now, and have nothing to tell them which is the town's harbour, apart from the smell of bread."
 category = &"settlement"
-requires = Array[ExtResource("3_vvg8u")]([SubResource("Resource_o34kl"), SubResource("Resource_eykoq"), SubResource("Resource_ugh72")])
+requires = Array[ExtResource("3_vvg8u")]([SubResource("Resource_o34kl"), SubResource("Resource_eykoq"), SubResource("Resource_ugh72"), SubResource("Resource_fujm3")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_cehh0")]([SubResource("Resource_movbp"), SubResource("Resource_50gjp")])

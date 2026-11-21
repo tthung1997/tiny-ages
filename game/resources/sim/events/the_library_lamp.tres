@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_7y7es"]
 script = ExtResource("3_1wyga")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_874tp"]
+script = ExtResource("3_1wyga")
 key = &"library_kept"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_7pdk7")
 id = &"the_library_lamp"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_1wyga")]([SubResource("Resource_cpwon"), SubResource("Resource_7y7es")])
+requires = Array[ExtResource("3_1wyga")]([SubResource("Resource_cpwon"), SubResource("Resource_7y7es"), SubResource("Resource_874tp")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_p2yfp")]([SubResource("Resource_rgrb1")])

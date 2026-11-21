@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_roeto"]
 script = ExtResource("3_7wnul")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_je5b2"]
+script = ExtResource("3_7wnul")
 key = &"harbours_linked"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_5ulom")
 id = &"the_harbour_lights"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_7wnul")]([SubResource("Resource_rhr8h"), SubResource("Resource_roeto")])
+requires = Array[ExtResource("3_7wnul")]([SubResource("Resource_rhr8h"), SubResource("Resource_roeto"), SubResource("Resource_je5b2")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_b20j8")]([SubResource("Resource_c2lqn")])

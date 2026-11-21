@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_y8ps8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_8mepi"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_4lrrp"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_ksfxq"]
+
+[sub_resource type="Resource" id="Resource_t7cdk"]
+script = ExtResource("2_8mepi")
+text = "The copyists carried in a book still smelling of wax."
+
+[sub_resource type="Resource" id="Resource_2o4h8"]
+script = ExtResource("3_4lrrp")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_lqihu"]
+script = ExtResource("3_4lrrp")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_twnls"]
+script = ExtResource("3_4lrrp")
+key = &"copying_room"
+
+[resource]
+script = ExtResource("4_ksfxq")
+id = &"medieval_remembered_copying_room"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_4lrrp")]([SubResource("Resource_2o4h8"), SubResource("Resource_lqihu"), SubResource("Resource_twnls")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_8mepi")]([SubResource("Resource_t7cdk")])

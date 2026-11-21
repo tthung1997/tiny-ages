@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_8grhb"]
 script = ExtResource("3_g84xa")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_84jq2"]
+script = ExtResource("3_g84xa")
 key = &"streets_slabbed"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_c6kyt")
 id = &"slabs_in_the_rain"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_g84xa")]([SubResource("Resource_tyu40"), SubResource("Resource_8grhb")])
+requires = Array[ExtResource("3_g84xa")]([SubResource("Resource_tyu40"), SubResource("Resource_8grhb"), SubResource("Resource_84jq2")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_x455f")]([SubResource("Resource_8tb0a")])

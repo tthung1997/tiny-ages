@@ -55,10 +55,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_qw0qq"]
 script = ExtResource("3_jkhn1")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_qecge"]
+script = ExtResource("3_jkhn1")
 kind = 11
 amount = 84
 
-[sub_resource type="Resource" id="Resource_qecge"]
+[sub_resource type="Resource" id="Resource_7jgxy"]
 script = ExtResource("3_jkhn1")
 kind = 9
 key = &"water_from_afar"
@@ -69,7 +75,7 @@ id = &"a_shaded_basin"
 title = "A place by the basin"
 body = "The basin is the coolest place in town, and the whole town has noticed, and there is nowhere to sit."
 category = &"nature"
-requires = Array[ExtResource("3_jkhn1")]([SubResource("Resource_2lxal"), SubResource("Resource_qw0qq"), SubResource("Resource_qecge")])
+requires = Array[ExtResource("3_jkhn1")]([SubResource("Resource_2lxal"), SubResource("Resource_qw0qq"), SubResource("Resource_qecge"), SubResource("Resource_7jgxy")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_8lw48")]([SubResource("Resource_piu6u"), SubResource("Resource_ofl1l")])

@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_pj0df"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_uh1sn"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_sxebk"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_cp2td"]
+
+[sub_resource type="Resource" id="Resource_gq476"]
+script = ExtResource("2_uh1sn")
+text = "A teacher returned with a lesson worth keeping on paper."
+
+[sub_resource type="Resource" id="Resource_lvh8k"]
+script = ExtResource("3_sxebk")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_m8pwd"]
+script = ExtResource("3_sxebk")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_8whfc"]
+script = ExtResource("3_sxebk")
+key = &"travelling_teachers"
+
+[resource]
+script = ExtResource("4_cp2td")
+id = &"medieval_remembered_travelling_teachers"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_sxebk")]([SubResource("Resource_lvh8k"), SubResource("Resource_m8pwd"), SubResource("Resource_8whfc")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_uh1sn")]([SubResource("Resource_gq476")])

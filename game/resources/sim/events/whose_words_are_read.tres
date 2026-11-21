@@ -42,15 +42,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_rpalg"]
 script = ExtResource("3_mvkux")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_0710c"]
+script = ExtResource("3_mvkux")
 kind = 11
 amount = 114
 
-[sub_resource type="Resource" id="Resource_0710c"]
+[sub_resource type="Resource" id="Resource_a2fqk"]
 script = ExtResource("3_mvkux")
 kind = 9
 key = &"written_law"
 
-[sub_resource type="Resource" id="Resource_a2fqk"]
+[sub_resource type="Resource" id="Resource_y3ckx"]
 script = ExtResource("3_mvkux")
 kind = 7
 
@@ -59,9 +65,9 @@ script = ExtResource("4_4j6iu")
 id = &"whose_words_are_read"
 title = "Whose words are read aloud"
 body = "The written laws are read aloud, and {subject} has noticed that the voice that reads them shapes how they sound."
-requires = Array[ExtResource("3_mvkux")]([SubResource("Resource_b1r72"), SubResource("Resource_rpalg"), SubResource("Resource_0710c")])
+requires = Array[ExtResource("3_mvkux")]([SubResource("Resource_b1r72"), SubResource("Resource_rpalg"), SubResource("Resource_0710c"), SubResource("Resource_a2fqk")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_mvkux")]([SubResource("Resource_a2fqk")])
+subject_requires = Array[ExtResource("3_mvkux")]([SubResource("Resource_y3ckx")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })

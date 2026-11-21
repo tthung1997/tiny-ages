@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_v62yo"]
 script = ExtResource("3_hsxmr")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_ko3t0"]
+script = ExtResource("3_hsxmr")
 key = &"seal_tree"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_bny5c")
 id = &"the_seal_in_the_wax"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_hsxmr")]([SubResource("Resource_r304h"), SubResource("Resource_v62yo")])
+requires = Array[ExtResource("3_hsxmr")]([SubResource("Resource_r304h"), SubResource("Resource_v62yo"), SubResource("Resource_ko3t0")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_3he83")]([SubResource("Resource_jxrh6")])

@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_vxlx7"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_rw3ku"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_jes7a"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_qw8e4"]
+
+[sub_resource type="Resource" id="Resource_ohmro"]
+script = ExtResource("2_rw3ku")
+kind = 1
+key = &"supper_bread"
+
+[sub_resource type="Resource" id="Resource_uint6"]
+script = ExtResource("2_rw3ku")
+text = "The loaves were labelled by town and eaten in no particular order."
+
+[sub_resource type="Resource" id="Resource_gpwvy"]
+script = ExtResource("1_vxlx7")
+id = &"supper_bread"
+label = "Bake a loaf for every town"
+effects = Array[ExtResource("2_rw3ku")]([SubResource("Resource_ohmro"), SubResource("Resource_uint6")])
+
+[sub_resource type="Resource" id="Resource_7ei31"]
+script = ExtResource("2_rw3ku")
+kind = 1
+key = &"supper_stew"
+
+[sub_resource type="Resource" id="Resource_4u2jc"]
+script = ExtResource("2_rw3ku")
+text = "The pot was emptied by people who had never eaten together before."
+
+[sub_resource type="Resource" id="Resource_1gkrf"]
+script = ExtResource("1_vxlx7")
+id = &"supper_stew"
+label = "Bring one big pot to the table"
+effects = Array[ExtResource("2_rw3ku")]([SubResource("Resource_7ei31"), SubResource("Resource_4u2jc")])
+
+[sub_resource type="Resource" id="Resource_eigq8"]
+script = ExtResource("3_jes7a")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_bx6de"]
+script = ExtResource("3_jes7a")
+kind = 11
+amount = 278
+
+[sub_resource type="Resource" id="Resource_ph4rg"]
+script = ExtResource("3_jes7a")
+kind = 9
+key = &"fair_on_the_road"
+
+[resource]
+script = ExtResource("4_qw8e4")
+id = &"medieval_a_place_at_supper"
+title = "A place at supper"
+body = "The next visitors will be hungry when they get here. What shall we put out?"
+category = &"settlement"
+requires = Array[ExtResource("3_jes7a")]([SubResource("Resource_eigq8"), SubResource("Resource_bx6de"), SubResource("Resource_ph4rg")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("1_vxlx7")]([SubResource("Resource_gpwvy"), SubResource("Resource_1gkrf")])

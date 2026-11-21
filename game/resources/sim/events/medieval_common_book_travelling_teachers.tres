@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_0sdm3"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_1g6ol"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_k1c63"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_qd1h1"]
+
+[sub_resource type="Resource" id="Resource_43wnd"]
+script = ExtResource("2_1g6ol")
+kind = 1
+key = &"medieval_common_book_travelling_teachers_1"
+
+[sub_resource type="Resource" id="Resource_pu3in"]
+script = ExtResource("2_1g6ol")
+kind = 10
+key = &"common_book"
+text = "The Common Book"
+
+[sub_resource type="Resource" id="Resource_xxd5x"]
+script = ExtResource("2_1g6ol")
+text = "The apprentices stitched the lessons into books narrow enough for a satchel."
+
+[sub_resource type="Resource" id="Resource_2g28r"]
+script = ExtResource("1_0sdm3")
+id = &"medieval_common_book_travelling_teachers_1"
+label = "Bind lessons for the road"
+effects = Array[ExtResource("2_1g6ol")]([SubResource("Resource_43wnd"), SubResource("Resource_pu3in"), SubResource("Resource_xxd5x")])
+
+[sub_resource type="Resource" id="Resource_kskux"]
+script = ExtResource("2_1g6ol")
+kind = 1
+key = &"medieval_common_book_travelling_teachers_3"
+
+[sub_resource type="Resource" id="Resource_2j4r0"]
+script = ExtResource("2_1g6ol")
+kind = 10
+key = &"common_book"
+text = "The Common Book"
+
+[sub_resource type="Resource" id="Resource_wbstw"]
+script = ExtResource("2_1g6ol")
+text = "What had taken an afternoon to show took three attempts to put into words."
+
+[sub_resource type="Resource" id="Resource_hw72t"]
+script = ExtResource("1_0sdm3")
+id = &"medieval_common_book_travelling_teachers_3"
+label = "Record demonstrations at the bench"
+effects = Array[ExtResource("2_1g6ol")]([SubResource("Resource_kskux"), SubResource("Resource_2j4r0"), SubResource("Resource_wbstw")])
+
+[sub_resource type="Resource" id="Resource_03bus"]
+script = ExtResource("3_k1c63")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_iu73u"]
+script = ExtResource("3_k1c63")
+kind = 11
+amount = 180
+
+[sub_resource type="Resource" id="Resource_kjbe6"]
+script = ExtResource("3_k1c63")
+kind = 9
+key = &"common_book"
+negate = true
+
+[sub_resource type="Resource" id="Resource_5x4uu"]
+script = ExtResource("3_k1c63")
+kind = 9
+key = &"guild_bench"
+
+[sub_resource type="Resource" id="Resource_5qvqv"]
+script = ExtResource("3_k1c63")
+key = &"travelling_teachers"
+
+[resource]
+script = ExtResource("4_qd1h1")
+id = &"medieval_common_book_travelling_teachers"
+title = "The Common Book"
+body = "Apprentices and copyists want a room with enough light. What should they copy first?"
+category = &"settlement"
+requires = Array[ExtResource("3_k1c63")]([SubResource("Resource_03bus"), SubResource("Resource_iu73u"), SubResource("Resource_kjbe6"), SubResource("Resource_5x4uu"), SubResource("Resource_5qvqv")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_0sdm3")]([SubResource("Resource_2g28r"), SubResource("Resource_hw72t")])

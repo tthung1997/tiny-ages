@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_efrhq"]
 script = ExtResource("3_t2dyr")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_ap7gt"]
+script = ExtResource("3_t2dyr")
 kind = 11
 amount = 14
 
-[sub_resource type="Resource" id="Resource_ap7gt"]
+[sub_resource type="Resource" id="Resource_ll1kh"]
 script = ExtResource("3_t2dyr")
 kind = 7
 
@@ -54,9 +60,9 @@ script = ExtResource("4_a8syd")
 id = &"a_masons_apprentice"
 title = "A mason's apprentice"
 body = "{subject} has been following the masons about, handing them things before they ask, and has begun to explain to others how the stone wants to be cut."
-requires = Array[ExtResource("3_t2dyr")]([SubResource("Resource_24mwd"), SubResource("Resource_efrhq")])
+requires = Array[ExtResource("3_t2dyr")]([SubResource("Resource_24mwd"), SubResource("Resource_efrhq"), SubResource("Resource_ap7gt")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_t2dyr")]([SubResource("Resource_ap7gt")])
+subject_requires = Array[ExtResource("3_t2dyr")]([SubResource("Resource_ll1kh")])
 trait_weights = Dictionary[StringName, float]({
 &"industrious": 3.0
 })

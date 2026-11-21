@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_8ndnp"]
 script = ExtResource("3_opv5q")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_keh4p"]
+script = ExtResource("3_opv5q")
 key = &"open_meeting"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_fntfo")
 id = &"the_open_meeting"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_opv5q")]([SubResource("Resource_bf5cc"), SubResource("Resource_8ndnp")])
+requires = Array[ExtResource("3_opv5q")]([SubResource("Resource_bf5cc"), SubResource("Resource_8ndnp"), SubResource("Resource_keh4p")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_jwqnm")]([SubResource("Resource_yn1oi")])

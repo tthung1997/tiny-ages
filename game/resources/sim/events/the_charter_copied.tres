@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_36bqq"]
 script = ExtResource("3_cc7br")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_xdj4b"]
+script = ExtResource("3_cc7br")
 key = &"charter_written"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_e5jax")
 id = &"the_charter_copied"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_cc7br")]([SubResource("Resource_v0dq4"), SubResource("Resource_36bqq")])
+requires = Array[ExtResource("3_cc7br")]([SubResource("Resource_v0dq4"), SubResource("Resource_36bqq"), SubResource("Resource_xdj4b")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_qim0r")]([SubResource("Resource_ubhty")])

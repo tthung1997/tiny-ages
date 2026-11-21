@@ -55,10 +55,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_x6b2f"]
 script = ExtResource("3_44nei")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_3dcqi"]
+script = ExtResource("3_44nei")
 kind = 11
 amount = 168
 
-[sub_resource type="Resource" id="Resource_3dcqi"]
+[sub_resource type="Resource" id="Resource_51cfu"]
 script = ExtResource("3_44nei")
 kind = 9
 key = &"the_square"
@@ -69,7 +75,7 @@ id = &"by_daylight_or_lamplight"
 title = "By daylight or by lamplight"
 body = "The square is busy all day, and the evening is when people have time to meet, and the council has been asked whether it ought to sit later."
 category = &"settlement"
-requires = Array[ExtResource("3_44nei")]([SubResource("Resource_0xuu8"), SubResource("Resource_x6b2f"), SubResource("Resource_3dcqi")])
+requires = Array[ExtResource("3_44nei")]([SubResource("Resource_0xuu8"), SubResource("Resource_x6b2f"), SubResource("Resource_3dcqi"), SubResource("Resource_51cfu")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_0ueey")]([SubResource("Resource_x7qvo"), SubResource("Resource_iyp1y")])

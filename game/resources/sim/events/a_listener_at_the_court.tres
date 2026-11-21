@@ -16,14 +16,20 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_xvgd2"]
 script = ExtResource("3_pu4sq")
-kind = 6
-key = &"social"
+kind = 8
+amount = 5
+negate = true
 
 [sub_resource type="Resource" id="Resource_87swj"]
 script = ExtResource("3_pu4sq")
-kind = 7
+kind = 6
+key = &"social"
 
 [sub_resource type="Resource" id="Resource_yc4m0"]
+script = ExtResource("3_pu4sq")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_k6y8k"]
 script = ExtResource("3_pu4sq")
 kind = 10
 
@@ -31,9 +37,9 @@ kind = 10
 script = ExtResource("4_rddvv")
 id = &"a_listener_at_the_court"
 title = "A quiet moment"
-requires = Array[ExtResource("3_pu4sq")]([SubResource("Resource_7tkp1")])
+requires = Array[ExtResource("3_pu4sq")]([SubResource("Resource_7tkp1"), SubResource("Resource_xvgd2")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_pu4sq")]([SubResource("Resource_xvgd2"), SubResource("Resource_87swj"), SubResource("Resource_yc4m0")])
+subject_requires = Array[ExtResource("3_pu4sq")]([SubResource("Resource_87swj"), SubResource("Resource_yc4m0"), SubResource("Resource_k6y8k")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_qf5f8")]([SubResource("Resource_6pris")])

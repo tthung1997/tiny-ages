@@ -128,3 +128,25 @@ blit(A, outlined(jar, OUT), 106, 164);
 IMG.putImageData(A.d); SPR.save();
 SPR.saveAs(DIR + 'game/assets/ui/skin_classical.png');
 console.log('classical skin done');
+
+// Medieval: a sheet of warm parchment inside dark oak rails, with a stitched title rule.
+P = new Buf(PW, PH);
+P.rect(0, 0, PW, PH, '#634431');
+P.rect(2, 2, PW - 4, PH - 4, '#8f6549');
+P.rect(7, 7, PW - 14, PH - 14, '#ba9164');
+P.rect(9, 9, PW - 18, PH - 18, '#f2e1bb');
+for (i = 0; i < 330; i++) {
+  x = 10 + Math.floor(rnd() * (PW - 20)); y = 10 + Math.floor(rnd() * (PH - 20));
+  P.px(x, y, i % 2 ? '#e9d6ad' : '#f7e9ca');
+}
+for (x = 13; x < 108; x += 4) P.line(x, 25, x + 2, 23, '#9b574a', 1);
+for (x = 11; x < PW - 8; x += 28) {
+  P.px(x, 3, '#dab172'); P.px(x, PH - 4, '#dab172');
+}
+for (i = 0; i < corners.length; i++) P.d[(corners[i][1] * PW + corners[i][0]) * 4 + 3] = 0;
+blit(A, P, 0, 0);
+blit(A, tile('#f0ddb3', '#fff1ce', '#c6a77d', '#925c47', OUT), 0, 164);
+blit(A, tile('#f8e9c4', '#fff8e5', '#dac096', '#b97d5e', OUT), 16, 164);
+blit(A, tile('#d6bc8e', '#c9a87a', '#e8d1a4', '#7b4a38', OUT), 32, 164);
+IMG.putImageData(A.d);
+SPR.saveAs(DIR + 'game/assets/ui/skin_medieval.png');

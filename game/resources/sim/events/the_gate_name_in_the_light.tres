@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_ibphx"]
 script = ExtResource("3_v2lck")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_ab0l3"]
+script = ExtResource("3_v2lck")
 key = &"gate_name"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_l0d12")
 id = &"the_gate_name_in_the_light"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_v2lck")]([SubResource("Resource_4s1y7"), SubResource("Resource_ibphx")])
+requires = Array[ExtResource("3_v2lck")]([SubResource("Resource_4s1y7"), SubResource("Resource_ibphx"), SubResource("Resource_ab0l3")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_dhid8")]([SubResource("Resource_w8k0f")])

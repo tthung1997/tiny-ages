@@ -9,8 +9,8 @@ const MAX_OVERLAP: float = 0.25
 const PAGE_BUDGET: Dictionary = {-1: 14, 0: 9, 1: 8}
 ## An age may hold more on a page when it is that age's character to (docs/ages.md, flexible density per age):
 ## the Classical Age's east shore adds a theatre and a harbour in place of the ship.
-const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}}
-const LAST_ERA: int = 4
+const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}, 5: {1: 9}}
+const LAST_ERA: int = 5
 ## The cave's own dressing shown at once (the pennant).
 const MAX_CAVE_DRESSING: int = 1
 
@@ -155,6 +155,10 @@ func test_props_shown_together_do_not_pile_on_each_other() -> void:
 		for i: int in shown.size():
 			for j: int in range(i + 1, shown.size()):
 				if _related(shown[i], shown[j]):
+					continue
+				if LanePieces.has(shown[i]) and LanePieces.has(shown[j]):
+					# These sprites do not occupy their authoring coordinates. The lane
+					# suite checks their art fits and their reserved spaces never overlap.
 					continue
 				var a: Dictionary = SceneProps.PROPS[shown[i]]
 				var b: Dictionary = SceneProps.PROPS[shown[j]]
@@ -381,7 +385,7 @@ func test_the_mammoth_is_the_cave_ages_alone() -> void:
 ## The Bloomery stands against the landmark's flank from x 73, so a later age's building ends before it.
 func test_the_signature_leaves_the_flank_to_the_bloomery() -> void:
 	var bloomery_left: int = WorldLayout.BUILDINGS[&"bloomery"]["cx"] - 12
-	for era_order: int in [3, 4]:
+	for era_order: int in [3, 4, 5]:
 		var back: Image = _back(era_order)
 		var right: int = 0
 		for y: int in 62:

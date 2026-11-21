@@ -11,6 +11,7 @@ const SETTLED: int = 1
 const BRONZE: int = 2
 const IRON: int = 3
 const CLASSICAL: int = 4
+const MEDIEVAL: int = 5
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -257,21 +258,35 @@ func _eras() -> Array[EraDef]:
 	]
 	classical.min_ticks_in_previous_era = CLASSICAL_MIN_TICKS
 	classical.turn_event = &"a_seat_at_the_table"
-	_set_profiles([cave, settled, bronze, iron, classical])
-	return [cave, settled, bronze, iron, classical]
+	var medieval: EraDef = _era(&"medieval", "Medieval Age", MEDIEVAL)
+	medieval.description = "Stewardship, guilds, and travelling fairs: what people make and learn " \
+			+ "is passed from hand to hand."
+	medieval.intro_text = "The Civic Hall put out a bench beneath its new porch, and people " \
+			+ "began to bring the things they meant to keep together."
+	medieval.housing = 14
+	medieval.required_achievements = [
+		&"paved_streets", &"water_from_afar", &"written_law", &"the_square",
+		&"lamp_and_stage", &"wider_world",
+	]
+	medieval.min_ticks_in_previous_era = 8640
+	medieval.turn_event = &"what_we_keep_together"
+	var eras: Array[EraDef] = [cave, settled, bronze, iron, classical, medieval]
+	_set_profiles(eras)
+	return eras
 
 
 ## What each age's villagers stand for (docs/ages.md, "How many people the strip shows"). A villager
 ## represents the settlement's people rather than counting them, so the ceiling stays small enough
 ## to read and cheap to run, and a later age's villager eats and brings in more to make up for it.
 ## `housing` is the age's own room; the ceiling is how far buildings and answers may stretch it.
-## These are tuning profiles for the five ages, not rules for every future one.
+## These are tuning profiles, not rules for every future age.
 const PROFILES: Array[Dictionary] = [
 	{"id": &"cave", "limit": 6, "need": 1.0, "food": 1.0, "wood": 1.0},
 	{"id": &"settled", "limit": 8, "need": 1.15, "food": 1.15, "wood": 1.1},
 	{"id": &"bronze", "limit": 10, "need": 1.3, "food": 1.3, "wood": 1.2},
 	{"id": &"iron", "limit": 12, "need": 1.5, "food": 1.5, "wood": 1.35},
 	{"id": &"classical", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
+	{"id": &"medieval", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 ]
 
 
@@ -405,6 +420,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_bronze_events())
 	events.append_array(_iron_events())
 	events.append_array(_classical_events())
+	events.append_array(_medieval_events())
 	return events
 
 
@@ -7429,8 +7445,8 @@ func _iron_remembered(event_id: StringName, flag: StringName, line: String) -> E
 ## and one road open to every group, small forks between them and quiet lines. Every decision is a
 ## fork (docs/gameplay.md P13). The turn asks *how* the town takes its place among cities; the
 ## roads read what the group answered in the Iron Age, but only the guaranteed flags (`letters`,
-## `hill_fort`, `coin_struck`, `known_abroad`) are ever required. The age has no gate out (G7);
-## its last forks only look toward what a later age could inherit.
+## `hill_fort`, `coin_struck`, `known_abroad`) are ever required. Its last forks look toward
+## Medieval without gating it.
 
 const CLASSICAL_TITLES: Dictionary = {
 	&"paved_streets": "Paved Streets",
@@ -7975,6 +7991,7 @@ func _classical_story(
 	event.body = body
 	event.requires = _conds([
 		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL),
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", MEDIEVAL, true),
 		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", CLASSICAL_STORY_DAY[day_key]),
 	])
 	event.chance_per_tick = STORY_CHANCE
@@ -8713,6 +8730,7 @@ func _classical_ambient(
 ) -> EventDef:
 	var event: EventDef = _ambient(event_id, line)
 	event.requires = _conds([_cond(SimCondition.Kind.ERA_AT_LEAST, &"", CLASSICAL)])
+	event.requires.append(_cond(SimCondition.Kind.ERA_AT_LEAST, &"", MEDIEVAL, true))
 	event.requires.append_array(needs)
 	event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
 	return event
@@ -8734,6 +8752,228 @@ func _classical_ambient_about(
 
 func _classical_remembered(event_id: StringName, flag: StringName, line: String) -> EventDef:
 	return _classical_ambient(event_id, line, [_flag_set(flag)])
+
+
+## [id, title, early day, common day, prerequisites, question, early and common roads].
+## Each road gives its inherited flag (if any) and two answers with journal lines.
+const MEDIEVAL_MILESTONES: Array[Array] = [
+	[&"water_in_trust", "Water in Trust", 24, 60, [],
+		"The basin still fills. Who will look after it when the people who built it are gone?", [
+		[&"water_stewards", "Pass the tally from street to street",
+			"The tally went round the town, and each street marked the channel it had cleared.",
+			"Keep an open ledger at the court",
+			"The basin got a ledger; anybody waiting for water could see whose turn it was."],
+		[&"water_craft", "Leave the repair tools at the basin",
+			"The channel builders hung their tools by the basin for the next hands to borrow.",
+			"Pair channel builders with apprentices",
+			"The youngest apprentices learned to hear a blocked channel before they saw it."],
+		[&"", "Mark the channels for neighbours to tend",
+			"Each street took a stretch of channel, marked by a small board at the basin.",
+			"Set aside a bench for repairs",
+			"The first thing mended on the new bench was the bench itself. It stood firm after."],
+	]],
+	[&"guild_bench", "The Guild Bench", 72, 108, [],
+		"There are empty bays under the market roof. The makers ask what they could share.", [
+		[&"water_craft", "Start a shared tool bench",
+			"The first borrower brought back the plane sharper than it had left.",
+			"Put finished work on show",
+			"A row of finished work stood under the awning, where anyone could ask how it was made."],
+		[&"travelling_teachers", "Swap apprentices for a lesson",
+			"The weaver's apprentice came back able to fit a handle to a tool.",
+			"Make a bench for open demonstrations",
+			"The bench turned to face the market, so nobody had to ask to come closer."],
+		[&"", "Bring the crafts to one long bench",
+			"One bench was long enough for several crafts, if they all moved their elbows in.",
+			"Give each craft its own bay",
+			"A cloth sign went up over each bay, and people carried their questions to the right one."],
+	]],
+	[&"charter_kept", "A Charter Kept", 126, 162, [&"water_in_trust", &"guild_bench"],
+		"The old promises still matter. How do we make them easy to find and easy to share?", [
+		[&"path_commons", "Read the promises at the hall door",
+			"The promises were read at the door, where the people fetching water could hear.",
+			"Take turns keeping the ledger",
+			"The ledger visited a new street every week and came back with more names than it left."],
+		[&"path_circuit", "Agree on measures at the arcade",
+			"Two town measures stood side by side. By dusk both towns could make the same mark.",
+			"Exchange copies of the towns' promises",
+			"The promises returned from the road with notes in the margin instead of corrections."],
+		[&"", "Put a single charter on display",
+			"The charter went up beneath the porch, out of the rain and within reach of a reader.",
+			"Read the charter aloud in turn",
+			"A new voice read the charter each time; someone brought a bench for the listeners."],
+	]],
+	[&"common_book", "The Common Book", 180, 216, [&"guild_bench"],
+		"Apprentices and copyists want a room with enough light. What should they copy first?", [
+		[&"copying_room", "Copy the practical guides first",
+			"The first copy from the new room explained how to sharpen the knife that trimmed it.",
+			"Collect the old stories first",
+			"The copyists left two endings to the same story. Both had been told for years."],
+		[&"travelling_teachers", "Bind lessons for the road",
+			"The apprentices stitched the lessons into books narrow enough for a satchel.",
+			"Record demonstrations at the bench",
+			"What had taken an afternoon to show took three attempts to put into words."],
+		[&"", "Keep a reference copy at the writing house",
+			"A book was opened on the long writing bench, ready for the next person to read.",
+			"Lend small copies to apprentices",
+			"The apprentices took their own pages home and brought them back with questions."],
+	]],
+	[&"fair_on_the_road", "A Fair on the Road", 234, 270, [&"charter_kept"],
+		"The makers and their neighbours would like the markets to visit one another.", [
+		[&"market_charter", "Take the tools round the towns",
+			"The travelling stall left with tools and came home with a benchful of new tricks.",
+			"Bring visiting wares to the arcade",
+			"Two towns shared most of an awning and found their wares looked better side by side."],
+		[&"market_hospitality", "Carry bread for the next hosts",
+			"The basket held bread on the outward road and was full of small gifts on the way back.",
+			"Set a welcome table at home",
+			"The table stayed out after the wares were put away, and the visitors did too."],
+		[&"", "Send a shared stall along the road",
+			"The stall took the road with wares from every bay in the arcade.",
+			"Offer visiting traders a bay here",
+			"The visitors put up their cloth beneath the market roof and left room for questions."],
+	]],
+	[&"round_of_towns", "A Round of Towns", 288, 324, [&"common_book", &"fair_on_the_road"],
+		"The travelling fair brings back as many ideas as wares. What shall it carry next?", [
+		[&"path_commons", "Host the returning makers",
+			"The supper table held lessons, work, and bread in roughly equal parts.",
+			"Send a book of the makers' work ahead",
+			"People along the road added their own designs until the book would barely close."],
+		[&"path_circuit", "Share an illustrated catalogue",
+			"A catalogue went round the towns; readers could recognise the things from the drawings.",
+			"Carry copied lessons round the circuit",
+			"The last town sent back a copied lesson the first town had never learned."],
+		[&"", "Exchange copies of the market list",
+			"The lists came back full of drawings and promises to show how each thing was made.",
+			"Send a book and ask for pages in return",
+			"The book came back thicker, and there was talk of finding an easier way to copy it."],
+	]],
+]
+
+
+func _medieval_events() -> Array[EventDef]:
+	var events: Array[EventDef] = [_what_we_keep_together()]
+	for spec: Array in MEDIEVAL_MILESTONES:
+		for road: Array in spec[6]:
+			events.append(_medieval_road(spec, road))
+	events.append_array(_medieval_stories())
+	events.append_array(_medieval_lines())
+	return events
+
+
+func _what_we_keep_together() -> EventDef:
+	var event: EventDef = _event(
+		&"what_we_keep_together", "What we keep together", &"settlement"
+	)
+	event.body = "The neighbouring towns ask how to share the work of looking after their " \
+			+ "water, books and market days. The channels run and the markets are open. This " \
+			+ "is a question for the years ahead."
+	event.choices = _choices([
+		_answer(&"name_the_commons", "Put the neighbourhoods in charge",
+			"The neighbours took responsibility for their own streets and made room at the "
+			+ "table for the towns that came to visit.",
+			[_set_flag(&"path_commons"), _eff(SimEffect.Kind.ADVANCE_ERA, &"medieval")]),
+		_answer(&"share_the_circuit", "Have the towns share the work",
+			"The towns sent people to learn how the others did the work, and each visitor "
+			+ "took one good idea back along the road.",
+			[_set_flag(&"path_circuit"), _eff(SimEffect.Kind.ADVANCE_ERA, &"medieval")]),
+	])
+	return event
+
+
+func _medieval_requirements(day: int) -> Array[SimCondition]:
+	return _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", MEDIEVAL),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", day),
+	])
+
+
+func _medieval_road(spec: Array, road: Array) -> EventDef:
+	var milestone: StringName = spec[0]
+	var inherited: StringName = road[0]
+	var suffix: String = "common" if inherited == &"" else String(inherited)
+	var id: StringName = StringName("medieval_%s_%s" % [milestone, suffix])
+	var event: EventDef = _event(id, spec[1], &"settlement")
+	event.chance_per_tick = 0.03
+	event.cooldown_ticks = 48
+	event.body = spec[5]
+	event.requires = _medieval_requirements(int(spec[3] if inherited == &"" else spec[2]))
+	event.requires.append(_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone, 0, true))
+	for required: StringName in spec[4]:
+		event.requires.append(_earned(required))
+	if inherited != &"":
+		event.requires.append(_flag_set(inherited))
+	for index: int in [1, 3]:
+		var answer_id: StringName = StringName("%s_%d" % [id, index])
+		var effects: Array[SimEffect] = [_set_flag(answer_id), _earn(milestone, spec[1])]
+		if milestone == &"round_of_towns":
+			effects.append(_set_flag(&"knowledge_shared"))
+		event.choices.append(_answer(answer_id, road[index], road[index + 1], effects))
+	return event
+
+
+func _medieval_stories() -> Array[EventDef]:
+	var mark: EventDef = _event(&"medieval_a_shared_mark", "A shared mark", &"settlement")
+	mark.body = "Nobody knows which mallet belongs to the bench. What shall we put on it?"
+	mark.requires = _medieval_requirements(115)
+	var margins: EventDef = _event(&"medieval_in_the_margins", "In the margins", &"settlement")
+	margins.body = "There is room at the foot of a copied page. What belongs there?"
+	margins.requires = _medieval_requirements(225)
+	var supper: EventDef = _event(&"medieval_a_place_at_supper", "A place at supper", &"settlement")
+	supper.body = "The next visitors will be hungry when they get here. What shall we put out?"
+	supper.requires = _medieval_requirements(278)
+	for event: EventDef in [mark, margins, supper]:
+		event.chance_per_tick = STORY_CHANCE
+		event.once = true
+	return [
+		_fork(mark,
+			_answer(&"guild_tree", "Cut a little tree in the handle",
+				"The mallet grew a tree, and the next tool to be shared grew one too.",
+				[_set_flag(&"guild_tree")]),
+			_answer(&"guild_ribbon", "Tie a ribbon to its handle",
+				"The ribbon got so dusty that everyone finally knew which mallet to borrow.",
+				[_set_flag(&"guild_ribbon")]), [_earned(&"guild_bench")]),
+		_fork(margins,
+			_answer(&"margin_stories", "Save a line of the old songs",
+				"Someone sang the line in the margin, and another voice knew the next one.",
+				[_set_flag(&"margin_stories")]),
+			_answer(&"margin_drawings", "Draw the things the words describe",
+				"The little drawings made the instructions faster to follow than to read.",
+				[_set_flag(&"margin_drawings")]), [_earned(&"common_book")]),
+		_fork(supper,
+			_answer(&"supper_bread", "Bake a loaf for every town",
+				"The loaves were labelled by town and eaten in no particular order.",
+				[_set_flag(&"supper_bread")]),
+			_answer(&"supper_stew", "Bring one big pot to the table",
+				"The pot was emptied by people who had never eaten together before.",
+				[_set_flag(&"supper_stew")]), [_earned(&"fair_on_the_road")]),
+	]
+
+
+func _medieval_lines() -> Array[EventDef]:
+	var lines: Array[EventDef] = []
+	for spec: Array in [
+		[&"water_stewards", "The old water stewards brought their street records to the new hall."],
+		[&"water_craft", "The channel builders arrived with tools and two keen apprentices."],
+		[&"copying_room", "The copyists carried in a book still smelling of wax."],
+		[&"travelling_teachers", "A teacher returned with a lesson worth keeping on paper."],
+		[&"market_charter", "The first visitor unfolded the old rota on the porch."],
+		[&"market_hospitality", "A familiar visitor found another place set at the table."],
+		[&"guild_tree", "An apprentice found the tree mark on a plane and knew where to return it."],
+		[&"guild_ribbon", "A fresh ribbon replaced the rag on the handle of the shared mallet."],
+		[&"margin_stories", "A line in a margin turned out to be the missing end of a song."],
+		[&"margin_drawings", "A reader copied only the drawings and got the work done before dusk."],
+		[&"supper_bread", "The last loaf left on the table went home with a visiting child."],
+		[&"supper_stew", "The pot came back across the road, polished inside and out."],
+		[&"knowledge_shared", "A copy arrived from a town that had never seen the first book."],
+	]:
+		var id: StringName = StringName("medieval_remembered_%s" % spec[0])
+		var event: EventDef = _ambient(id, spec[1])
+		event.requires = _medieval_requirements(0)
+		event.requires.append(_flag_set(spec[0]))
+		event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
+		event.once = true
+		lines.append(event)
+	return lines
 
 
 func _build_choice(

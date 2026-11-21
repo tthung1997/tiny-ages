@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_avata"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_yp4oi"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_2h0hw"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_lehn8"]
+
+[sub_resource type="Resource" id="Resource_1akyj"]
+script = ExtResource("2_yp4oi")
+kind = 1
+key = &"margin_stories"
+
+[sub_resource type="Resource" id="Resource_wdiqn"]
+script = ExtResource("2_yp4oi")
+text = "Someone sang the line in the margin, and another voice knew the next one."
+
+[sub_resource type="Resource" id="Resource_s3vew"]
+script = ExtResource("1_avata")
+id = &"margin_stories"
+label = "Save a line of the old songs"
+effects = Array[ExtResource("2_yp4oi")]([SubResource("Resource_1akyj"), SubResource("Resource_wdiqn")])
+
+[sub_resource type="Resource" id="Resource_raq11"]
+script = ExtResource("2_yp4oi")
+kind = 1
+key = &"margin_drawings"
+
+[sub_resource type="Resource" id="Resource_g4umq"]
+script = ExtResource("2_yp4oi")
+text = "The little drawings made the instructions faster to follow than to read."
+
+[sub_resource type="Resource" id="Resource_6rvat"]
+script = ExtResource("1_avata")
+id = &"margin_drawings"
+label = "Draw the things the words describe"
+effects = Array[ExtResource("2_yp4oi")]([SubResource("Resource_raq11"), SubResource("Resource_g4umq")])
+
+[sub_resource type="Resource" id="Resource_0h4bt"]
+script = ExtResource("3_2h0hw")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_au2di"]
+script = ExtResource("3_2h0hw")
+kind = 11
+amount = 225
+
+[sub_resource type="Resource" id="Resource_7qljh"]
+script = ExtResource("3_2h0hw")
+kind = 9
+key = &"common_book"
+
+[resource]
+script = ExtResource("4_lehn8")
+id = &"medieval_in_the_margins"
+title = "In the margins"
+body = "There is room at the foot of a copied page. What belongs there?"
+category = &"settlement"
+requires = Array[ExtResource("3_2h0hw")]([SubResource("Resource_0h4bt"), SubResource("Resource_au2di"), SubResource("Resource_7qljh")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("1_avata")]([SubResource("Resource_s3vew"), SubResource("Resource_6rvat")])

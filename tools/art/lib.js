@@ -135,6 +135,9 @@ var IRON_D = '#2c313b', IRON_M = '#555d6b', IRON_L = '#9aa5b5';
 PAL.linenMira = palWith(PAL.clothMira, { shirt: '#efe6d0', shirtD: '#cbbf9f', trim: '#b8402f', cloak: '#7c4a68', cloakD: '#5a3450' });
 PAL.linenTheo = palWith(PAL.clothTheo, { shirt: '#e8e0c8', shirtD: '#c4baa0', trim: '#2f5f8a', cloak: '#4f6e8f', cloakD: '#3a5270' });
 PAL.linenWren = palWith(PAL.clothWren, { shirt: '#eee6cc', shirtD: '#c9c0a2', trim: '#3f7a4a', cloak: '#c9953a', cloakD: '#a07428' });
+PAL.hoodMira = palWith(PAL.clothMira, { shirt: '#af6856', shirtD: '#814737', cloak: '#c86c5a', cloakD: '#853e3b', pants: '#544d65' });
+PAL.hoodTheo = palWith(PAL.clothTheo, { shirt: '#7895a0', shirtD: '#546d7a', cloak: '#6293ab', cloakD: '#3f5a78', pants: '#584936' });
+PAL.hoodWren = palWith(PAL.clothWren, { shirt: '#af9054', shirtD: '#7f6539', cloak: '#d6aa5c', cloakD: '#9e7039', pants: '#4b6258' });
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
@@ -166,6 +169,7 @@ function vil(o) {
     var ofit = o.outfit, field = ofit == 'field', brz = ofit == 'fittings', town = ofit == 'town' || brz;
     var irn = ofit == 'iron', chk = ofit == 'checked' || irn;
     var civ = ofit == 'civic', lin = ofit == 'linen' || civ;
+    var guild = ofit == 'guild', hood = ofit == 'hood' || guild;
     var sole = o.fur ? '#5a4636' : '#4a3224';
     if (field) { legc = SKD; sole = '#c98a6a'; }
     if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
@@ -181,6 +185,11 @@ function vil(o) {
       }
     }
     leg(l1, h1); leg(l2, h2);
+    if (hood) {
+      // The pointed hood hangs behind the neck, not over the villager's hair.
+      b.line(bx + 1, bodyTop - 2, bx - 3, bodyTop + 2, cl.cloakD, 2);
+      b.px(bx - 3, bodyTop + 2, cl.cloak); b.px(bx - 4, bodyTop + 3, cl.cloakD);
+    }
     if (chk) { // the cloak hanging down the back, no hood
       b.rect(bx - 3, bodyTop, 3, bh + 1, cl.cloakD); b.rect(bx - 3, bodyTop, 1, bh + 1, cl.cloak);
     }
@@ -246,6 +255,17 @@ function vil(o) {
       b.rect(bx, bodyTop + bh - 2, bw, 1, '#d9c9a0'); b.px(bx + bw - 2, bodyTop + bh - 1, '#d9c9a0');
       b.rect(bx, bodyTop, bw - 1, 2, cl.cloak); b.rect(bx, bodyTop + 2, 2, 2, cl.cloak); b.px(bx + 1, bodyTop + 4, cl.cloakD);
       if (civ) { b.rect(bx, bodyTop + 1, bw - 1, 1, cl.trim); b.px(bx + bw - 3, bodyTop + 2, BRONZE_L); b.px(bx + bw - 3, bodyTop + 3, BRONZE_D); }
+    }
+    if (hood) {
+      b.rect(bx, bodyTop + 3, bw, 1, '#5f3d27');
+      b.px(bx + 3, bodyTop + 3, '#e6bd76');
+      b.rect(bx, bodyTop + bh - 1, bw, 2, cl.shirtD);
+      b.rect(bx - 1, bodyTop, bw + 1, guild ? 2 : 1, guild ? cl.cloak : cl.cloakD);
+      if (guild) {
+        b.rect(bx - 2, bodyTop + 2, 5, 2, cl.cloak);
+        b.rect(bx - 3, bodyTop + 3, 2, 2, cl.cloakD);
+        b.px(bx + 2, bodyTop + 2, '#f4d393');
+      }
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_suk8a"]
 script = ExtResource("3_p6pfx")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_j2yu6"]
+script = ExtResource("3_p6pfx")
 key = &"awning_market"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_yej61")
 id = &"awnings_in_the_wind"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_p6pfx")]([SubResource("Resource_a3kc3"), SubResource("Resource_suk8a")])
+requires = Array[ExtResource("3_p6pfx")]([SubResource("Resource_a3kc3"), SubResource("Resource_suk8a"), SubResource("Resource_j2yu6")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_v26es")]([SubResource("Resource_26hwr")])
