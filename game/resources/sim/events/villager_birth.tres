@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_45t6x"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_u1uie"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_4r1dy"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_8taim"]
+
+[sub_resource type="Resource" id="Resource_ixltj"]
+script = ExtResource("2_u1uie")
+kind = 19
+
+[sub_resource type="Resource" id="Resource_2y117"]
+script = ExtResource("3_4r1dy")
+kind = 5
+amount = 8
+
+[sub_resource type="Resource" id="Resource_kh4lu"]
+script = ExtResource("3_4r1dy")
+kind = 12
+amount = 3
+
+[sub_resource type="Resource" id="Resource_jav4t"]
+script = ExtResource("3_4r1dy")
+kind = 2
+key = &"food"
+amount = 30
+
+[resource]
+script = ExtResource("4_8taim")
+id = &"villager_birth"
+title = "A birth in the settlement"
+category = &"settlement"
+requires = Array[ExtResource("3_4r1dy")]([SubResource("Resource_2y117"), SubResource("Resource_kh4lu"), SubResource("Resource_jav4t")])
+chance_per_tick = 0.004
+cooldown_ticks = 480
+effects = Array[ExtResource("2_u1uie")]([SubResource("Resource_ixltj")])

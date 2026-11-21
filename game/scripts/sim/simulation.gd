@@ -242,10 +242,10 @@ func era_gate_open(era: EraDef) -> bool:
 	return true
 
 
-## A newcomer joins the group: an unused name from the content pool, random traits, and a look
+## A villager joins the group: an unused name from the content pool, random traits, and a look
 ## reused in turn. Uses the simulation's rng, so it stays reproducible. Null, with a warning, if
 ## the group is already at `SimConfig.max_villagers`.
-func add_villager() -> VillagerState:
+func add_villager(born_here: bool = false, event_id: StringName = &"") -> VillagerState:
 	if world.villagers.size() >= config.max_villagers:
 		push_warning("The group is at its limit of %d villagers" % config.max_villagers)
 		return null
@@ -269,7 +269,8 @@ func add_villager() -> VillagerState:
 	for pick: int in mini(content.traits_per_villager, pool.size()):
 		villager.traits.append(content.villager_traits[pool[pick]])
 	world.villagers.append(villager)
-	add_journal("%s joined the group." % villager.display_name, &"settlement", &"", villager.id)
+	var line: String = "%s was born in the settlement." if born_here else "%s joined the group."
+	add_journal(line % villager.display_name, &"settlement", event_id, villager.id)
 	villager_joined.emit(villager)
 	return villager
 
@@ -313,7 +314,8 @@ func refresh_housing() -> void:
 		if world.has_flag(flag):
 			total += content.flag_housing[flag]
 	world.housing = total
-	world.villager_limit = era.max_villagers if era != null else config.max_villagers
+	world.villager_limit = mini(era.max_villagers, config.max_villagers) \
+			if era != null else config.max_villagers
 	if world.building_tags.size() != content.buildings.size():
 		world.building_tags.clear()
 		for def: BuildingDef in content.buildings:

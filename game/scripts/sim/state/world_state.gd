@@ -75,8 +75,7 @@ const FRACTION_SCALE: float = 1000000.0
 ## How many villagers the camp holds. Derived from the age, the buildings and the answers the
 ## group gave, and kept up to date by Simulation.refresh_housing; it is never saved.
 var housing: int = 0
-## The age's ceiling on the group's size (EraDef.max_villagers), kept up to date alongside
-## `housing` and never saved.
+## The age's ceiling held to the global safety limit, updated alongside `housing` and never saved.
 var villager_limit: int = 1000
 ## What weather can reach, by building definition: def id to its tags (BuildingDef.tags). Derived
 ## from the content like `housing`, kept up to date by Simulation.refresh_housing, never saved.
