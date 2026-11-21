@@ -415,6 +415,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_story_decisions())
 	events.append_array(_settled_stories())
 	events.append_array(_growth_decisions())
+	events.append(_villager_birth())
 	events.append_array(_ambient_lines())
 	events.append_array(_settled_ambient_lines())
 	events.append_array(_bronze_events())
@@ -3384,6 +3385,19 @@ func _growth_decisions() -> Array[EventDef]:
 		_traveller_at_dusk(), _too_many_for_the_cave(), _who_leads_the_foraging(),
 		_family_at_the_door(), _too_many_for_the_village(), _a_lean_spring(),
 	]
+
+
+func _villager_birth() -> EventDef:
+	var event: EventDef = _event(&"villager_birth", "A birth in the settlement", &"settlement")
+	event.requires = _conds([
+		_cond(SimCondition.Kind.DAYS_AT_LEAST, &"", 8),
+		_room_for(3), # Leave two places for arrival choices.
+		_has(&"food", 30),
+	])
+	event.chance_per_tick = 0.004
+	event.cooldown_ticks = 480
+	event.effects = _effs([_eff(SimEffect.Kind.BIRTH_VILLAGER)])
+	return event
 
 
 ## Only while the cave is not the Settled Age's.

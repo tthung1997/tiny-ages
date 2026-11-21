@@ -22,8 +22,10 @@ placeholder and does not yet follow these decisions; see "What this changes".
 - **P4 Start with three villagers whose traits are random** (seeded, so a run is reproducible). Their
   names are not fixed; their traits shape which events they take part in and how those play out.
 - **P5 The settlement can grow, and has limits that give, never break.** Villagers arrive through
-  decisions while the camp has room (the age, its buildings and the group's answers set it) and the
-  food to share. Everyone eats the same, but only foragers and hunters make food and they share the
+  decisions, and occasional births happen automatically while there is a food surplus and enough
+  room to leave two places for arrivals. Births are recorded in the journal, including those
+  during offline catch-up. The age, its buildings and the group's answers set how many people the
+  camp can hold. Everyone eats the same, but only foragers and hunters make food and they share the
   ground, so a bigger group has to spend more of its days on food; running short only moves what villagers do (more foraging, less wood and building), never
   hurts anyone. When the camp is full, a fork eases it: build out, or a family leaves to live
   elsewhere (nobody dies). Population is the clearest progress signal on a tiny strip. **A villager stands for the settlement's people; it is not a head count.** Each age has its own profile (a ceiling on arrivals, and what a villager eats and brings in), so later ages read as larger without drawing every person, and nobody already in the group is ever removed (docs/ages.md, "How many people the strip shows").

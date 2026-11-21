@@ -64,6 +64,8 @@ func apply(
 			sim.damage_building(effect.key, effect.text, kind, event_id)
 		SimEffect.Kind.REPAIR_BUILDING:
 			sim.repair_buildings(effect.key)
+		SimEffect.Kind.BIRTH_VILLAGER:
+			sim.add_villager(true, event_id)
 
 
 func _format(text: String, subject: VillagerState) -> String:

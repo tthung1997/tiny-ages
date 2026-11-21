@@ -26,6 +26,7 @@ enum Kind {
 	## if empty), chosen with the simulation's rng. Journals `text` ({building} is its name) or a
 	## plain line. Does nothing if there is none.
 	REPAIR_BUILDING, ## Every damaged building is mended (or only the one whose id is `key`).
+	BIRTH_VILLAGER, ## One villager is born in the settlement.
 }
 
 @export var kind: Kind = Kind.JOURNAL

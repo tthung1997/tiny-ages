@@ -4,6 +4,7 @@ extends McpTestSuite
 ## eases by building or by a family leaving: nobody dies and nothing blocks an age.
 
 const DAY: int = SimFixture.TICKS_PER_DAY
+const BIRTH: StringName = &"villager_birth"
 
 
 func suite_name() -> String:
@@ -202,6 +203,75 @@ func test_the_group_never_passes_its_safety_limit() -> void:
 		sim.add_villager()
 	assert_eq(sim.world.villagers.size(), 5)
 	assert_true(sim.add_villager() == null)
+
+
+# ---- births ---------------------------------------------------------------------------------
+
+func _birth_sim() -> Simulation:
+	var sim: Simulation = SimFixture.new_sim()
+	var config: SimConfig = _own_config(sim)
+	config.gather_rate = 0.0
+	config.food_per_villager_per_day = 0.0
+	var birth: EventDef = sim.content.get_event(BIRTH).duplicate()
+	birth.chance_per_tick = 1.0
+	sim.content = sim.content.duplicate()
+	sim.content.events = [birth]
+	return sim
+
+
+func test_birth_waits_for_the_settlement_to_have_a_food_surplus() -> void:
+	var sim: Simulation = _birth_sim()
+	sim.world.flags[&"lean_to"] = true
+	sim.world.resources[&"food"] = 30
+	sim.advance_ticks(DAY * 8 - sim.world.tick - 1)
+	assert_eq(sim.world.villagers.size(), 3, "No births in the first days")
+	sim.world.resources[&"food"] = 29
+	sim.advance_ticks(1)
+	assert_eq(sim.world.villagers.size(), 3, "No birth below the surplus threshold")
+	sim.world.resources[&"food"] = 30
+	sim.advance_ticks(1)
+	assert_eq(sim.world.villagers.size(), 4)
+	assert_true(sim.world.pending.is_empty(), "A birth doesn't ask the player to decide")
+
+
+func test_births_leave_two_places_for_arrivals_and_obey_the_global_cap() -> void:
+	var sim: Simulation = _birth_sim()
+	SimFixture.jump_to_day(sim, 8)
+	sim.world.resources[&"food"] = 40
+	sim.advance_ticks(1)
+	assert_eq(sim.world.villagers.size(), 3, "The cave itself has too little room")
+	sim.world.flags[&"lean_to"] = true
+	sim.config.max_villagers = 5
+	sim.advance_ticks(1)
+	assert_eq(sim.world.villagers.size(), 3, "The global cap leaves only two places")
+	sim.config.max_villagers = 14
+	sim.advance_ticks(1)
+	assert_eq(sim.world.villagers.size(), 4)
+	sim.advance_ticks(sim.content.get_event(BIRTH).cooldown_ticks)
+	assert_eq(sim.world.villagers.size(), 4, "The age ceiling leaves only two places")
+
+
+func test_births_are_spaced_out_and_reported_in_offline_catch_up() -> void:
+	var live: Simulation = _birth_sim()
+	var offline: Simulation = _birth_sim()
+	for sim: Simulation in [live, offline]:
+		sim.advance_era(&"bronze")
+		SimFixture.jump_to_day(sim, 8)
+		sim.world.resources[&"food"] = 40
+	var cooldown: int = live.content.get_event(BIRTH).cooldown_ticks
+	live.advance_ticks(cooldown + 1)
+	var now: float = offline.world.last_seen_unix
+	var seconds_per_tick: float = offline.config.seconds_per_tick()
+	var report: CatchUpReport = offline.advance_real_time(now + cooldown * seconds_per_tick)
+	assert_eq(offline.world.villagers.size(), 4, "Only one birth before the cooldown ends")
+	assert_eq(report.journal_entries.size(), 1)
+	if report.journal_entries.size() == 1:
+		var born: VillagerState = offline.world.villagers.back()
+		assert_eq(report.journal_entries[0].subject_id, born.id)
+		assert_eq(report.journal_entries[0].text, "%s was born in the settlement." % born.display_name)
+	offline.advance_real_time(now + (cooldown + 1) * seconds_per_tick)
+	assert_eq(offline.world.villagers.size(), 5, "Births can recur when there is still room")
+	assert_eq(SimFixture.snapshot(offline.world), SimFixture.snapshot(live.world))
 
 
 # ---- leaving --------------------------------------------------------------------------------
