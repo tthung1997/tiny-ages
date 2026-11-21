@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_5s4pa"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_v81df"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_uudjh"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_edany"]
+
+[sub_resource type="Resource" id="Resource_guids"]
+script = ExtResource("2_v81df")
+text = "The first visitor unfolded the old rota on the porch."
+
+[sub_resource type="Resource" id="Resource_8img7"]
+script = ExtResource("3_uudjh")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_15j1i"]
+script = ExtResource("3_uudjh")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_nlsms"]
+script = ExtResource("3_uudjh")
+key = &"market_charter"
+
+[resource]
+script = ExtResource("4_edany")
+id = &"medieval_remembered_market_charter"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_uudjh")]([SubResource("Resource_8img7"), SubResource("Resource_15j1i"), SubResource("Resource_nlsms")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_v81df")]([SubResource("Resource_guids")])

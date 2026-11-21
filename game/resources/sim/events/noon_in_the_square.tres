@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_fitmg"]
 script = ExtResource("3_nggdb")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_udlr3"]
+script = ExtResource("3_nggdb")
 kind = 9
 key = &"the_square"
 
@@ -24,7 +30,7 @@ script = ExtResource("4_k770m")
 id = &"noon_in_the_square"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_nggdb")]([SubResource("Resource_2ovey"), SubResource("Resource_fitmg")])
+requires = Array[ExtResource("3_nggdb")]([SubResource("Resource_2ovey"), SubResource("Resource_fitmg"), SubResource("Resource_udlr3")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_s0gm2")]([SubResource("Resource_swu27")])

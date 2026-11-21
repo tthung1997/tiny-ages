@@ -260,3 +260,149 @@ for (gi = 0; gi < groups.length; gi++) {
 var count = 0;
 for (name in layers) { IMG.putImageData(layers[name].d); SPR.saveAs(GAME + name + '.png'); count++; }
 console.log('classical camp done, ' + count + ' game layers');
+
+function awning(b, x, y, w, cloth) {
+  for (var dx = 0; dx < w; dx++) {
+    var stripe = dx % 8 < 4;
+    b.rect(x + dx, y, 1, 4, stripe ? cloth[1] : PLASTER);
+    b.px(x + dx, y, stripe ? cloth[0] : STONEL);
+    b.px(x + dx, y + 3, stripe ? cloth[2] : PLASTERD);
+    if (dx % 4 === 1 || dx % 4 === 2) b.px(x + dx, y + 4, stripe ? cloth[2] : PLASTERD);
+  }
+}
+
+function guildArcade(fair) {
+  return function (b) {
+    courses(b, 0, 24, 54, 3, STONE, STONED, 7);
+    b.rect(0, 24, 54, 1, STONEL);
+    b.rect(2, 9, 50, 15, '#51464a');
+    for (var x = 3; x < 53; x += 12) {
+      b.rect(x, 10, 2, 14, OAK);
+      b.rect(x, 11, 1, 12, OAKH);
+      b.line(x, 16, x + 4, 12, OAKH, 1);
+    }
+    tiles(b, 1, 9, 6, 45, 0, 53);
+    b.rect(1, 9, 52, 1, OAKD);
+    awning(b, 2, 10, 50, ['#98b7b6', '#5d8493', '#426070']);
+
+    b.rect(5, 20, 9, 2, OAKH); b.rect(5, 21, 9, 1, OAK);
+    b.rect(6, 22, 1, 2, OAKD); b.rect(12, 22, 1, 2, OAKD);
+    b.line(7, 16, 10, 20, '#d3b483', 1); b.rect(7, 17, 4, 2, IRON_L);
+    b.rect(18, 18, 8, 2, '#a95c4d'); b.rect(18, 20, 6, 2, '#d49c64');
+    b.rect(18, 22, 8, 1, OAKH);
+    b.rect(33, 14, 7, 7, OAKD);
+    b.rect(34, 15, 5, 5, '#d5ab5a'); b.line(35, 18, 38, 16, '#846337', 1);
+    b.rect(43, 19, 7, 2, OAKH); b.rect(44, 21, 1, 3, OAK);
+    if (fair) {
+      b.rect(16, 17, 10, 7, '#b48857'); b.rect(17, 17, 8, 2, '#ecd193');
+      b.rect(21, 18, 1, 6, '#885b3c');
+      b.ell(46, 21, 4, 2.5, '#b38049'); b.rect(44, 19, 5, 1, '#dab57b');
+      b.px(45, 21, '#f1d39c'); b.px(47, 22, OAKL);
+    }
+  };
+}
+
+function tendedCourt(b) {
+  b.rect(3, 10, 3, 15, OAK); b.rect(3, 11, 1, 13, OAKH);
+  b.rect(20, 10, 3, 15, OAKD); b.rect(20, 11, 1, 13, OAKL);
+  b.line(4, 16, 8, 12, OAKH, 1); b.line(21, 16, 17, 12, OAK, 1);
+  roof(b, 1, 12, 10, 12, 0, 25, function (x, y, t, left, right) {
+    var c = x < 13 ? '#567f9f' : '#405b7b';
+    if (left || y === 1) c = '#96bdcb';
+    else if (right || y === 12) c = '#334458';
+    else if (y % 3 === 0) c = x < 13 ? '#456785' : '#364d65';
+    b.px(x, y, c);
+  });
+  b.rect(2, 12, 22, 2, OAKD); b.rect(3, 12, 20, 1, OAKL);
+
+  b.rect(10, 14, 3, 4, STONES); b.rect(10, 14, 1, 3, STONEL);
+  b.rect(11, 17, 2, 7, WATERL); b.rect(12, 19, 1, 5, WATER);
+  b.rect(17, 15, 5, 5, OAKD); b.rect(17, 15, 4, 4, '#dfc789');
+  b.px(18, 16, OAKL); b.px(18, 18, OAKL);
+
+  courses(b, 1, 23, 24, 7, STONE, STONED, 5);
+  b.rect(2, 22, 22, 1, STONEL); b.px(1, 23, STONEL); b.px(24, 23, STONEL);
+  b.rect(3, 23, 20, 3, WATER); b.rect(3, 23, 20, 1, WATERL);
+  b.rect(10, 24, 4, 1, '#c9ebf2'); b.px(17, 25, WATERD);
+  b.rect(2, 26, 22, 1, STONEL);
+}
+
+function scriptorium(b) {
+  b.rect(2, 12, 22, 16, PLASTER);
+  b.rect(19, 11, 5, 17, PLASTERD);
+  courses(b, 1, 25, 24, 4, STONE, STONED, 6);
+  b.rect(18, 3, 4, 9, STONE[0]); b.rect(18, 3, 5, 1, STONEL);
+  roof(b, 2, 15, 8, 10, 0, 23, function (x, y, t, left, right) {
+    var c = x < 12 ? '#577884' : '#435b6b';
+    if (left) c = '#8eaaab';
+    else if (right || y === 15 || y % 3 === 0) c = '#384856';
+    else if ((x + Math.floor(y / 3) * 2) % 5 === 0) c = '#6c8993';
+    b.px(x, y, c);
+  });
+  b.rect(3, 15, 15, 10, OAKD);
+  b.rect(5, 14, 11, 1, OAKH);
+  b.rect(4, 16, 13, 7, '#e4a559'); b.rect(4, 16, 13, 2, '#ffde99');
+  b.rect(8, 16, 1, 7, OAK); b.rect(12, 16, 1, 7, OAK);
+  b.rect(5, 21, 11, 2, '#8d553b');
+  b.rect(5, 20, 3, 1, '#f8e5b5'); b.rect(13, 20, 3, 1, '#f8e5b5');
+  b.rect(2, 24, 17, 1, OAKH);
+  b.rect(19, 20, 4, 7, DARK); b.rect(19, 19, 3, 1, OAKL);
+  b.rect(19, 27, 6, 1, STONEL);
+}
+
+function fairWharf(b) {
+  harbour(b); // Keep the lantern at its Classical coordinates for the existing night glow.
+  b.rect(6, 12, 40, 9, '#54454a');
+  tiles(b, 6, 12, 12, 38, 4, 47);
+  awning(b, 6, 12, 40, ['#dfa779', '#ac6454', '#78463d']);
+  b.rect(8, 16, 2, 6, OAK); b.rect(43, 16, 2, 6, OAK);
+  b.px(8, 18, OAKH);
+  b.rect(13, 18, 7, 4, '#9d7150'); b.rect(13, 18, 7, 1, '#c99d64');
+  b.rect(15, 19, 1, 3, OAKL);
+  b.ell(25, 19, 3, 2, '#d3b076'); b.ell(30, 20, 3, 1.5, '#c2a175');
+  b.rect(36, 18, 5, 4, '#8e6c51'); b.rect(37, 19, 3, 1, '#d4a970');
+  b.rect(49, 18, 2, 5, OAKL); b.rect(54, 18, 2, 5, OAK);
+  b.line(50, 19, 54, 20, '#b2946a', 1);
+}
+
+function travellersHall(b) {
+  b.rect(3, 10, 43, 16, PLASTER); b.rect(35, 10, 11, 16, PLASTERD);
+  b.rect(37, 1, 5, 9, STONE[0]); b.rect(36, 1, 7, 2, STONED);
+  b.px(37, 1, STONEL);
+  tiles(b, 0, 12, 10, 33, 0, 48);
+  b.rect(3, 12, 43, 2, OAK); b.rect(3, 12, 43, 1, OAKL);
+  b.rect(5, 16, 26, 9, '#504349');
+  b.rect(6, 15, 24, 2, OAK); b.rect(6, 15, 24, 1, OAKH);
+  b.rect(5, 17, 2, 8, OAKL); b.rect(29, 17, 2, 8, OAK);
+  b.line(6, 20, 10, 16, OAKH, 1); b.line(30, 20, 26, 16, OAK, 1);
+  b.rect(11, 21, 15, 2, '#d9ad69'); b.rect(12, 22, 13, 1, OAKH);
+  b.rect(13, 23, 1, 2, OAKL); b.rect(24, 23, 1, 2, OAKL);
+  b.rect(16, 20, 5, 1, PLASTER); b.px(23, 20, '#e2a862');
+  b.rect(36, 16, 7, 6, DARK); b.rect(37, 17, 5, 4, '#e1a65f');
+  b.rect(39, 17, 1, 4, OAK);
+  b.rect(34, 22, 11, 1, OAKH);
+  b.rect(44, 14, 4, 1, OAKL); b.rect(45, 15, 3, 4, '#537d91'); b.px(46, 16, '#e8c687');
+  courses(b, 1, 25, 46, 3, STONE, STONED, 7);
+  b.rect(4, 25, 40, 1, STONEL); b.rect(7, 27, 34, 1, '#d0c6b1');
+}
+
+var medieval = {
+  tended_water_court: layerOf([obj(26, 30, 197, 75, tendedCourt)]),
+  guild_arcade: layerOf([obj(54, 27, 28, 64, guildArcade(false))]),
+  guild_arcade_fair: layerOf([obj(54, 27, 28, 64, guildArcade(true))]),
+  scriptorium: layerOf([obj(26, 29, 280, 66, scriptorium)]),
+  east_fair_wharf: layerOf([obj(84, 34, 279, 72, fairWharf), obj(26, 18, 289, 75, ship)]),
+  east_travellers_hall: layerOf([obj(49, 28, 138, 69, travellersHall)]),
+  stewardship_charter: layerOf([obj(8, 10, 42, 63, function (b) {
+    b.rect(0, 0, 8, 8, OAK); b.rect(1, 1, 6, 6, '#edda9d');
+    b.rect(2, 2, 4, 1, OAKL); b.rect(2, 4, 3, 1, OAKL); b.px(5, 5, '#a44838');
+    b.rect(1, 8, 1, 2, OAK); b.rect(6, 8, 1, 2, OAK);
+  })]),
+  stewardship_pages: layerOf([obj(8, 4, 24, 63, function (b) {
+    b.rect(0, 1, 8, 3, OAKL); b.rect(0, 0, 7, 2, '#f3e0a7'); b.rect(3, 0, 1, 4, '#b75b41');
+  })])
+};
+for (name in medieval) {
+  IMG.putImageData(medieval[name].d);
+  SPR.saveAs(DIR + 'game/assets/world/medieval/' + name + '.png');
+}

@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_c78fc"]
 script = ExtResource("3_rts32")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_hnt1s"]
+script = ExtResource("3_rts32")
 key = &"long_table"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_rpjeh")
 id = &"the_long_table_again"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_rts32")]([SubResource("Resource_ct0bs"), SubResource("Resource_c78fc")])
+requires = Array[ExtResource("3_rts32")]([SubResource("Resource_ct0bs"), SubResource("Resource_c78fc"), SubResource("Resource_hnt1s")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_41m4u")]([SubResource("Resource_a4x2c")])

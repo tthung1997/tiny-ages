@@ -346,7 +346,7 @@ func _animate_beacon(delta: float) -> void:
 	if not _east_light_shown():
 		return
 	var lit_x: Vector2 = WorldLayout.LIGHTHOUSE_LIGHT_X \
-			if _light_carrier() == &"east_harbour" else WorldLayout.BEACON_LIGHT_X
+			if _light_carrier() != &"east_beacon" else WorldLayout.BEACON_LIGHT_X
 	lit_x += Vector2(_light_shift(), _light_shift())
 	var left: float = float(_camera.pixel_x())
 	if left > lit_x.y or left + float(WorldLayout.VIEW_SIZE.x) < lit_x.x:
@@ -768,7 +768,7 @@ func _prop_pos(prop_id: StringName) -> Vector2:
 ## The east shore's night light is drawn with its piece, so it moves with the piece it belongs to:
 ## the harbour's lighthouse once there is a harbour, else the beacon.
 func _light_carrier() -> StringName:
-	for id: StringName in [&"east_harbour", &"east_beacon"]:
+	for id: StringName in [&"east_fair_wharf", &"east_harbour", &"east_beacon"]:
 		if (_props[id] as Sprite2D).visible:
 			return id
 	return &""

@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_cdl16"]
 script = ExtResource("3_lt3xk")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_owqfa"]
+script = ExtResource("3_lt3xk")
 kind = 9
 key = &"lamp_and_stage"
 
@@ -24,7 +30,7 @@ script = ExtResource("4_b08um")
 id = &"a_line_forgotten"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_lt3xk")]([SubResource("Resource_xcqta"), SubResource("Resource_cdl16")])
+requires = Array[ExtResource("3_lt3xk")]([SubResource("Resource_xcqta"), SubResource("Resource_cdl16"), SubResource("Resource_owqfa")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_oihuq")]([SubResource("Resource_fvfbw")])

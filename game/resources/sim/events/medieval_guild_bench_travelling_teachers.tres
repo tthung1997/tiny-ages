@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_s3oyc"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_g67k1"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_knu33"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_01siy"]
+
+[sub_resource type="Resource" id="Resource_1cmy0"]
+script = ExtResource("2_g67k1")
+kind = 1
+key = &"medieval_guild_bench_travelling_teachers_1"
+
+[sub_resource type="Resource" id="Resource_dshp8"]
+script = ExtResource("2_g67k1")
+kind = 10
+key = &"guild_bench"
+text = "The Guild Bench"
+
+[sub_resource type="Resource" id="Resource_y0tsg"]
+script = ExtResource("2_g67k1")
+text = "The weaver's apprentice came back able to fit a handle to a tool."
+
+[sub_resource type="Resource" id="Resource_ryd6y"]
+script = ExtResource("1_s3oyc")
+id = &"medieval_guild_bench_travelling_teachers_1"
+label = "Swap apprentices for a lesson"
+effects = Array[ExtResource("2_g67k1")]([SubResource("Resource_1cmy0"), SubResource("Resource_dshp8"), SubResource("Resource_y0tsg")])
+
+[sub_resource type="Resource" id="Resource_vermi"]
+script = ExtResource("2_g67k1")
+kind = 1
+key = &"medieval_guild_bench_travelling_teachers_3"
+
+[sub_resource type="Resource" id="Resource_f3cfv"]
+script = ExtResource("2_g67k1")
+kind = 10
+key = &"guild_bench"
+text = "The Guild Bench"
+
+[sub_resource type="Resource" id="Resource_m7cve"]
+script = ExtResource("2_g67k1")
+text = "The bench turned to face the market, so nobody had to ask to come closer."
+
+[sub_resource type="Resource" id="Resource_r18ve"]
+script = ExtResource("1_s3oyc")
+id = &"medieval_guild_bench_travelling_teachers_3"
+label = "Make a bench for open demonstrations"
+effects = Array[ExtResource("2_g67k1")]([SubResource("Resource_vermi"), SubResource("Resource_f3cfv"), SubResource("Resource_m7cve")])
+
+[sub_resource type="Resource" id="Resource_kxgku"]
+script = ExtResource("3_knu33")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_2n4a0"]
+script = ExtResource("3_knu33")
+kind = 11
+amount = 72
+
+[sub_resource type="Resource" id="Resource_6tjtn"]
+script = ExtResource("3_knu33")
+kind = 9
+key = &"guild_bench"
+negate = true
+
+[sub_resource type="Resource" id="Resource_4mtev"]
+script = ExtResource("3_knu33")
+key = &"travelling_teachers"
+
+[resource]
+script = ExtResource("4_01siy")
+id = &"medieval_guild_bench_travelling_teachers"
+title = "The Guild Bench"
+body = "There are empty bays under the market roof. The makers ask what they could share."
+category = &"settlement"
+requires = Array[ExtResource("3_knu33")]([SubResource("Resource_kxgku"), SubResource("Resource_2n4a0"), SubResource("Resource_6tjtn"), SubResource("Resource_4mtev")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_s3oyc")]([SubResource("Resource_ryd6y"), SubResource("Resource_r18ve")])

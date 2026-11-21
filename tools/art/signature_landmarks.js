@@ -221,6 +221,62 @@ function civichall(b) {
   b.rect(34, 1, 1, 11, IRON_M); b.rect(35, 2, 6, 5, '#b8402f'); b.rect(35, 4, 6, 1, '#efe6d0'); b.px(34, 0, IRON_L);
 }
 
+function stewardshipHall(b) {
+  var oak = '#60402d', oakL = '#9d6946', dark = '#372a31';
+  var plaster = '#f0dfb9', plasterS = '#cbbb99';
+  var stone = ['#aaa08e', '#b9ae98', '#c8bca3'], mortar = '#746c68';
+  var red = '#af5c46', redL = '#d99466', redS = '#753e38', redD = '#542e30';
+  var woad = '#476f84', woadL = '#7fa7b0';
+
+  // Old civic masonry under a roof built in two sections. The porch and its steps are nearer.
+  b.rect(5, 22, 59, 27, plaster);
+  b.rect(55, 22, 13, 27, plasterS);
+  b.rect(5, 28, 61, 3, '#b6a487');
+  courses(b, 3, 47, 67, 5, stone, mortar, 6);
+  b.rect(3, 47, 67, 1, '#dccfb1');
+  roof(b, 12, 30, 48, 59, 39, 70, function (px, py, t, left, right) {
+    var c = left ? redL : right || py === 30 ? redD : redS;
+    if (!left && !right && py < 30 && py % 3 === 1) c = '#935044';
+    b.px(px, py, c);
+  });
+  roof(b, 4, 29, 22, 30, 0, 57, function (px, py, t, left, right) {
+    var c = px < 29 ? red : redS;
+    if (left || py === 4) c = redL;
+    else if (right || py === 29) c = redD;
+    else if (py % 3 === 1) c = px < 29 ? '#92493b' : redD;
+    else if ((px + Math.floor(py / 3) * 3) % 9 === 0) c = '#9c4d3e';
+    b.px(px, py, c);
+  });
+  // A taller front gable, with broad diagonal braces instead of a uniform timber grid.
+  roof(b, 11, 34, 33, 36, 14, 54, function (px, py, t, left, right) {
+    b.px(px, py, left ? oakL : right || py >= 32 ? oak : px >= 40 ? plasterS : plaster);
+  });
+  b.line(34, 13, 17, 32, '#dfba90', 1); b.line(36, 13, 53, 33, redD, 1);
+  b.rect(34, 14, 2, 18, oak);
+  b.line(22, 30, 34, 20, oak, 2); b.line(36, 21, 47, 31, oak, 2);
+  b.rect(31, 21, 8, 8, dark); b.rect(32, 20, 6, 1, dark);
+  b.rect(32, 22, 6, 5, '#e2a85f'); b.rect(34, 22, 1, 5, oak);
+  b.rect(30, 29, 10, 1, oakL);
+
+  // A broad, recessed public porch. Keep the doorway's dark pixels at x 34.
+  b.rect(15, 33, 39, 2, oak); b.rect(15, 33, 39, 1, oakL);
+  b.rect(18, 35, 33, 16, '#65534e'); b.rect(18, 35, 33, 3, dark);
+  b.rect(28, 39, 13, 13, dark); b.rect(30, 38, 9, 1, dark);
+  b.rect(18, 36, 3, 15, oak); b.rect(48, 36, 3, 15, oak);
+  b.rect(18, 37, 1, 12, oakL); b.rect(48, 37, 1, 12, '#805439');
+  b.line(19, 42, 25, 36, oakL, 1); b.line(49, 42, 44, 36, oak, 1);
+  b.rect(16, 50, 7, 2, stone[1]); b.rect(46, 50, 7, 2, stone[1]);
+  b.rect(25, 51, 20, 2, stone[2]); b.rect(23, 53, 24, 1, stone[1]);
+
+  b.rect(55, 34, 10, 9, dark); b.rect(56, 33, 8, 1, oakL);
+  b.rect(56, 35, 8, 6, '#e9a850'); b.rect(56, 35, 8, 1, '#ffdc91');
+  for (var x = 58; x < 64; x += 3) b.rect(x, 35, 1, 6, oak);
+  b.rect(54, 43, 12, 1, '#e0c39b');
+  b.rect(7, 33, 8, 1, oakL); b.rect(8, 34, 6, 10, woad);
+  b.rect(8, 34, 1, 10, woadL); b.rect(10, 38, 2, 3, '#f4d286');
+  b.px(9, 43, woadL); b.px(13, 43, plaster);
+}
+
 // ---- Classical: a bronze brazier in place of the camp fire (16x14, foot row 78) ---------------------------------
 function brazier(b, frame) {
   var fl = FLAMES[frame || 0], i, BD = '#6e4a1a';
@@ -232,10 +288,13 @@ function brazier(b, frame) {
 }
 function pineOnly() { return [obj(16, 26, 204, 65, pine, { sh: 6 })]; }
 
-function flameFn(frame, kind) { return function (b) { (kind == 'classical' ? brazier : firepit)(b, frame); }; }
+function flameFn(frame, kind) {
+  return function (b) { (kind == 'classical' || kind == 'medieval' ? brazier : firepit)(b, frame); };
+}
 
 var AGES = [
-  ['settled', longhouse], ['bronze', gatehouse], ['iron', hillhall], ['classical', civichall]
+  ['settled', longhouse], ['bronze', gatehouse], ['iron', hillhall], ['classical', civichall],
+  ['medieval', stewardshipHall]
 ];
 var ai, ap, i, back, count = 0;
 for (ai = 0; ai < AGES.length; ai++) {

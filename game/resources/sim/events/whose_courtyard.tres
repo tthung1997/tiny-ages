@@ -55,15 +55,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_s5j6j"]
 script = ExtResource("3_5ysfn")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_0dmtn"]
+script = ExtResource("3_5ysfn")
 kind = 11
 amount = 32
 
-[sub_resource type="Resource" id="Resource_0dmtn"]
+[sub_resource type="Resource" id="Resource_yei2s"]
 script = ExtResource("3_5ysfn")
 kind = 9
 key = &"paved_streets"
 
-[sub_resource type="Resource" id="Resource_yei2s"]
+[sub_resource type="Resource" id="Resource_7v7q8"]
 script = ExtResource("3_5ysfn")
 kind = 7
 
@@ -72,9 +78,9 @@ script = ExtResource("4_5hvrp")
 id = &"whose_courtyard"
 title = "Whose courtyard stays open"
 body = "The paved courtyard between the houses has become the best place in town, and {subject} has noticed that the weavers want a roof over it, and the children do not."
-requires = Array[ExtResource("3_5ysfn")]([SubResource("Resource_rpxpi"), SubResource("Resource_s5j6j"), SubResource("Resource_0dmtn")])
+requires = Array[ExtResource("3_5ysfn")]([SubResource("Resource_rpxpi"), SubResource("Resource_s5j6j"), SubResource("Resource_0dmtn"), SubResource("Resource_yei2s")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_5ysfn")]([SubResource("Resource_yei2s")])
+subject_requires = Array[ExtResource("3_5ysfn")]([SubResource("Resource_7v7q8")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })

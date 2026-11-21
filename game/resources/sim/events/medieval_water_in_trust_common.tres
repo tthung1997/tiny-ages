@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_dy8mh"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_eibsy"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_cr648"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_wukb8"]
+
+[sub_resource type="Resource" id="Resource_cb0ax"]
+script = ExtResource("2_eibsy")
+kind = 1
+key = &"medieval_water_in_trust_common_1"
+
+[sub_resource type="Resource" id="Resource_2xiqb"]
+script = ExtResource("2_eibsy")
+kind = 10
+key = &"water_in_trust"
+text = "Water in Trust"
+
+[sub_resource type="Resource" id="Resource_tqbqc"]
+script = ExtResource("2_eibsy")
+text = "Each street took a stretch of channel, marked by a small board at the basin."
+
+[sub_resource type="Resource" id="Resource_uwqrk"]
+script = ExtResource("1_dy8mh")
+id = &"medieval_water_in_trust_common_1"
+label = "Mark the channels for neighbours to tend"
+effects = Array[ExtResource("2_eibsy")]([SubResource("Resource_cb0ax"), SubResource("Resource_2xiqb"), SubResource("Resource_tqbqc")])
+
+[sub_resource type="Resource" id="Resource_yulsu"]
+script = ExtResource("2_eibsy")
+kind = 1
+key = &"medieval_water_in_trust_common_3"
+
+[sub_resource type="Resource" id="Resource_cf5k1"]
+script = ExtResource("2_eibsy")
+kind = 10
+key = &"water_in_trust"
+text = "Water in Trust"
+
+[sub_resource type="Resource" id="Resource_o70ev"]
+script = ExtResource("2_eibsy")
+text = "The first thing mended on the new bench was the bench itself. It stood firm after."
+
+[sub_resource type="Resource" id="Resource_i01vk"]
+script = ExtResource("1_dy8mh")
+id = &"medieval_water_in_trust_common_3"
+label = "Set aside a bench for repairs"
+effects = Array[ExtResource("2_eibsy")]([SubResource("Resource_yulsu"), SubResource("Resource_cf5k1"), SubResource("Resource_o70ev")])
+
+[sub_resource type="Resource" id="Resource_xlfb4"]
+script = ExtResource("3_cr648")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_cvn22"]
+script = ExtResource("3_cr648")
+kind = 11
+amount = 60
+
+[sub_resource type="Resource" id="Resource_s5kvo"]
+script = ExtResource("3_cr648")
+kind = 9
+key = &"water_in_trust"
+negate = true
+
+[resource]
+script = ExtResource("4_wukb8")
+id = &"medieval_water_in_trust_common"
+title = "Water in Trust"
+body = "The basin still fills. Who will look after it when the people who built it are gone?"
+category = &"settlement"
+requires = Array[ExtResource("3_cr648")]([SubResource("Resource_xlfb4"), SubResource("Resource_cvn22"), SubResource("Resource_s5kvo")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_dy8mh")]([SubResource("Resource_uwqrk"), SubResource("Resource_i01vk")])

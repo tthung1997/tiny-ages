@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_tuttm"]
 script = ExtResource("3_6eqw8")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_dkwd5"]
+script = ExtResource("3_6eqw8")
 kind = 11
 amount = 232
 
-[sub_resource type="Resource" id="Resource_dkwd5"]
+[sub_resource type="Resource" id="Resource_gmx8m"]
 script = ExtResource("3_6eqw8")
 kind = 9
 key = &"lamp_and_stage"
@@ -56,7 +62,7 @@ id = &"a_play"
 title = "A play"
 body = "Someone has proposed a play, with parts for everyone, and the only question is what it is about."
 category = &"settlement"
-requires = Array[ExtResource("3_6eqw8")]([SubResource("Resource_t8oc5"), SubResource("Resource_tuttm"), SubResource("Resource_dkwd5")])
+requires = Array[ExtResource("3_6eqw8")]([SubResource("Resource_t8oc5"), SubResource("Resource_tuttm"), SubResource("Resource_dkwd5"), SubResource("Resource_gmx8m")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_c03em")]([SubResource("Resource_7byw1"), SubResource("Resource_3o0i5")])

@@ -145,6 +145,9 @@ func test_every_prop_shows_for_its_trigger_and_only_then() -> void:
 				site.def_id = spec["key"]
 				site.complete = true
 				sim.world.buildings.append(site)
+		if spec.get("requires_crossing", false):
+			assert_false(SceneProps.is_shown(prop_id, sim.world), "%s needs a crossing" % prop_id)
+			sim.world.flags[&"stepping_stones"] = true
 		assert_true(SceneProps.is_shown(prop_id, sim.world), "%s should show" % prop_id)
 
 

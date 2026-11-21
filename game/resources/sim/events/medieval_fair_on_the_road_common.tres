@@ -1,0 +1,80 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_apjs2"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_wou4d"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_3rn2r"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_ixdbl"]
+
+[sub_resource type="Resource" id="Resource_upssp"]
+script = ExtResource("2_wou4d")
+kind = 1
+key = &"medieval_fair_on_the_road_common_1"
+
+[sub_resource type="Resource" id="Resource_0kfwp"]
+script = ExtResource("2_wou4d")
+kind = 10
+key = &"fair_on_the_road"
+text = "A Fair on the Road"
+
+[sub_resource type="Resource" id="Resource_rsfxh"]
+script = ExtResource("2_wou4d")
+text = "The stall took the road with wares from every bay in the arcade."
+
+[sub_resource type="Resource" id="Resource_xohra"]
+script = ExtResource("1_apjs2")
+id = &"medieval_fair_on_the_road_common_1"
+label = "Send a shared stall along the road"
+effects = Array[ExtResource("2_wou4d")]([SubResource("Resource_upssp"), SubResource("Resource_0kfwp"), SubResource("Resource_rsfxh")])
+
+[sub_resource type="Resource" id="Resource_nw4ct"]
+script = ExtResource("2_wou4d")
+kind = 1
+key = &"medieval_fair_on_the_road_common_3"
+
+[sub_resource type="Resource" id="Resource_edrtn"]
+script = ExtResource("2_wou4d")
+kind = 10
+key = &"fair_on_the_road"
+text = "A Fair on the Road"
+
+[sub_resource type="Resource" id="Resource_5pnut"]
+script = ExtResource("2_wou4d")
+text = "The visitors put up their cloth beneath the market roof and left room for questions."
+
+[sub_resource type="Resource" id="Resource_6ty2h"]
+script = ExtResource("1_apjs2")
+id = &"medieval_fair_on_the_road_common_3"
+label = "Offer visiting traders a bay here"
+effects = Array[ExtResource("2_wou4d")]([SubResource("Resource_nw4ct"), SubResource("Resource_edrtn"), SubResource("Resource_5pnut")])
+
+[sub_resource type="Resource" id="Resource_bulhu"]
+script = ExtResource("3_3rn2r")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_8d18n"]
+script = ExtResource("3_3rn2r")
+kind = 11
+amount = 270
+
+[sub_resource type="Resource" id="Resource_axmj4"]
+script = ExtResource("3_3rn2r")
+kind = 9
+key = &"fair_on_the_road"
+negate = true
+
+[sub_resource type="Resource" id="Resource_2spq0"]
+script = ExtResource("3_3rn2r")
+kind = 9
+key = &"charter_kept"
+
+[resource]
+script = ExtResource("4_ixdbl")
+id = &"medieval_fair_on_the_road_common"
+title = "A Fair on the Road"
+body = "The makers and their neighbours would like the markets to visit one another."
+category = &"settlement"
+requires = Array[ExtResource("3_3rn2r")]([SubResource("Resource_bulhu"), SubResource("Resource_8d18n"), SubResource("Resource_axmj4"), SubResource("Resource_2spq0")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_apjs2")]([SubResource("Resource_xohra"), SubResource("Resource_6ty2h")])

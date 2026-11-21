@@ -55,15 +55,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_m7ki4"]
 script = ExtResource("3_ncxgt")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_n8psw"]
+script = ExtResource("3_ncxgt")
 kind = 11
 amount = 222
 
-[sub_resource type="Resource" id="Resource_n8psw"]
+[sub_resource type="Resource" id="Resource_h2p1h"]
 script = ExtResource("3_ncxgt")
 kind = 9
 key = &"lamp_and_stage"
 
-[sub_resource type="Resource" id="Resource_h2p1h"]
+[sub_resource type="Resource" id="Resource_txdab"]
 script = ExtResource("3_ncxgt")
 kind = 7
 
@@ -72,9 +78,9 @@ script = ExtResource("4_itpaw")
 id = &"a_visiting_book"
 title = "A visiting book"
 body = "A traveller has left a book behind, overnight, with a note asking that it be looked after, and {subject} has already read the first page and is not sleeping."
-requires = Array[ExtResource("3_ncxgt")]([SubResource("Resource_lvgrc"), SubResource("Resource_m7ki4"), SubResource("Resource_n8psw")])
+requires = Array[ExtResource("3_ncxgt")]([SubResource("Resource_lvgrc"), SubResource("Resource_m7ki4"), SubResource("Resource_n8psw"), SubResource("Resource_h2p1h")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_ncxgt")]([SubResource("Resource_h2p1h")])
+subject_requires = Array[ExtResource("3_ncxgt")]([SubResource("Resource_txdab")])
 trait_weights = Dictionary[StringName, float]({
 &"curious": 3.0
 })

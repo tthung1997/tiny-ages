@@ -55,15 +55,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_k3est"]
 script = ExtResource("3_44cyf")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_lswgl"]
+script = ExtResource("3_44cyf")
 kind = 11
 amount = 178
 
-[sub_resource type="Resource" id="Resource_lswgl"]
+[sub_resource type="Resource" id="Resource_81mqn"]
 script = ExtResource("3_44cyf")
 kind = 9
 key = &"the_square"
 
-[sub_resource type="Resource" id="Resource_81mqn"]
+[sub_resource type="Resource" id="Resource_70qwk"]
 script = ExtResource("3_44cyf")
 kind = 7
 
@@ -72,9 +78,9 @@ script = ExtResource("4_oa8mu")
 id = &"visiting_craftspeople"
 title = "Room for visiting craftspeople"
 body = "Craftspeople from other towns are asking for room in the square, and {subject} has noticed that the square is the one place that cannot grow."
-requires = Array[ExtResource("3_44cyf")]([SubResource("Resource_b5ax4"), SubResource("Resource_k3est"), SubResource("Resource_lswgl")])
+requires = Array[ExtResource("3_44cyf")]([SubResource("Resource_b5ax4"), SubResource("Resource_k3est"), SubResource("Resource_lswgl"), SubResource("Resource_81mqn")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_44cyf")]([SubResource("Resource_81mqn")])
+subject_requires = Array[ExtResource("3_44cyf")]([SubResource("Resource_70qwk")])
 trait_weights = Dictionary[StringName, float]({
 &"industrious": 3.0
 })

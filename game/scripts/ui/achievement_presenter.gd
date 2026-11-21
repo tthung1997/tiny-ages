@@ -14,11 +14,13 @@ const ICON_ORDER: Array[StringName] = [
 	&"beyond_the_water", &"first_bloom", &"fuller_harvest", &"the_hill_fort", &"silver_by_weight",
 	&"written_word", &"name_abroad", &"paved_streets", &"water_from_afar", &"written_law",
 	&"the_square", &"lamp_and_stage", &"wider_world",
+	&"water_in_trust", &"guild_bench", &"charter_kept", &"common_book", &"fair_on_the_road",
+	&"round_of_towns",
 ]
 const ICONS_PATH: String = "res://assets/ui/achievements.png"
 const CELL: Vector2i = Vector2i(20, 20)
 ## Shown for an achievement with no icon of its own: the cell after the last one in `ICON_ORDER`.
-const GENERIC_ICON: int = 33
+const GENERIC_ICON: int = 39
 
 
 class Badge:

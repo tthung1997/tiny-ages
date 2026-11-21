@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_pk3so"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_votts"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_hawqh"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_uomms"]
+
+[sub_resource type="Resource" id="Resource_hnw3l"]
+script = ExtResource("2_votts")
+text = "A reader copied only the drawings and got the work done before dusk."
+
+[sub_resource type="Resource" id="Resource_02nls"]
+script = ExtResource("3_hawqh")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_m31nf"]
+script = ExtResource("3_hawqh")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_pmu43"]
+script = ExtResource("3_hawqh")
+key = &"margin_drawings"
+
+[resource]
+script = ExtResource("4_uomms")
+id = &"medieval_remembered_margin_drawings"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_hawqh")]([SubResource("Resource_02nls"), SubResource("Resource_m31nf"), SubResource("Resource_pmu43")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_votts")]([SubResource("Resource_hnw3l")])

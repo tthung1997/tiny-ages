@@ -130,7 +130,9 @@ func _plan_trader(
 	var post_home: float = float(WorldLayout.BUILDINGS[&"trading_post"]["cx"])
 	var post_x: float = _moved(layout, &"trading_post", post_home)
 	var market_x: float = _market_x(layout)
-	var market: bool = world.has_flag(&"market_day") and not is_nan(market_x)
+	var market: bool = not is_nan(market_x) and (
+		world.has_flag(&"market_day") or world.has_achievement(&"guild_bench")
+	)
 	var post: bool = world.has_building(&"trading_post") and not is_nan(post_x)
 	if not market and not post:
 		return false

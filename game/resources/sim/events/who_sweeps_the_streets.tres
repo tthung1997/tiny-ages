@@ -55,15 +55,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_bn71q"]
 script = ExtResource("3_i3ptd")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_5fi3h"]
+script = ExtResource("3_i3ptd")
 kind = 11
 amount = 8
 
-[sub_resource type="Resource" id="Resource_5fi3h"]
+[sub_resource type="Resource" id="Resource_p48p5"]
 script = ExtResource("3_i3ptd")
 kind = 9
 key = &"paved_streets"
 
-[sub_resource type="Resource" id="Resource_p48p5"]
+[sub_resource type="Resource" id="Resource_6bfid"]
 script = ExtResource("3_i3ptd")
 kind = 7
 
@@ -72,9 +78,9 @@ script = ExtResource("4_1kbla")
 id = &"who_sweeps_the_streets"
 title = "Who sweeps the first streets"
 body = "A street that is paved is a street that can be swept, and {subject} has noticed that nobody has said who sweeps it."
-requires = Array[ExtResource("3_i3ptd")]([SubResource("Resource_u4s8b"), SubResource("Resource_bn71q"), SubResource("Resource_5fi3h")])
+requires = Array[ExtResource("3_i3ptd")]([SubResource("Resource_u4s8b"), SubResource("Resource_bn71q"), SubResource("Resource_5fi3h"), SubResource("Resource_p48p5")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_i3ptd")]([SubResource("Resource_p48p5")])
+subject_requires = Array[ExtResource("3_i3ptd")]([SubResource("Resource_6bfid")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })

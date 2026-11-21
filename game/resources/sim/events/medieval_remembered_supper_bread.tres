@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ybdxu"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_5wfug"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_gjnih"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_yrdnm"]
+
+[sub_resource type="Resource" id="Resource_dll8w"]
+script = ExtResource("2_5wfug")
+text = "The last loaf left on the table went home with a visiting child."
+
+[sub_resource type="Resource" id="Resource_y3c4o"]
+script = ExtResource("3_gjnih")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_br2c1"]
+script = ExtResource("3_gjnih")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_uexor"]
+script = ExtResource("3_gjnih")
+key = &"supper_bread"
+
+[resource]
+script = ExtResource("4_yrdnm")
+id = &"medieval_remembered_supper_bread"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_gjnih")]([SubResource("Resource_y3c4o"), SubResource("Resource_br2c1"), SubResource("Resource_uexor")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_5wfug")]([SubResource("Resource_dll8w")])

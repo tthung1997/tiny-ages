@@ -267,7 +267,6 @@ func test_the_last_forks_look_ahead_without_promising_a_later_age() -> void:
 				assert_false(
 					effect.kind == SimEffect.Kind.ADVANCE_ERA, "%s does not turn the age" % event_id
 				)
-		assert_eq(_content().next_era(4), null, "There is no age after the Classical Age yet")
 
 
 func test_every_story_fork_sets_flags_a_choice_can_remember() -> void:
@@ -345,7 +344,7 @@ func _assert_finishes(rng_seed: int, path: StringName, declines: int) -> void:
 				"%s: %s came before day %d" % [label, milestone, OPENS[milestone]]
 			)
 	assert_true(sim.world.has_flag(&"towns_connected"), "%s: the towns are connected" % label)
-	assert_eq(sim.world.era, &"classical", "%s: the age stays open-ended" % label)
+	assert_eq(sim.world.era, &"classical", "%s: the next age waits for its five-day gate" % label)
 
 
 func _pass_on_first_asks(sim: Simulation, passed: Dictionary, declines: int) -> void:

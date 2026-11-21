@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ixibq"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_66ll7"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_r8p7v"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_x4eky"]
+
+[sub_resource type="Resource" id="Resource_r7tjc"]
+script = ExtResource("2_66ll7")
+text = "The channel builders arrived with tools and two keen apprentices."
+
+[sub_resource type="Resource" id="Resource_gxe6p"]
+script = ExtResource("3_r8p7v")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_12no2"]
+script = ExtResource("3_r8p7v")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_6v2hr"]
+script = ExtResource("3_r8p7v")
+key = &"water_craft"
+
+[resource]
+script = ExtResource("4_x4eky")
+id = &"medieval_remembered_water_craft"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_r8p7v")]([SubResource("Resource_gxe6p"), SubResource("Resource_12no2"), SubResource("Resource_6v2hr")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_66ll7")]([SubResource("Resource_r7tjc")])

@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_ebiap"]
 script = ExtResource("3_bm55o")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_f12ex"]
+script = ExtResource("3_bm55o")
 kind = 9
 key = &"wider_world"
 
@@ -24,7 +30,7 @@ script = ExtResource("4_s2q4y")
 id = &"a_letter_arrived"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_bm55o")]([SubResource("Resource_dof3u"), SubResource("Resource_ebiap")])
+requires = Array[ExtResource("3_bm55o")]([SubResource("Resource_dof3u"), SubResource("Resource_ebiap"), SubResource("Resource_f12ex")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_033ia")]([SubResource("Resource_jdqf2")])

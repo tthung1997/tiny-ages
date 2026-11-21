@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_m8jwk"]
 script = ExtResource("3_ktfwp")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_osy1u"]
+script = ExtResource("3_ktfwp")
 kind = 11
 amount = 126
 
-[sub_resource type="Resource" id="Resource_osy1u"]
+[sub_resource type="Resource" id="Resource_3t0kl"]
 script = ExtResource("3_ktfwp")
 kind = 9
 key = &"written_law"
@@ -56,7 +62,7 @@ id = &"a_seal_for_the_charter"
 title = "A seal for the charter"
 body = "The laws have been written, and a great many of them need a mark to show that they are the town's, and somebody has suggested the old coin."
 category = &"settlement"
-requires = Array[ExtResource("3_ktfwp")]([SubResource("Resource_e0prr"), SubResource("Resource_m8jwk"), SubResource("Resource_osy1u")])
+requires = Array[ExtResource("3_ktfwp")]([SubResource("Resource_e0prr"), SubResource("Resource_m8jwk"), SubResource("Resource_osy1u"), SubResource("Resource_3t0kl")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_6j8v7")]([SubResource("Resource_g6lvp"), SubResource("Resource_opdu3")])

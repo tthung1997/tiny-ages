@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EraDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/era_def.gd" id="1_hledx"]
+
+[resource]
+script = ExtResource("1_hledx")
+id = &"medieval"
+display_name = "Medieval Age"
+order = 5
+description = "Stewardship, guilds, and travelling fairs: what people make and learn is passed from hand to hand."
+intro_text = "The Civic Hall put out a bench beneath its new porch, and people began to bring the things they meant to keep together."
+housing = 14
+max_villagers = 14
+food_need_scale = 1.7
+food_yield_scale = 1.7
+wood_yield_scale = 1.5
+required_achievements = Array[StringName]([&"paved_streets", &"water_from_afar", &"written_law", &"the_square", &"lamp_and_stage", &"wider_world"])
+min_ticks_in_previous_era = 8640
+turn_event = &"what_we_keep_together"

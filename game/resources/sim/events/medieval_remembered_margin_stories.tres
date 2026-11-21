@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_bfqws"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_m3m3r"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_oyjf1"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_8igk2"]
+
+[sub_resource type="Resource" id="Resource_o8c5t"]
+script = ExtResource("2_m3m3r")
+text = "A line in a margin turned out to be the missing end of a song."
+
+[sub_resource type="Resource" id="Resource_33hfd"]
+script = ExtResource("3_oyjf1")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_fvj06"]
+script = ExtResource("3_oyjf1")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_nf8ki"]
+script = ExtResource("3_oyjf1")
+key = &"margin_stories"
+
+[resource]
+script = ExtResource("4_8igk2")
+id = &"medieval_remembered_margin_stories"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_oyjf1")]([SubResource("Resource_33hfd"), SubResource("Resource_fvj06"), SubResource("Resource_nf8ki")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_m3m3r")]([SubResource("Resource_o8c5t")])

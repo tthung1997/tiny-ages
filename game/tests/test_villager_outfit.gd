@@ -31,6 +31,8 @@ func test_each_world_wears_what_it_has_earned() -> void:
 		[4, [&"first_bloom"], VillagerOutfit.LINEN],
 		[4, [&"paved_streets"], VillagerOutfit.LINEN],
 		[4, [&"the_square"], VillagerOutfit.CIVIC],
+		[5, [&"the_square"], VillagerOutfit.HOOD],
+		[5, [&"guild_bench"], VillagerOutfit.GUILD],
 	]
 	for item: Array in cases:
 		var earned: Array[StringName] = []
@@ -47,6 +49,7 @@ func test_an_achievement_means_nothing_before_its_age() -> void:
 		VillagerOutfit.WOVEN
 	)
 	assert_eq(VillagerOutfit.for_world(_world(3, [&"the_square"])), VillagerOutfit.CHECKED)
+	assert_eq(VillagerOutfit.for_world(_world(4, [&"guild_bench"])), VillagerOutfit.LINEN)
 
 
 func test_a_new_world_wears_furs() -> void:
@@ -58,6 +61,7 @@ func test_the_outfits_get_finer_as_the_world_does() -> void:
 	var steps: Array = [
 		[0, []], [1, []], [1, [&"woven_cloth"]], [2, []], [2, [&"first_casting"]],
 		[3, []], [3, [&"first_bloom"]], [4, []], [4, [&"the_square"]],
+		[5, []], [5, [&"guild_bench"]],
 	]
 	for step: Array in steps:
 		var earned: Array[StringName] = []
@@ -98,7 +102,7 @@ func test_the_outfits_are_drawn_differently() -> void:
 		var sheet: Texture2D = load(WorldLayout.villager_sheet_path(&"mira", outfit)) as Texture2D
 		var image: Image = sheet.get_image()
 		seen[image.get_data().hex_encode()] = outfit
-	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "Nine outfits, nine different sheets")
+	assert_eq(seen.size(), VillagerOutfit.ORDER.size(), "One distinct sheet per outfit")
 
 
 func test_an_unknown_look_wears_miras_clothes_in_the_same_outfit() -> void:

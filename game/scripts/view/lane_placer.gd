@@ -80,6 +80,8 @@ static func replaces() -> Dictionary:
 
 
 static func _note_replaces(replacer: StringName, replaced: StringName) -> void:
+	if replacer == replaced:
+		return
 	var list: Array = _replaces.get(replacer, [])
 	if not list.has(replaced):
 		list.append(replaced)
@@ -161,15 +163,24 @@ static func _is_free(run: Dictionary, key: StringName, start: int) -> bool:
 	var table: Dictionary = run["table"]
 	var lane: StringName = _lane(table, key)
 	var spaces: int = _spaces(table, key)
-	if not LaneSpaces.span_open(
-		lane, start, spaces, _terrain(table, key), run["era"], run["crossed"]
-	):
+	if not _fits_terrain(run, key, start):
 		return false
 	var cells: Array = run["cells"][lane]
 	for at: int in range(start, start + spaces):
 		if cells[at] != NONE or _is_inside_building(run, lane, at):
 			return false
 	return true
+
+
+static func _fits_terrain(run: Dictionary, key: StringName, start: int) -> bool:
+	var table: Dictionary = run["table"]
+	var lane: StringName = _lane(table, key)
+	if LanePieces.FAR_BANK_ONLY.has(key) and not LaneSpaces.needs_crossing(lane, start):
+		return false
+	var crossed: bool = run["crossed"] and not LanePieces.HOME_BANK_ONLY.has(key)
+	return LaneSpaces.span_open(
+		lane, start, _spaces(table, key), _terrain(table, key), run["era"], crossed
+	)
 
 
 ## Whether a prop space lies inside a building that spans it, which would put the prop right in
@@ -242,9 +253,7 @@ static func _evict_for(run: Dictionary, key: StringName) -> int:
 	var best_count: int = 0
 	var best_distance: float = 0.0
 	for start: int in LaneSpaces.starts_by_distance(lane, spaces):
-		if not LaneSpaces.span_open(
-			lane, start, spaces, _terrain(table, key), run["era"], run["crossed"]
-		):
+		if not _fits_terrain(run, key, start):
 			continue
 		var victims: Dictionary = {}
 		var worst: int = 1 << 60

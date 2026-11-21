@@ -51,7 +51,7 @@ var _panel_textures: Dictionary = {}
 static func skins() -> Dictionary:
 	return {
 		&"cave": cave, &"settled": clay, &"bronze": bronze, &"iron": iron,
-		&"classical": classical,
+		&"classical": classical, &"medieval": medieval,
 	}
 
 
@@ -132,6 +132,20 @@ static func classical() -> PanelSkin:
 	skin.scroll_track = Color("d8ccb0")
 	skin.scroll_grabber = Color("b86a42")
 	skin.tooltip_fill = Color("f0e8d4")
+	skin._place_pieces()
+	return skin
+
+
+static func medieval() -> PanelSkin:
+	var skin: PanelSkin = PanelSkin.new()
+	skin.era_id = &"medieval"
+	skin.atlas_path = ASSET_DIR + "skin_medieval.png"
+	skin.title_color = Color("793c32")
+	skin.muted = Color("634936")
+	skin.day_color = Color("815334")
+	skin.scroll_track = Color("dcc39a")
+	skin.scroll_grabber = Color("865744")
+	skin.tooltip_fill = Color("f0e0bc")
 	skin._place_pieces()
 	return skin
 

@@ -409,7 +409,7 @@ Still open: the working names (*A harder fire*, `path_bloomery` / `path_ore`).
 
 ## Classical Age
 
-Status: **built (issue #40): the sim, the milestones, the forks, the signature buildings, the world art, the clothes, the UI skin and the medals.** It follows the earlier ages' shape (G6, G7, P13) and stands on what the Iron Age left (I10). What is new is **streets, water brought in, written law, a square, learning and a stage, and a wider world of other cities**. Days are *days into the Classical Age* (`ERA_DAYS_AT_LEAST`; 72 days is a real day). The age is open-ended (G7): it has no gate out, and what comes after it is only a direction ("Medieval: the direction").
+Status: **built (issue #40): the sim, the milestones, the forks, the signature buildings, the world art, the clothes, the UI skin and the medals.** It follows the earlier ages' shape (G6, G7, P13) and stands on what the Iron Age left (I10). What is new is **streets, water brought in, written law, a square, learning and a stage, and a wider world of other cities**. Days are *days into the Classical Age* (`ERA_DAYS_AT_LEAST`; 72 days is a real day). All six milestones and five real days in Classical open the turn into [Medieval](#medieval-age).
 
 ### Decisions
 
@@ -419,7 +419,7 @@ Status: **built (issue #40): the sim, the milestones, the forks, the signature b
 | C2 | **No new building.** The age adds no standalone building slot; its milestones put *pieces* on the world, and each piece folds older ones into a tidier whole (`replaced_by`: the market stalls, the council ring, the writing post and the coin tray become one **market arcade**; the well becomes a **water court**; the camp's road is **paved**; the deep-keeled ship gives way to a **harbour**). Two more pieces are new places: a **theatre** and an inscribed **law pillar** that the arcade later takes in. | A world that only ever adds things gets crowded and unreadable. The town gets denser in what it *is*, and the building a milestone earns still counts for its sim benefits and history (nothing saved changes). |
 | C3 | **One signature building per age** (see "One signature building per age"): the whole cave landmark, rock included, is replaced at each turn by that age's own building in the same footprint. | The landmark is what the eye reads first; an age should be recognisable from it alone. |
 | C4 | **Representative villagers, not a census**, with a profile per age (see "How many people the strip shows"). | Crowding hurts both feel and cost; an empty strip is boring. Balance is per age, not one rule. |
-| C5 | **Medieval is the direction, not a build** ("Medieval: the direction"). The sixth milestone's roads all set `towns_connected`, which a later age reads as `known_abroad` is read here. | Open-ended; nothing is ever "finished", and the next age is not invented later. |
+| C5 | All roads to the sixth milestone set `towns_connected`, the starting point of the [Medieval Age](#medieval-age) story, not a separate gate. | Optional stories can shape the age ahead without holding anyone back. |
 
 ### The turn: *A seat at the table*
 
@@ -456,6 +456,7 @@ The camp's landmark is the same footprint every age (a 100x54 piece with its foo
 | Bronze | Gatehouse | Mud-brick towers round a bronze-capped arch: the settlement becomes a town |
 | Iron | Hill-fort hall | A slate footing, timber and limewash, an iron-bound door between palisade ends |
 | Classical | Civic hall | A limestone porch of columns under a terracotta pediment, a tiled hall beside it |
+| Medieval | Stewardship Hall | Steep tiled roofs over dark timber, limewash and an open porch |
 
 It shows because the age turned, never because of a flag, an achievement or a hint (P8). The Cave Age's pennant goes with the cliff; the later ages' doors and standards are retired (the signature has its own entrance and banner: the Bronze gatehouse's bronze disc, the Iron hall's slate banner, the Classical hall's red banner on its pediment; the longhouse has none). **The Bloomery stands against its flank** (x 73 to 97), so the Iron hall and the Classical hall end before x 73 and the Bronze gatehouse before x 91 (a test checks it); **the mammoth is the Cave Age's alone** (a later age draws only the lone pine); and the **Classical fire is a bronze brazier** on the camp fire's spot (the glow, the flicker and the gathering place are the same). **The lighthouse replaces the beacon** (the harbour hides `east_beacon` and its night light is `east_beacon_glow` in the Classical folder, which takes the beacon's by name), and **the arcade takes in the cart and the donkeys**. **Farming is the Field's alone**: the farmers' sown plot, scarecrow, farmstead and plough team are gone (they drew the same thing as the Field, on another page and row), the Field stands on the back lane with the other buildings, in the west village against the hall's flank where the plot and farmstead were (`WorldLayout.BUILDINGS`, its camp art moved 269 px west), and `path_agriculture` shows nothing of its own; herders keep their pen, sheepfold and shearing pen (moved 70 px west to make room) and lose the garden patch, which was a second farming piece. The hens leave the village when the Bronze Age turns. The Granary takes the Drying Rack's ground (`WorldLayout.BUILDING_FOLDED_INTO`: the view hides the rack while a granary stands or goes up, the sim keeps both), so a field and a store never stand on each other. Hover names it for its age (`WorldLandmarks.SIGNATURE_NAMES`). Medieval can repurpose it as a guild or stewardship hall, and a modern age as a civic building in a dense block: those are directions, not assets.
 
@@ -478,7 +479,7 @@ A villager **stands for** the settlement's people; it does not count them. Each 
 
 ### Medieval: the direction
 
-Not built (G7). It inherits **stewardship, guilds, preserved learning and travelling markets**: the water court and the arcade become a guild's and a charter's places; the library and school become scriptoria and apprenticeships; the harbour and the market circuit become travelling fairs. Its gate would be the Classical six plus `towns_connected` for the outlook, and the three overture forks' flags (`water_stewards` / `water_craft`, `copying_room` / `travelling_teachers`, `market_charter` / `market_hospitality`) are what its turn would remember. Nothing collapses and nothing is conquered.
+See the [Medieval Age](#medieval-age).
 
 ### What is built
 
@@ -491,8 +492,115 @@ Not built (G7). It inherits **stewardship, guilds, preserved learning and travel
 ### Open questions
 
 - The working names (*A seat at the table*, `path_assembly` / `path_league`) are in; none is final.
-- Whether the Classical Age needs a gate out before a Medieval one is designed (G7 says no).
 - Whether the ceilings (6, 8, 10, 12, 14) feel right on screen is for a person to judge: look at a developed world in each age (`--era=`, `--earn=`, `--flag=`, `--shot=`), sparse and busy, day and night.
+
+## Medieval Age
+
+Status: **built (issue #57).** Classical villagers built things
+together. Medieval villagers decide how to look after them, pass on what they know, and share
+them with their neighbours. The town is still there when the age turns: no collapse, conquest,
+combat, or failure state.
+
+### The turn: *What we keep together*
+
+The hidden gate is **all six Classical milestones** (`paved_streets`, `water_from_afar`,
+`written_law`, `the_square`, `lamp_and_stage`, `wider_world`) and **8,640 ticks in Classical**
+(five real days, with time away counting as usual). `towns_connected` is the premise, not a
+seventh gate: both answers on every route to `wider_world` already set it. This uses the
+existing `EraDef` gate and also lets a save with the six achievements but a missing flag
+advance. No Classical choice or overture is required.
+
+The neighbouring towns ask how to share the work of keeping their water, books, and market
+days going. Either answer starts Medieval: **Put the neighbourhoods in charge**
+(`path_commons`) or **Have the towns share the work** (`path_circuit`). The former gives
+earlier routes about local promises and hosting; the latter gives earlier routes about shared
+standards and exchanging work. Neither gives a production bonus or cuts off a milestone.
+
+The turn uses the same question for everyone. Short, flag-gated journal moments afterwards
+remember each overture independently, without assuming the others:
+
+| Classical memory | What Medieval opens with | If unanswered |
+|---|---|---|
+| `water_stewards` / `water_craft` | Neighbours bring their water records / channel builders bring their tools and apprentices. | The basin works; the question of who keeps it is new. |
+| `copying_room` / `travelling_teachers` | Copyists bring a book to the new hall / a teacher brings back a lesson worth keeping. | People bring loose notes and well-told lessons, not an established school. |
+| `market_charter` / `market_hospitality` | Visitors bring the agreed rota / hosts set another place at the table. | Visitors ask where they might set out their wares next time. |
+
+### Milestones and their roads
+
+Days are measured **into Medieval** (72 game days per real day). Each road is a fork and both
+answers earn that milestone. The common road opens at the later day and needs only the age,
+that day, and the listed prerequisite milestones: no inherited flag, specific villager,
+stock, construction, bridge, weather, or market date. Earlier roads do not close at that
+day; once a milestone is earned, its other roads are no longer needed. Choices change the
+journal and the use or dressing of the same places, not their footprint or output.
+
+| Milestone | First / common day; needs | Earlier roads | Common road | On screen |
+|---|---|---|---|---|
+| **Water in Trust** (`water_in_trust`) | 24 / 60; none | `water_stewards`: pass a tally from street to street or keep an open ledger at the court. `water_craft`: leave tool racks at the basin or pair channel builders with learners. | Mark the channels for neighbours to tend or keep a bench for repair work. | The stone arch becomes a blue-roofed timber shelter over a wider stone trough, in the same prop space. |
+| **The Guild Bench** (`guild_bench`) | 72 / 108; none | `water_craft`: start a shared tool bench or put finished work on show. `travelling_teachers`: swap learners for a lesson or keep an open demonstration bench. | Join the crafts at one long bench or give each craft a bay of the arcade. | The arcade becomes a guild arcade; benches and cloth signs sit under its existing roofline. |
+| **A Charter Kept** (`charter_kept`) | 126 / 162; `water_in_trust`, `guild_bench` | `path_commons`: read the promises at the hall door or rotate who keeps the ledger. `path_circuit`: agree on measures at the arcade or exchange copies of the towns' promises. | Keep a single charter on display or read it aloud in turn. | A charter board under the hall's porch; the law pillar does not come back. |
+| **The Common Book** (`common_book`) | 180 / 216; `guild_bench` | `copying_room`: copy practical guides first or collect the old stories first. `travelling_teachers`: bind lessons for the road or record demonstrations at the bench. | Keep one reference copy at the writing house or lend small copies to apprentices. | A **Scriptorium & Apprentice House** with a broad, mullioned window, reachable even without a bridge. |
+| **A Fair on the Road** (`fair_on_the_road`) | 234 / 270; `charter_kept` | `market_charter`: take tools round the towns or bring their wares to the arcade. `market_hospitality`: travel with bread for the hosts or lay a welcome table at home. | Send a shared stall along the road or offer the next visiting traders a bay here. | A basket and wares at the guild arcade; the harbour becomes a **Fair Wharf** with a striped canopy, keeping its lighthouse. |
+| **A Round of Towns** (`round_of_towns`) | 288 / 324; `common_book`, `fair_on_the_road` | `path_commons`: host returning makers or send a book of their work ahead. `path_circuit`: share a catalogue of wares or carry a bundle of copied lessons round the circuit. | Exchange copies of the market list or send a book and ask for new pages in return. | Papers beside the charter and, with a crossing, the theatre becomes a **Travellers' Hall**. Every answer also sets `knowledge_shared`. |
+
+Between the milestones, use small, optional decisions and quiet journal lines: whose mark goes on
+a shared tool, which old story belongs in the margins, or what to put out for returning traders.
+The fair circuit is a story about visits, not a timetable the player has to attend. There are no
+deadlines, missed rewards, upkeep bills, or new gauges. A decision can wait while the player is away.
+
+### What changes in the strip
+
+The **Stewardship Hall** replaces the Civic Hall at the turn, regardless of the answer. Its
+stepped roofline, braced front gable, broad recessed porch and stone steps read at native
+384×80 before the player can see the blue banner or amber window. It keeps the existing
+100×54 landmark footprint, foot row 66, entrance near x 34,
+clear flank at x 73 and up, and brazier and gathering spot. Its porch and writing bay gain
+dressing as milestones are earned, not additional slots. Keep the existing pixel scale and
+outline; leave enough open ground to see the 16 px villagers walking.
+
+| Decision | Pieces and reserved spaces |
+|---|---|
+| **Keep** | The Hut, Field, surviving herd pens, Smithy or Trading Post, Bloomery or Granary, and Drying Rack where it has not already folded into the Granary. Keep the paved road, rampart, any crossing, and the Quay in shallows. |
+| **Upgrade in place** | The tended water court keeps `water_court` (rank 2, one prop space). The striped guild arcade keeps `market_arcade` (rank 1, two building spaces) and its market destination. The Fair Wharf keeps `east_harbour` (rank 1, three coastal building spaces) and the position of its lighthouse. With a crossing, the Travellers' Hall keeps `east_theatre` (rank 3, two ground building spaces) and recalls the old stage in its stone steps. Land-based fair activity stays on reachable ground; it does not open an absent crossing. |
+| **Add** | The Scriptorium takes one 28 px building space on the home bank (rank 1). The milestone supplies it directly; there is no construction order or new resource output. |
+| **Retire from the view** | At the turn, retire the old Lookout and loose slag heap. Keep their history and any sim benefits. The arcade still contains the old market stalls, council ring, law pillar, writing post, coin tray, cart and donkeys; none comes back as separate scenery. |
+
+Medieval uses the same three pages, lane grid, and per-page budgets as Classical.
+The fixed signature sits outside the lane budget and
+all other pieces obey the existing terrain and crossing rules. When space is tight, decor and
+lower-rank scenery give way before ranks 1 and 2. The view never takes away output, housing,
+or a choice. Reusing the placement keys keeps saves, hover, and work spots aligned.
+
+**Clothes and panels:** a belted long-sleeved tunic, leggings and a pointed hood folded back
+at the turn; a dyed shoulder cape once the Guild Bench is earned. The faces, walk cycles and
+role overlays still identify the same people. The panel skin uses oak and parchment, and the
+six milestones each have a medal.
+
+**Representative profile:** base housing 14 and a ceiling of 14. Keep the Classical
+food need and forage/hunt scales at ×1.70 and wood yield at ×1.50, with unchanged building
+output. Make the age feel busier through what the same villagers do at the bench, court, and
+arcade, not through extra arrivals or faster stock gain. This is a starting profile, not a
+measured balance result.
+
+### Looking ahead: the Renaissance
+
+The next age could be about knowledge becoming easier to share: common measures from the
+charter, makers trained at the guild bench, books copied at the hall, and a fair circuit that
+can carry printed sheets and illustrated maps. `knowledge_shared` tells that story whichever
+road the towns took. If a Renaissance chapter is built later, the Medieval six can be its
+gate; for now the fair and the settlement keep going after the last milestone.
+
+### Acceptance checks for a playable chapter
+
+- Play both turn answers with none of the overture flags or optional buildings, and play
+  each inherited road with its flag. Check both answers on every road; defer questions and
+  verify the later routes still get every group to `knowledge_shared`. Check the five-day
+  gate, a save with all six achievements but no `towns_connected`, and exact offline catch-up.
+- Load a crowded Classical save and compare placement before and after each upgrade. Check
+  rank 1 and 2 fit, the page budgets, the saved water and market positions, correct coastal
+  anchoring and hover/light alignment, and no walkers sent to the far bank without a crossing.
+- Review all three pages at native scale by day and night and check stock and arrivals on
+  small and full settlements before tuning the profile.
 
 ## Candidate ages (for reference)
 
@@ -503,7 +611,8 @@ Not built (G7). It inherits **stewardship, guilds, preserved learning and travel
 | 3. Bronze | Metal, trade, walls, first towns (proposed: "Bronze Age: design proposal") | Mud-brick, workshops, roads, boats |
 | 4. Iron | A harder metal, farming for bigger towns, a fort, coin, writing, a name abroad (proposed: "Iron Age") | Forts, granaries, bloomeries, ships |
 | 5. Classical | Streets, water brought in, written law, a square, learning and a stage, a wider world (built: "Classical Age") | Paved streets, an arcade, a water court, a theatre, a harbour |
-| 6+ | Medieval and later | Out of scope for now |
+| 6. Medieval | Stewardship, guilds, preserved learning and travelling fairs ([Medieval Age](#medieval-age)) | Stewardship Hall, Scriptorium, tended water court, guild arcade, Fair Wharf and Travellers' Hall |
+| 7. Renaissance | Printed knowledge and shared measures (direction only) | Not designed yet |
 
 Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a horizon only. Not yet confirmed.
 

@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_6qssv"]
 script = ExtResource("3_plaj3")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_c8mlt"]
+script = ExtResource("3_plaj3")
 kind = 11
 amount = 312
 
-[sub_resource type="Resource" id="Resource_c8mlt"]
+[sub_resource type="Resource" id="Resource_o8sab"]
 script = ExtResource("3_plaj3")
 kind = 9
 key = &"water_from_afar"
@@ -56,7 +62,7 @@ id = &"who_keeps_the_water_running"
 title = "Who keeps the water running"
 body = "The water has run for a long time now, and people have begun to ask who will keep it running when the ones who built it are old."
 category = &"settlement"
-requires = Array[ExtResource("3_plaj3")]([SubResource("Resource_bt1tx"), SubResource("Resource_6qssv"), SubResource("Resource_c8mlt")])
+requires = Array[ExtResource("3_plaj3")]([SubResource("Resource_bt1tx"), SubResource("Resource_6qssv"), SubResource("Resource_c8mlt"), SubResource("Resource_o8sab")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_2uldr")]([SubResource("Resource_4yoib"), SubResource("Resource_2lp7q")])

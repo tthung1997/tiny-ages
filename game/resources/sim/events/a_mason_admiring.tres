@@ -16,14 +16,20 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_kwph3"]
 script = ExtResource("3_6f72m")
-kind = 6
-key = &"industrious"
+kind = 8
+amount = 5
+negate = true
 
 [sub_resource type="Resource" id="Resource_x4w0o"]
 script = ExtResource("3_6f72m")
-kind = 7
+kind = 6
+key = &"industrious"
 
 [sub_resource type="Resource" id="Resource_o8b4u"]
+script = ExtResource("3_6f72m")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_yyo3h"]
 script = ExtResource("3_6f72m")
 kind = 10
 
@@ -31,9 +37,9 @@ kind = 10
 script = ExtResource("4_uslsq")
 id = &"a_mason_admiring"
 title = "A quiet moment"
-requires = Array[ExtResource("3_6f72m")]([SubResource("Resource_6mcbk")])
+requires = Array[ExtResource("3_6f72m")]([SubResource("Resource_6mcbk"), SubResource("Resource_kwph3")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_6f72m")]([SubResource("Resource_kwph3"), SubResource("Resource_x4w0o"), SubResource("Resource_o8b4u")])
+subject_requires = Array[ExtResource("3_6f72m")]([SubResource("Resource_x4w0o"), SubResource("Resource_o8b4u"), SubResource("Resource_yyo3h")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_taaqp")]([SubResource("Resource_yccro")])

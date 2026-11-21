@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_6gjlm"]
 script = ExtResource("3_6dqyk")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_yfmvy"]
+script = ExtResource("3_6dqyk")
 kind = 11
 amount = 326
 
-[sub_resource type="Resource" id="Resource_yfmvy"]
+[sub_resource type="Resource" id="Resource_g01yo"]
 script = ExtResource("3_6dqyk")
 kind = 9
 key = &"lamp_and_stage"
@@ -56,7 +62,7 @@ id = &"a_book_for_the_journey"
 title = "A book for the journey"
 body = "The books are good and heavy, and the people who travel have begun to ask for one that can go with them."
 category = &"settlement"
-requires = Array[ExtResource("3_6dqyk")]([SubResource("Resource_2jorv"), SubResource("Resource_6gjlm"), SubResource("Resource_yfmvy")])
+requires = Array[ExtResource("3_6dqyk")]([SubResource("Resource_2jorv"), SubResource("Resource_6gjlm"), SubResource("Resource_yfmvy"), SubResource("Resource_g01yo")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_dctrs")]([SubResource("Resource_irtoq"), SubResource("Resource_uqfck")])

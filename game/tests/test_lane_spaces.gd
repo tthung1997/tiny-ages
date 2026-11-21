@@ -3,7 +3,7 @@ extends McpTestSuite
 ## piece goes in the free space nearest the hall and keeps it, restricted ground takes only what
 ## belongs there, a full lane hides the lowest rank, and none of it touches the simulation.
 
-const LAST_ERA: int = 4
+const LAST_ERA: int = 5
 const SAVE_PATH: String = "user://test_lane_save.tres"
 ## The first age each building can stand in (the sim gates them by milestone; the view does not).
 const BUILDING_ERA: Dictionary = {
@@ -19,6 +19,42 @@ const MID: StringName = LaneSpaces.MID
 
 func suite_name() -> String:
 	return "lane_spaces"
+
+
+func test_medieval_upgrades_keep_their_spaces_and_consolidated_props_stay_hidden() -> void:
+	var world: WorldState = _full_world(4)
+	var classical: LaneLayout = LanePlacer.place(world)
+	world.era_order = 5
+	world.achievements.append_array([&"water_in_trust", &"guild_bench", &"fair_on_the_road",
+		&"round_of_towns"] as Array[StringName])
+	var medieval: LaneLayout = LanePlacer.place(world)
+	for pair: Array in [
+		[&"water_court", &"tended_water_court"], [&"market_arcade", &"guild_arcade_fair"],
+		[&"east_harbour", &"east_fair_wharf"], [&"east_theatre", &"east_travellers_hall"],
+	]:
+		assert_false(SceneProps.is_shown(pair[0], world), "%s is replaced" % pair[0])
+		assert_true(SceneProps.is_shown(pair[1], world), "%s is unlocked" % pair[1])
+		assert_eq(LanePieces.key_of(pair[1]), pair[0])
+		assert_eq(medieval.starts.get(pair[0]), classical.starts.get(pair[0]))
+	assert_false(SceneProps.is_shown(&"law_pillar", world))
+	assert_false(SceneProps.is_shown(&"east_beacon", world))
+
+
+func test_the_medieval_scriptorium_stays_home_and_travellers_hall_waits_for_a_crossing() -> void:
+	var world: WorldState = _world(5, false)
+	world.achievements.append_array([
+		&"common_book", &"fair_on_the_road", &"lamp_and_stage", &"round_of_towns",
+	] as Array[StringName])
+	var layout: LaneLayout = LanePlacer.place(world)
+	assert_true(layout.is_placed(&"scriptorium"))
+	assert_true(SceneProps.is_shown(&"east_fair_wharf", world))
+	assert_false(SceneProps.is_shown(&"east_travellers_hall", world))
+	world.flags[&"stepping_stones"] = true
+	layout = LanePlacer.place(world)
+	assert_true(SceneProps.is_shown(&"east_travellers_hall", world))
+	assert_true(layout.is_placed(&"east_theatre"))
+	assert_true(layout.center_x(&"east_theatre") >= float(LaneSpaces.FAR_BANK_FROM))
+	assert_true(layout.center_x(&"scriptorium") < float(LaneSpaces.RIVER_FROM))
 
 
 func teardown() -> void:
@@ -460,7 +496,7 @@ func test_ranks_one_and_two_always_show_in_every_age() -> void:
 func test_ranks_one_and_two_show_whatever_order_the_group_earned_them_in() -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 50
-	for era_order: int in [1, 2, 3, 4]:
+	for era_order: int in range(1, LAST_ERA + 1):
 		for pass_index: int in 6:
 			var unlocks: Array[Callable] = _unlocks(era_order)
 			for index: int in range(unlocks.size() - 1, 0, -1):

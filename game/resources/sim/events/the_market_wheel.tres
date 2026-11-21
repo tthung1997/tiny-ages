@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_sffit"]
 script = ExtResource("3_7e3dy")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_fams5"]
+script = ExtResource("3_7e3dy")
 key = &"market_circuit"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_ine5l")
 id = &"the_market_wheel"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_7e3dy")]([SubResource("Resource_wdvsc"), SubResource("Resource_sffit")])
+requires = Array[ExtResource("3_7e3dy")]([SubResource("Resource_wdvsc"), SubResource("Resource_sffit"), SubResource("Resource_fams5")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_vqyad")]([SubResource("Resource_m37sr")])

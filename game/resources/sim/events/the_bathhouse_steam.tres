@@ -16,6 +16,12 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_23tbf"]
 script = ExtResource("3_mrsag")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_aocj6"]
+script = ExtResource("3_mrsag")
 key = &"bathhouse"
 
 [resource]
@@ -23,7 +29,7 @@ script = ExtResource("4_0idqa")
 id = &"the_bathhouse_steam"
 title = "A quiet moment"
 category = &"nature"
-requires = Array[ExtResource("3_mrsag")]([SubResource("Resource_mm7gy"), SubResource("Resource_23tbf")])
+requires = Array[ExtResource("3_mrsag")]([SubResource("Resource_mm7gy"), SubResource("Resource_23tbf"), SubResource("Resource_aocj6")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_ma0db")]([SubResource("Resource_tgi1a")])

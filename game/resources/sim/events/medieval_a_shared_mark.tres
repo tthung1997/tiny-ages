@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_wy0xn"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_4j4hl"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_02pk1"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_x61lx"]
+
+[sub_resource type="Resource" id="Resource_85hta"]
+script = ExtResource("2_4j4hl")
+kind = 1
+key = &"guild_tree"
+
+[sub_resource type="Resource" id="Resource_cc2qc"]
+script = ExtResource("2_4j4hl")
+text = "The mallet grew a tree, and the next tool to be shared grew one too."
+
+[sub_resource type="Resource" id="Resource_wlr56"]
+script = ExtResource("1_wy0xn")
+id = &"guild_tree"
+label = "Cut a little tree in the handle"
+effects = Array[ExtResource("2_4j4hl")]([SubResource("Resource_85hta"), SubResource("Resource_cc2qc")])
+
+[sub_resource type="Resource" id="Resource_wuowb"]
+script = ExtResource("2_4j4hl")
+kind = 1
+key = &"guild_ribbon"
+
+[sub_resource type="Resource" id="Resource_o2fa1"]
+script = ExtResource("2_4j4hl")
+text = "The ribbon got so dusty that everyone finally knew which mallet to borrow."
+
+[sub_resource type="Resource" id="Resource_qmw0n"]
+script = ExtResource("1_wy0xn")
+id = &"guild_ribbon"
+label = "Tie a ribbon to its handle"
+effects = Array[ExtResource("2_4j4hl")]([SubResource("Resource_wuowb"), SubResource("Resource_o2fa1")])
+
+[sub_resource type="Resource" id="Resource_0r6mx"]
+script = ExtResource("3_02pk1")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_tcvmm"]
+script = ExtResource("3_02pk1")
+kind = 11
+amount = 115
+
+[sub_resource type="Resource" id="Resource_itvu7"]
+script = ExtResource("3_02pk1")
+kind = 9
+key = &"guild_bench"
+
+[resource]
+script = ExtResource("4_x61lx")
+id = &"medieval_a_shared_mark"
+title = "A shared mark"
+body = "Nobody knows which mallet belongs to the bench. What shall we put on it?"
+category = &"settlement"
+requires = Array[ExtResource("3_02pk1")]([SubResource("Resource_0r6mx"), SubResource("Resource_tcvmm"), SubResource("Resource_itvu7")])
+chance_per_tick = 0.05
+once = true
+choices = Array[ExtResource("1_wy0xn")]([SubResource("Resource_wlr56"), SubResource("Resource_qmw0n")])

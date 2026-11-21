@@ -42,15 +42,21 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_remra"]
 script = ExtResource("3_40cki")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_3rs1h"]
+script = ExtResource("3_40cki")
 kind = 11
 amount = 242
 
-[sub_resource type="Resource" id="Resource_3rs1h"]
+[sub_resource type="Resource" id="Resource_3o2er"]
 script = ExtResource("3_40cki")
 kind = 9
 key = &"lamp_and_stage"
 
-[sub_resource type="Resource" id="Resource_3o2er"]
+[sub_resource type="Resource" id="Resource_6hgau"]
 script = ExtResource("3_40cki")
 kind = 7
 
@@ -59,9 +65,9 @@ script = ExtResource("4_0nomm")
 id = &"where_to_teach"
 title = "Where to teach"
 body = "{subject} has begun to teach whoever comes, and has noticed that they teach better in one sort of place than another."
-requires = Array[ExtResource("3_40cki")]([SubResource("Resource_0y8ex"), SubResource("Resource_remra"), SubResource("Resource_3rs1h")])
+requires = Array[ExtResource("3_40cki")]([SubResource("Resource_0y8ex"), SubResource("Resource_remra"), SubResource("Resource_3rs1h"), SubResource("Resource_3o2er")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_40cki")]([SubResource("Resource_3o2er")])
+subject_requires = Array[ExtResource("3_40cki")]([SubResource("Resource_6hgau")])
 trait_weights = Dictionary[StringName, float]({
 &"social": 3.0
 })

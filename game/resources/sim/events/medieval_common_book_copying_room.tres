@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ft8bg"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_2kevq"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_h2w0d"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_d6y6f"]
+
+[sub_resource type="Resource" id="Resource_ygps1"]
+script = ExtResource("2_2kevq")
+kind = 1
+key = &"medieval_common_book_copying_room_1"
+
+[sub_resource type="Resource" id="Resource_pluqp"]
+script = ExtResource("2_2kevq")
+kind = 10
+key = &"common_book"
+text = "The Common Book"
+
+[sub_resource type="Resource" id="Resource_024nn"]
+script = ExtResource("2_2kevq")
+text = "The first copy from the new room explained how to sharpen the knife that trimmed it."
+
+[sub_resource type="Resource" id="Resource_ry6k2"]
+script = ExtResource("1_ft8bg")
+id = &"medieval_common_book_copying_room_1"
+label = "Copy the practical guides first"
+effects = Array[ExtResource("2_2kevq")]([SubResource("Resource_ygps1"), SubResource("Resource_pluqp"), SubResource("Resource_024nn")])
+
+[sub_resource type="Resource" id="Resource_4n5ww"]
+script = ExtResource("2_2kevq")
+kind = 1
+key = &"medieval_common_book_copying_room_3"
+
+[sub_resource type="Resource" id="Resource_y0jtd"]
+script = ExtResource("2_2kevq")
+kind = 10
+key = &"common_book"
+text = "The Common Book"
+
+[sub_resource type="Resource" id="Resource_84wkn"]
+script = ExtResource("2_2kevq")
+text = "The copyists left two endings to the same story. Both had been told for years."
+
+[sub_resource type="Resource" id="Resource_8ubns"]
+script = ExtResource("1_ft8bg")
+id = &"medieval_common_book_copying_room_3"
+label = "Collect the old stories first"
+effects = Array[ExtResource("2_2kevq")]([SubResource("Resource_4n5ww"), SubResource("Resource_y0jtd"), SubResource("Resource_84wkn")])
+
+[sub_resource type="Resource" id="Resource_2kv72"]
+script = ExtResource("3_h2w0d")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_1kn3k"]
+script = ExtResource("3_h2w0d")
+kind = 11
+amount = 180
+
+[sub_resource type="Resource" id="Resource_ymes1"]
+script = ExtResource("3_h2w0d")
+kind = 9
+key = &"common_book"
+negate = true
+
+[sub_resource type="Resource" id="Resource_tpo4o"]
+script = ExtResource("3_h2w0d")
+kind = 9
+key = &"guild_bench"
+
+[sub_resource type="Resource" id="Resource_7cdo8"]
+script = ExtResource("3_h2w0d")
+key = &"copying_room"
+
+[resource]
+script = ExtResource("4_d6y6f")
+id = &"medieval_common_book_copying_room"
+title = "The Common Book"
+body = "Apprentices and copyists want a room with enough light. What should they copy first?"
+category = &"settlement"
+requires = Array[ExtResource("3_h2w0d")]([SubResource("Resource_2kv72"), SubResource("Resource_1kn3k"), SubResource("Resource_ymes1"), SubResource("Resource_tpo4o"), SubResource("Resource_7cdo8")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_ft8bg")]([SubResource("Resource_ry6k2"), SubResource("Resource_8ubns")])

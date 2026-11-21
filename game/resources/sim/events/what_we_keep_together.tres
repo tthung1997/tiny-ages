@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_gwb1y"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_hogg8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_j4p48"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_uup2v"]
+
+[sub_resource type="Resource" id="Resource_7g0o1"]
+script = ExtResource("2_hogg8")
+kind = 1
+key = &"path_commons"
+
+[sub_resource type="Resource" id="Resource_jy8xa"]
+script = ExtResource("2_hogg8")
+kind = 12
+key = &"medieval"
+
+[sub_resource type="Resource" id="Resource_3obmp"]
+script = ExtResource("2_hogg8")
+text = "The neighbours took responsibility for their own streets and made room at the table for the towns that came to visit."
+
+[sub_resource type="Resource" id="Resource_ri4c1"]
+script = ExtResource("1_gwb1y")
+id = &"name_the_commons"
+label = "Put the neighbourhoods in charge"
+effects = Array[ExtResource("2_hogg8")]([SubResource("Resource_7g0o1"), SubResource("Resource_jy8xa"), SubResource("Resource_3obmp")])
+
+[sub_resource type="Resource" id="Resource_sot1m"]
+script = ExtResource("2_hogg8")
+kind = 1
+key = &"path_circuit"
+
+[sub_resource type="Resource" id="Resource_g1u6m"]
+script = ExtResource("2_hogg8")
+kind = 12
+key = &"medieval"
+
+[sub_resource type="Resource" id="Resource_t8vls"]
+script = ExtResource("2_hogg8")
+text = "The towns sent people to learn how the others did the work, and each visitor took one good idea back along the road."
+
+[sub_resource type="Resource" id="Resource_xvqwj"]
+script = ExtResource("1_gwb1y")
+id = &"share_the_circuit"
+label = "Have the towns share the work"
+effects = Array[ExtResource("2_hogg8")]([SubResource("Resource_sot1m"), SubResource("Resource_g1u6m"), SubResource("Resource_t8vls")])
+
+[resource]
+script = ExtResource("4_uup2v")
+id = &"what_we_keep_together"
+title = "What we keep together"
+body = "The neighbouring towns ask how to share the work of looking after their water, books and market days. The channels run and the markets are open. This is a question for the years ahead."
+category = &"settlement"
+choices = Array[ExtResource("1_gwb1y")]([SubResource("Resource_ri4c1"), SubResource("Resource_xvqwj")])

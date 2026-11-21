@@ -1,0 +1,95 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_c3jtl"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_1ngcd"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_fmmpo"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_jpchs"]
+
+[sub_resource type="Resource" id="Resource_exdfa"]
+script = ExtResource("2_1ngcd")
+kind = 1
+key = &"medieval_round_of_towns_common_1"
+
+[sub_resource type="Resource" id="Resource_t7idu"]
+script = ExtResource("2_1ngcd")
+kind = 10
+key = &"round_of_towns"
+text = "A Round of Towns"
+
+[sub_resource type="Resource" id="Resource_k0ty8"]
+script = ExtResource("2_1ngcd")
+kind = 1
+key = &"knowledge_shared"
+
+[sub_resource type="Resource" id="Resource_l0wem"]
+script = ExtResource("2_1ngcd")
+text = "The lists came back full of drawings and promises to show how each thing was made."
+
+[sub_resource type="Resource" id="Resource_xcltc"]
+script = ExtResource("1_c3jtl")
+id = &"medieval_round_of_towns_common_1"
+label = "Exchange copies of the market list"
+effects = Array[ExtResource("2_1ngcd")]([SubResource("Resource_exdfa"), SubResource("Resource_t7idu"), SubResource("Resource_k0ty8"), SubResource("Resource_l0wem")])
+
+[sub_resource type="Resource" id="Resource_y7rtr"]
+script = ExtResource("2_1ngcd")
+kind = 1
+key = &"medieval_round_of_towns_common_3"
+
+[sub_resource type="Resource" id="Resource_w1n2l"]
+script = ExtResource("2_1ngcd")
+kind = 10
+key = &"round_of_towns"
+text = "A Round of Towns"
+
+[sub_resource type="Resource" id="Resource_3ntsl"]
+script = ExtResource("2_1ngcd")
+kind = 1
+key = &"knowledge_shared"
+
+[sub_resource type="Resource" id="Resource_4omvf"]
+script = ExtResource("2_1ngcd")
+text = "The book came back thicker, and there was talk of finding an easier way to copy it."
+
+[sub_resource type="Resource" id="Resource_48qvl"]
+script = ExtResource("1_c3jtl")
+id = &"medieval_round_of_towns_common_3"
+label = "Send a book and ask for pages in return"
+effects = Array[ExtResource("2_1ngcd")]([SubResource("Resource_y7rtr"), SubResource("Resource_w1n2l"), SubResource("Resource_3ntsl"), SubResource("Resource_4omvf")])
+
+[sub_resource type="Resource" id="Resource_mcqw4"]
+script = ExtResource("3_fmmpo")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_q0tlm"]
+script = ExtResource("3_fmmpo")
+kind = 11
+amount = 324
+
+[sub_resource type="Resource" id="Resource_nhyju"]
+script = ExtResource("3_fmmpo")
+kind = 9
+key = &"round_of_towns"
+negate = true
+
+[sub_resource type="Resource" id="Resource_0j603"]
+script = ExtResource("3_fmmpo")
+kind = 9
+key = &"common_book"
+
+[sub_resource type="Resource" id="Resource_mcogp"]
+script = ExtResource("3_fmmpo")
+kind = 9
+key = &"fair_on_the_road"
+
+[resource]
+script = ExtResource("4_jpchs")
+id = &"medieval_round_of_towns_common"
+title = "A Round of Towns"
+body = "The travelling fair brings back as many ideas as wares. What shall it carry next?"
+category = &"settlement"
+requires = Array[ExtResource("3_fmmpo")]([SubResource("Resource_mcqw4"), SubResource("Resource_q0tlm"), SubResource("Resource_nhyju"), SubResource("Resource_0j603"), SubResource("Resource_mcogp")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_c3jtl")]([SubResource("Resource_xcltc"), SubResource("Resource_48qvl")])

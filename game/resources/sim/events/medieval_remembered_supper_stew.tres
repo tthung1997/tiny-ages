@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_in4nl"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_uqoue"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_xs366"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_3lw7l"]
+
+[sub_resource type="Resource" id="Resource_0bo5y"]
+script = ExtResource("2_uqoue")
+text = "The pot came back across the road, polished inside and out."
+
+[sub_resource type="Resource" id="Resource_nvams"]
+script = ExtResource("3_xs366")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_a5lfk"]
+script = ExtResource("3_xs366")
+kind = 11
+
+[sub_resource type="Resource" id="Resource_uuvy4"]
+script = ExtResource("3_xs366")
+key = &"supper_stew"
+
+[resource]
+script = ExtResource("4_3lw7l")
+id = &"medieval_remembered_supper_stew"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_xs366")]([SubResource("Resource_nvams"), SubResource("Resource_a5lfk"), SubResource("Resource_uuvy4")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_uqoue")]([SubResource("Resource_0bo5y")])

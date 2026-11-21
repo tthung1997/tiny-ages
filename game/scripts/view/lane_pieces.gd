@@ -69,6 +69,7 @@ const TABLE: Dictionary = {
 	&"market_arcade": [BACK, 2, GROUND, 1],
 	&"writing_post": [BACK, 1, GROUND, 3],
 	&"law_pillar": [BACK, 1, GROUND, 3],
+	&"scriptorium": [BACK, 1, GROUND, 1],
 	&"cart": [MID, 1, GROUND, 4],
 	&"donkeys": [MID, 1, GROUND, 4],
 	&"coin_tray": [MID, 1, GROUND, 4],
@@ -118,7 +119,12 @@ const BACKDROP: Array[StringName] = [
 	&"river_bank", &"road_camp", &"road_market", &"road_west", &"road_hall", &"road_bank",
 	&"cave_standard_cave", &"paved_street_market",
 	&"paved_street_west", &"paved_street_hall", &"paved_street", &"paved_street_bank",
+	&"stewardship_charter", &"stewardship_pages",
 ]
+
+## Buildings used on routes that must work on the home side of the river.
+const HOME_BANK_ONLY: Array[StringName] = [&"scriptorium"]
+const FAR_BANK_ONLY: Array[StringName] = [&"east_theatre"]
 
 ## The pieces a trader's market is: the arcade of the Classical Age once there is one, else the
 ## stalls, the council ring or the tally post (one group, one set of spaces).

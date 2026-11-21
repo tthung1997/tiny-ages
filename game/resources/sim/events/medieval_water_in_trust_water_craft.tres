@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_pak5c"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_bqc21"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_k16gq"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_rcsw1"]
+
+[sub_resource type="Resource" id="Resource_jlx5x"]
+script = ExtResource("2_bqc21")
+kind = 1
+key = &"medieval_water_in_trust_water_craft_1"
+
+[sub_resource type="Resource" id="Resource_377jc"]
+script = ExtResource("2_bqc21")
+kind = 10
+key = &"water_in_trust"
+text = "Water in Trust"
+
+[sub_resource type="Resource" id="Resource_mhn6c"]
+script = ExtResource("2_bqc21")
+text = "The channel builders hung their tools by the basin for the next hands to borrow."
+
+[sub_resource type="Resource" id="Resource_1x48a"]
+script = ExtResource("1_pak5c")
+id = &"medieval_water_in_trust_water_craft_1"
+label = "Leave the repair tools at the basin"
+effects = Array[ExtResource("2_bqc21")]([SubResource("Resource_jlx5x"), SubResource("Resource_377jc"), SubResource("Resource_mhn6c")])
+
+[sub_resource type="Resource" id="Resource_2y482"]
+script = ExtResource("2_bqc21")
+kind = 1
+key = &"medieval_water_in_trust_water_craft_3"
+
+[sub_resource type="Resource" id="Resource_6u5yk"]
+script = ExtResource("2_bqc21")
+kind = 10
+key = &"water_in_trust"
+text = "Water in Trust"
+
+[sub_resource type="Resource" id="Resource_kew87"]
+script = ExtResource("2_bqc21")
+text = "The youngest apprentices learned to hear a blocked channel before they saw it."
+
+[sub_resource type="Resource" id="Resource_2oeuo"]
+script = ExtResource("1_pak5c")
+id = &"medieval_water_in_trust_water_craft_3"
+label = "Pair channel builders with apprentices"
+effects = Array[ExtResource("2_bqc21")]([SubResource("Resource_2y482"), SubResource("Resource_6u5yk"), SubResource("Resource_kew87")])
+
+[sub_resource type="Resource" id="Resource_bk1t6"]
+script = ExtResource("3_k16gq")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_pqa7q"]
+script = ExtResource("3_k16gq")
+kind = 11
+amount = 24
+
+[sub_resource type="Resource" id="Resource_evcfc"]
+script = ExtResource("3_k16gq")
+kind = 9
+key = &"water_in_trust"
+negate = true
+
+[sub_resource type="Resource" id="Resource_kxse7"]
+script = ExtResource("3_k16gq")
+key = &"water_craft"
+
+[resource]
+script = ExtResource("4_rcsw1")
+id = &"medieval_water_in_trust_water_craft"
+title = "Water in Trust"
+body = "The basin still fills. Who will look after it when the people who built it are gone?"
+category = &"settlement"
+requires = Array[ExtResource("3_k16gq")]([SubResource("Resource_bk1t6"), SubResource("Resource_pqa7q"), SubResource("Resource_evcfc"), SubResource("Resource_kxse7")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_pak5c")]([SubResource("Resource_1x48a"), SubResource("Resource_2oeuo")])

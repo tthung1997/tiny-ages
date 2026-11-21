@@ -42,10 +42,16 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_kgemo"]
 script = ExtResource("3_awup4")
+kind = 8
+amount = 5
+negate = true
+
+[sub_resource type="Resource" id="Resource_tw8r2"]
+script = ExtResource("3_awup4")
 kind = 11
 amount = 138
 
-[sub_resource type="Resource" id="Resource_tw8r2"]
+[sub_resource type="Resource" id="Resource_82t67"]
 script = ExtResource("3_awup4")
 kind = 9
 key = &"written_law"
@@ -56,7 +62,7 @@ id = &"newcomers_and_the_agreements"
 title = "Newcomers and the agreements"
 body = "New people keep arriving along the road, and the town's laws are not theirs, and someone has asked how long the old ones have to wait to be read."
 category = &"settlement"
-requires = Array[ExtResource("3_awup4")]([SubResource("Resource_vw6pr"), SubResource("Resource_kgemo"), SubResource("Resource_tw8r2")])
+requires = Array[ExtResource("3_awup4")]([SubResource("Resource_vw6pr"), SubResource("Resource_kgemo"), SubResource("Resource_tw8r2"), SubResource("Resource_82t67")])
 chance_per_tick = 0.05
 once = true
 choices = Array[ExtResource("1_bd5g5")]([SubResource("Resource_5jijy"), SubResource("Resource_1swjj")])

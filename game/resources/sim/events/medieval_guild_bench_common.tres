@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_v107w"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_q73sy"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_n1jr2"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_172s2"]
+
+[sub_resource type="Resource" id="Resource_3du0s"]
+script = ExtResource("2_q73sy")
+kind = 1
+key = &"medieval_guild_bench_common_1"
+
+[sub_resource type="Resource" id="Resource_op6h6"]
+script = ExtResource("2_q73sy")
+kind = 10
+key = &"guild_bench"
+text = "The Guild Bench"
+
+[sub_resource type="Resource" id="Resource_g7dsd"]
+script = ExtResource("2_q73sy")
+text = "One bench was long enough for several crafts, if they all moved their elbows in."
+
+[sub_resource type="Resource" id="Resource_jdf41"]
+script = ExtResource("1_v107w")
+id = &"medieval_guild_bench_common_1"
+label = "Bring the crafts to one long bench"
+effects = Array[ExtResource("2_q73sy")]([SubResource("Resource_3du0s"), SubResource("Resource_op6h6"), SubResource("Resource_g7dsd")])
+
+[sub_resource type="Resource" id="Resource_780cm"]
+script = ExtResource("2_q73sy")
+kind = 1
+key = &"medieval_guild_bench_common_3"
+
+[sub_resource type="Resource" id="Resource_g234l"]
+script = ExtResource("2_q73sy")
+kind = 10
+key = &"guild_bench"
+text = "The Guild Bench"
+
+[sub_resource type="Resource" id="Resource_gq5s8"]
+script = ExtResource("2_q73sy")
+text = "A cloth sign went up over each bay, and people carried their questions to the right one."
+
+[sub_resource type="Resource" id="Resource_0ik2p"]
+script = ExtResource("1_v107w")
+id = &"medieval_guild_bench_common_3"
+label = "Give each craft its own bay"
+effects = Array[ExtResource("2_q73sy")]([SubResource("Resource_780cm"), SubResource("Resource_g234l"), SubResource("Resource_gq5s8")])
+
+[sub_resource type="Resource" id="Resource_dylok"]
+script = ExtResource("3_n1jr2")
+kind = 8
+amount = 5
+
+[sub_resource type="Resource" id="Resource_18pi0"]
+script = ExtResource("3_n1jr2")
+kind = 11
+amount = 108
+
+[sub_resource type="Resource" id="Resource_gr0pl"]
+script = ExtResource("3_n1jr2")
+kind = 9
+key = &"guild_bench"
+negate = true
+
+[resource]
+script = ExtResource("4_172s2")
+id = &"medieval_guild_bench_common"
+title = "The Guild Bench"
+body = "There are empty bays under the market roof. The makers ask what they could share."
+category = &"settlement"
+requires = Array[ExtResource("3_n1jr2")]([SubResource("Resource_dylok"), SubResource("Resource_18pi0"), SubResource("Resource_gr0pl")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_v107w")]([SubResource("Resource_jdf41"), SubResource("Resource_0ik2p")])

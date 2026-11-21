@@ -16,14 +16,20 @@ amount = 4
 
 [sub_resource type="Resource" id="Resource_5gdld"]
 script = ExtResource("3_lfix7")
-kind = 6
-key = &"curious"
+kind = 8
+amount = 5
+negate = true
 
 [sub_resource type="Resource" id="Resource_2q8to"]
 script = ExtResource("3_lfix7")
-kind = 7
+kind = 6
+key = &"curious"
 
 [sub_resource type="Resource" id="Resource_8tg8v"]
+script = ExtResource("3_lfix7")
+kind = 7
+
+[sub_resource type="Resource" id="Resource_8onrm"]
 script = ExtResource("3_lfix7")
 kind = 10
 
@@ -31,9 +37,9 @@ kind = 10
 script = ExtResource("4_n5ljk")
 id = &"a_reader_at_the_lamp"
 title = "A quiet moment"
-requires = Array[ExtResource("3_lfix7")]([SubResource("Resource_e5vbg")])
+requires = Array[ExtResource("3_lfix7")]([SubResource("Resource_e5vbg"), SubResource("Resource_5gdld")])
 needs_subject = true
-subject_requires = Array[ExtResource("3_lfix7")]([SubResource("Resource_5gdld"), SubResource("Resource_2q8to"), SubResource("Resource_8tg8v")])
+subject_requires = Array[ExtResource("3_lfix7")]([SubResource("Resource_2q8to"), SubResource("Resource_8tg8v"), SubResource("Resource_8onrm")])
 chance_per_tick = 0.002
 cooldown_ticks = 360
 effects = Array[ExtResource("2_5id66")]([SubResource("Resource_4606k")])
