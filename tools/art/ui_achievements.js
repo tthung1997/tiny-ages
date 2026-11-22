@@ -1,6 +1,6 @@
-// @open tools/art/dist/ui_achievements_canvas.png
-// @canvas 800x20
-// The achievement icons, one 680x20 sheet of 34 round medals (20x20 each, in the order of
+// @open tools/art/dist/ui_achievements_920_canvas.png
+// @canvas 920x20
+// The achievement icons, one sheet of round medals (20x20 each, in the order of
 // AchievementPresenter.ICON_ORDER, then a plain rosette for any achievement without its own)
 // -> art/reference/ui_achievements.png and game/assets/ui/achievements.png. The cell order is
 // mirrored in game/scripts/ui/achievement_presenter.gd; append new icons at the end.
@@ -249,11 +249,37 @@ function sharedPages(g) {
   g.rect(6, 3, 3, 1, '#926742'); g.rect(6, 5, 3, 1, '#926742');
 }
 
+function printingPress(g) {
+  g.rect(0, 2, 12, 2, WOOD); g.rect(1, 4, 2, 7, WOOD); g.rect(9, 4, 2, 7, WOOD);
+  g.rect(5, 1, 2, 6, INK); g.rect(3, 7, 6, 2, '#f6d887'); g.rect(0, 10, 12, 1, WOODL);
+}
+function townRule(g) {
+  g.rect(0, 3, 12, 6, '#dba951');
+  for (var x = 1; x < 12; x += 2) g.rect(x, 4, 1, x % 4 === 1 ? 3 : 2, WOOD);
+}
+function wayfinder(g) {
+  g.rect(1, 1, 10, 10, '#eddaa5'); g.line(3, 2, 8, 10, '#558bbe', 2);
+  g.line(2, 9, 9, 3, '#9f6442', 1); g.rect(7, 3, 3, 2, '#799767');
+}
+function tryAgain(g) {
+  g.rect(1, 8, 10, 2, WOOD); g.rect(2, 10, 1, 2, WOOD); g.rect(9, 10, 1, 2, WOOD);
+  g.rect(1, 5, 4, 3, '#558794'); g.rect(7, 3, 4, 5, '#b86a50');
+}
+function pagesAtFair(g) {
+  fairStall(g);
+  g.rect(1, 3, 10, 2, '#558794'); g.rect(3, 7, 6, 2, '#f8e3a5');
+}
+function observations(g) {
+  g.rect(0, 2, 12, 9, WOOD); g.rect(1, 1, 5, 9, '#f8e3a5');
+  g.rect(6, 1, 5, 9, '#a9c5cc'); g.line(2, 7, 4, 4, INK, 1); g.line(7, 7, 10, 5, INK, 1);
+}
+
 var GLYPHS = [fire, stoneTools, food, stories, group, garden, roof, harvest, clay, cloth, village,
   greenStone, field, pen, butterfly, crucible, alloy, brickWall, wheel, town, sail,
   bloom, shareSheaf, hillFort, weighedCoin, tablet, longship,
   pavedStreets, aqueduct, law, square, lamp, triremeSail,
-  tendedBasin, guildTools, keptCharter, boundBook, fairStall, sharedPages, rosette];
+  tendedBasin, guildTools, keptCharter, boundBook, fairStall, sharedPages,
+  printingPress, townRule, wayfinder, tryAgain, pagesAtFair, observations, rosette];
 var SHEET = new Buf(GLYPHS.length * 20, 20);
 for (var i = 0; i < GLYPHS.length; i++) {
   var medal = new Buf(18, 18);

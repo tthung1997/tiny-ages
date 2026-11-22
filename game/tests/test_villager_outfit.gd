@@ -33,6 +33,8 @@ func test_each_world_wears_what_it_has_earned() -> void:
 		[4, [&"the_square"], VillagerOutfit.CIVIC],
 		[5, [&"the_square"], VillagerOutfit.HOOD],
 		[5, [&"guild_bench"], VillagerOutfit.GUILD],
+		[6, [&"guild_bench"], VillagerOutfit.DOUBLET],
+		[6, [&"open_demonstration"], VillagerOutfit.SHOW_COAT],
 	]
 	for item: Array in cases:
 		var earned: Array[StringName] = []
@@ -62,6 +64,7 @@ func test_the_outfits_get_finer_as_the_world_does() -> void:
 		[0, []], [1, []], [1, [&"woven_cloth"]], [2, []], [2, [&"first_casting"]],
 		[3, []], [3, [&"first_bloom"]], [4, []], [4, [&"the_square"]],
 		[5, []], [5, [&"guild_bench"]],
+		[6, []], [6, [&"open_demonstration"]],
 	]
 	for step: Array in steps:
 		var earned: Array[StringName] = []

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ikm46"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_r66bk"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_qvcj3"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_66t0s"]
+
+[sub_resource type="Resource" id="Resource_2dqtb"]
+script = ExtResource("2_r66bk")
+text = "The printer set a little tree in the corner of a page about tools."
+
+[sub_resource type="Resource" id="Resource_mgli1"]
+script = ExtResource("3_qvcj3")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_akst6"]
+script = ExtResource("3_qvcj3")
+key = &"guild_tree"
+
+[resource]
+script = ExtResource("4_66t0s")
+id = &"renaissance_remembered_guild_tree"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_qvcj3")]([SubResource("Resource_mgli1"), SubResource("Resource_akst6")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_r66bk")]([SubResource("Resource_2dqtb")])

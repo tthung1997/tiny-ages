@@ -102,7 +102,6 @@ func test_common_roads_wait_without_a_crossing_or_any_inherited_answers() -> voi
 		assert_true(sim.resolve_decision(decision.id, road.choices[1].id))
 	assert_true(sim.world.has_flag(&"knowledge_shared"))
 	assert_eq(sim.world.era, &"medieval")
-	assert_true(sim.content.next_era(sim.world.era_order) == null)
 
 
 func test_classical_gate_is_the_same_online_and_away() -> void:

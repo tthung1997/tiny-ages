@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_32ve6"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_agmtb"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_qcjmd"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_xu48c"]
+
+[sub_resource type="Resource" id="Resource_gi58t"]
+script = ExtResource("2_agmtb")
+kind = 1
+key = &"path_pages"
+
+[sub_resource type="Resource" id="Resource_rd0no"]
+script = ExtResource("2_agmtb")
+kind = 12
+key = &"renaissance"
+
+[sub_resource type="Resource" id="Resource_ckrmp"]
+script = ExtResource("2_agmtb")
+text = "The copyists brought their most thumbed pages to the new Print Hall."
+
+[sub_resource type="Resource" id="Resource_ulkqi"]
+script = ExtResource("1_32ve6")
+id = &"share_pages"
+label = "Start with books and stories"
+effects = Array[ExtResource("2_agmtb")]([SubResource("Resource_gi58t"), SubResource("Resource_rd0no"), SubResource("Resource_ckrmp")])
+
+[sub_resource type="Resource" id="Resource_rn6vq"]
+script = ExtResource("2_agmtb")
+kind = 1
+key = &"path_patterns"
+
+[sub_resource type="Resource" id="Resource_uap0s"]
+script = ExtResource("2_agmtb")
+kind = 12
+key = &"renaissance"
+
+[sub_resource type="Resource" id="Resource_b64rk"]
+script = ExtResource("2_agmtb")
+text = "The makers left space around each drawing for the next town to add to it."
+
+[sub_resource type="Resource" id="Resource_l8ble"]
+script = ExtResource("1_32ve6")
+id = &"share_patterns"
+label = "Start with maps and makers' patterns"
+effects = Array[ExtResource("2_agmtb")]([SubResource("Resource_rn6vq"), SubResource("Resource_uap0s"), SubResource("Resource_b64rk")])
+
+[resource]
+script = ExtResource("4_xu48c")
+id = &"room_on_the_page"
+title = "Room on the page"
+body = "The towns have been sending one another pages by hand. The makers have found a way to make many copies from one setting. What shall the first sheets carry?"
+category = &"settlement"
+choices = Array[ExtResource("1_32ve6")]([SubResource("Resource_ulkqi"), SubResource("Resource_l8ble")])

@@ -446,10 +446,15 @@ const PROPS: Dictionary = {
 	&"stewardship_charter": {
 		"name": "Charter of the towns", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"charter_kept", "from_era": 5,
+		"until_era": 6,
 	},
 	&"scriptorium": {
 		"name": "Scriptorium & Apprentice House", "at_x": -384.0, "z": 66,
 		"place": &"west_village", "kind": Kind.ACHIEVEMENT, "key": &"common_book", "from_era": 5,
+	},
+	&"map_house": {
+		"name": "Map House", "at_x": -384.0, "z": 66, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"wayfinder_sheet", "from_era": 6,
 	},
 	&"east_fair_wharf": {
 		"name": "Fair Wharf", "at_x": 384.0, "z": 60, "place": &"east_shore",
@@ -464,6 +469,25 @@ const PROPS: Dictionary = {
 	&"stewardship_pages": {
 		"name": "Books for the road", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"round_of_towns", "from_era": 5,
+		"until_era": 6,
+	},
+	&"print_sheets": {
+		"name": "Freshly printed pages", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"first_impression", "from_era": 6,
+		"replaced_by": &"wayfinder_map",
+	},
+	&"wayfinder_map": {
+		"name": "Wayfinder's map", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"wayfinder_sheet", "from_era": 6,
+	},
+	&"town_rule": {
+		"name": "The towns' shared rule", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"common_measure", "from_era": 6,
+		"replaced_by": &"observations_board",
+	},
+	&"observations_board": {
+		"name": "The towns' observations", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"notebook_of_questions", "from_era": 6,
 	},
 }
 

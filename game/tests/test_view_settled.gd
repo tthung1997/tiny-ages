@@ -43,7 +43,12 @@ func test_a_piece_is_found_in_the_newest_age_that_has_it() -> void:
 		"The Classical Age redraws it as a plastered stone house"
 	)
 	assert_true(
-		WorldLayout.piece_path(&"building_hut", 9).contains("/classical/"),
+		WorldLayout.piece_path(&"building_hut", 6).contains("/renaissance/"),
+		"The Renaissance redraws the older stone house"
+	)
+	assert_eq(
+		WorldLayout.piece_path(&"building_hut", WorldLayout.ERA_DIRS.size()),
+		WorldLayout.piece_path(&"building_hut", WorldLayout.ERA_DIRS.size() - 1),
 		"A later age with no folder yet uses the newest there is"
 	)
 	assert_true(

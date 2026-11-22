@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_mlda7"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_iur1p"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_l4tch"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_75uc3"]
+
+[sub_resource type="Resource" id="Resource_12r5o"]
+script = ExtResource("2_iur1p")
+kind = 1
+key = &"renaissance_notebook_of_questions_margin_drawings_1"
+
+[sub_resource type="Resource" id="Resource_th3m1"]
+script = ExtResource("2_iur1p")
+kind = 10
+key = &"notebook_of_questions"
+text = "A Notebook of Questions"
+
+[sub_resource type="Resource" id="Resource_u1exo"]
+script = ExtResource("2_iur1p")
+kind = 1
+key = &"observations_shared"
+
+[sub_resource type="Resource" id="Resource_2qoe7"]
+script = ExtResource("2_iur1p")
+text = "The little drawings went in the same notebook, each with its place and day."
+
+[sub_resource type="Resource" id="Resource_1dwhm"]
+script = ExtResource("1_mlda7")
+id = &"renaissance_notebook_of_questions_margin_drawings_1"
+label = "Sketch where the midday shadow falls"
+effects = Array[ExtResource("2_iur1p")]([SubResource("Resource_12r5o"), SubResource("Resource_th3m1"), SubResource("Resource_u1exo"), SubResource("Resource_2qoe7")])
+
+[sub_resource type="Resource" id="Resource_kxn2h"]
+script = ExtResource("2_iur1p")
+kind = 1
+key = &"renaissance_notebook_of_questions_margin_drawings_3"
+
+[sub_resource type="Resource" id="Resource_hvi3d"]
+script = ExtResource("2_iur1p")
+kind = 10
+key = &"notebook_of_questions"
+text = "A Notebook of Questions"
+
+[sub_resource type="Resource" id="Resource_lhf30"]
+script = ExtResource("2_iur1p")
+kind = 1
+key = &"observations_shared"
+
+[sub_resource type="Resource" id="Resource_weoob"]
+script = ExtResource("2_iur1p")
+text = "Two drawings disagreed, so the next page asked when and where each was made."
+
+[sub_resource type="Resource" id="Resource_c8tre"]
+script = ExtResource("1_mlda7")
+id = &"renaissance_notebook_of_questions_margin_drawings_3"
+label = "Draw the river mark after rain"
+effects = Array[ExtResource("2_iur1p")]([SubResource("Resource_kxn2h"), SubResource("Resource_hvi3d"), SubResource("Resource_lhf30"), SubResource("Resource_weoob")])
+
+[sub_resource type="Resource" id="Resource_kx0pt"]
+script = ExtResource("3_l4tch")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_8wfho"]
+script = ExtResource("3_l4tch")
+kind = 11
+amount = 288
+
+[sub_resource type="Resource" id="Resource_i5ppw"]
+script = ExtResource("3_l4tch")
+kind = 9
+key = &"notebook_of_questions"
+negate = true
+
+[sub_resource type="Resource" id="Resource_7w2xk"]
+script = ExtResource("3_l4tch")
+kind = 9
+key = &"fair_of_pages"
+
+[sub_resource type="Resource" id="Resource_ptf4c"]
+script = ExtResource("3_l4tch")
+key = &"margin_drawings"
+
+[resource]
+script = ExtResource("4_75uc3")
+id = &"renaissance_notebook_of_questions_margin_drawings"
+title = "A Notebook of Questions"
+body = "The towns can print the same question, then compare their own answers. What comes first?"
+category = &"settlement"
+requires = Array[ExtResource("3_l4tch")]([SubResource("Resource_kx0pt"), SubResource("Resource_8wfho"), SubResource("Resource_i5ppw"), SubResource("Resource_7w2xk"), SubResource("Resource_ptf4c")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_mlda7")]([SubResource("Resource_1dwhm"), SubResource("Resource_c8tre")])

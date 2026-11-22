@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_agv6v"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_bufcu"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_pi7eh"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_2wtk0"]
+
+[sub_resource type="Resource" id="Resource_itus8"]
+script = ExtResource("2_bufcu")
+kind = 1
+key = &"renaissance_open_demonstration_guild_ribbon_1"
+
+[sub_resource type="Resource" id="Resource_nteuj"]
+script = ExtResource("2_bufcu")
+kind = 10
+key = &"open_demonstration"
+text = "An Open Demonstration"
+
+[sub_resource type="Resource" id="Resource_v6yov"]
+script = ExtResource("2_bufcu")
+text = "The visitors could follow the lesson from tool to tool without knowing their names."
+
+[sub_resource type="Resource" id="Resource_yim1v"]
+script = ExtResource("1_agv6v")
+id = &"renaissance_open_demonstration_guild_ribbon_1"
+label = "Mark the borrowed tools with bright ribbons"
+effects = Array[ExtResource("2_bufcu")]([SubResource("Resource_itus8"), SubResource("Resource_nteuj"), SubResource("Resource_v6yov")])
+
+[sub_resource type="Resource" id="Resource_60l3u"]
+script = ExtResource("2_bufcu")
+kind = 1
+key = &"renaissance_open_demonstration_guild_ribbon_3"
+
+[sub_resource type="Resource" id="Resource_f414i"]
+script = ExtResource("2_bufcu")
+kind = 10
+key = &"open_demonstration"
+text = "An Open Demonstration"
+
+[sub_resource type="Resource" id="Resource_14a33"]
+script = ExtResource("2_bufcu")
+text = "The last ribbon went back to the first bench so the next group could start."
+
+[sub_resource type="Resource" id="Resource_pn1ok"]
+script = ExtResource("1_agv6v")
+id = &"renaissance_open_demonstration_guild_ribbon_3"
+label = "Label a ribbon for each step"
+effects = Array[ExtResource("2_bufcu")]([SubResource("Resource_60l3u"), SubResource("Resource_f414i"), SubResource("Resource_14a33")])
+
+[sub_resource type="Resource" id="Resource_0scgo"]
+script = ExtResource("3_pi7eh")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_os58k"]
+script = ExtResource("3_pi7eh")
+kind = 11
+amount = 180
+
+[sub_resource type="Resource" id="Resource_xod0a"]
+script = ExtResource("3_pi7eh")
+kind = 9
+key = &"open_demonstration"
+negate = true
+
+[sub_resource type="Resource" id="Resource_rkkop"]
+script = ExtResource("3_pi7eh")
+kind = 9
+key = &"common_measure"
+
+[sub_resource type="Resource" id="Resource_5ujxw"]
+script = ExtResource("3_pi7eh")
+key = &"guild_ribbon"
+
+[resource]
+script = ExtResource("4_2wtk0")
+id = &"renaissance_open_demonstration_guild_ribbon"
+title = "An Open Demonstration"
+body = "The guild wants anyone to be able to repeat a lesson without the teacher there."
+category = &"settlement"
+requires = Array[ExtResource("3_pi7eh")]([SubResource("Resource_0scgo"), SubResource("Resource_os58k"), SubResource("Resource_xod0a"), SubResource("Resource_rkkop"), SubResource("Resource_5ujxw")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_agv6v")]([SubResource("Resource_yim1v"), SubResource("Resource_pn1ok")])

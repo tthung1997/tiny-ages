@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_swusk"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_8ndv6"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_g5375"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_vxbqa"]
+
+[sub_resource type="Resource" id="Resource_7nv7a"]
+script = ExtResource("2_8ndv6")
+text = "A copied lesson returned to town with a note asking for more."
+
+[sub_resource type="Resource" id="Resource_fmqmf"]
+script = ExtResource("3_g5375")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_k7tky"]
+script = ExtResource("3_g5375")
+key = &"knowledge_shared"
+
+[resource]
+script = ExtResource("4_vxbqa")
+id = &"renaissance_remembered_knowledge_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_g5375")]([SubResource("Resource_fmqmf"), SubResource("Resource_k7tky")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_8ndv6")]([SubResource("Resource_7nv7a")])

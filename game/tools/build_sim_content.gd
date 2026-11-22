@@ -12,6 +12,7 @@ const BRONZE: int = 2
 const IRON: int = 3
 const CLASSICAL: int = 4
 const MEDIEVAL: int = 5
+const RENAISSANCE: int = 6
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -270,7 +271,17 @@ func _eras() -> Array[EraDef]:
 	]
 	medieval.min_ticks_in_previous_era = 8640
 	medieval.turn_event = &"what_we_keep_together"
-	var eras: Array[EraDef] = [cave, settled, bronze, iron, classical, medieval]
+	var renaissance: EraDef = _era(&"renaissance", "Renaissance Age", RENAISSANCE)
+	renaissance.description = "Printed pages, shared measures, and questions that travel."
+	renaissance.intro_text = "The books came home with more pages than they left with. " \
+			+ "In the new Print Hall, there is room to make a copy for every town."
+	renaissance.housing = 14
+	renaissance.required_achievements.assign(MEDIEVAL_MILESTONES.map(func(spec: Array):
+		return spec[0]
+	))
+	renaissance.min_ticks_in_previous_era = 8640
+	renaissance.turn_event = &"room_on_the_page"
+	var eras: Array[EraDef] = [cave, settled, bronze, iron, classical, medieval, renaissance]
 	_set_profiles(eras)
 	return eras
 
@@ -287,6 +298,7 @@ const PROFILES: Array[Dictionary] = [
 	{"id": &"iron", "limit": 12, "need": 1.5, "food": 1.5, "wood": 1.35},
 	{"id": &"classical", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 	{"id": &"medieval", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
+	{"id": &"renaissance", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 ]
 
 
@@ -422,6 +434,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_iron_events())
 	events.append_array(_classical_events())
 	events.append_array(_medieval_events())
+	events.append_array(_renaissance_events())
 	return events
 
 
@@ -8868,7 +8881,10 @@ func _medieval_events() -> Array[EventDef]:
 	var events: Array[EventDef] = [_what_we_keep_together()]
 	for spec: Array in MEDIEVAL_MILESTONES:
 		for road: Array in spec[6]:
-			events.append(_medieval_road(spec, road))
+			events.append(_chapter_road(
+				"medieval", MEDIEVAL, spec, road,
+				&"knowledge_shared" if spec[0] == &"round_of_towns" else &""
+			))
 	events.append_array(_medieval_stories())
 	events.append_array(_medieval_lines())
 	return events
@@ -8901,16 +8917,21 @@ func _medieval_requirements(day: int) -> Array[SimCondition]:
 	])
 
 
-func _medieval_road(spec: Array, road: Array) -> EventDef:
+func _chapter_road(
+	chapter: String, era: int, spec: Array, road: Array, handoff: StringName = &""
+) -> EventDef:
 	var milestone: StringName = spec[0]
 	var inherited: StringName = road[0]
 	var suffix: String = "common" if inherited == &"" else String(inherited)
-	var id: StringName = StringName("medieval_%s_%s" % [milestone, suffix])
+	var id: StringName = StringName("%s_%s_%s" % [chapter, milestone, suffix])
 	var event: EventDef = _event(id, spec[1], &"settlement")
 	event.chance_per_tick = 0.03
 	event.cooldown_ticks = 48
 	event.body = spec[5]
-	event.requires = _medieval_requirements(int(spec[3] if inherited == &"" else spec[2]))
+	event.requires = _conds([
+		_cond(SimCondition.Kind.ERA_AT_LEAST, &"", era),
+		_cond(SimCondition.Kind.ERA_DAYS_AT_LEAST, &"", spec[3] if inherited == &"" else spec[2]),
+	])
 	event.requires.append(_cond(SimCondition.Kind.ACHIEVEMENT_EARNED, milestone, 0, true))
 	for required: StringName in spec[4]:
 		event.requires.append(_earned(required))
@@ -8919,8 +8940,8 @@ func _medieval_road(spec: Array, road: Array) -> EventDef:
 	for index: int in [1, 3]:
 		var answer_id: StringName = StringName("%s_%d" % [id, index])
 		var effects: Array[SimEffect] = [_set_flag(answer_id), _earn(milestone, spec[1])]
-		if milestone == &"round_of_towns":
-			effects.append(_set_flag(&"knowledge_shared"))
+		if handoff != &"":
+			effects.append(_set_flag(handoff))
 		event.choices.append(_answer(answer_id, road[index], road[index + 1], effects))
 	return event
 
@@ -8988,6 +9009,112 @@ func _medieval_lines() -> Array[EventDef]:
 		event.once = true
 		lines.append(event)
 	return lines
+
+
+## Same road format as MEDIEVAL_MILESTONES. The common road never needs a story flag.
+const RENAISSANCE_MILESTONES: Array[Array] = [
+	[&"first_impression", "First Impression", 24, 60, [],
+		"The copyists can make a stack of pages from one setting of type. What goes first?", [
+		[&"path_pages", "Print a song everybody knows",
+			"By evening the same verse was being sung at both ends of the street.",
+			"Print the book's most borrowed lesson",
+			"For once nobody had to wait for the reference copy to come back."],
+		[&"", "Print a page for the apprentices",
+			"Each apprentice took a fresh page home and brought back a different question.",
+			"Print a sheet for the market",
+			"The stallholders recognised the same hand on every page. It wasn't a hand at all."],
+	]],
+	[&"common_measure", "A Common Measure", 72, 108, [],
+		"The charter gives the towns a shared measure. Where should they keep a copy of it?", [
+		[&"path_circuit", "Send a marked rule around the circuit",
+			"The rule came back with a tally for every town that had checked it.",
+			"Ask each town to send its measure",
+			"The makers laid the rules side by side and marked where they agreed."],
+		[&"", "Fix a marked rule at the arcade",
+			"A visitor checked a bolt of cloth against the rule without asking whose it was.",
+			"Keep marked rules on the loan bench",
+			"The apprentices checked the loan rules against one another before setting out."],
+	]],
+	[&"wayfinder_sheet", "A Wayfinder's Sheet", 126, 162, [&"first_impression"],
+		"There is room on a printed map for the places people use to find their way.", [
+		[&"path_patterns", "Mark the ridge and the homeward paths",
+			"The ridge on the page looked just like the ridge above the last bend.",
+			"Draw the stretches of road where people stop",
+			"The map gained a bench, a shady tree and a water stop before it gained a border."],
+		[&"", "Draw the road from the hall to the forest",
+			"The first map started at the hall door and stopped where the trees closed in.",
+			"Leave a margin for travellers' corrections",
+			"The next copy showed a bend in the road that the first one had missed."],
+	]],
+	[&"open_demonstration", "An Open Demonstration", 180, 216, [&"common_measure"],
+		"The guild wants anyone to be able to repeat a lesson without the teacher there.", [
+		[&"guild_ribbon", "Mark the borrowed tools with bright ribbons",
+			"The visitors could follow the lesson from tool to tool without knowing their names.",
+			"Label a ribbon for each step",
+			"The last ribbon went back to the first bench so the next group could start."],
+		[&"", "Let a learner repeat the steps aloud",
+			"At the third step the learner stopped: a small detail had been left out.",
+			"Put two attempts side by side",
+			"The makers kept both pieces, so visitors could see what the change had done."],
+	]],
+	[&"fair_of_pages", "A Fair of Pages", 234, 270, [&"wayfinder_sheet", &"open_demonstration"],
+		"The fairs can carry sheets and patterns as easily as wares. How shall the swap work?", [
+		[&"path_commons", "Make room under the home arcade",
+			"Neighbours gave visitors a dry bench to sort the pages and add their own.",
+			"Ask returning makers to show what they tried",
+			"The returning makers laid out their work next to the sheets they had used."],
+		[&"", "Send bundles by the west road",
+			"The road bundles came back lighter on lessons and heavier on useful corrections.",
+			"Keep a table for exchanging copies here",
+			"By the end of the visit the exchange table held more new sheets than old ones."],
+	]],
+	[&"notebook_of_questions", "A Notebook of Questions", 288, 324, [&"fair_of_pages"],
+		"The towns can print the same question, then compare their own answers. What comes first?", [
+		[&"margin_drawings", "Sketch where the midday shadow falls",
+			"The little drawings went in the same notebook, each with its place and day.",
+			"Draw the river mark after rain",
+			"Two drawings disagreed, so the next page asked when and where each was made."],
+		[&"", "Compare the length of a midday shadow",
+			"Each town wrote its measure beside the day. The numbers asked another question.",
+			"Compare where the first buds open",
+			"The notebooks came back with dates, places and room for next year's marks."],
+	]],
+]
+
+
+func _renaissance_events() -> Array[EventDef]:
+	var turn: EventDef = _event(&"room_on_the_page", "Room on the page", &"settlement")
+	turn.body = "The towns have been sending one another pages by hand. The makers have found " \
+			+ "a way to make many copies from one setting. What shall the first sheets carry?"
+	turn.choices = _choices([
+		_answer(&"share_pages", "Start with books and stories",
+			"The copyists brought their most thumbed pages to the new Print Hall.",
+			[_set_flag(&"path_pages"), _eff(SimEffect.Kind.ADVANCE_ERA, &"renaissance")]),
+		_answer(&"share_patterns", "Start with maps and makers' patterns",
+			"The makers left space around each drawing for the next town to add to it.",
+			[_set_flag(&"path_patterns"), _eff(SimEffect.Kind.ADVANCE_ERA, &"renaissance")]),
+	])
+	var events: Array[EventDef] = [turn]
+	for spec: Array in RENAISSANCE_MILESTONES:
+		for road: Array in spec[6]:
+			events.append(_chapter_road(
+				"renaissance", RENAISSANCE, spec, road,
+				&"observations_shared" if spec[0] == &"notebook_of_questions" else &""
+			))
+	for memory: Array in [
+		[&"knowledge_shared", "A copied lesson returned to town with a note asking for more."],
+		[&"guild_tree", "The printer set a little tree in the corner of a page about tools."],
+		[&"margin_stories", "The old line in the margin turned up on a sheet of songs."],
+	]:
+		var id: StringName = StringName("renaissance_remembered_%s" % memory[0])
+		var event: EventDef = _ambient(id, memory[1])
+		event.requires = _conds([
+			_cond(SimCondition.Kind.ERA_AT_LEAST, &"", RENAISSANCE), _flag_set(memory[0]),
+		])
+		event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
+		event.once = true
+		events.append(event)
+	return events
 
 
 func _build_choice(

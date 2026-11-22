@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ab51t"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_7jg2q"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_vvpoi"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_h32s3"]
+
+[sub_resource type="Resource" id="Resource_1vbv5"]
+script = ExtResource("2_7jg2q")
+kind = 1
+key = &"renaissance_first_impression_path_pages_1"
+
+[sub_resource type="Resource" id="Resource_4mt7v"]
+script = ExtResource("2_7jg2q")
+kind = 10
+key = &"first_impression"
+text = "First Impression"
+
+[sub_resource type="Resource" id="Resource_mccgg"]
+script = ExtResource("2_7jg2q")
+text = "By evening the same verse was being sung at both ends of the street."
+
+[sub_resource type="Resource" id="Resource_d8fp8"]
+script = ExtResource("1_ab51t")
+id = &"renaissance_first_impression_path_pages_1"
+label = "Print a song everybody knows"
+effects = Array[ExtResource("2_7jg2q")]([SubResource("Resource_1vbv5"), SubResource("Resource_4mt7v"), SubResource("Resource_mccgg")])
+
+[sub_resource type="Resource" id="Resource_i1otf"]
+script = ExtResource("2_7jg2q")
+kind = 1
+key = &"renaissance_first_impression_path_pages_3"
+
+[sub_resource type="Resource" id="Resource_qwxhe"]
+script = ExtResource("2_7jg2q")
+kind = 10
+key = &"first_impression"
+text = "First Impression"
+
+[sub_resource type="Resource" id="Resource_lfo74"]
+script = ExtResource("2_7jg2q")
+text = "For once nobody had to wait for the reference copy to come back."
+
+[sub_resource type="Resource" id="Resource_vpiqg"]
+script = ExtResource("1_ab51t")
+id = &"renaissance_first_impression_path_pages_3"
+label = "Print the book's most borrowed lesson"
+effects = Array[ExtResource("2_7jg2q")]([SubResource("Resource_i1otf"), SubResource("Resource_qwxhe"), SubResource("Resource_lfo74")])
+
+[sub_resource type="Resource" id="Resource_3x5ym"]
+script = ExtResource("3_vvpoi")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_05r4u"]
+script = ExtResource("3_vvpoi")
+kind = 11
+amount = 24
+
+[sub_resource type="Resource" id="Resource_wrncv"]
+script = ExtResource("3_vvpoi")
+kind = 9
+key = &"first_impression"
+negate = true
+
+[sub_resource type="Resource" id="Resource_16s4p"]
+script = ExtResource("3_vvpoi")
+key = &"path_pages"
+
+[resource]
+script = ExtResource("4_h32s3")
+id = &"renaissance_first_impression_path_pages"
+title = "First Impression"
+body = "The copyists can make a stack of pages from one setting of type. What goes first?"
+category = &"settlement"
+requires = Array[ExtResource("3_vvpoi")]([SubResource("Resource_3x5ym"), SubResource("Resource_05r4u"), SubResource("Resource_wrncv"), SubResource("Resource_16s4p")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_ab51t")]([SubResource("Resource_d8fp8"), SubResource("Resource_vpiqg")])

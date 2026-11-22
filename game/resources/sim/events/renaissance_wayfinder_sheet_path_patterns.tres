@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_6s6ib"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_ifl84"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_bek77"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_maail"]
+
+[sub_resource type="Resource" id="Resource_kln55"]
+script = ExtResource("2_ifl84")
+kind = 1
+key = &"renaissance_wayfinder_sheet_path_patterns_1"
+
+[sub_resource type="Resource" id="Resource_sffpo"]
+script = ExtResource("2_ifl84")
+kind = 10
+key = &"wayfinder_sheet"
+text = "A Wayfinder's Sheet"
+
+[sub_resource type="Resource" id="Resource_m4ta3"]
+script = ExtResource("2_ifl84")
+text = "The ridge on the page looked just like the ridge above the last bend."
+
+[sub_resource type="Resource" id="Resource_0dnb4"]
+script = ExtResource("1_6s6ib")
+id = &"renaissance_wayfinder_sheet_path_patterns_1"
+label = "Mark the ridge and the homeward paths"
+effects = Array[ExtResource("2_ifl84")]([SubResource("Resource_kln55"), SubResource("Resource_sffpo"), SubResource("Resource_m4ta3")])
+
+[sub_resource type="Resource" id="Resource_08d5f"]
+script = ExtResource("2_ifl84")
+kind = 1
+key = &"renaissance_wayfinder_sheet_path_patterns_3"
+
+[sub_resource type="Resource" id="Resource_f080g"]
+script = ExtResource("2_ifl84")
+kind = 10
+key = &"wayfinder_sheet"
+text = "A Wayfinder's Sheet"
+
+[sub_resource type="Resource" id="Resource_q4s1h"]
+script = ExtResource("2_ifl84")
+text = "The map gained a bench, a shady tree and a water stop before it gained a border."
+
+[sub_resource type="Resource" id="Resource_n4l0y"]
+script = ExtResource("1_6s6ib")
+id = &"renaissance_wayfinder_sheet_path_patterns_3"
+label = "Draw the stretches of road where people stop"
+effects = Array[ExtResource("2_ifl84")]([SubResource("Resource_08d5f"), SubResource("Resource_f080g"), SubResource("Resource_q4s1h")])
+
+[sub_resource type="Resource" id="Resource_2upwt"]
+script = ExtResource("3_bek77")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_hxj64"]
+script = ExtResource("3_bek77")
+kind = 11
+amount = 126
+
+[sub_resource type="Resource" id="Resource_ukmnn"]
+script = ExtResource("3_bek77")
+kind = 9
+key = &"wayfinder_sheet"
+negate = true
+
+[sub_resource type="Resource" id="Resource_4qt7y"]
+script = ExtResource("3_bek77")
+kind = 9
+key = &"first_impression"
+
+[sub_resource type="Resource" id="Resource_mcncp"]
+script = ExtResource("3_bek77")
+key = &"path_patterns"
+
+[resource]
+script = ExtResource("4_maail")
+id = &"renaissance_wayfinder_sheet_path_patterns"
+title = "A Wayfinder's Sheet"
+body = "There is room on a printed map for the places people use to find their way."
+category = &"settlement"
+requires = Array[ExtResource("3_bek77")]([SubResource("Resource_2upwt"), SubResource("Resource_hxj64"), SubResource("Resource_ukmnn"), SubResource("Resource_4qt7y"), SubResource("Resource_mcncp")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_6s6ib")]([SubResource("Resource_0dnb4"), SubResource("Resource_n4l0y")])

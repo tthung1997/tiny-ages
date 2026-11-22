@@ -1,0 +1,85 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_lpiu4"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_yqp7r"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_ss0tk"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_1byth"]
+
+[sub_resource type="Resource" id="Resource_xj1c3"]
+script = ExtResource("2_yqp7r")
+kind = 1
+key = &"renaissance_fair_of_pages_common_1"
+
+[sub_resource type="Resource" id="Resource_rdukj"]
+script = ExtResource("2_yqp7r")
+kind = 10
+key = &"fair_of_pages"
+text = "A Fair of Pages"
+
+[sub_resource type="Resource" id="Resource_1tbeq"]
+script = ExtResource("2_yqp7r")
+text = "The road bundles came back lighter on lessons and heavier on useful corrections."
+
+[sub_resource type="Resource" id="Resource_rud3n"]
+script = ExtResource("1_lpiu4")
+id = &"renaissance_fair_of_pages_common_1"
+label = "Send bundles by the west road"
+effects = Array[ExtResource("2_yqp7r")]([SubResource("Resource_xj1c3"), SubResource("Resource_rdukj"), SubResource("Resource_1tbeq")])
+
+[sub_resource type="Resource" id="Resource_86g0t"]
+script = ExtResource("2_yqp7r")
+kind = 1
+key = &"renaissance_fair_of_pages_common_3"
+
+[sub_resource type="Resource" id="Resource_2sui8"]
+script = ExtResource("2_yqp7r")
+kind = 10
+key = &"fair_of_pages"
+text = "A Fair of Pages"
+
+[sub_resource type="Resource" id="Resource_fvvav"]
+script = ExtResource("2_yqp7r")
+text = "By the end of the visit the exchange table held more new sheets than old ones."
+
+[sub_resource type="Resource" id="Resource_xdokt"]
+script = ExtResource("1_lpiu4")
+id = &"renaissance_fair_of_pages_common_3"
+label = "Keep a table for exchanging copies here"
+effects = Array[ExtResource("2_yqp7r")]([SubResource("Resource_86g0t"), SubResource("Resource_2sui8"), SubResource("Resource_fvvav")])
+
+[sub_resource type="Resource" id="Resource_vdg52"]
+script = ExtResource("3_ss0tk")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_w6c1v"]
+script = ExtResource("3_ss0tk")
+kind = 11
+amount = 270
+
+[sub_resource type="Resource" id="Resource_1lvvd"]
+script = ExtResource("3_ss0tk")
+kind = 9
+key = &"fair_of_pages"
+negate = true
+
+[sub_resource type="Resource" id="Resource_s5sbt"]
+script = ExtResource("3_ss0tk")
+kind = 9
+key = &"wayfinder_sheet"
+
+[sub_resource type="Resource" id="Resource_vfc7b"]
+script = ExtResource("3_ss0tk")
+kind = 9
+key = &"open_demonstration"
+
+[resource]
+script = ExtResource("4_1byth")
+id = &"renaissance_fair_of_pages_common"
+title = "A Fair of Pages"
+body = "The fairs can carry sheets and patterns as easily as wares. How shall the swap work?"
+category = &"settlement"
+requires = Array[ExtResource("3_ss0tk")]([SubResource("Resource_vdg52"), SubResource("Resource_w6c1v"), SubResource("Resource_1lvvd"), SubResource("Resource_s5sbt"), SubResource("Resource_vfc7b")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_lpiu4")]([SubResource("Resource_rud3n"), SubResource("Resource_xdokt")])

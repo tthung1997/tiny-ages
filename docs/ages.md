@@ -9,7 +9,7 @@ Status: **direction agreed; the sim supports eras and the slice is re-themed.** 
 | G1 | The game **starts in the Cave Age** (hunter-gatherers living in caves) | Player's vision for the game. |
 | G2 | **Ages are linear, but the player's choices decide how they get there and what the age looks like.** Not branching into different ages per player | The MVP's "knowledge" axes (Agriculture / Craft / Exploration) drive the transition, so one player's Settled Age is farmland, another's is herding or craft. Linear ages keep the art and content scope bounded. |
 | G3 | **Sequencing: decide the structure now, draw art one age at a time.** Age 1 art first; later ages are content packs | Art cost multiplies per age; the sim and content only need the era *structure* up front. |
-| G4 | **Change is gradual and cumulative**: new buildings and props appear and older ones stay (the cave remains as storage), so the world accumulates history instead of being replaced | Matches "the player's desktop physically becomes more populated"; also cheaper than swapping whole scenes. |
+| G4 | **Change is gradual and cumulative**: give each age a comparable mix of new buildings and in-place upgrades, without a fixed quota. Prefer upgrading older buildings; let pieces added or upgraded last age stay unless they're age-specific. The signature landmark can change at every turn. | Matches "the player's desktop physically becomes more populated" and keeps each age's work visible into the next. |
 | G5 | An **age** is a content/art pack and tech level; a **chapter** is settlement size within it (the MVP's Camp → Hamlet → Village milestones) | Keeps two different ideas apart. |
 | G6 | **Every age is about as long as the Cave Age**: five or six hidden milestones spread over about five real days, with small decisions and quiet lines between them | The pace should feel the same from age to age; a short age feels like a skipped chapter. |
 | G7 | **The game is open-ended.** The newest age has no end, no final milestone and no credits: its milestones are the *gate* of an age that does not exist yet. A later age is added as data (an `EraDef` whose `required_achievements` are the previous age's milestones, plus content and art), with no change to the engine | Room for future updates; nothing is ever "finished". |
@@ -584,11 +584,11 @@ measured balance result.
 
 ### Looking ahead: the Renaissance
 
-The next age could be about knowledge becoming easier to share: common measures from the
+The next age is about knowledge becoming easier to share: common measures from the
 charter, makers trained at the guild bench, books copied at the hall, and a fair circuit that
 can carry printed sheets and illustrated maps. `knowledge_shared` tells that story whichever
-road the towns took. If a Renaissance chapter is built later, the Medieval six can be its
-gate; for now the fair and the settlement keep going after the last milestone.
+road the towns took. The Medieval six and five days open the [Renaissance Age](#renaissance-age);
+the fair and the settlement keep going if the player leaves the turn unanswered.
 
 ### Acceptance checks for a playable chapter
 
@@ -602,6 +602,75 @@ gate; for now the fair and the settlement keep going after the last milestone.
 - Review all three pages at native scale by day and night and check stock and arrivals on
   small and full settlements before tuning the profile.
 
+## Renaissance Age
+
+Status: **built (issue #59)**. Medieval towns passed on what they knew. Renaissance towns can
+make many copies of one page, then use them to compare what people see and do in different places.
+
+### The turn: *Room on the page*
+
+The hidden gate is all six Medieval milestones and **8,640 ticks in Medieval** (five real
+days, including time away). Every route to *A Round of Towns* sets `knowledge_shared`.
+That is the premise, not another gate: older saves with the six milestones but no flag can
+still turn. No optional answer, building, or crossing is required.
+
+The towns ask what the first sheets should carry: **books and stories** (`path_pages`) or
+**maps and makers' patterns** (`path_patterns`). Either answer turns the age and opens one
+earlier route. The Medieval commons and circuit answers can open different roads; a borrowed
+tool's ribbon and a drawing in a margin can also come back. Other memories, like the tree mark
+on a tool or a line of song, may appear in the journal but never lock a route.
+
+### Milestones and the next age
+
+Days are measured into Renaissance. The common road needs only the age, day and milestones listed.
+Both answers on either road count; earlier roads don't expire. The fair is an exchange, not an
+appointment. There are no extra resources, production bonuses, timers to miss, or failure states.
+
+| Milestone | Early / common day; needs | Earlier road | Common road | What the Enlightenment inherits |
+|---|---|---|---|---|
+| **First Impression** (`first_impression`) | 24 / 60; none | `path_pages`: a song or a well-borrowed lesson | An apprentice's page or a market sheet | Identical copies of the same question or instructions |
+| **A Common Measure** (`common_measure`) | 72 / 108; none | `path_circuit`: one rule sent round or one sent in by each town | A fixed rule at the arcade or loan rules on the bench | A shared unit for comparing reports |
+| **A Wayfinder's Sheet** (`wayfinder_sheet`) | 126 / 162; First Impression | `path_patterns`: ridge and homeward paths or the road's resting places | A home-bank map or a margin for corrections | The place recorded alongside each observation |
+| **An Open Demonstration** (`open_demonstration`) | 180 / 216; A Common Measure | `guild_ribbon`: mark the tools or label each step | A learner repeats the steps or two attempts go side by side | A method someone else can repeat and check |
+| **A Fair of Pages** (`fair_of_pages`) | 234 / 270; Wayfinder's Sheet and Open Demonstration | `path_commons`: host the exchange or show what returning makers tried | Send bundles west or keep a swap table at home | A way to circulate findings and corrections |
+| **A Notebook of Questions** (`notebook_of_questions`) | 288 / 324; A Fair of Pages | `margin_drawings`: sketch the midday shadow or a river mark | Compare shadow lengths or where buds open | Dated, located observations to compare; every answer sets `observations_shared` |
+
+**Next horizon: the Enlightenment**, not yet playable. The Renaissance makes it easy to share
+what one town knows; the Enlightenment can ask how several towns know whether the same thing is
+true. Its opening could put two reports side by side and ask whether to repeat the observation
+locally or invite another town to try it. Use the six Renaissance milestones and the usual
+five days if that age is built; `observations_shared` is the premise, not a separate gate or
+a requirement to pick a particular subject. Until then the shops, journals, and fairs carry on.
+
+### What changes in the strip
+
+- **Print Hall:** a two-storey stone print shop with a continuous tiled roof, a stone cornice,
+  three warm upper windows, and a recessed entrance. Keep the 100×54 footprint, foot row 66,
+  entrance near x 34, spare flank from x 73, and the brazier. Printed pages fill one bay,
+  then an illustrated map replaces them.
+  A wide brass rule appears in the other bay; the finale replaces it with two contrasting
+  sheets of observations. The Medieval porch dressings are retired, not scattered into the street.
+- **Upgrade older buildings:** the Classical tiled **Hut** gets a stepped teal roof and a dormer,
+  the Iron **Granary** keeps its raised floor and gains a tiled roof and a braced loading door
+  above stone piers, and the Bronze **Quay** gets a
+  stone deck and a covered table for cargo and pages. Only buildings the settlement already has
+  change; their slots, work spots and outputs stay the same.
+- **Add the Map House:** *A Wayfinder's Sheet* earns a one-space building on the home bank, with
+  a clay-tile roof, chimney, and an illustrated sheet set into a shuttered window. It doesn't need a
+  bridge, a construction order, or a new resource. It yields its space if the lane fills with
+  higher-priority buildings. The Medieval Scriptorium and Guild Arcade
+  still host lessons and fairs and keep their art, as do the Tended Water Court, roads, Fair Wharf,
+  lighthouse and Travellers' Hall.
+- **Clothes and panels:** short, bright doublets with squared shoulders and light collars replace
+  hoods; broader cuffs and a contrasting hem mark the Open Demonstration. Keep the same
+  faces, walk cycles and role overlays. Use ivory paper with teal rails for the panels and a
+  medal per milestone.
+
+The representative profile stays at 14 housing and a ceiling of 14, ×1.70 food need and food
+yield, and ×1.50 wood yield. Judge the changes on the full **384×80 strip at 1×**, by day and
+night, moving between the hall and the west page. The hall's roof, pale page blocks and aprons
+of colour on the awnings and outfits should read without relying on tiny marks.
+
 ## Candidate ages (for reference)
 
 | Age | Life | Visible change |
@@ -612,7 +681,8 @@ gate; for now the fair and the settlement keep going after the last milestone.
 | 4. Iron | A harder metal, farming for bigger towns, a fort, coin, writing, a name abroad (proposed: "Iron Age") | Forts, granaries, bloomeries, ships |
 | 5. Classical | Streets, water brought in, written law, a square, learning and a stage, a wider world (built: "Classical Age") | Paved streets, an arcade, a water court, a theatre, a harbour |
 | 6. Medieval | Stewardship, guilds, preserved learning and travelling fairs ([Medieval Age](#medieval-age)) | Stewardship Hall, Scriptorium, tended water court, guild arcade, Fair Wharf and Travellers' Hall |
-| 7. Renaissance | Printed knowledge and shared measures (direction only) | Not designed yet |
+| 7. Renaissance | Printed knowledge, shared measures, and observations ([Renaissance Age](#renaissance-age)) | Print Hall, Map House, upgraded Hut, Granary and Quay, and bright doublets |
+| 8. Enlightenment | Public questions and repeatable observations (direction only) | Not yet designed |
 
 Recommended MVP scope: Age 1 in full, Age 2 as the first transition, Age 3 as a horizon only. Not yet confirmed.
 

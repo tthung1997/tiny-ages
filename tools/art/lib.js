@@ -138,6 +138,34 @@ PAL.linenWren = palWith(PAL.clothWren, { shirt: '#eee6cc', shirtD: '#c9c0a2', tr
 PAL.hoodMira = palWith(PAL.clothMira, { shirt: '#af6856', shirtD: '#814737', cloak: '#c86c5a', cloakD: '#853e3b', pants: '#544d65' });
 PAL.hoodTheo = palWith(PAL.clothTheo, { shirt: '#7895a0', shirtD: '#546d7a', cloak: '#6293ab', cloakD: '#3f5a78', pants: '#584936' });
 PAL.hoodWren = palWith(PAL.clothWren, { shirt: '#af9054', shirtD: '#7f6539', cloak: '#d6aa5c', cloakD: '#9e7039', pants: '#4b6258' });
+PAL.doubletMira = palWith(PAL.clothMira, { shirt: '#994e70', shirtD: '#763957', trim: '#dfa56e' });
+PAL.doubletTheo = palWith(PAL.clothTheo, { shirt: '#438b9b', shirtD: '#326372', trim: '#95c9c9' });
+PAL.doubletWren = palWith(PAL.clothWren, { shirt: '#b17736', shirtD: '#855532', trim: '#f1bb6a' });
+
+// Keep the same character silhouettes, draw buffer and pose order when an age changes clothes.
+function saveOutfitSheets(sprite, outDir, outfits, palettes, stone) {
+  var image = sprite.layer(0).cel(0).image;
+  var names = ['mira', 'theo', 'wren'], hair = ['bun', 'tuft', 'long'];
+  var frames = [
+    ['idle', 0], ['walk', 0], ['walk', 1], ['walk', 2], ['walk', 3],
+    ['chop', 0], ['chop', 1], ['chop', 2], ['hammer', 0], ['hammer', 1], ['spear', 0]
+  ];
+  seed = 3;
+  for (var n = 0; n < outfits.length; n++) {
+    for (var j = 0; j < names.length; j++) {
+      var sheet = new Buf(308, 30);
+      for (var i = 0; i < frames.length; i++) {
+        var o = { outfit: outfits[n], pal: palettes[j], stone: stone, hair: hair[j],
+          role: j === 2 ? 'gatherer' : undefined, pose: frames[i][0], f: frames[i][1] };
+        var body = new Buf(27, 27); vil(o)(body);
+        sheet.ell(i * 28 + 14, 28, 5, 1.3, '#5f8236');
+        blit(sheet, outlined(body, OUT), i * 28, 0);
+      }
+      image.putImageData(sheet.d);
+      sprite.saveAs(outDir + outfits[n] + '/' + names[j] + '.png');
+    }
+  }
+}
 
 // ---- villager (style A: mini chibi, 16px tall) ------------------------------
 // o = { pal, pose: idle|walk|chop|hammer|fish|spear, f: frame,
@@ -170,6 +198,7 @@ function vil(o) {
     var irn = ofit == 'iron', chk = ofit == 'checked' || irn;
     var civ = ofit == 'civic', lin = ofit == 'linen' || civ;
     var guild = ofit == 'guild', hood = ofit == 'hood' || guild;
+    var show = ofit == 'show_coat', doublet = ofit == 'doublet' || show;
     var sole = o.fur ? '#5a4636' : '#4a3224';
     if (field) { legc = SKD; sole = '#c98a6a'; }
     if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
@@ -266,6 +295,13 @@ function vil(o) {
         b.rect(bx - 3, bodyTop + 3, 2, 2, cl.cloakD);
         b.px(bx + 2, bodyTop + 2, '#f4d393');
       }
+    }
+    if (doublet) {
+      b.rect(bx - 2, bodyTop, bw + 4, 2, show ? cl.trim : cl.shirt);
+      b.rect(bx - 1, bodyTop, bw + 2, 1, '#f5e1b4');
+      b.rect(bx + 2, bodyTop + 1, 1, 4, '#f5e1b4');
+      b.rect(bx - 1, bodyTop + 3, bw + 2, show ? 2 : 1, show ? cl.shirtD : cl.shirt);
+      if (show) b.rect(bx - 1, bodyTop + 4, bw + 2, 1, cl.trim);
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

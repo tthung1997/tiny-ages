@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EraDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/era_def.gd" id="1_uu0bk"]
+
+[resource]
+script = ExtResource("1_uu0bk")
+id = &"renaissance"
+display_name = "Renaissance Age"
+order = 6
+description = "Printed pages, shared measures, and questions that travel."
+intro_text = "The books came home with more pages than they left with. In the new Print Hall, there is room to make a copy for every town."
+housing = 14
+max_villagers = 14
+food_need_scale = 1.7
+food_yield_scale = 1.7
+wood_yield_scale = 1.5
+required_achievements = Array[StringName]([&"water_in_trust", &"guild_bench", &"charter_kept", &"common_book", &"fair_on_the_road", &"round_of_towns"])
+min_ticks_in_previous_era = 8640
+turn_event = &"room_on_the_page"

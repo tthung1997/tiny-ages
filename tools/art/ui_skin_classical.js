@@ -150,3 +150,18 @@ blit(A, tile('#f8e9c4', '#fff8e5', '#dac096', '#b97d5e', OUT), 16, 164);
 blit(A, tile('#d6bc8e', '#c9a87a', '#e8d1a4', '#7b4a38', OUT), 32, 164);
 IMG.putImageData(A.d);
 SPR.saveAs(DIR + 'game/assets/ui/skin_medieval.png');
+
+// Renaissance: inked rules and ivory paper inside blue-green rails.
+P = new Buf(PW, PH);
+P.rect(0, 0, PW, PH, '#294f5c');
+P.rect(3, 3, PW - 6, PH - 6, '#6c97a0');
+P.rect(7, 7, PW - 14, PH - 14, '#bda983');
+P.rect(9, 9, PW - 18, PH - 18, '#f4e9cd');
+P.rect(13, 23, PW - 26, 1, '#56778a'); P.rect(13, 25, PW - 26, 1, '#d0bc9a');
+for (i = 0; i < corners.length; i++) P.d[(corners[i][1] * PW + corners[i][0]) * 4 + 3] = 0;
+blit(A, P, 0, 0);
+blit(A, tile('#ede1c7', '#fff4d5', '#bba884', '#56778a', OUT), 0, 164);
+blit(A, tile('#fff1cf', '#fffbe9', '#c4b68f', '#64909e', OUT), 16, 164);
+blit(A, tile('#dbd0b7', '#b8b29c', '#f0e4ce', '#375c69', OUT), 32, 164);
+IMG.putImageData(A.d);
+SPR.saveAs(DIR + 'game/assets/ui/skin_renaissance.png');
