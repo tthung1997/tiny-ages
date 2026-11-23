@@ -48,6 +48,11 @@ Without `--run`, `bundle.py` only writes `tools/art/dist/<name>.bundle.js` (git-
 
 The Medieval assets regenerate with
 `python tools/art/bundle.py --run classical_camp signature_landmarks medieval_villagers ui_skin_classical ui_achievements`.
+
+**Renaissance:** `classical_camp`, `signature_landmarks`, `renaissance_villagers`,
+`ui_skin_classical`, and `ui_achievements` export the Print Hall, page displays, Map House,
+redrawn Hut, Granary and Quay, doublets and show coats, panels, and six medals. The sprites are
+generated in-house with LibreSprite from the existing pixel-art helpers; no external assets are needed.
 The in-place upgrades reuse the Classical drawing functions, including the Fair Wharf's
 lighthouse. The scripts also write the Scriptorium, Stewardship Hall and porch details,
 folded-hood and guild-cape sheets, oak-and-parchment skin, and six medals. Run Godot

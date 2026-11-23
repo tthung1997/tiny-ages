@@ -9,8 +9,8 @@ const MAX_OVERLAP: float = 0.25
 const PAGE_BUDGET: Dictionary = {-1: 14, 0: 9, 1: 8}
 ## An age may hold more on a page when it is that age's character to (docs/ages.md, flexible density per age):
 ## the Classical Age's east shore adds a theatre and a harbour in place of the ship.
-const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}, 5: {1: 9}}
-const LAST_ERA: int = 5
+const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}, 5: {1: 9}, 6: {1: 9}}
+const LAST_ERA: int = 6
 ## The cave's own dressing shown at once (the pennant).
 const MAX_CAVE_DRESSING: int = 1
 
@@ -338,7 +338,8 @@ func test_every_age_after_the_cave_draws_its_own_signature_building() -> void:
 		var back: Image = _back(era_order)
 		assert_ne(back.get_data(), cave.get_data(), "%s's landmark is not the cave's cliff" % age)
 		for frame: int in WorldLayout.FIRE_FRAMES:
-			var fire_path: String = WorldLayout.piece_path(WorldLayout.fire_frame_name(frame), era_order)
+			var frame_name: StringName = WorldLayout.fire_frame_name(frame)
+			var fire_path: String = WorldLayout.piece_path(frame_name, era_order)
 			assert_true(fire_path.contains("/%s/" % age), "%s has its own fire pit %d" % [age, frame])
 
 
@@ -385,7 +386,7 @@ func test_the_mammoth_is_the_cave_ages_alone() -> void:
 ## The Bloomery stands against the landmark's flank from x 73, so a later age's building ends before it.
 func test_the_signature_leaves_the_flank_to_the_bloomery() -> void:
 	var bloomery_left: int = WorldLayout.BUILDINGS[&"bloomery"]["cx"] - 12
-	for era_order: int in [3, 4, 5]:
+	for era_order: int in [3, 4, 5, 6]:
 		var back: Image = _back(era_order)
 		var right: int = 0
 		for y: int in 62:

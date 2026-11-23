@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_mjcas"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_hfhx1"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_nhlkh"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_mt7nn"]
+
+[sub_resource type="Resource" id="Resource_2q4p0"]
+script = ExtResource("2_hfhx1")
+kind = 1
+key = &"renaissance_common_measure_path_circuit_1"
+
+[sub_resource type="Resource" id="Resource_4wn3f"]
+script = ExtResource("2_hfhx1")
+kind = 10
+key = &"common_measure"
+text = "A Common Measure"
+
+[sub_resource type="Resource" id="Resource_aythe"]
+script = ExtResource("2_hfhx1")
+text = "The rule came back with a tally for every town that had checked it."
+
+[sub_resource type="Resource" id="Resource_glpnl"]
+script = ExtResource("1_mjcas")
+id = &"renaissance_common_measure_path_circuit_1"
+label = "Send a marked rule around the circuit"
+effects = Array[ExtResource("2_hfhx1")]([SubResource("Resource_2q4p0"), SubResource("Resource_4wn3f"), SubResource("Resource_aythe")])
+
+[sub_resource type="Resource" id="Resource_36d1d"]
+script = ExtResource("2_hfhx1")
+kind = 1
+key = &"renaissance_common_measure_path_circuit_3"
+
+[sub_resource type="Resource" id="Resource_ib06s"]
+script = ExtResource("2_hfhx1")
+kind = 10
+key = &"common_measure"
+text = "A Common Measure"
+
+[sub_resource type="Resource" id="Resource_abntf"]
+script = ExtResource("2_hfhx1")
+text = "The makers laid the rules side by side and marked where they agreed."
+
+[sub_resource type="Resource" id="Resource_apa4c"]
+script = ExtResource("1_mjcas")
+id = &"renaissance_common_measure_path_circuit_3"
+label = "Ask each town to send its measure"
+effects = Array[ExtResource("2_hfhx1")]([SubResource("Resource_36d1d"), SubResource("Resource_ib06s"), SubResource("Resource_abntf")])
+
+[sub_resource type="Resource" id="Resource_t1l25"]
+script = ExtResource("3_nhlkh")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_7efi8"]
+script = ExtResource("3_nhlkh")
+kind = 11
+amount = 72
+
+[sub_resource type="Resource" id="Resource_qbqma"]
+script = ExtResource("3_nhlkh")
+kind = 9
+key = &"common_measure"
+negate = true
+
+[sub_resource type="Resource" id="Resource_7b6b3"]
+script = ExtResource("3_nhlkh")
+key = &"path_circuit"
+
+[resource]
+script = ExtResource("4_mt7nn")
+id = &"renaissance_common_measure_path_circuit"
+title = "A Common Measure"
+body = "The charter gives the towns a shared measure. Where should they keep a copy of it?"
+category = &"settlement"
+requires = Array[ExtResource("3_nhlkh")]([SubResource("Resource_t1l25"), SubResource("Resource_7efi8"), SubResource("Resource_qbqma"), SubResource("Resource_7b6b3")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_mjcas")]([SubResource("Resource_glpnl"), SubResource("Resource_apa4c")])

@@ -8,7 +8,9 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## Art folders by era order. A piece is found by looking from the current age back to the first, so
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
-const ERA_DIRS: Array[String] = ["cave", "settled", "bronze", "iron", "classical", "medieval"]
+const ERA_DIRS: Array[String] = [
+	"cave", "settled", "bronze", "iron", "classical", "medieval", "renaissance",
+]
 ## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
 ## Role overlays (an apron, a pack) drawn over any villager, one sheet per profession.

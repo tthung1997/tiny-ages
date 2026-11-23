@@ -406,3 +406,90 @@ for (name in medieval) {
   IMG.putImageData(medieval[name].d);
   SPR.saveAs(DIR + 'game/assets/world/medieval/' + name + '.png');
 }
+
+var paper = '#fff0c5', fold = '#cdb887', ink = '#526c86';
+function pageBoard(b, map) {
+  b.rect(0, 1, 13, 11, OAKD);
+  b.rect(1, 0, 11, 10, paper);
+  if (map) {
+    b.rect(1, 1, 3, 8, '#8abdcf'); b.line(4, 1, 9, 8, '#558bbe', 2);
+    b.line(10, 3, 4, 8, '#a47a4e', 1); b.rect(7, 2, 4, 2, '#799767');
+  } else {
+    b.rect(2, 2, 8, 2, fold); b.rect(3, 5, 7, 1, ink); b.rect(3, 7, 4, 1, ink);
+  }
+}
+
+var renaissance = {
+  print_sheets: layerOf([obj(13, 12, 12, 62, function (b) { pageBoard(b, false); })]),
+  wayfinder_map: layerOf([obj(13, 12, 12, 62, function (b) { pageBoard(b, true); })]),
+  town_rule: layerOf([obj(16, 8, 58, 61, function (b) {
+    b.rect(0, 2, 16, 6, OAKD); b.rect(1, 0, 14, 6, '#e6b95e');
+    for (var x = 2; x < 15; x += 3) b.rect(x, 1, 1, 3, OAKD);
+  })]),
+  observations_board: layerOf([obj(16, 12, 58, 62, function (b) {
+    b.rect(0, 0, 16, 12, OAKD);
+    b.rect(1, 2, 6, 8, paper); b.rect(9, 1, 6, 9, '#9bbac6');
+    b.line(2, 8, 5, 4, ink, 1); b.line(10, 6, 14, 4, ink, 1);
+  })]),
+  map_house: layerOf([obj(26, 29, 82, 66, function (b) {
+    b.rect(2, 12, 22, 16, '#ebceaa'); b.rect(20, 12, 4, 16, '#bb9b80');
+    b.rect(19, 1, 4, 10, '#9d7466'); b.rect(18, 1, 6, 2, '#c19b86');
+    roof(b, 4, 13, 8, 15, 0, 25, function (x, y, t, left, right) {
+      var c = x < 17 ? '#bd775b' : '#96584b';
+      if (left || t === 0) c = '#e2a480';
+      else if (right || t === 1 || y % 3 === 0) c = '#834c41';
+      b.px(x, y, c);
+    });
+    b.rect(2, 14, 22, 1, '#b7967a');
+    b.rect(4, 16, 12, 10, '#6b5044'); b.rect(5, 17, 10, 8, '#d6a36a');
+    b.rect(6, 18, 8, 6, paper); b.rect(7, 19, 2, 4, '#6b9ea8');
+    b.line(9, 22, 13, 19, '#968358', 1); b.px(12, 22, '#719472');
+    b.rect(3, 17, 2, 7, '#618077'); b.rect(15, 17, 2, 7, '#46685f');
+    b.rect(4, 25, 12, 1, OAKH);
+    b.rect(17, 18, 6, 10, '#d3b18d'); b.rect(18, 19, 4, 9, DARK);
+    b.rect(18, 21, 3, 7, '#775544'); b.px(20, 24, '#ebbc79');
+    b.rect(2, 27, 22, 2, '#a99481'); b.rect(17, 28, 6, 1, '#e3c9ad');
+  })]),
+  building_hut: layerOf([obj(34, 24, 268, 71, function (b) {
+    stonehouse(b);
+    b.rect(1, 9, 32, 5, '#397580'); b.rect(1, 9, 32, 1, '#83b5b6');
+    b.rect(3, 6, 28, 4, '#4a8b95'); b.rect(7, 3, 20, 4, '#4f96a1');
+    b.rect(12, 1, 11, 3, '#67a7ae'); b.rect(9, 6, 6, 6, '#e4c799');
+    b.rect(10, 7, 4, 4, '#3d5361'); b.rect(11, 7, 1, 4, '#bc9e73');
+    b.rect(23, 17, 8, 3, '#49745e');
+    b.rect(24, 16, 6, 1, '#daa48b'); b.rect(23, 19, 8, 2, OAKL);
+  }, { sh: 14 })]),
+  building_granary: layerOf([obj(26, 30, 234, 67, function (b) {
+    b.rect(2, 10, 22, 13, '#dbb77e'); b.rect(19, 10, 5, 13, '#aa7d57');
+    b.rect(2, 12, 22, 2, '#8d603e');
+    for (var x = 5; x < 23; x += 4) b.rect(x, 14, 1, 8, '#bc925e');
+    roof(b, 2, 11, 9, 15, 0, 25, function (px, y, t, left, right) {
+      var c = px < 14 ? '#538c97' : '#376774';
+      if (left || y === 2) c = '#8fbcb9';
+      else if (right || y === 11 || y % 3 === 1) c = '#324e60';
+      b.px(px, y, c);
+    });
+    b.rect(2, 22, 22, 2, OAKD); b.rect(2, 22, 22, 1, OAKH);
+    b.rect(3, 24, 4, 5, '#9f9181'); b.rect(20, 24, 3, 5, '#948675');
+    b.rect(3, 25, 4, 1, '#d9c4a5'); b.rect(20, 25, 3, 1, '#c4b192');
+    b.rect(2, 28, 6, 2, '#c8bca3'); b.rect(19, 28, 5, 2, '#c8bca3');
+    b.rect(8, 13, 10, 10, OAKD); b.rect(9, 14, 7, 8, '#ae7545');
+    b.line(9, 21, 15, 15, '#724632', 2); b.px(15, 19, '#e8bc67');
+    b.rect(4, 16, 3, 2, OAKD); b.rect(20, 16, 3, 2, OAKD);
+    b.rect(9, 23, 8, 2, '#b28359'); b.rect(8, 25, 10, 2, '#795943');
+    b.rect(7, 27, 12, 2, '#b39a76'); b.rect(7, 28, 12, 1, '#795943');
+  })]),
+  building_quay: layerOf([obj(40, 24, 338, 72, function (b) {
+    b.rect(0, 17, 40, 4, '#a99880'); b.rect(0, 17, 40, 1, '#eee1c5');
+    for (var x = 2; x < 39; x += 9) b.rect(x, 21, 3, 3, '#777572');
+    b.rect(7, 10, 2, 7, OAKL); b.rect(25, 10, 2, 7, OAK);
+    b.rect(9, 14, 15, 2, OAKH); b.rect(12, 12, 6, 2, '#ebd39c');
+    awning(b, 5, 7, 24, ['#96c0bf', '#4b8794', '#304f5d']);
+    b.rect(6, 5, 22, 2, '#407682'); b.rect(9, 3, 16, 2, '#6fa8af');
+    b.rect(35, 10, 2, 7, OAKD); b.rect(34, 8, 4, 3, '#e9b763');
+  })])
+};
+for (name in renaissance) {
+  IMG.putImageData(renaissance[name].d);
+  SPR.saveAs(DIR + 'game/assets/world/renaissance/' + name + '.png');
+}

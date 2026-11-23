@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_1pqki"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_c7gpc"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_xp0yh"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_jrx0j"]
+
+[sub_resource type="Resource" id="Resource_pq75w"]
+script = ExtResource("2_c7gpc")
+kind = 1
+key = &"renaissance_common_measure_common_1"
+
+[sub_resource type="Resource" id="Resource_lcmhs"]
+script = ExtResource("2_c7gpc")
+kind = 10
+key = &"common_measure"
+text = "A Common Measure"
+
+[sub_resource type="Resource" id="Resource_s4tym"]
+script = ExtResource("2_c7gpc")
+text = "A visitor checked a bolt of cloth against the rule without asking whose it was."
+
+[sub_resource type="Resource" id="Resource_h157x"]
+script = ExtResource("1_1pqki")
+id = &"renaissance_common_measure_common_1"
+label = "Fix a marked rule at the arcade"
+effects = Array[ExtResource("2_c7gpc")]([SubResource("Resource_pq75w"), SubResource("Resource_lcmhs"), SubResource("Resource_s4tym")])
+
+[sub_resource type="Resource" id="Resource_p547n"]
+script = ExtResource("2_c7gpc")
+kind = 1
+key = &"renaissance_common_measure_common_3"
+
+[sub_resource type="Resource" id="Resource_etd8a"]
+script = ExtResource("2_c7gpc")
+kind = 10
+key = &"common_measure"
+text = "A Common Measure"
+
+[sub_resource type="Resource" id="Resource_tl8h8"]
+script = ExtResource("2_c7gpc")
+text = "The apprentices checked the loan rules against one another before setting out."
+
+[sub_resource type="Resource" id="Resource_kq3qk"]
+script = ExtResource("1_1pqki")
+id = &"renaissance_common_measure_common_3"
+label = "Keep marked rules on the loan bench"
+effects = Array[ExtResource("2_c7gpc")]([SubResource("Resource_p547n"), SubResource("Resource_etd8a"), SubResource("Resource_tl8h8")])
+
+[sub_resource type="Resource" id="Resource_24p17"]
+script = ExtResource("3_xp0yh")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_7cdty"]
+script = ExtResource("3_xp0yh")
+kind = 11
+amount = 108
+
+[sub_resource type="Resource" id="Resource_ofkjp"]
+script = ExtResource("3_xp0yh")
+kind = 9
+key = &"common_measure"
+negate = true
+
+[resource]
+script = ExtResource("4_jrx0j")
+id = &"renaissance_common_measure_common"
+title = "A Common Measure"
+body = "The charter gives the towns a shared measure. Where should they keep a copy of it?"
+category = &"settlement"
+requires = Array[ExtResource("3_xp0yh")]([SubResource("Resource_24p17"), SubResource("Resource_7cdty"), SubResource("Resource_ofkjp")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_1pqki")]([SubResource("Resource_h157x"), SubResource("Resource_kq3qk")])

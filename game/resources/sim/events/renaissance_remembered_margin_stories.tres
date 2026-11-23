@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_8lcij"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_urc2i"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_rlwlc"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_tk0u1"]
+
+[sub_resource type="Resource" id="Resource_g7do8"]
+script = ExtResource("2_urc2i")
+text = "The old line in the margin turned up on a sheet of songs."
+
+[sub_resource type="Resource" id="Resource_h81pt"]
+script = ExtResource("3_rlwlc")
+kind = 8
+amount = 6
+
+[sub_resource type="Resource" id="Resource_w6sh0"]
+script = ExtResource("3_rlwlc")
+key = &"margin_stories"
+
+[resource]
+script = ExtResource("4_tk0u1")
+id = &"renaissance_remembered_margin_stories"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_rlwlc")]([SubResource("Resource_h81pt"), SubResource("Resource_w6sh0")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_urc2i")]([SubResource("Resource_g7do8")])

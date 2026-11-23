@@ -277,24 +277,75 @@ function stewardshipHall(b) {
   b.px(9, 43, woadL); b.px(13, 43, plaster);
 }
 
-// ---- Classical: a bronze brazier in place of the camp fire (16x14, foot row 78) ---------------------------------
-function brazier(b, frame) {
-  var fl = FLAMES[frame || 0], i, BD = '#6e4a1a';
+function printHall(b) {
+  var plaster = '#e7c8a3', limestone = '#f1dbb7', shade = '#a68a79';
+  var stone = ['#c9ad91', '#d9bba0', '#e0c6ab'], mortar = '#ae907e';
+  var recess = '#39323c', teal = '#46716d', amber = '#edb978', gold = '#ffe0a2';
+
+  b.rect(5, 14, 63, 37, plaster);
+  b.rect(63, 14, 5, 37, shade);
+  courses(b, 5, 33, 58, 18, stone, mortar, 9);
+  roof(b, 6, 14, 13, 55, 2, 70, function (x, y, t, left, right) {
+    var c = x >= 56 ? '#995a4a' : '#be7556';
+    if (left || t === 0) c = '#e3a078';
+    else if (right || t === 1 || y === 10) c = '#81493f';
+    else if ((x + y * 2) % 8 === 0) c = '#a8624a';
+    b.px(x, y, c);
+  });
+  b.rect(3, 14, 67, 2, limestone); b.rect(5, 16, 63, 1, shade);
+  b.rect(5, 31, 63, 1, limestone); b.rect(5, 32, 63, 1, shade);
+
+  // Three upper bays line up with the shopfronts and entrance below.
+  for (var x = 13; x <= 57; x += 22) {
+    b.rect(x - 5, 20, 11, 10, limestone); b.rect(x - 3, 18, 7, 2, limestone);
+    b.rect(x - 3, 21, 7, 7, recess); b.rect(x - 2, 20, 5, 2, recess);
+    b.rect(x - 2, 22, 5, 5, amber); b.rect(x - 2, 22, 2, 2, gold);
+    b.rect(x, 22, 1, 5, '#7e5547'); b.rect(x - 5, 22, 2, 6, teal);
+    b.rect(x + 4, 22, 2, 6, '#597d73'); b.rect(x - 5, 28, 11, 1, shade);
+  }
+  for (var pier = 23; pier <= 45; pier += 22) {
+    b.rect(pier, 17, 2, 14, limestone); b.rect(pier + 2, 18, 1, 12, shade);
+  }
+
+  // The shop windows sit behind the existing milestone display sprites.
+  b.rect(5, 37, 15, 13, limestone); b.rect(48, 37, 19, 13, limestone);
+  b.rect(6, 38, 13, 10, recess); b.rect(49, 38, 17, 10, recess);
+  b.rect(7, 39, 11, 8, '#bd855b'); b.rect(50, 39, 15, 8, '#bd855b');
+  b.rect(7, 39, 11, 2, amber); b.rect(50, 39, 15, 2, amber);
+  b.rect(12, 39, 1, 8, OAK); b.rect(57, 39, 1, 8, OAK);
+  b.rect(5, 48, 15, 1, teal); b.rect(48, 48, 19, 1, teal);
+  b.ell(34, 41, 12, 8, limestone); b.rect(22, 41, 25, 10, limestone);
+  b.ell(34, 41, 8, 5, recess); b.rect(26, 41, 17, 11, recess);
+  b.rect(26, 41, 2, 10, '#72574e'); b.rect(41, 41, 2, 10, '#604552');
+  b.px(34, 34, '#fff0cc');
+  b.rect(23, 51, 23, 1, limestone); b.rect(23, 52, 23, 1, shade);
+  b.rect(20, 53, 29, 1, '#c0a28b');
+}
+
+// ---- Classical onwards: bronze brazier (16x14, foot row 78) -----------------
+function brazier(b, frame, renaissance) {
+  var fl = FLAMES[frame || 0], i, BD = renaissance ? '#354956' : '#6e4a1a';
   b.line(4, 13, 7, 9, BD, 1); b.line(12, 13, 9, 9, BD, 1); b.rect(8, 9, 1, 5, BD); b.rect(5, 13, 7, 1, BD);
   b.tri(fl.cx, fl.top, fl.h - 2, 3, '#f59e2b', '#e5732b'); b.tri(fl.ix, 3, 4, 1, '#ffe27a', '#ffe27a');
   for (i = 0; i < fl.spark.length; i++) b.px(fl.spark[i][0], Math.max(0, fl.spark[i][1] - 1), fl.spark[i][2]);
-  b.ell(8, 8, 5.5, 2.4, BRONZE_D); b.ell(8, 7.4, 5.2, 1.8, BRONZE); b.rect(4, 6, 9, 1, BRONZE_L);
+  b.ell(8, 8, 5.5, 2.4, renaissance ? '#40626b' : BRONZE_D);
+  b.ell(8, 7.4, 5.2, 1.8, renaissance ? '#709096' : BRONZE);
+  b.rect(4, 6, 9, 1, renaissance ? '#aad0cb' : BRONZE_L);
   b.ell(8, 7, 3.6, 1, '#3a2a22'); b.rect(6, 7, 5, 1, '#e5732b'); b.px(8, 7, '#ffe27a');
 }
 function pineOnly() { return [obj(16, 26, 204, 65, pine, { sh: 6 })]; }
 
 function flameFn(frame, kind) {
-  return function (b) { (kind == 'classical' || kind == 'medieval' ? brazier : firepit)(b, frame); };
+  return function (b) {
+    if (kind == 'classical' || kind == 'medieval' || kind == 'renaissance') {
+      brazier(b, frame, kind == 'renaissance');
+    } else firepit(b, frame);
+  };
 }
 
 var AGES = [
   ['settled', longhouse], ['bronze', gatehouse], ['iron', hillhall], ['classical', civichall],
-  ['medieval', stewardshipHall]
+  ['medieval', stewardshipHall], ['renaissance', printHall]
 ];
 var ai, ap, i, back, count = 0;
 for (ai = 0; ai < AGES.length; ai++) {

@@ -3,7 +3,7 @@ extends McpTestSuite
 ## piece goes in the free space nearest the hall and keeps it, restricted ground takes only what
 ## belongs there, a full lane hides the lowest rank, and none of it touches the simulation.
 
-const LAST_ERA: int = 5
+const LAST_ERA: int = 6
 const SAVE_PATH: String = "user://test_lane_save.tres"
 ## The first age each building can stand in (the sim gates them by milestone; the view does not).
 const BUILDING_ERA: Dictionary = {
@@ -55,6 +55,56 @@ func test_the_medieval_scriptorium_stays_home_and_travellers_hall_waits_for_a_cr
 	assert_true(layout.is_placed(&"east_theatre"))
 	assert_true(layout.center_x(&"east_theatre") >= float(LaneSpaces.FAR_BANK_FROM))
 	assert_true(layout.center_x(&"scriptorium") < float(LaneSpaces.RIVER_FROM))
+
+
+func test_renaissance_keeps_medieval_buildings_and_adds_a_home_bank_map_house() -> void:
+	var world: WorldState = _world(5, false)
+	world.achievements.append_array([
+		&"the_square", &"guild_bench", &"common_book", &"fair_on_the_road",
+	])
+	for id: StringName in [&"hut", &"granary", &"quay"]:
+		_build(world, id)
+	var medieval: LaneLayout = LanePlacer.place(world)
+	world.era_order = 6
+	assert_false(LanePlacer.place(world).is_placed(&"map_house"))
+	world.achievements.append_array([&"wayfinder_sheet", &"open_demonstration", &"fair_of_pages"])
+	var renaissance: LaneLayout = LanePlacer.place(world)
+	for piece: StringName in [&"scriptorium", &"guild_arcade_fair"]:
+		assert_true(SceneProps.is_shown(piece, world))
+		var key: StringName = LanePieces.key_of(piece)
+		assert_true(renaissance.is_placed(key))
+		assert_eq(renaissance.starts.get(key), medieval.starts.get(key))
+	assert_true(renaissance.is_placed(&"map_house"))
+	assert_true(renaissance.center_x(&"map_house") < float(LaneSpaces.RIVER_FROM))
+	assert_false(SceneProps.is_shown(&"east_travellers_hall", world))
+
+
+func test_map_house_does_not_displace_essential_buildings_in_a_full_village() -> void:
+	var world: WorldState = _full_world(5, false)
+	var medieval: LaneLayout = LanePlacer.place(world)
+	world.era_order = 6
+	world.achievements.append(&"wayfinder_sheet")
+	var renaissance: LaneLayout = LanePlacer.place(world)
+	for key: StringName in medieval.starts:
+		if LanePieces.is_essential(key) and LanePieces.lane_of(key) == BACK:
+			assert_eq(renaissance.starts.get(key), medieval.starts.get(key), String(key))
+
+
+func test_older_building_redraws_keep_their_saved_spaces() -> void:
+	var world: WorldState = _world(5, false)
+	for id: StringName in [&"hut", &"granary", &"quay"]:
+		_build(world, id)
+	var medieval: LaneLayout = LanePlacer.place(world)
+	world.era_order = 6
+	var renaissance: LaneLayout = LanePlacer.place(world)
+	for id: StringName in [&"hut", &"granary", &"quay"]:
+		assert_true(renaissance.is_placed(id))
+		assert_eq(renaissance.starts.get(id), medieval.starts.get(id))
+		var layer: StringName = StringName("building_%s" % id)
+		assert_true(WorldLayout.piece_path(layer, 6).contains("/renaissance/"))
+	var quay_art: Rect2i = LanePieces.art_rect(&"building_quay", 6)
+	var quay_edge: float = renaissance.sprite_x(&"quay", quay_art) + float(quay_art.position.x)
+	assert_true(absf(quay_edge - 317.0) <= 3.0, "The covered quay still meets the bank")
 
 
 func teardown() -> void:
