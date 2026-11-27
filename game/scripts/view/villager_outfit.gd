@@ -17,10 +17,13 @@ const HOOD: StringName = &"hood"
 const GUILD: StringName = &"guild"
 const DOUBLET: StringName = &"doublet"
 const SHOW_COAT: StringName = &"show_coat"
+const WAISTCOAT: StringName = &"waistcoat"
+const WORK_COAT: StringName = &"work_coat"
 
 ## Every outfit, simplest first: each falls back to the one before it if its art is missing.
 const ORDER: Array[StringName] = [
 	FUR, FIELD, WOVEN, TOWN, BRONZE, CHECKED, IRON, LINEN, CIVIC, HOOD, GUILD, DOUBLET, SHOW_COAT,
+	WAISTCOAT, WORK_COAT,
 ]
 
 const SETTLED_ERA: int = 1
@@ -29,6 +32,7 @@ const IRON_ERA: int = 3
 const CLASSICAL_ERA: int = 4
 const MEDIEVAL_ERA: int = 5
 const RENAISSANCE_ERA: int = 6
+const ENLIGHTENMENT_ERA: int = 7
 const WOVEN_ACHIEVEMENT: StringName = &"woven_cloth"
 const BRONZE_ACHIEVEMENT: StringName = &"first_casting"
 const IRON_ACHIEVEMENT: StringName = &"first_bloom"
@@ -50,10 +54,13 @@ const DIRS: Dictionary = {
 	GUILD: "res://assets/world/medieval/villagers/guild/",
 	DOUBLET: "res://assets/world/renaissance/villagers/doublet/",
 	SHOW_COAT: "res://assets/world/renaissance/villagers/show_coat/",
+	WAISTCOAT: "res://assets/world/enlightenment/villagers/waistcoat/",
+	WORK_COAT: "res://assets/world/enlightenment/villagers/work_coat/",
 }
 
 
-## The finest outfit the world has earned: a doublet or show coat in the Renaissance;
+## The finest outfit the world has earned: long coats in the Enlightenment;
+## a doublet or show coat in the Renaissance;
 ## the hood or guild cape in the Medieval Age; a mantle
 ## once the Square is earned in the
 ## Classical Age, linen from the turn of that age, iron fittings once the first bloom is earned in
@@ -62,6 +69,8 @@ const DIRS: Dictionary = {
 ## the cloth is woven in the Settled Age or later, field clothes from the turn of the Settled Age,
 ## else furs.
 static func for_world(world: WorldState) -> StringName:
+	if world.era_order >= ENLIGHTENMENT_ERA:
+		return WORK_COAT if world.has_achievement(&"method_in_other_hands") else WAISTCOAT
 	if world.era_order >= RENAISSANCE_ERA:
 		return SHOW_COAT if world.has_achievement(&"open_demonstration") else DOUBLET
 	if world.era_order >= MEDIEVAL_ERA:

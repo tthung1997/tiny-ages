@@ -9,7 +9,7 @@ const ASSET_ROOT: String = "res://assets/world/"
 ## a later age can redraw one slot (the hut, the field) and leave everything else as it was
 ## (docs/ages.md V10: the world accumulates, and a slot is upgraded in place).
 const ERA_DIRS: Array[String] = [
-	"cave", "settled", "bronze", "iron", "classical", "medieval", "renaissance",
+	"cave", "settled", "bronze", "iron", "classical", "medieval", "renaissance", "enlightenment",
 ]
 ## The fur sheets, the first outfit; the others are in `VillagerOutfit.DIRS`.
 const VILLAGER_DIR: String = "res://assets/world/cave/villagers/"
@@ -56,7 +56,7 @@ const PLACES: Dictionary = {
 	&"cave_yard": Rect2(88, 62, 176, 19),
 	&"river_bank": Rect2(264, 56, 120, 25),
 	&"west_market": Rect2(-384, 36, 56, 45),
-	&"west_village": Rect2(-328, 36, 328, 45),
+	&"west_village": Rect2(-328, 27, 328, 54),
 	&"east_shore": Rect2(384, 40, 384, 41),
 }
 

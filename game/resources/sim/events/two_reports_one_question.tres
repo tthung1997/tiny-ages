@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_um6a5"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_3t6by"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_pi543"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_7pdy0"]
+
+[sub_resource type="Resource" id="Resource_ssbpa"]
+script = ExtResource("2_3t6by")
+kind = 1
+key = &"repeat_here"
+
+[sub_resource type="Resource" id="Resource_wocgi"]
+script = ExtResource("2_3t6by")
+kind = 12
+key = &"enlightenment"
+
+[sub_resource type="Resource" id="Resource_tbhkt"]
+script = ExtResource("2_3t6by")
+text = "A fresh sheet went up beside the old one. There was room to try again."
+
+[sub_resource type="Resource" id="Resource_1122c"]
+script = ExtResource("1_um6a5")
+id = &"repeat_here"
+label = "Repeat the observation here"
+effects = Array[ExtResource("2_3t6by")]([SubResource("Resource_ssbpa"), SubResource("Resource_wocgi"), SubResource("Resource_tbhkt")])
+
+[sub_resource type="Resource" id="Resource_ljogs"]
+script = ExtResource("2_3t6by")
+kind = 1
+key = &"ask_neighbours"
+
+[sub_resource type="Resource" id="Resource_5twoc"]
+script = ExtResource("2_3t6by")
+kind = 12
+key = &"enlightenment"
+
+[sub_resource type="Resource" id="Resource_r11bn"]
+script = ExtResource("2_3t6by")
+text = "A copy of the question went out by the west road with space for a reply."
+
+[sub_resource type="Resource" id="Resource_ihkim"]
+script = ExtResource("1_um6a5")
+id = &"ask_neighbours"
+label = "Ask a neighbouring town to try it"
+effects = Array[ExtResource("2_3t6by")]([SubResource("Resource_ljogs"), SubResource("Resource_5twoc"), SubResource("Resource_r11bn")])
+
+[resource]
+script = ExtResource("4_7pdy0")
+id = &"two_reports_one_question"
+title = "Two reports, one question"
+body = "The towns' notebooks have come back. Two careful reports disagree. Where should the next observation be made?"
+category = &"settlement"
+choices = Array[ExtResource("1_um6a5")]([SubResource("Resource_1122c"), SubResource("Resource_ihkim")])

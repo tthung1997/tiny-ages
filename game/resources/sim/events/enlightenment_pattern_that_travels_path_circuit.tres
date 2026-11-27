@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_4rrhi"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_ovp0q"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_gcf6o"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_pcjl1"]
+
+[sub_resource type="Resource" id="Resource_i8q6g"]
+script = ExtResource("2_ovp0q")
+kind = 1
+key = &"enlightenment_pattern_that_travels_path_circuit_1"
+
+[sub_resource type="Resource" id="Resource_aqfej"]
+script = ExtResource("2_ovp0q")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_tcu6x"]
+script = ExtResource("2_ovp0q")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_h3bei"]
+script = ExtResource("2_ovp0q")
+text = "A jig came back by the fair road. The sample fitted without being pared down."
+
+[sub_resource type="Resource" id="Resource_g3rp2"]
+script = ExtResource("1_4rrhi")
+id = &"enlightenment_pattern_that_travels_path_circuit_1"
+label = "Send the pattern round the fair circuit"
+effects = Array[ExtResource("2_ovp0q")]([SubResource("Resource_i8q6g"), SubResource("Resource_aqfej"), SubResource("Resource_tcu6x"), SubResource("Resource_h3bei")])
+
+[sub_resource type="Resource" id="Resource_wc4gx"]
+script = ExtResource("2_ovp0q")
+kind = 1
+key = &"enlightenment_pattern_that_travels_path_circuit_3"
+
+[sub_resource type="Resource" id="Resource_uv2d8"]
+script = ExtResource("2_ovp0q")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_l2qfr"]
+script = ExtResource("2_ovp0q")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_m3ot4"]
+script = ExtResource("2_ovp0q")
+text = "The visiting jig worked like the first, though no two hands had cut its wood."
+
+[sub_resource type="Resource" id="Resource_jh00t"]
+script = ExtResource("1_4rrhi")
+id = &"enlightenment_pattern_that_travels_path_circuit_3"
+label = "Have a maker bring back a jig from the next fair"
+effects = Array[ExtResource("2_ovp0q")]([SubResource("Resource_wc4gx"), SubResource("Resource_uv2d8"), SubResource("Resource_l2qfr"), SubResource("Resource_m3ot4")])
+
+[sub_resource type="Resource" id="Resource_doehk"]
+script = ExtResource("3_gcf6o")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_apfjg"]
+script = ExtResource("3_gcf6o")
+kind = 11
+amount = 288
+
+[sub_resource type="Resource" id="Resource_qbv38"]
+script = ExtResource("3_gcf6o")
+kind = 9
+key = &"pattern_that_travels"
+negate = true
+
+[sub_resource type="Resource" id="Resource_boemu"]
+script = ExtResource("3_gcf6o")
+kind = 9
+key = &"correction_in_the_open"
+
+[sub_resource type="Resource" id="Resource_q4x1b"]
+script = ExtResource("3_gcf6o")
+key = &"path_circuit"
+
+[resource]
+script = ExtResource("4_pcjl1")
+id = &"enlightenment_pattern_that_travels_path_circuit"
+title = "A Pattern That Travels"
+body = "A checked pattern shows how to make a jig that holds each piece in the same place. Who should try the pattern without its maker there?"
+category = &"settlement"
+requires = Array[ExtResource("3_gcf6o")]([SubResource("Resource_doehk"), SubResource("Resource_apfjg"), SubResource("Resource_qbv38"), SubResource("Resource_boemu"), SubResource("Resource_q4x1b")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_4rrhi")]([SubResource("Resource_g3rp2"), SubResource("Resource_jh00t")])

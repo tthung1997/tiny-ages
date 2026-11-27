@@ -29417,12 +29417,1143 @@ min_days = 4.0
 max_days = 6.0
 food_multiplier = 0.6
 
+[sub_resource type="Resource" id="Resource_enlightenment_17"]
+script = ExtResource("2_0otko")
+id = &"enlightenment"
+display_name = "Enlightenment Age"
+order = 7
+description = "Shared questions, fair trials, and patterns other hands can use."
+intro_text = "The two reports stayed pinned side by side. The town opened an Observatory so anyone could see what had been tried, and try it again."
+housing = 14
+max_villagers = 14
+food_need_scale = 1.7
+food_yield_scale = 1.7
+wood_yield_scale = 1.5
+required_achievements = Array[StringName]([&"first_impression", &"common_measure", &"wayfinder_sheet", &"open_demonstration", &"fair_of_pages", &"notebook_of_questions"])
+min_ticks_in_previous_era = 8640
+turn_event = &"two_reports_one_question"
+
+[sub_resource type="Resource" id="Resource_ssbpa"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"repeat_here"
+
+[sub_resource type="Resource" id="Resource_wocgi"]
+script = ExtResource("5_x2sw1")
+kind = 12
+key = &"enlightenment"
+
+[sub_resource type="Resource" id="Resource_tbhkt"]
+script = ExtResource("5_x2sw1")
+text = "A fresh sheet went up beside the old one. There was room to try again."
+
+[sub_resource type="Resource" id="Resource_1122c"]
+script = ExtResource("4_euihr")
+id = &"repeat_here"
+label = "Repeat the observation here"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ssbpa"), SubResource("Resource_wocgi"), SubResource("Resource_tbhkt")])
+
+[sub_resource type="Resource" id="Resource_ljogs"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"ask_neighbours"
+
+[sub_resource type="Resource" id="Resource_5twoc"]
+script = ExtResource("5_x2sw1")
+kind = 12
+key = &"enlightenment"
+
+[sub_resource type="Resource" id="Resource_r11bn"]
+script = ExtResource("5_x2sw1")
+text = "A copy of the question went out by the west road with space for a reply."
+
+[sub_resource type="Resource" id="Resource_ihkim"]
+script = ExtResource("4_euihr")
+id = &"ask_neighbours"
+label = "Ask a neighbouring town to try it"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ljogs"), SubResource("Resource_5twoc"), SubResource("Resource_r11bn")])
+
+[sub_resource type="Resource" id="Resource_enlightenment_5104"]
+script = ExtResource("3_0wd41")
+id = &"two_reports_one_question"
+title = "Two reports, one question"
+body = "The towns' notebooks have come back. Two careful reports disagree. Where should the next observation be made?"
+category = &"settlement"
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_1122c"), SubResource("Resource_ihkim")])
+
+[sub_resource type="Resource" id="Resource_ys737"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_repeat_here_1"
+
+[sub_resource type="Resource" id="Resource_qrcgt"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_1slcs"]
+script = ExtResource("5_x2sw1")
+text = "The new sheet went up beside the old one with the standing place marked."
+
+[sub_resource type="Resource" id="Resource_mlv3h"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_repeat_here_1"
+label = "Look again from the same spot"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ys737"), SubResource("Resource_qrcgt"), SubResource("Resource_1slcs")])
+
+[sub_resource type="Resource" id="Resource_4m01n"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_repeat_here_3"
+
+[sub_resource type="Resource" id="Resource_vemwv"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_gm8uh"]
+script = ExtResource("5_x2sw1")
+text = "The second pair of eyes noticed what the first account had left out."
+
+[sub_resource type="Resource" id="Resource_mrsg8"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_repeat_here_3"
+label = "Ask a second neighbour here to look"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_4m01n"), SubResource("Resource_vemwv"), SubResource("Resource_gm8uh")])
+
+[sub_resource type="Resource" id="Resource_io5pu"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_uj7vx"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 24
+
+[sub_resource type="Resource" id="Resource_rbyxp"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"two_reports"
+negate = true
+
+[sub_resource type="Resource" id="Resource_4dii1"]
+script = ExtResource("6_xydym")
+key = &"repeat_here"
+
+[sub_resource type="Resource" id="Resource_enlightenment_5117"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_two_reports_repeat_here"
+title = "Two Reports Side by Side"
+body = "Two reports disagree. The towns will keep both on the board. How should they compare?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_io5pu"), SubResource("Resource_uj7vx"), SubResource("Resource_rbyxp"), SubResource("Resource_4dii1")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_mlv3h"), SubResource("Resource_mrsg8")])
+
+[sub_resource type="Resource" id="Resource_rbre1"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_ask_neighbours_1"
+
+[sub_resource type="Resource" id="Resource_c5tdm"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_w5een"]
+script = ExtResource("5_x2sw1")
+text = "The visitor put a finger on the map. Nobody at home had been standing there."
+
+[sub_resource type="Resource" id="Resource_mocnq"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_ask_neighbours_1"
+label = "Mark where the visiting report was made"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_rbre1"), SubResource("Resource_c5tdm"), SubResource("Resource_w5een")])
+
+[sub_resource type="Resource" id="Resource_01qv0"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_ask_neighbours_3"
+
+[sub_resource type="Resource" id="Resource_x2c47"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_mwvcy"]
+script = ExtResource("5_x2sw1")
+text = "The return sheet came with a date, and both reports stayed on the board."
+
+[sub_resource type="Resource" id="Resource_ka1ne"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_ask_neighbours_3"
+label = "Ask the neighbours to send the day as well"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_01qv0"), SubResource("Resource_x2c47"), SubResource("Resource_mwvcy")])
+
+[sub_resource type="Resource" id="Resource_wtlh0"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_7lk4n"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 24
+
+[sub_resource type="Resource" id="Resource_wujtc"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"two_reports"
+negate = true
+
+[sub_resource type="Resource" id="Resource_6j6xb"]
+script = ExtResource("6_xydym")
+key = &"ask_neighbours"
+
+[sub_resource type="Resource" id="Resource_enlightenment_5130"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_two_reports_ask_neighbours"
+title = "Two Reports Side by Side"
+body = "Two reports disagree. The towns will keep both on the board. How should they compare?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_wtlh0"), SubResource("Resource_7lk4n"), SubResource("Resource_wujtc"), SubResource("Resource_6j6xb")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_mocnq"), SubResource("Resource_ka1ne")])
+
+[sub_resource type="Resource" id="Resource_4wm31"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_common_1"
+
+[sub_resource type="Resource" id="Resource_iet3b"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_5k778"]
+script = ExtResource("5_x2sw1")
+text = "The towns marked both places rather than crossing out the smaller number."
+
+[sub_resource type="Resource" id="Resource_2bjq3"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_common_1"
+label = "Lay the reports out by place"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_4wm31"), SubResource("Resource_iet3b"), SubResource("Resource_5k778")])
+
+[sub_resource type="Resource" id="Resource_2kp6d"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_two_reports_common_3"
+
+[sub_resource type="Resource" id="Resource_au7fy"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_4avxs"]
+script = ExtResource("5_x2sw1")
+text = "The two dates made it clear that nobody had to have been wrong."
+
+[sub_resource type="Resource" id="Resource_ngju7"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_two_reports_common_3"
+label = "Lay the reports out by time"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_2kp6d"), SubResource("Resource_au7fy"), SubResource("Resource_4avxs")])
+
+[sub_resource type="Resource" id="Resource_8ipjf"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_vx51i"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 60
+
+[sub_resource type="Resource" id="Resource_b5ihp"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"two_reports"
+negate = true
+
+[sub_resource type="Resource" id="Resource_enlightenment_5142"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_two_reports_common"
+title = "Two Reports Side by Side"
+body = "Two reports disagree. The towns will keep both on the board. How should they compare?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_8ipjf"), SubResource("Resource_vx51i"), SubResource("Resource_b5ihp")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_2bjq3"), SubResource("Resource_ngju7")])
+
+[sub_resource type="Resource" id="Resource_r5g1b"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_rule_that_agrees_path_pages_1"
+
+[sub_resource type="Resource" id="Resource_y7vv8"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_vx3ii"]
+script = ExtResource("5_x2sw1")
+text = "A printed sketch showed that one maker had counted from the end of the wood."
+
+[sub_resource type="Resource" id="Resource_vo147"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_rule_that_agrees_path_pages_1"
+label = "Print where the reference starts"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_r5g1b"), SubResource("Resource_y7vv8"), SubResource("Resource_vx3ii")])
+
+[sub_resource type="Resource" id="Resource_evtki"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_rule_that_agrees_path_pages_3"
+
+[sub_resource type="Resource" id="Resource_tk6us"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_03ahf"]
+script = ExtResource("5_x2sw1")
+text = "An apprentice carried a sheet of matching marks out to the Instrument Shop."
+
+[sub_resource type="Resource" id="Resource_rc5qn"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_rule_that_agrees_path_pages_3"
+label = "Print the marks that should line up"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_evtki"), SubResource("Resource_tk6us"), SubResource("Resource_03ahf")])
+
+[sub_resource type="Resource" id="Resource_1k5pf"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_jr01a"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 72
+
+[sub_resource type="Resource" id="Resource_7o4cf"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"rule_that_agrees"
+negate = true
+
+[sub_resource type="Resource" id="Resource_6q73g"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"two_reports"
+
+[sub_resource type="Resource" id="Resource_silbw"]
+script = ExtResource("6_xydym")
+key = &"path_pages"
+
+[sub_resource type="Resource" id="Resource_enlightenment_5156"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_rule_that_agrees_path_pages"
+title = "A Rule That Agrees"
+body = "Two rules with the same markings give different readings. How shall they be checked?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_1k5pf"), SubResource("Resource_jr01a"), SubResource("Resource_7o4cf"), SubResource("Resource_6q73g"), SubResource("Resource_silbw")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_vo147"), SubResource("Resource_rc5qn")])
+
+[sub_resource type="Resource" id="Resource_diirl"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_rule_that_agrees_common_1"
+
+[sub_resource type="Resource" id="Resource_plc8t"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_k0egw"]
+script = ExtResource("5_x2sw1")
+text = "The Instrument Shop kept the reference on a shelf anyone could reach."
+
+[sub_resource type="Resource" id="Resource_lhd1d"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_rule_that_agrees_common_1"
+label = "Check both against the marked reference"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_diirl"), SubResource("Resource_plc8t"), SubResource("Resource_k0egw")])
+
+[sub_resource type="Resource" id="Resource_iugbt"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_rule_that_agrees_common_3"
+
+[sub_resource type="Resource" id="Resource_vco64"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_yvc6e"]
+script = ExtResource("5_x2sw1")
+text = "The checks agreed, and a spare marked rule went up at the Observatory."
+
+[sub_resource type="Resource" id="Resource_i2fiu"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_rule_that_agrees_common_3"
+label = "Swap rules and let another maker check"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_iugbt"), SubResource("Resource_vco64"), SubResource("Resource_yvc6e")])
+
+[sub_resource type="Resource" id="Resource_vlf4f"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_1mkl8"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 108
+
+[sub_resource type="Resource" id="Resource_vswxm"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"rule_that_agrees"
+negate = true
+
+[sub_resource type="Resource" id="Resource_gr8wy"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"two_reports"
+
+[sub_resource type="Resource" id="Resource_enlightenment_5169"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_rule_that_agrees_common"
+title = "A Rule That Agrees"
+body = "Two rules with the same markings give different readings. How shall they be checked?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_vlf4f"), SubResource("Resource_1mkl8"), SubResource("Resource_vswxm"), SubResource("Resource_gr8wy")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_lhd1d"), SubResource("Resource_i2fiu")])
+
+[sub_resource type="Resource" id="Resource_ikqrv"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_method_in_other_hands_guild_ribbon_1"
+
+[sub_resource type="Resource" id="Resource_hoqq7"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_4fhvd"]
+script = ExtResource("5_x2sw1")
+text = "The learner followed the drawing without once calling for the maker."
+
+[sub_resource type="Resource" id="Resource_ch0me"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_method_in_other_hands_guild_ribbon_1"
+label = "Draw the tools in ribbon order"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ikqrv"), SubResource("Resource_hoqq7"), SubResource("Resource_4fhvd")])
+
+[sub_resource type="Resource" id="Resource_d517s"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_method_in_other_hands_guild_ribbon_3"
+
+[sub_resource type="Resource" id="Resource_4564w"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_nqtda"]
+script = ExtResource("5_x2sw1")
+text = "The last ribbon came off the board when the learner finished the lesson."
+
+[sub_resource type="Resource" id="Resource_meeth"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_method_in_other_hands_guild_ribbon_3"
+label = "Write the steps beside the ribbon colours"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_d517s"), SubResource("Resource_4564w"), SubResource("Resource_nqtda")])
+
+[sub_resource type="Resource" id="Resource_oknfu"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_a4sfj"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 126
+
+[sub_resource type="Resource" id="Resource_c7uk1"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"method_in_other_hands"
+negate = true
+
+[sub_resource type="Resource" id="Resource_dho2y"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"rule_that_agrees"
+
+[sub_resource type="Resource" id="Resource_1mfyv"]
+script = ExtResource("6_xydym")
+key = &"guild_ribbon"
+
+[sub_resource type="Resource" id="Resource_enlightenment_5183"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_method_in_other_hands_guild_ribbon"
+title = "A Method in Other Hands"
+body = "Someone who missed the demonstration wants to try it. What should the makers hand on?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_oknfu"), SubResource("Resource_a4sfj"), SubResource("Resource_c7uk1"), SubResource("Resource_dho2y"), SubResource("Resource_1mfyv")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_ch0me"), SubResource("Resource_meeth")])
+
+[sub_resource type="Resource" id="Resource_hmabf"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_method_in_other_hands_common_1"
+
+[sub_resource type="Resource" id="Resource_3y81s"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_ma0mm"]
+script = ExtResource("5_x2sw1")
+text = "A learner followed the last drawing alone, then pinned the result beside it."
+
+[sub_resource type="Resource" id="Resource_4y0yd"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_method_in_other_hands_common_1"
+label = "Draw the steps in order"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_hmabf"), SubResource("Resource_3y81s"), SubResource("Resource_ma0mm")])
+
+[sub_resource type="Resource" id="Resource_ouido"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_method_in_other_hands_common_3"
+
+[sub_resource type="Resource" id="Resource_5nwmd"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_kcx3y"]
+script = ExtResource("5_x2sw1")
+text = "The learner made it to the last step without the person who wrote the page."
+
+[sub_resource type="Resource" id="Resource_1cu2q"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_method_in_other_hands_common_3"
+label = "Write down the steps in order"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_ouido"), SubResource("Resource_5nwmd"), SubResource("Resource_kcx3y")])
+
+[sub_resource type="Resource" id="Resource_5qrev"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_rudbg"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 162
+
+[sub_resource type="Resource" id="Resource_7u7vg"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"method_in_other_hands"
+negate = true
+
+[sub_resource type="Resource" id="Resource_k8upv"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"rule_that_agrees"
+
+[sub_resource type="Resource" id="Resource_o43js"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_method_in_other_hands_common"
+title = "A Method in Other Hands"
+body = "Someone who missed the demonstration wants to try it. What should the makers hand on?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_5qrev"), SubResource("Resource_rudbg"), SubResource("Resource_7u7vg"), SubResource("Resource_k8upv")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_4y0yd"), SubResource("Resource_1cu2q")])
+
+[sub_resource type="Resource" id="Resource_j75oj"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_a_fair_trial_margin_drawings_1"
+
+[sub_resource type="Resource" id="Resource_hdjpo"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"a_fair_trial"
+text = "A Fair Trial"
+
+[sub_resource type="Resource" id="Resource_cmm0t"]
+script = ExtResource("5_x2sw1")
+text = "The gardeners drew both beds and marked that both had received the same water."
+
+[sub_resource type="Resource" id="Resource_3y06m"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_a_fair_trial_margin_drawings_1"
+label = "Sketch the bed with a little shelter"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_j75oj"), SubResource("Resource_hdjpo"), SubResource("Resource_cmm0t")])
+
+[sub_resource type="Resource" id="Resource_umg4x"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_a_fair_trial_margin_drawings_3"
+
+[sub_resource type="Resource" id="Resource_82v5u"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"a_fair_trial"
+text = "A Fair Trial"
+
+[sub_resource type="Resource" id="Resource_b5qna"]
+script = ExtResource("5_x2sw1")
+text = "Two measures went in the margin. The drawing showed the beds shared the same light."
+
+[sub_resource type="Resource" id="Resource_njb3m"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_a_fair_trial_margin_drawings_3"
+label = "Draw the two watering measures"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_umg4x"), SubResource("Resource_82v5u"), SubResource("Resource_b5qna")])
+
+[sub_resource type="Resource" id="Resource_ax4ts"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_xk7r5"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 180
+
+[sub_resource type="Resource" id="Resource_thkom"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"a_fair_trial"
+negate = true
+
+[sub_resource type="Resource" id="Resource_766ex"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"method_in_other_hands"
+
+[sub_resource type="Resource" id="Resource_kydfr"]
+script = ExtResource("6_xydym")
+key = &"margin_drawings"
+
+[sub_resource type="Resource" id="Resource_7bi6l"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_a_fair_trial_margin_drawings"
+title = "A Fair Trial"
+body = "The gardeners can set two beds side by side. What one thing shall they vary?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_ax4ts"), SubResource("Resource_xk7r5"), SubResource("Resource_thkom"), SubResource("Resource_766ex"), SubResource("Resource_kydfr")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_3y06m"), SubResource("Resource_njb3m")])
+
+[sub_resource type="Resource" id="Resource_adaa6"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_a_fair_trial_common_1"
+
+[sub_resource type="Resource" id="Resource_jubhy"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"a_fair_trial"
+text = "A Fair Trial"
+
+[sub_resource type="Resource" id="Resource_j4hxg"]
+script = ExtResource("5_x2sw1")
+text = "Both beds got the same water. The gardeners wrote down which had shelter."
+
+[sub_resource type="Resource" id="Resource_y0osu"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_a_fair_trial_common_1"
+label = "Shelter one bed"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_adaa6"), SubResource("Resource_jubhy"), SubResource("Resource_j4hxg")])
+
+[sub_resource type="Resource" id="Resource_uv584"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_a_fair_trial_common_3"
+
+[sub_resource type="Resource" id="Resource_ddk0a"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"a_fair_trial"
+text = "A Fair Trial"
+
+[sub_resource type="Resource" id="Resource_0awl4"]
+script = ExtResource("5_x2sw1")
+text = "Both beds shared the same light. The gardeners wrote down how much each got."
+
+[sub_resource type="Resource" id="Resource_xcefa"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_a_fair_trial_common_3"
+label = "Water one bed a little more"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_uv584"), SubResource("Resource_ddk0a"), SubResource("Resource_0awl4")])
+
+[sub_resource type="Resource" id="Resource_5yreu"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_jcwlp"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 216
+
+[sub_resource type="Resource" id="Resource_w76ih"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"a_fair_trial"
+negate = true
+
+[sub_resource type="Resource" id="Resource_yssa4"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"method_in_other_hands"
+
+[sub_resource type="Resource" id="Resource_xdl5k"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_a_fair_trial_common"
+title = "A Fair Trial"
+body = "The gardeners can set two beds side by side. What one thing shall they vary?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_5yreu"), SubResource("Resource_jcwlp"), SubResource("Resource_w76ih"), SubResource("Resource_yssa4")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_y0osu"), SubResource("Resource_xcefa")])
+
+[sub_resource type="Resource" id="Resource_qdnm1"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_correction_in_the_open_path_patterns_1"
+
+[sub_resource type="Resource" id="Resource_ky3im"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_bxvji"]
+script = ExtResource("5_x2sw1")
+text = "The familiar map margin held the correction without covering the old line."
+
+[sub_resource type="Resource" id="Resource_7fw6m"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_correction_in_the_open_path_patterns_1"
+label = "Mark the correction on the old sheet"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_qdnm1"), SubResource("Resource_ky3im"), SubResource("Resource_bxvji")])
+
+[sub_resource type="Resource" id="Resource_kt230"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_correction_in_the_open_path_patterns_3"
+
+[sub_resource type="Resource" id="Resource_ecfeu"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_33ov1"]
+script = ExtResource("5_x2sw1")
+text = "Travellers took both sheets, with the changed line easy to find."
+
+[sub_resource type="Resource" id="Resource_aqsae"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_correction_in_the_open_path_patterns_3"
+label = "Print the old and new pattern together"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_kt230"), SubResource("Resource_ecfeu"), SubResource("Resource_33ov1")])
+
+[sub_resource type="Resource" id="Resource_uiaey"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_l60rj"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 234
+
+[sub_resource type="Resource" id="Resource_ar7tp"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"correction_in_the_open"
+negate = true
+
+[sub_resource type="Resource" id="Resource_4qmku"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"a_fair_trial"
+
+[sub_resource type="Resource" id="Resource_0k1r2"]
+script = ExtResource("6_xydym")
+key = &"path_patterns"
+
+[sub_resource type="Resource" id="Resource_vqgsu"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_correction_in_the_open_path_patterns"
+title = "A Correction in the Open"
+body = "An early note left out a condition. How should the towns share the correction?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_uiaey"), SubResource("Resource_l60rj"), SubResource("Resource_ar7tp"), SubResource("Resource_4qmku"), SubResource("Resource_0k1r2")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_7fw6m"), SubResource("Resource_aqsae")])
+
+[sub_resource type="Resource" id="Resource_kdlgq"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_correction_in_the_open_common_1"
+
+[sub_resource type="Resource" id="Resource_hdhxq"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_rg5bb"]
+script = ExtResource("5_x2sw1")
+text = "The next bundle carried the correction beside the old sheet, not in its place."
+
+[sub_resource type="Resource" id="Resource_08y0m"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_correction_in_the_open_common_1"
+label = "Send a correction sheet west"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_kdlgq"), SubResource("Resource_hdhxq"), SubResource("Resource_rg5bb")])
+
+[sub_resource type="Resource" id="Resource_521uv"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_correction_in_the_open_common_3"
+
+[sub_resource type="Resource" id="Resource_esquq"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_tlis4"]
+script = ExtResource("5_x2sw1")
+text = "Visitors went home able to say what had changed and why."
+
+[sub_resource type="Resource" id="Resource_cay5q"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_correction_in_the_open_common_3"
+label = "Explain the change at the home arcade"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_521uv"), SubResource("Resource_esquq"), SubResource("Resource_tlis4")])
+
+[sub_resource type="Resource" id="Resource_m1dux"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_jagg5"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 270
+
+[sub_resource type="Resource" id="Resource_yet5c"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"correction_in_the_open"
+negate = true
+
+[sub_resource type="Resource" id="Resource_3x0g3"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"a_fair_trial"
+
+[sub_resource type="Resource" id="Resource_cs6j4"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_correction_in_the_open_common"
+title = "A Correction in the Open"
+body = "An early note left out a condition. How should the towns share the correction?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_m1dux"), SubResource("Resource_jagg5"), SubResource("Resource_yet5c"), SubResource("Resource_3x0g3")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_08y0m"), SubResource("Resource_cay5q")])
+
+[sub_resource type="Resource" id="Resource_i8q6g"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_pattern_that_travels_path_circuit_1"
+
+[sub_resource type="Resource" id="Resource_aqfej"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_tcu6x"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_h3bei"]
+script = ExtResource("5_x2sw1")
+text = "A jig came back by the fair road. The sample fitted without being pared down."
+
+[sub_resource type="Resource" id="Resource_g3rp2"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_pattern_that_travels_path_circuit_1"
+label = "Send the pattern round the fair circuit"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_i8q6g"), SubResource("Resource_aqfej"), SubResource("Resource_tcu6x"), SubResource("Resource_h3bei")])
+
+[sub_resource type="Resource" id="Resource_wc4gx"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_pattern_that_travels_path_circuit_3"
+
+[sub_resource type="Resource" id="Resource_uv2d8"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_l2qfr"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_m3ot4"]
+script = ExtResource("5_x2sw1")
+text = "The visiting jig worked like the first, though no two hands had cut its wood."
+
+[sub_resource type="Resource" id="Resource_jh00t"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_pattern_that_travels_path_circuit_3"
+label = "Have a maker bring back a jig from the next fair"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_wc4gx"), SubResource("Resource_uv2d8"), SubResource("Resource_l2qfr"), SubResource("Resource_m3ot4")])
+
+[sub_resource type="Resource" id="Resource_doehk"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_apfjg"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 288
+
+[sub_resource type="Resource" id="Resource_qbv38"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"pattern_that_travels"
+negate = true
+
+[sub_resource type="Resource" id="Resource_boemu"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"correction_in_the_open"
+
+[sub_resource type="Resource" id="Resource_q4x1b"]
+script = ExtResource("6_xydym")
+key = &"path_circuit"
+
+[sub_resource type="Resource" id="Resource_h21yc"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_pattern_that_travels_path_circuit"
+title = "A Pattern That Travels"
+body = "A checked pattern shows how to make a jig that holds each piece in the same place. Who should try the pattern without its maker there?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_doehk"), SubResource("Resource_apfjg"), SubResource("Resource_qbv38"), SubResource("Resource_boemu"), SubResource("Resource_q4x1b")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_g3rp2"), SubResource("Resource_jh00t")])
+
+[sub_resource type="Resource" id="Resource_0tll1"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_pattern_that_travels_common_1"
+
+[sub_resource type="Resource" id="Resource_j4st2"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_lhhd3"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_e0jyw"]
+script = ExtResource("5_x2sw1")
+text = "The returned jig matched. The maker wondered which tools could turn without a hand."
+
+[sub_resource type="Resource" id="Resource_iy3dt"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_pattern_that_travels_common_1"
+label = "Ask a neighbouring maker to try it"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_0tll1"), SubResource("Resource_j4st2"), SubResource("Resource_lhhd3"), SubResource("Resource_e0jyw")])
+
+[sub_resource type="Resource" id="Resource_6jwb1"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"enlightenment_pattern_that_travels_common_3"
+
+[sub_resource type="Resource" id="Resource_d1k4m"]
+script = ExtResource("5_x2sw1")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_0ffnq"]
+script = ExtResource("5_x2sw1")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_3mhbm"]
+script = ExtResource("5_x2sw1")
+text = "The visitor made a matching jig from the page. Both now wait by the same drawing."
+
+[sub_resource type="Resource" id="Resource_t7m5n"]
+script = ExtResource("4_euihr")
+id = &"enlightenment_pattern_that_travels_common_3"
+label = "Invite a visiting maker to try it here"
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_6jwb1"), SubResource("Resource_d1k4m"), SubResource("Resource_0ffnq"), SubResource("Resource_3mhbm")])
+
+[sub_resource type="Resource" id="Resource_jno7x"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_vkwl6"]
+script = ExtResource("6_xydym")
+kind = 11
+amount = 324
+
+[sub_resource type="Resource" id="Resource_aq57p"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"pattern_that_travels"
+negate = true
+
+[sub_resource type="Resource" id="Resource_pkixr"]
+script = ExtResource("6_xydym")
+kind = 9
+key = &"correction_in_the_open"
+
+[sub_resource type="Resource" id="Resource_cy8eo"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_pattern_that_travels_common"
+title = "A Pattern That Travels"
+body = "A checked pattern shows how to make a jig that holds each piece in the same place. Who should try the pattern without its maker there?"
+category = &"settlement"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_jno7x"), SubResource("Resource_vkwl6"), SubResource("Resource_aq57p"), SubResource("Resource_pkixr")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("4_euihr")]([SubResource("Resource_iy3dt"), SubResource("Resource_t7m5n")])
+
+[sub_resource type="Resource" id="Resource_kumgs"]
+script = ExtResource("5_x2sw1")
+text = "The first notebook still opens to a pair of different marks."
+
+[sub_resource type="Resource" id="Resource_dlq6u"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_boqfo"]
+script = ExtResource("6_xydym")
+key = &"observations_shared"
+
+[sub_resource type="Resource" id="Resource_t7p1s"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_remembered_observations_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_dlq6u"), SubResource("Resource_boqfo")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_kumgs")])
+
+[sub_resource type="Resource" id="Resource_7en64"]
+script = ExtResource("5_x2sw1")
+text = "A visitor used a copy of the old map to label the place on a report."
+
+[sub_resource type="Resource" id="Resource_2t7n7"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_hwiu8"]
+script = ExtResource("6_xydym")
+key = &"path_patterns"
+
+[sub_resource type="Resource" id="Resource_5jcf4"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_remembered_path_patterns"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_2t7n7"), SubResource("Resource_hwiu8")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_7en64")])
+
+[sub_resource type="Resource" id="Resource_fvd6o"]
+script = ExtResource("5_x2sw1")
+text = "Someone wondered whether the river could turn a workshop's tools."
+
+[sub_resource type="Resource" id="Resource_v5gj8"]
+script = ExtResource("6_xydym")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_nfen7"]
+script = ExtResource("6_xydym")
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_iq8nq"]
+script = ExtResource("3_0wd41")
+id = &"enlightenment_remembered_methods_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("6_xydym")]([SubResource("Resource_v5gj8"), SubResource("Resource_nfen7")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("5_x2sw1")]([SubResource("Resource_fvd6o")])
+
 [resource]
 script = ExtResource("8_cekk5")
-events = Array[ExtResource("3_0wd41")]([SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv"), SubResource("Resource_ccg0i"), SubResource("Resource_p65dx"), SubResource("Resource_5o20g"), SubResource("Resource_tex2y"), SubResource("Resource_dfght"), SubResource("Resource_cp2lu"), SubResource("Resource_3odwt"), SubResource("Resource_solnv"), SubResource("Resource_r1ogh"), SubResource("Resource_qdrbr"), SubResource("Resource_4hmtb"), SubResource("Resource_je3wh"), SubResource("Resource_c38qe"), SubResource("Resource_you37"), SubResource("Resource_cvets"), SubResource("Resource_bhfx2"), SubResource("Resource_v8xsm"), SubResource("Resource_frd55"), SubResource("Resource_2ce7b"), SubResource("Resource_6cj6i"), SubResource("Resource_xf0wq"), SubResource("Resource_jye1w"), SubResource("Resource_k3vke"), SubResource("Resource_7b330"), SubResource("Resource_bjcwf"), SubResource("Resource_1it0c"), SubResource("Resource_cdaif"), SubResource("Resource_a743v"), SubResource("Resource_fimve"), SubResource("Resource_po8x5"), SubResource("Resource_4rwfm"), SubResource("Resource_cphko"), SubResource("Resource_ebqmo"), SubResource("Resource_sjndk"), SubResource("Resource_bd0an"), SubResource("Resource_7qamo"), SubResource("Resource_oiilm"), SubResource("Resource_6yjj8"), SubResource("Resource_s5o1e"), SubResource("Resource_1pgg2"), SubResource("Resource_lpwfu"), SubResource("Resource_tk683"), SubResource("Resource_66j5g"), SubResource("Resource_t5c7n"), SubResource("Resource_5s0ii"), SubResource("Resource_jtpsn"), SubResource("Resource_bjgap"), SubResource("Resource_mv4j8"), SubResource("Resource_hcxon"), SubResource("Resource_qvt5g"), SubResource("Resource_vo4kx"), SubResource("Resource_i2nd5"), SubResource("Resource_4s6l1"), SubResource("Resource_kmqyp"), SubResource("Resource_rgjj3"), SubResource("Resource_cq3jj"), SubResource("Resource_hm6yr"), SubResource("Resource_88w4w"), SubResource("Resource_wqjox"), SubResource("Resource_yxvn6"), SubResource("Resource_bfvwe"), SubResource("Resource_wpyys"), SubResource("Resource_0yld7"), SubResource("Resource_itrrt"), SubResource("Resource_wpnbs"), SubResource("Resource_tugnu"), SubResource("Resource_jvm7t"), SubResource("Resource_p7j6f"), SubResource("Resource_4ju8w"), SubResource("Resource_lv1wy"), SubResource("Resource_mn5ya"), SubResource("Resource_maaea"), SubResource("Resource_85vtr"), SubResource("Resource_6al76"), SubResource("Resource_b1mli"), SubResource("Resource_2num6"), SubResource("Resource_o24bb"), SubResource("Resource_376a3"), SubResource("Resource_5fo5d"), SubResource("Resource_p2f64"), SubResource("Resource_7apdw"), SubResource("Resource_iylia"), SubResource("Resource_cnmxn"), SubResource("Resource_tr7n2"), SubResource("Resource_raubt"), SubResource("Resource_q3qlx"), SubResource("Resource_ki6qg"), SubResource("Resource_mrtj0"), SubResource("Resource_ub2nj"), SubResource("Resource_m3vbp"), SubResource("Resource_555gm"), SubResource("Resource_ilevw"), SubResource("Resource_gc03t"), SubResource("Resource_62ooa"), SubResource("Resource_7bwmb"), SubResource("Resource_7ni6q"), SubResource("Resource_r4at2"), SubResource("Resource_uekey"), SubResource("Resource_ad4wu"), SubResource("Resource_5pqpx"), SubResource("Resource_iygpg"), SubResource("Resource_xy5wh"), SubResource("Resource_5pl8c"), SubResource("Resource_e7cpg"), SubResource("Resource_y7b0b"), SubResource("Resource_5mttt"), SubResource("Resource_w27nk"), SubResource("Resource_rg8lm"), SubResource("Resource_arej0"), SubResource("Resource_8ns83"), SubResource("Resource_qfkxi"), SubResource("Resource_d4yog"), SubResource("Resource_63sju"), SubResource("Resource_tmghi"), SubResource("Resource_00c7p"), SubResource("Resource_kpyny"), SubResource("Resource_2imdh"), SubResource("Resource_8a25b"), SubResource("Resource_vrtl2"), SubResource("Resource_6c66i"), SubResource("Resource_6ae1i"), SubResource("Resource_ks2r5"), SubResource("Resource_34x6e"), SubResource("Resource_n0aic"), SubResource("Resource_4j7ps"), SubResource("Resource_bnxx7"), SubResource("Resource_bwd6i"), SubResource("Resource_1yfer"), SubResource("Resource_ld17n"), SubResource("Resource_qiixx"), SubResource("Resource_praxj"), SubResource("Resource_3hj0x"), SubResource("Resource_qlonm"), SubResource("Resource_gqw0r"), SubResource("Resource_oirwk"), SubResource("Resource_0j0rv"), SubResource("Resource_ytiws"), SubResource("Resource_eh0n1"), SubResource("Resource_onmec"), SubResource("Resource_6pr0f"), SubResource("Resource_b7swp"), SubResource("Resource_tpsiq"), SubResource("Resource_sdu6a"), SubResource("Resource_7wsy3"), SubResource("Resource_gfqbk"), SubResource("Resource_cjb1i"), SubResource("Resource_4wf7a"), SubResource("Resource_2su26"), SubResource("Resource_bw4y3"), SubResource("Resource_fgyby"), SubResource("Resource_e03bo"), SubResource("Resource_3d3d5"), SubResource("Resource_7y6s0"), SubResource("Resource_0nbag"), SubResource("Resource_i7vgm"), SubResource("Resource_ma37o"), SubResource("Resource_uy5kb"), SubResource("Resource_suiwq"), SubResource("Resource_p70mb"), SubResource("Resource_r67hm"), SubResource("Resource_rvimm"), SubResource("Resource_wbnhq"), SubResource("Resource_h1ck5"), SubResource("Resource_k3sp5"), SubResource("Resource_7hiay"), SubResource("Resource_jpabc"), SubResource("Resource_oyco2"), SubResource("Resource_mcvk7"), SubResource("Resource_iblje"), SubResource("Resource_utwo8"), SubResource("Resource_vkir5"), SubResource("Resource_xb306"), SubResource("Resource_a1kim"), SubResource("Resource_yla4w"), SubResource("Resource_c7jev"), SubResource("Resource_ncyuq"), SubResource("Resource_1chbo"), SubResource("Resource_8gbae"), SubResource("Resource_5ud75"), SubResource("Resource_hwg2h"), SubResource("Resource_sgh2g"), SubResource("Resource_scf6l"), SubResource("Resource_pul3f"), SubResource("Resource_bbbaq"), SubResource("Resource_jtk1m"), SubResource("Resource_slqlh"), SubResource("Resource_uq0cj"), SubResource("Resource_kfqqn"), SubResource("Resource_it2ob"), SubResource("Resource_lhgxh"), SubResource("Resource_84pve"), SubResource("Resource_4l3ds"), SubResource("Resource_vman0"), SubResource("Resource_v8dg1"), SubResource("Resource_lx6ou"), SubResource("Resource_isxif"), SubResource("Resource_e75v0"), SubResource("Resource_uy0yy"), SubResource("Resource_ruswx"), SubResource("Resource_mdh30"), SubResource("Resource_l3j5n"), SubResource("Resource_u1bki"), SubResource("Resource_fn8nk"), SubResource("Resource_qjuq7"), SubResource("Resource_hvixp"), SubResource("Resource_orlcv"), SubResource("Resource_k4qa8"), SubResource("Resource_jv871"), SubResource("Resource_6mb0a"), SubResource("Resource_ev3vv"), SubResource("Resource_xalrm"), SubResource("Resource_iu023"), SubResource("Resource_t822f"), SubResource("Resource_4j7j1"), SubResource("Resource_tuti6"), SubResource("Resource_ty2cc"), SubResource("Resource_ogidc"), SubResource("Resource_g0gap"), SubResource("Resource_rwo8b"), SubResource("Resource_cn0bp"), SubResource("Resource_oddvx"), SubResource("Resource_ih1u7"), SubResource("Resource_lxg7f"), SubResource("Resource_qmkfv"), SubResource("Resource_qxxib"), SubResource("Resource_f1uga"), SubResource("Resource_o4jgw"), SubResource("Resource_cpt2k"), SubResource("Resource_uw4eg"), SubResource("Resource_q4olr"), SubResource("Resource_0luyg"), SubResource("Resource_7figi"), SubResource("Resource_752ox"), SubResource("Resource_vew2h"), SubResource("Resource_2gfwl"), SubResource("Resource_07csu"), SubResource("Resource_cs8of"), SubResource("Resource_m6sd1"), SubResource("Resource_j2dab"), SubResource("Resource_fts5k"), SubResource("Resource_0ob31"), SubResource("Resource_64or2"), SubResource("Resource_neab8"), SubResource("Resource_gop38"), SubResource("Resource_and7d"), SubResource("Resource_ugje0"), SubResource("Resource_0h2cv"), SubResource("Resource_rmuce"), SubResource("Resource_wnlge"), SubResource("Resource_syneb"), SubResource("Resource_vy6b3"), SubResource("Resource_c1frk"), SubResource("Resource_ugx8p"), SubResource("Resource_8ru31"), SubResource("Resource_kubm6"), SubResource("Resource_bjfvx"), SubResource("Resource_4h8gr"), SubResource("Resource_fomdy"), SubResource("Resource_5vk6f"), SubResource("Resource_6oh7m"), SubResource("Resource_kw5en"), SubResource("Resource_ltc0a"), SubResource("Resource_jv1uq"), SubResource("Resource_fvjef"), SubResource("Resource_jc4yq"), SubResource("Resource_g6bht"), SubResource("Resource_poei0"), SubResource("Resource_ojff0"), SubResource("Resource_pxolu"), SubResource("Resource_15osl"), SubResource("Resource_dikhq"), SubResource("Resource_y2gvh"), SubResource("Resource_s5psu"), SubResource("Resource_4dcsq"), SubResource("Resource_0oebq"), SubResource("Resource_pfs1x"), SubResource("Resource_mik1w"), SubResource("Resource_u1dvo"), SubResource("Resource_ola0w"), SubResource("Resource_um83o"), SubResource("Resource_q6h24"), SubResource("Resource_l7ert"), SubResource("Resource_hwn68"), SubResource("Resource_3v6g8"), SubResource("Resource_hl5l7"), SubResource("Resource_ggeq1"), SubResource("Resource_1xftm"), SubResource("Resource_rw2nj"), SubResource("Resource_uxug0"), SubResource("Resource_gs6nd"), SubResource("Resource_6jlgn"), SubResource("Resource_e0jga"), SubResource("Resource_6wjcc"), SubResource("Resource_gfi48"), SubResource("Resource_wbuab"), SubResource("Resource_acl5h"), SubResource("Resource_8lq5t"), SubResource("Resource_76q2a"), SubResource("Resource_o5e00"), SubResource("Resource_pcxy3"), SubResource("Resource_b6sjm"), SubResource("Resource_1bhkj"), SubResource("Resource_v23he"), SubResource("Resource_q6k73"), SubResource("Resource_j1h0h"), SubResource("Resource_i1402"), SubResource("Resource_262f7"), SubResource("Resource_l7ogg"), SubResource("Resource_6bn63"), SubResource("Resource_rdxxc"), SubResource("Resource_0xfmj"), SubResource("Resource_ok8bt"), SubResource("Resource_iybc0"), SubResource("Resource_my1iw"), SubResource("Resource_pimr0"), SubResource("Resource_mds4k"), SubResource("Resource_uinej"), SubResource("Resource_nmcxa"), SubResource("Resource_bvqxm"), SubResource("Resource_jjhlr"), SubResource("Resource_tvm7n"), SubResource("Resource_2jrns"), SubResource("Resource_pwcv8"), SubResource("Resource_h0r7c"), SubResource("Resource_eb4hk"), SubResource("Resource_mcbde"), SubResource("Resource_ry6yd"), SubResource("Resource_ixjnb"), SubResource("Resource_nq8tg"), SubResource("Resource_n0eof"), SubResource("Resource_lv48h"), SubResource("Resource_q3hri"), SubResource("Resource_eg0en"), SubResource("Resource_rq6nj"), SubResource("Resource_xkaff"), SubResource("Resource_bjaxl"), SubResource("Resource_008ua"), SubResource("Resource_pguth"), SubResource("Resource_738lv"), SubResource("Resource_a3kgu"), SubResource("Resource_ln7r3"), SubResource("Resource_vxphd"), SubResource("Resource_bniqe"), SubResource("Resource_em254"), SubResource("Resource_imp54"), SubResource("Resource_os5qw"), SubResource("Resource_ees5r"), SubResource("Resource_xyrgx"), SubResource("Resource_s225c"), SubResource("Resource_a40f6"), SubResource("Resource_otjv4"), SubResource("Resource_gyr5i"), SubResource("Resource_rwhxn"), SubResource("Resource_tijju"), SubResource("Resource_vlqab"), SubResource("Resource_gmp3q"), SubResource("Resource_0fcj5"), SubResource("Resource_vj4un"), SubResource("Resource_d0i38"), SubResource("Resource_hcegs"), SubResource("Resource_vlyya"), SubResource("Resource_wbux6"), SubResource("Resource_16g7h"), SubResource("Resource_t0nx0"), SubResource("Resource_pth4s"), SubResource("Resource_v23w2"), SubResource("Resource_nnvef"), SubResource("Resource_w8g3e"), SubResource("Resource_wcg7u"), SubResource("Resource_ns5ui"), SubResource("Resource_dkfbh"), SubResource("Resource_nqebk"), SubResource("Resource_knvw1"), SubResource("Resource_vhgbf"), SubResource("Resource_1o0qd"), SubResource("Resource_3idwd"), SubResource("Resource_i67p3"), SubResource("Resource_ggjso"), SubResource("Resource_5tju6"), SubResource("Resource_2ejvj"), SubResource("Resource_e2lsn"), SubResource("Resource_u8gmf"), SubResource("Resource_lh13l"), SubResource("Resource_n6xjy"), SubResource("Resource_qj75h"), SubResource("Resource_my2oy"), SubResource("Resource_k0rpq"), SubResource("Resource_kmqxu"), SubResource("Resource_ihpep"), SubResource("Resource_55m5b"), SubResource("Resource_tna2q"), SubResource("Resource_8c2wr"), SubResource("Resource_s06tn"), SubResource("Resource_8ue2s"), SubResource("Resource_qef1g"), SubResource("Resource_8a2ca"), SubResource("Resource_wts87"), SubResource("Resource_l1er1"), SubResource("Resource_kmnem"), SubResource("Resource_gakeh"), SubResource("Resource_jfo7s"), SubResource("Resource_nbh2y"), SubResource("Resource_nvwk4"), SubResource("Resource_p3cwb"), SubResource("Resource_xhkx6"), SubResource("Resource_jpv1o"), SubResource("Resource_bvb8o"), SubResource("Resource_qa8sw"), SubResource("Resource_kipce"), SubResource("Resource_covar"), SubResource("Resource_74ilf"), SubResource("Resource_0ixkg"), SubResource("Resource_dv3rv"), SubResource("Resource_e0m5i"), SubResource("Resource_uc6hv"), SubResource("Resource_xu02q"), SubResource("Resource_j487e"), SubResource("Resource_2hp7d"), SubResource("Resource_0gpkf"), SubResource("Resource_08jjs"), SubResource("Resource_4ayiv"), SubResource("Resource_jmydj"), SubResource("Resource_1w47r"), SubResource("Resource_g04pt"), SubResource("Resource_ejubb"), SubResource("Resource_2o452"), SubResource("Resource_jtiwi"), SubResource("Resource_pm2st"), SubResource("Resource_rrwwh"), SubResource("Resource_smlue"), SubResource("Resource_001l2"), SubResource("Resource_brjog"), SubResource("Resource_p3s0o"), SubResource("Resource_v5g6f"), SubResource("Resource_t3asq"), SubResource("Resource_ehphf"), SubResource("Resource_wdsoa"), SubResource("Resource_6ghdi"), SubResource("Resource_by36j"), SubResource("Resource_rp713"), SubResource("Resource_7glwn"), SubResource("Resource_ltqs8"), SubResource("Resource_xqo68"), SubResource("Resource_6j1an"), SubResource("Resource_231tm"), SubResource("Resource_xyjph"), SubResource("Resource_10vt3"), SubResource("Resource_q0os3"), SubResource("Resource_1n77r"), SubResource("Resource_ajfm7"), SubResource("Resource_25cad"), SubResource("Resource_8ap0s"), SubResource("Resource_46l83"), SubResource("Resource_j3cu7"), SubResource("Resource_sofg1"), SubResource("Resource_iimnk"), SubResource("Resource_84ho8"), SubResource("Resource_t652c"), SubResource("Resource_esvpr"), SubResource("Resource_2gux6"), SubResource("Resource_66o5q"), SubResource("Resource_2henc"), SubResource("Resource_ib0yx"), SubResource("Resource_6gdki"), SubResource("Resource_6pjdl"), SubResource("Resource_2fjq0"), SubResource("Resource_jjd7p"), SubResource("Resource_0y6mp"), SubResource("Resource_giuau"), SubResource("Resource_cblk7"), SubResource("Resource_qea35"), SubResource("Resource_34y5a"), SubResource("Resource_k5str"), SubResource("Resource_au7gd")])
+events = Array[ExtResource("3_0wd41")]([SubResource("Resource_0e7a7"), SubResource("Resource_5rvqx"), SubResource("Resource_pgpg8"), SubResource("Resource_osd2p"), SubResource("Resource_rcq87"), SubResource("Resource_bpwt8"), SubResource("Resource_36fvu"), SubResource("Resource_dd8cf"), SubResource("Resource_ce0tw"), SubResource("Resource_vygxo"), SubResource("Resource_u8j8n"), SubResource("Resource_se6h3"), SubResource("Resource_cky1a"), SubResource("Resource_ar3v3"), SubResource("Resource_3lfw1"), SubResource("Resource_sxvj6"), SubResource("Resource_t7rsy"), SubResource("Resource_rj6gk"), SubResource("Resource_xykxt"), SubResource("Resource_027qw"), SubResource("Resource_rvfm3"), SubResource("Resource_xy6sl"), SubResource("Resource_mfbm3"), SubResource("Resource_rv0nl"), SubResource("Resource_88eak"), SubResource("Resource_6wyg6"), SubResource("Resource_6iklo"), SubResource("Resource_vdfhv"), SubResource("Resource_1bq40"), SubResource("Resource_bjmsn"), SubResource("Resource_d4scu"), SubResource("Resource_euf81"), SubResource("Resource_q1sem"), SubResource("Resource_y7cvq"), SubResource("Resource_2367r"), SubResource("Resource_8ok0w"), SubResource("Resource_atclf"), SubResource("Resource_g63xs"), SubResource("Resource_s2jsa"), SubResource("Resource_5wnlb"), SubResource("Resource_g3wce"), SubResource("Resource_0r047"), SubResource("Resource_euy71"), SubResource("Resource_ph7u5"), SubResource("Resource_qc1fm"), SubResource("Resource_dld4y"), SubResource("Resource_ph6lk"), SubResource("Resource_ntc30"), SubResource("Resource_ns0l7"), SubResource("Resource_kgw7h"), SubResource("Resource_eppu6"), SubResource("Resource_tq8lk"), SubResource("Resource_1jopo"), SubResource("Resource_gf0cy"), SubResource("Resource_gx0a7"), SubResource("Resource_5s62b"), SubResource("Resource_p3ixc"), SubResource("Resource_n8gec"), SubResource("Resource_venu4"), SubResource("Resource_wr4nm"), SubResource("Resource_cdahx"), SubResource("Resource_6n1ki"), SubResource("Resource_4yh2e"), SubResource("Resource_ok5eu"), SubResource("Resource_8dw7o"), SubResource("Resource_j8hqa"), SubResource("Resource_kgfng"), SubResource("Resource_3bvkb"), SubResource("Resource_fip82"), SubResource("Resource_rx7mr"), SubResource("Resource_kuww2"), SubResource("Resource_pxiyj"), SubResource("Resource_n87ae"), SubResource("Resource_jni75"), SubResource("Resource_a4qn0"), SubResource("Resource_3tmqq"), SubResource("Resource_hcgj7"), SubResource("Resource_bmapd"), SubResource("Resource_tapjy"), SubResource("Resource_xllvq"), SubResource("Resource_mgqkr"), SubResource("Resource_nfa5u"), SubResource("Resource_im1hx"), SubResource("Resource_btc77"), SubResource("Resource_7iwfm"), SubResource("Resource_tlued"), SubResource("Resource_wnh4f"), SubResource("Resource_ejjpc"), SubResource("Resource_5oq4u"), SubResource("Resource_lvbo7"), SubResource("Resource_o55pb"), SubResource("Resource_202c3"), SubResource("Resource_rb8g7"), SubResource("Resource_myemd"), SubResource("Resource_jv7hd"), SubResource("Resource_5lak7"), SubResource("Resource_dem84"), SubResource("Resource_f7kau"), SubResource("Resource_i7j5c"), SubResource("Resource_03aes"), SubResource("Resource_u67f1"), SubResource("Resource_ocqsx"), SubResource("Resource_t40kq"), SubResource("Resource_hextx"), SubResource("Resource_inhey"), SubResource("Resource_tmcvw"), SubResource("Resource_he8y4"), SubResource("Resource_rlo75"), SubResource("Resource_4fjua"), SubResource("Resource_ma63a"), SubResource("Resource_4lbu0"), SubResource("Resource_f55ls"), SubResource("Resource_ge3xv"), SubResource("Resource_ccg0i"), SubResource("Resource_p65dx"), SubResource("Resource_5o20g"), SubResource("Resource_tex2y"), SubResource("Resource_dfght"), SubResource("Resource_cp2lu"), SubResource("Resource_3odwt"), SubResource("Resource_solnv"), SubResource("Resource_r1ogh"), SubResource("Resource_qdrbr"), SubResource("Resource_4hmtb"), SubResource("Resource_je3wh"), SubResource("Resource_c38qe"), SubResource("Resource_you37"), SubResource("Resource_cvets"), SubResource("Resource_bhfx2"), SubResource("Resource_v8xsm"), SubResource("Resource_frd55"), SubResource("Resource_2ce7b"), SubResource("Resource_6cj6i"), SubResource("Resource_xf0wq"), SubResource("Resource_jye1w"), SubResource("Resource_k3vke"), SubResource("Resource_7b330"), SubResource("Resource_bjcwf"), SubResource("Resource_1it0c"), SubResource("Resource_cdaif"), SubResource("Resource_a743v"), SubResource("Resource_fimve"), SubResource("Resource_po8x5"), SubResource("Resource_4rwfm"), SubResource("Resource_cphko"), SubResource("Resource_ebqmo"), SubResource("Resource_sjndk"), SubResource("Resource_bd0an"), SubResource("Resource_7qamo"), SubResource("Resource_oiilm"), SubResource("Resource_6yjj8"), SubResource("Resource_s5o1e"), SubResource("Resource_1pgg2"), SubResource("Resource_lpwfu"), SubResource("Resource_tk683"), SubResource("Resource_66j5g"), SubResource("Resource_t5c7n"), SubResource("Resource_5s0ii"), SubResource("Resource_jtpsn"), SubResource("Resource_bjgap"), SubResource("Resource_mv4j8"), SubResource("Resource_hcxon"), SubResource("Resource_qvt5g"), SubResource("Resource_vo4kx"), SubResource("Resource_i2nd5"), SubResource("Resource_4s6l1"), SubResource("Resource_kmqyp"), SubResource("Resource_rgjj3"), SubResource("Resource_cq3jj"), SubResource("Resource_hm6yr"), SubResource("Resource_88w4w"), SubResource("Resource_wqjox"), SubResource("Resource_yxvn6"), SubResource("Resource_bfvwe"), SubResource("Resource_wpyys"), SubResource("Resource_0yld7"), SubResource("Resource_itrrt"), SubResource("Resource_wpnbs"), SubResource("Resource_tugnu"), SubResource("Resource_jvm7t"), SubResource("Resource_p7j6f"), SubResource("Resource_4ju8w"), SubResource("Resource_lv1wy"), SubResource("Resource_mn5ya"), SubResource("Resource_maaea"), SubResource("Resource_85vtr"), SubResource("Resource_6al76"), SubResource("Resource_b1mli"), SubResource("Resource_2num6"), SubResource("Resource_o24bb"), SubResource("Resource_376a3"), SubResource("Resource_5fo5d"), SubResource("Resource_p2f64"), SubResource("Resource_7apdw"), SubResource("Resource_iylia"), SubResource("Resource_cnmxn"), SubResource("Resource_tr7n2"), SubResource("Resource_raubt"), SubResource("Resource_q3qlx"), SubResource("Resource_ki6qg"), SubResource("Resource_mrtj0"), SubResource("Resource_ub2nj"), SubResource("Resource_m3vbp"), SubResource("Resource_555gm"), SubResource("Resource_ilevw"), SubResource("Resource_gc03t"), SubResource("Resource_62ooa"), SubResource("Resource_7bwmb"), SubResource("Resource_7ni6q"), SubResource("Resource_r4at2"), SubResource("Resource_uekey"), SubResource("Resource_ad4wu"), SubResource("Resource_5pqpx"), SubResource("Resource_iygpg"), SubResource("Resource_xy5wh"), SubResource("Resource_5pl8c"), SubResource("Resource_e7cpg"), SubResource("Resource_y7b0b"), SubResource("Resource_5mttt"), SubResource("Resource_w27nk"), SubResource("Resource_rg8lm"), SubResource("Resource_arej0"), SubResource("Resource_8ns83"), SubResource("Resource_qfkxi"), SubResource("Resource_d4yog"), SubResource("Resource_63sju"), SubResource("Resource_tmghi"), SubResource("Resource_00c7p"), SubResource("Resource_kpyny"), SubResource("Resource_2imdh"), SubResource("Resource_8a25b"), SubResource("Resource_vrtl2"), SubResource("Resource_6c66i"), SubResource("Resource_6ae1i"), SubResource("Resource_ks2r5"), SubResource("Resource_34x6e"), SubResource("Resource_n0aic"), SubResource("Resource_4j7ps"), SubResource("Resource_bnxx7"), SubResource("Resource_bwd6i"), SubResource("Resource_1yfer"), SubResource("Resource_ld17n"), SubResource("Resource_qiixx"), SubResource("Resource_praxj"), SubResource("Resource_3hj0x"), SubResource("Resource_qlonm"), SubResource("Resource_gqw0r"), SubResource("Resource_oirwk"), SubResource("Resource_0j0rv"), SubResource("Resource_ytiws"), SubResource("Resource_eh0n1"), SubResource("Resource_onmec"), SubResource("Resource_6pr0f"), SubResource("Resource_b7swp"), SubResource("Resource_tpsiq"), SubResource("Resource_sdu6a"), SubResource("Resource_7wsy3"), SubResource("Resource_gfqbk"), SubResource("Resource_cjb1i"), SubResource("Resource_4wf7a"), SubResource("Resource_2su26"), SubResource("Resource_bw4y3"), SubResource("Resource_fgyby"), SubResource("Resource_e03bo"), SubResource("Resource_3d3d5"), SubResource("Resource_7y6s0"), SubResource("Resource_0nbag"), SubResource("Resource_i7vgm"), SubResource("Resource_ma37o"), SubResource("Resource_uy5kb"), SubResource("Resource_suiwq"), SubResource("Resource_p70mb"), SubResource("Resource_r67hm"), SubResource("Resource_rvimm"), SubResource("Resource_wbnhq"), SubResource("Resource_h1ck5"), SubResource("Resource_k3sp5"), SubResource("Resource_7hiay"), SubResource("Resource_jpabc"), SubResource("Resource_oyco2"), SubResource("Resource_mcvk7"), SubResource("Resource_iblje"), SubResource("Resource_utwo8"), SubResource("Resource_vkir5"), SubResource("Resource_xb306"), SubResource("Resource_a1kim"), SubResource("Resource_yla4w"), SubResource("Resource_c7jev"), SubResource("Resource_ncyuq"), SubResource("Resource_1chbo"), SubResource("Resource_8gbae"), SubResource("Resource_5ud75"), SubResource("Resource_hwg2h"), SubResource("Resource_sgh2g"), SubResource("Resource_scf6l"), SubResource("Resource_pul3f"), SubResource("Resource_bbbaq"), SubResource("Resource_jtk1m"), SubResource("Resource_slqlh"), SubResource("Resource_uq0cj"), SubResource("Resource_kfqqn"), SubResource("Resource_it2ob"), SubResource("Resource_lhgxh"), SubResource("Resource_84pve"), SubResource("Resource_4l3ds"), SubResource("Resource_vman0"), SubResource("Resource_v8dg1"), SubResource("Resource_lx6ou"), SubResource("Resource_isxif"), SubResource("Resource_e75v0"), SubResource("Resource_uy0yy"), SubResource("Resource_ruswx"), SubResource("Resource_mdh30"), SubResource("Resource_l3j5n"), SubResource("Resource_u1bki"), SubResource("Resource_fn8nk"), SubResource("Resource_qjuq7"), SubResource("Resource_hvixp"), SubResource("Resource_orlcv"), SubResource("Resource_k4qa8"), SubResource("Resource_jv871"), SubResource("Resource_6mb0a"), SubResource("Resource_ev3vv"), SubResource("Resource_xalrm"), SubResource("Resource_iu023"), SubResource("Resource_t822f"), SubResource("Resource_4j7j1"), SubResource("Resource_tuti6"), SubResource("Resource_ty2cc"), SubResource("Resource_ogidc"), SubResource("Resource_g0gap"), SubResource("Resource_rwo8b"), SubResource("Resource_cn0bp"), SubResource("Resource_oddvx"), SubResource("Resource_ih1u7"), SubResource("Resource_lxg7f"), SubResource("Resource_qmkfv"), SubResource("Resource_qxxib"), SubResource("Resource_f1uga"), SubResource("Resource_o4jgw"), SubResource("Resource_cpt2k"), SubResource("Resource_uw4eg"), SubResource("Resource_q4olr"), SubResource("Resource_0luyg"), SubResource("Resource_7figi"), SubResource("Resource_752ox"), SubResource("Resource_vew2h"), SubResource("Resource_2gfwl"), SubResource("Resource_07csu"), SubResource("Resource_cs8of"), SubResource("Resource_m6sd1"), SubResource("Resource_j2dab"), SubResource("Resource_fts5k"), SubResource("Resource_0ob31"), SubResource("Resource_64or2"), SubResource("Resource_neab8"), SubResource("Resource_gop38"), SubResource("Resource_and7d"), SubResource("Resource_ugje0"), SubResource("Resource_0h2cv"), SubResource("Resource_rmuce"), SubResource("Resource_wnlge"), SubResource("Resource_syneb"), SubResource("Resource_vy6b3"), SubResource("Resource_c1frk"), SubResource("Resource_ugx8p"), SubResource("Resource_8ru31"), SubResource("Resource_kubm6"), SubResource("Resource_bjfvx"), SubResource("Resource_4h8gr"), SubResource("Resource_fomdy"), SubResource("Resource_5vk6f"), SubResource("Resource_6oh7m"), SubResource("Resource_kw5en"), SubResource("Resource_ltc0a"), SubResource("Resource_jv1uq"), SubResource("Resource_fvjef"), SubResource("Resource_jc4yq"), SubResource("Resource_g6bht"), SubResource("Resource_poei0"), SubResource("Resource_ojff0"), SubResource("Resource_pxolu"), SubResource("Resource_15osl"), SubResource("Resource_dikhq"), SubResource("Resource_y2gvh"), SubResource("Resource_s5psu"), SubResource("Resource_4dcsq"), SubResource("Resource_0oebq"), SubResource("Resource_pfs1x"), SubResource("Resource_mik1w"), SubResource("Resource_u1dvo"), SubResource("Resource_ola0w"), SubResource("Resource_um83o"), SubResource("Resource_q6h24"), SubResource("Resource_l7ert"), SubResource("Resource_hwn68"), SubResource("Resource_3v6g8"), SubResource("Resource_hl5l7"), SubResource("Resource_ggeq1"), SubResource("Resource_1xftm"), SubResource("Resource_rw2nj"), SubResource("Resource_uxug0"), SubResource("Resource_gs6nd"), SubResource("Resource_6jlgn"), SubResource("Resource_e0jga"), SubResource("Resource_6wjcc"), SubResource("Resource_gfi48"), SubResource("Resource_wbuab"), SubResource("Resource_acl5h"), SubResource("Resource_8lq5t"), SubResource("Resource_76q2a"), SubResource("Resource_o5e00"), SubResource("Resource_pcxy3"), SubResource("Resource_b6sjm"), SubResource("Resource_1bhkj"), SubResource("Resource_v23he"), SubResource("Resource_q6k73"), SubResource("Resource_j1h0h"), SubResource("Resource_i1402"), SubResource("Resource_262f7"), SubResource("Resource_l7ogg"), SubResource("Resource_6bn63"), SubResource("Resource_rdxxc"), SubResource("Resource_0xfmj"), SubResource("Resource_ok8bt"), SubResource("Resource_iybc0"), SubResource("Resource_my1iw"), SubResource("Resource_pimr0"), SubResource("Resource_mds4k"), SubResource("Resource_uinej"), SubResource("Resource_nmcxa"), SubResource("Resource_bvqxm"), SubResource("Resource_jjhlr"), SubResource("Resource_tvm7n"), SubResource("Resource_2jrns"), SubResource("Resource_pwcv8"), SubResource("Resource_h0r7c"), SubResource("Resource_eb4hk"), SubResource("Resource_mcbde"), SubResource("Resource_ry6yd"), SubResource("Resource_ixjnb"), SubResource("Resource_nq8tg"), SubResource("Resource_n0eof"), SubResource("Resource_lv48h"), SubResource("Resource_q3hri"), SubResource("Resource_eg0en"), SubResource("Resource_rq6nj"), SubResource("Resource_xkaff"), SubResource("Resource_bjaxl"), SubResource("Resource_008ua"), SubResource("Resource_pguth"), SubResource("Resource_738lv"), SubResource("Resource_a3kgu"), SubResource("Resource_ln7r3"), SubResource("Resource_vxphd"), SubResource("Resource_bniqe"), SubResource("Resource_em254"), SubResource("Resource_imp54"), SubResource("Resource_os5qw"), SubResource("Resource_ees5r"), SubResource("Resource_xyrgx"), SubResource("Resource_s225c"), SubResource("Resource_a40f6"), SubResource("Resource_otjv4"), SubResource("Resource_gyr5i"), SubResource("Resource_rwhxn"), SubResource("Resource_tijju"), SubResource("Resource_vlqab"), SubResource("Resource_gmp3q"), SubResource("Resource_0fcj5"), SubResource("Resource_vj4un"), SubResource("Resource_d0i38"), SubResource("Resource_hcegs"), SubResource("Resource_vlyya"), SubResource("Resource_wbux6"), SubResource("Resource_16g7h"), SubResource("Resource_t0nx0"), SubResource("Resource_pth4s"), SubResource("Resource_v23w2"), SubResource("Resource_nnvef"), SubResource("Resource_w8g3e"), SubResource("Resource_wcg7u"), SubResource("Resource_ns5ui"), SubResource("Resource_dkfbh"), SubResource("Resource_nqebk"), SubResource("Resource_knvw1"), SubResource("Resource_vhgbf"), SubResource("Resource_1o0qd"), SubResource("Resource_3idwd"), SubResource("Resource_i67p3"), SubResource("Resource_ggjso"), SubResource("Resource_5tju6"), SubResource("Resource_2ejvj"), SubResource("Resource_e2lsn"), SubResource("Resource_u8gmf"), SubResource("Resource_lh13l"), SubResource("Resource_n6xjy"), SubResource("Resource_qj75h"), SubResource("Resource_my2oy"), SubResource("Resource_k0rpq"), SubResource("Resource_kmqxu"), SubResource("Resource_ihpep"), SubResource("Resource_55m5b"), SubResource("Resource_tna2q"), SubResource("Resource_8c2wr"), SubResource("Resource_s06tn"), SubResource("Resource_8ue2s"), SubResource("Resource_qef1g"), SubResource("Resource_8a2ca"), SubResource("Resource_wts87"), SubResource("Resource_l1er1"), SubResource("Resource_kmnem"), SubResource("Resource_gakeh"), SubResource("Resource_jfo7s"), SubResource("Resource_nbh2y"), SubResource("Resource_nvwk4"), SubResource("Resource_p3cwb"), SubResource("Resource_xhkx6"), SubResource("Resource_jpv1o"), SubResource("Resource_bvb8o"), SubResource("Resource_qa8sw"), SubResource("Resource_kipce"), SubResource("Resource_covar"), SubResource("Resource_74ilf"), SubResource("Resource_0ixkg"), SubResource("Resource_dv3rv"), SubResource("Resource_e0m5i"), SubResource("Resource_uc6hv"), SubResource("Resource_xu02q"), SubResource("Resource_j487e"), SubResource("Resource_2hp7d"), SubResource("Resource_0gpkf"), SubResource("Resource_08jjs"), SubResource("Resource_4ayiv"), SubResource("Resource_jmydj"), SubResource("Resource_1w47r"), SubResource("Resource_g04pt"), SubResource("Resource_ejubb"), SubResource("Resource_2o452"), SubResource("Resource_jtiwi"), SubResource("Resource_pm2st"), SubResource("Resource_rrwwh"), SubResource("Resource_smlue"), SubResource("Resource_001l2"), SubResource("Resource_brjog"), SubResource("Resource_p3s0o"), SubResource("Resource_v5g6f"), SubResource("Resource_t3asq"), SubResource("Resource_ehphf"), SubResource("Resource_wdsoa"), SubResource("Resource_6ghdi"), SubResource("Resource_by36j"), SubResource("Resource_rp713"), SubResource("Resource_7glwn"), SubResource("Resource_ltqs8"), SubResource("Resource_xqo68"), SubResource("Resource_6j1an"), SubResource("Resource_231tm"), SubResource("Resource_xyjph"), SubResource("Resource_10vt3"), SubResource("Resource_q0os3"), SubResource("Resource_1n77r"), SubResource("Resource_ajfm7"), SubResource("Resource_25cad"), SubResource("Resource_8ap0s"), SubResource("Resource_46l83"), SubResource("Resource_j3cu7"), SubResource("Resource_sofg1"), SubResource("Resource_iimnk"), SubResource("Resource_84ho8"), SubResource("Resource_t652c"), SubResource("Resource_esvpr"), SubResource("Resource_2gux6"), SubResource("Resource_66o5q"), SubResource("Resource_2henc"), SubResource("Resource_ib0yx"), SubResource("Resource_6gdki"), SubResource("Resource_6pjdl"), SubResource("Resource_2fjq0"), SubResource("Resource_jjd7p"), SubResource("Resource_0y6mp"), SubResource("Resource_giuau"), SubResource("Resource_cblk7"), SubResource("Resource_qea35"), SubResource("Resource_34y5a"), SubResource("Resource_k5str"), SubResource("Resource_au7gd"), SubResource("Resource_enlightenment_5104"), SubResource("Resource_enlightenment_5117"), SubResource("Resource_enlightenment_5130"), SubResource("Resource_enlightenment_5142"), SubResource("Resource_enlightenment_5156"), SubResource("Resource_enlightenment_5169"), SubResource("Resource_enlightenment_5183"), SubResource("Resource_o43js"), SubResource("Resource_7bi6l"), SubResource("Resource_xdl5k"), SubResource("Resource_vqgsu"), SubResource("Resource_cs6j4"), SubResource("Resource_h21yc"), SubResource("Resource_cy8eo"), SubResource("Resource_t7p1s"), SubResource("Resource_5jcf4"), SubResource("Resource_iq8nq")])
 buildings = Array[ExtResource("1_wh8jf")]([SubResource("Resource_jqx0p"), SubResource("Resource_w1vrj"), SubResource("Resource_x3mb8"), SubResource("Resource_4ragh"), SubResource("Resource_pgv5y"), SubResource("Resource_7a64m"), SubResource("Resource_suuu8"), SubResource("Resource_4g58m"), SubResource("Resource_qdfsn"), SubResource("Resource_5po8p")])
 plants = Array[ExtResource("7_yklc2")]([SubResource("Resource_elmj6")])
-eras = Array[ExtResource("2_0otko")]([SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f")])
+eras = Array[ExtResource("2_0otko")]([SubResource("Resource_1iwjt"), SubResource("Resource_u7x25"), SubResource("Resource_qkyvo"), SubResource("Resource_ggqur"), SubResource("Resource_b3l6f"), SubResource("Resource_epblf"), SubResource("Resource_l2b1f"), SubResource("Resource_enlightenment_17")])
 weathers = Array[ExtResource("9_5n80e")]([SubResource("Resource_in545"), SubResource("Resource_qp0ie"), SubResource("Resource_mtc2s"), SubResource("Resource_b8f3e"), SubResource("Resource_43up2"), SubResource("Resource_xyr1n"), SubResource("Resource_k8f2s")])
 villager_names = Array[String](["Mira", "Theo", "Wren", "Ash", "Bram", "Cora", "Dov", "Elm", "Fenn", "Gale", "Hale", "Ivo", "Juno", "Kest", "Lark", "Moss", "Nia", "Orin", "Pike", "Rue", "Sage", "Tarn", "Una", "Vale"])
 villager_traits = Array[StringName]([&"curious", &"social", &"industrious", &"nature_loving"])

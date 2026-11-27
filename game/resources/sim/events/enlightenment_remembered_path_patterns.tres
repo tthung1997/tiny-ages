@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_3nxs6"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_47aj8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_2faeg"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_ngs3o"]
+
+[sub_resource type="Resource" id="Resource_7en64"]
+script = ExtResource("2_47aj8")
+text = "A visitor used a copy of the old map to label the place on a report."
+
+[sub_resource type="Resource" id="Resource_2t7n7"]
+script = ExtResource("3_2faeg")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_hwiu8"]
+script = ExtResource("3_2faeg")
+key = &"path_patterns"
+
+[resource]
+script = ExtResource("4_ngs3o")
+id = &"enlightenment_remembered_path_patterns"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_2faeg")]([SubResource("Resource_2t7n7"), SubResource("Resource_hwiu8")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_47aj8")]([SubResource("Resource_7en64")])

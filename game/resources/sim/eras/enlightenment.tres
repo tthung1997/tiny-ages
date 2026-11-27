@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EraDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/era_def.gd" id="1_ng3hx"]
+
+[resource]
+script = ExtResource("1_ng3hx")
+id = &"enlightenment"
+display_name = "Enlightenment Age"
+order = 7
+description = "Shared questions, fair trials, and patterns other hands can use."
+intro_text = "The two reports stayed pinned side by side. The town opened an Observatory so anyone could see what had been tried, and try it again."
+housing = 14
+max_villagers = 14
+food_need_scale = 1.7
+food_yield_scale = 1.7
+wood_yield_scale = 1.5
+required_achievements = Array[StringName]([&"first_impression", &"common_measure", &"wayfinder_sheet", &"open_demonstration", &"fair_of_pages", &"notebook_of_questions"])
+min_ticks_in_previous_era = 8640
+turn_event = &"two_reports_one_question"

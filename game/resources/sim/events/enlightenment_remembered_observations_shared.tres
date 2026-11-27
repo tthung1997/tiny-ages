@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_ryok6"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_yqiqa"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_mxd4b"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_3erv3"]
+
+[sub_resource type="Resource" id="Resource_kumgs"]
+script = ExtResource("2_yqiqa")
+text = "The first notebook still opens to a pair of different marks."
+
+[sub_resource type="Resource" id="Resource_dlq6u"]
+script = ExtResource("3_mxd4b")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_boqfo"]
+script = ExtResource("3_mxd4b")
+key = &"observations_shared"
+
+[resource]
+script = ExtResource("4_3erv3")
+id = &"enlightenment_remembered_observations_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_mxd4b")]([SubResource("Resource_dlq6u"), SubResource("Resource_boqfo")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_yqiqa")]([SubResource("Resource_kumgs")])

@@ -48,7 +48,7 @@ func test_both_turn_answers_work_without_medieval_flags_or_buildings() -> void:
 		assert_eq(sim.world.has_flag(&"path_patterns"), answer == &"share_patterns")
 
 
-func test_common_roads_can_wait_and_leave_the_age_open_ended() -> void:
+func test_common_roads_can_wait_and_leave_the_turn_to_the_player() -> void:
 	var sim: Simulation = _start(&"renaissance")
 	var days: Array[int] = [60, 108, 162, 216, 270, 324]
 	assert_false(WorldLayout.crossing_open(sim.world))
@@ -71,7 +71,7 @@ func test_common_roads_can_wait_and_leave_the_age_open_ended() -> void:
 	sim.world.tick = sim.world.era_started_tick + 8640
 	EraSystem.new().step(sim)
 	assert_eq(sim.world.era, &"renaissance")
-	assert_true(sim.content.next_era(sim.world.era_order) == null)
+	assert_true(SimFixture.pending_for(sim, &"two_reports_one_question") != null)
 
 
 func test_both_answers_on_every_road_and_early_route_flags() -> void:

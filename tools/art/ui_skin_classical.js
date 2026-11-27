@@ -165,3 +165,19 @@ blit(A, tile('#fff1cf', '#fffbe9', '#c4b68f', '#64909e', OUT), 16, 164);
 blit(A, tile('#dbd0b7', '#b8b29c', '#f0e4ce', '#375c69', OUT), 32, 164);
 IMG.putImageData(A.d);
 SPR.saveAs(DIR + 'game/assets/ui/skin_renaissance.png');
+
+// Enlightenment: a slate-blue frame and a thin brass rule on warm paper.
+P = new Buf(PW, PH);
+P.rect(0, 0, PW, PH, '#394b67');
+P.rect(3, 3, PW - 6, PH - 6, '#75899a');
+P.rect(6, 6, PW - 12, PH - 12, '#a48958');
+P.rect(8, 8, PW - 16, PH - 16, '#f5e7c9');
+P.rect(13, 23, PW - 26, 1, '#a9824c');
+P.rect(13, 25, PW - 26, 1, '#dbc392');
+for (i = 0; i < corners.length; i++) P.d[(corners[i][1] * PW + corners[i][0]) * 4 + 3] = 0;
+blit(A, P, 0, 0);
+blit(A, tile('#e9dbba', '#fff1cf', '#c4ae80', '#536581', OUT), 0, 164);
+blit(A, tile('#f9ecc9', '#fffae5', '#cab080', '#7a8ea4', OUT), 16, 164);
+blit(A, tile('#d7c6a4', '#baab8d', '#ebdebe', '#394b67', OUT), 32, 164);
+IMG.putImageData(A.d);
+SPR.saveAs(DIR + 'game/assets/ui/skin_enlightenment.png');

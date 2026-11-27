@@ -3,7 +3,7 @@ extends McpTestSuite
 ## piece goes in the free space nearest the hall and keeps it, restricted ground takes only what
 ## belongs there, a full lane hides the lowest rank, and none of it touches the simulation.
 
-const LAST_ERA: int = 6
+const LAST_ERA: int = 7
 const SAVE_PATH: String = "user://test_lane_save.tres"
 ## The first age each building can stand in (the sim gates them by milestone; the view does not).
 const BUILDING_ERA: Dictionary = {
@@ -105,6 +105,34 @@ func test_older_building_redraws_keep_their_saved_spaces() -> void:
 	var quay_art: Rect2i = LanePieces.art_rect(&"building_quay", 6)
 	var quay_edge: float = renaissance.sprite_x(&"quay", quay_art) + float(quay_art.position.x)
 	assert_true(absf(quay_edge - 317.0) <= 3.0, "The covered quay still meets the bank")
+
+
+func test_enlightenment_scenery_uses_home_spaces_without_moving_older_buildings() -> void:
+	for crowded: bool in [false, true]:
+		var world: WorldState = _full_world(6, false) if crowded else _world(6, false)
+		_build(world, &"field")
+		if not world.has_achievement(&"water_in_trust"):
+			world.achievements.append(&"water_in_trust")
+		var old: LaneLayout = LanePlacer.place(world)
+		world.era_order = 7
+		var turn: LaneLayout = LanePlacer.place(world)
+		for id: StringName in [&"instrument_shop", &"trial_house"]:
+			assert_false(turn.is_placed(id))
+		world.achievements.append_array([&"rule_that_agrees", &"a_fair_trial"])
+		var earned: LaneLayout = LanePlacer.place(world)
+		for key: StringName in old.starts:
+			if LanePieces.is_essential(key):
+				assert_eq(earned.starts.get(key), old.starts.get(key), String(key))
+		for id: StringName in [&"instrument_shop", &"trial_house"]:
+			assert_true(SceneProps.is_shown(id, world))
+			if not crowded:
+				assert_true(earned.is_placed(id), String(id))
+			if earned.is_placed(id):
+				assert_true(earned.center_x(id) < float(LaneSpaces.RIVER_FROM), String(id))
+	for id: StringName in [&"building_field", &"tended_water_court"]:
+		assert_true(WorldLayout.piece_path(id, 7).contains("/enlightenment/"), String(id))
+	for id: StringName in [&"building_hut", &"building_granary", &"building_quay", &"map_house"]:
+		assert_eq(WorldLayout.piece_path(id, 7), WorldLayout.piece_path(id, 6), String(id))
 
 
 func teardown() -> void:

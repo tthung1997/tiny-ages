@@ -13,6 +13,7 @@ const IRON: int = 3
 const CLASSICAL: int = 4
 const MEDIEVAL: int = 5
 const RENAISSANCE: int = 6
+const ENLIGHTENMENT: int = 7
 ## Game days (72 per real day, see SimConfig) before each Cave Age milestone can happen, so the
 ## five-day age is spread out instead of finished in an afternoon. Fire is not staged: it is the
 ## opening. This is one table so the pace can be retuned in one place.
@@ -281,7 +282,19 @@ func _eras() -> Array[EraDef]:
 	))
 	renaissance.min_ticks_in_previous_era = 8640
 	renaissance.turn_event = &"room_on_the_page"
-	var eras: Array[EraDef] = [cave, settled, bronze, iron, classical, medieval, renaissance]
+	var enlightenment: EraDef = _era(&"enlightenment", "Enlightenment Age", ENLIGHTENMENT)
+	enlightenment.description = "Shared questions, fair trials, and patterns other hands can use."
+	enlightenment.intro_text = "The two reports stayed pinned side by side. The town opened " \
+			+ "an Observatory so anyone could see what had been tried, and try it again."
+	enlightenment.housing = 14
+	enlightenment.required_achievements.assign(RENAISSANCE_MILESTONES.map(func(spec: Array):
+		return spec[0]
+	))
+	enlightenment.min_ticks_in_previous_era = 8640
+	enlightenment.turn_event = &"two_reports_one_question"
+	var eras: Array[EraDef] = [
+		cave, settled, bronze, iron, classical, medieval, renaissance, enlightenment,
+	]
 	_set_profiles(eras)
 	return eras
 
@@ -299,6 +312,7 @@ const PROFILES: Array[Dictionary] = [
 	{"id": &"classical", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 	{"id": &"medieval", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 	{"id": &"renaissance", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
+	{"id": &"enlightenment", "limit": 14, "need": 1.7, "food": 1.7, "wood": 1.5},
 ]
 
 
@@ -435,6 +449,7 @@ func _events() -> Array[EventDef]:
 	events.append_array(_classical_events())
 	events.append_array(_medieval_events())
 	events.append_array(_renaissance_events())
+	events.append_array(_enlightenment_events())
 	return events
 
 
@@ -9110,6 +9125,115 @@ func _renaissance_events() -> Array[EventDef]:
 		var event: EventDef = _ambient(id, memory[1])
 		event.requires = _conds([
 			_cond(SimCondition.Kind.ERA_AT_LEAST, &"", RENAISSANCE), _flag_set(memory[0]),
+		])
+		event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
+		event.once = true
+		events.append(event)
+	return events
+
+
+const ENLIGHTENMENT_MILESTONES: Array[Array] = [
+	[&"two_reports", "Two Reports Side by Side", 24, 60, [],
+		"Two reports disagree. The towns will keep both on the board. How should they compare?", [
+		[&"repeat_here", "Look again from the same spot",
+			"The new sheet went up beside the old one with the standing place marked.",
+			"Ask a second neighbour here to look",
+			"The second pair of eyes noticed what the first account had left out."],
+		[&"ask_neighbours", "Mark where the visiting report was made",
+			"The visitor put a finger on the map. Nobody at home had been standing there.",
+			"Ask the neighbours to send the day as well",
+			"The return sheet came with a date, and both reports stayed on the board."],
+		[&"", "Lay the reports out by place",
+			"The towns marked both places rather than crossing out the smaller number.",
+			"Lay the reports out by time",
+			"The two dates made it clear that nobody had to have been wrong."],
+	]],
+	[&"rule_that_agrees", "A Rule That Agrees", 72, 108, [&"two_reports"],
+		"Two rules with the same markings give different readings. How shall they be checked?", [
+		[&"path_pages", "Print where the reference starts",
+			"A printed sketch showed that one maker had counted from the end of the wood.",
+			"Print the marks that should line up",
+			"An apprentice carried a sheet of matching marks out to the Instrument Shop."],
+		[&"", "Check both against the marked reference",
+			"The Instrument Shop kept the reference on a shelf anyone could reach.",
+			"Swap rules and let another maker check",
+			"The checks agreed, and a spare marked rule went up at the Observatory."],
+	]],
+	[&"method_in_other_hands", "A Method in Other Hands", 126, 162, [&"rule_that_agrees"],
+		"Someone who missed the demonstration wants to try it. What should the makers hand on?", [
+		[&"guild_ribbon", "Draw the tools in ribbon order",
+			"The learner followed the drawing without once calling for the maker.",
+			"Write the steps beside the ribbon colours",
+			"The last ribbon came off the board when the learner finished the lesson."],
+		[&"", "Draw the steps in order",
+			"A learner followed the last drawing alone, then pinned the result beside it.",
+			"Write down the steps in order",
+			"The learner made it to the last step without the person who wrote the page."],
+	]],
+	[&"a_fair_trial", "A Fair Trial", 180, 216, [&"method_in_other_hands"],
+		"The gardeners can set two beds side by side. What one thing shall they vary?", [
+		[&"margin_drawings", "Sketch the bed with a little shelter",
+			"The gardeners drew both beds and marked that both had received the same water.",
+			"Draw the two watering measures",
+			"Two measures went in the margin. The drawing showed the beds shared the same light."],
+		[&"", "Shelter one bed",
+			"Both beds got the same water. The gardeners wrote down which had shelter.",
+			"Water one bed a little more",
+			"Both beds shared the same light. The gardeners wrote down how much each got."],
+	]],
+	[&"correction_in_the_open", "A Correction in the Open", 234, 270, [&"a_fair_trial"],
+		"An early note left out a condition. How should the towns share the correction?", [
+		[&"path_patterns", "Mark the correction on the old sheet",
+			"The familiar map margin held the correction without covering the old line.",
+			"Print the old and new pattern together",
+			"Travellers took both sheets, with the changed line easy to find."],
+		[&"", "Send a correction sheet west",
+			"The next bundle carried the correction beside the old sheet, not in its place.",
+			"Explain the change at the home arcade",
+			"Visitors went home able to say what had changed and why."],
+	]],
+	[&"pattern_that_travels", "A Pattern That Travels", 288, 324, [&"correction_in_the_open"],
+		"A checked pattern shows how to make a jig that holds each piece in the same place. " \
+			+ "Who should try the pattern without its maker there?", [
+		[&"path_circuit", "Send the pattern round the fair circuit",
+			"A jig came back by the fair road. The sample fitted without being pared down.",
+			"Have a maker bring back a jig from the next fair",
+			"The visiting jig worked like the first, though no two hands had cut its wood."],
+		[&"", "Ask a neighbouring maker to try it",
+			"The returned jig matched. The maker wondered which tools could turn without a hand.",
+			"Invite a visiting maker to try it here",
+			"The visitor made a matching jig from the page. Both now wait by the same drawing."],
+	]],
+]
+
+
+func _enlightenment_events() -> Array[EventDef]:
+	var turn: EventDef = _event(&"two_reports_one_question", "Two reports, one question",
+		&"settlement")
+	turn.body = "The towns' notebooks have come back. Two careful reports disagree. " \
+			+ "Where should the next observation be made?"
+	turn.choices = _choices([
+		_answer(&"repeat_here", "Repeat the observation here",
+			"A fresh sheet went up beside the old one. There was room to try again.",
+			[_set_flag(&"repeat_here"), _eff(SimEffect.Kind.ADVANCE_ERA, &"enlightenment")]),
+		_answer(&"ask_neighbours", "Ask a neighbouring town to try it",
+			"A copy of the question went out by the west road with space for a reply.",
+			[_set_flag(&"ask_neighbours"), _eff(SimEffect.Kind.ADVANCE_ERA, &"enlightenment")]),
+	])
+	var events: Array[EventDef] = [turn]
+	for spec: Array in ENLIGHTENMENT_MILESTONES:
+		for road: Array in spec[6]:
+			events.append(_chapter_road("enlightenment", ENLIGHTENMENT, spec, road,
+				&"methods_shared" if spec[0] == &"pattern_that_travels" else &""))
+	for memory: Array in [
+		[&"observations_shared", "The first notebook still opens to a pair of different marks."],
+		[&"path_patterns", "A visitor used a copy of the old map to label the place on a report."],
+		[&"methods_shared", "Someone wondered whether the river could turn a workshop's tools."],
+	]:
+		var id: StringName = StringName("enlightenment_remembered_%s" % memory[0])
+		var event: EventDef = _ambient(id, memory[1])
+		event.requires = _conds([
+			_cond(SimCondition.Kind.ERA_AT_LEAST, &"", ENLIGHTENMENT), _flag_set(memory[0]),
 		])
 		event.chance_per_tick = CLASSICAL_AMBIENT_CHANCE
 		event.once = true

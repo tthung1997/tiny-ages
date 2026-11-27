@@ -493,3 +493,139 @@ for (name in renaissance) {
   IMG.putImageData(renaissance[name].d);
   SPR.saveAs(DIR + 'game/assets/world/renaissance/' + name + '.png');
 }
+
+function instrumentShop(b) {
+  var slate = '#475c72', slatel = '#809aa5', slated = '#343e54';
+  var x, g = '#e5c992', brick = ['#d3a17d', '#c38c6d', '#cd9876'];
+  courses(b, 3, 12, 36, 24, brick, '#a87662', 6);
+  b.rect(36, 13, 3, 22, '#a56f5b');
+  b.rect(32, 1, 5, 9, brick[1]); b.rect(31, 1, 7, 2, g);
+  roof(b, 4, 13, 10, 31, 0, 41, function (x, y, t, left, right) {
+    b.px(x, y, left || t === 0 ? slatel : right || t === 1 || y === 9 ? slated : slate);
+  });
+  b.rect(1, 13, 40, 2, g);
+  b.rect(1, 19, 24, 14, slated); b.rect(3, 17, 20, 3, slate);
+  b.rect(3, 20, 20, 10, '#c58b54'); b.rect(4, 20, 18, 2, '#f2cb87');
+  b.rect(3, 21, 3, 9, '#aa7950'); b.rect(20, 21, 3, 9, '#aa7950');
+  for (x = 6; x <= 19; x += 13) b.rect(x, 20, 1, 10, '#805d4e');
+  b.ell(13, 25, 5, 4, '#674839'); b.ell(13, 25, 4, 3, '#eab95f');
+  b.rect(8, 21, 11, 3, '#dca46a'); b.line(12, 23, 16, 27, '#ffe4a3', 1);
+  b.rect(1, 31, 24, 2, slate); b.rect(2, 31, 22, 1, slatel);
+  b.rect(25, 14, 12, 21, g); b.rect(27, 15, 8, 20, DARK);
+  b.rect(27, 16, 1, 18, '#73554d'); b.px(33, 28, '#d4a961');
+  b.rect(3, 35, 36, 1, STONED); b.rect(24, 35, 15, 1, STONEL);
+}
+
+function trialHouse(b) {
+  var glass = '#8eb5bc', shade = '#547783', shine = '#c9e2d9', bars = '#566c6e';
+  b.rect(2, 11, 46, 25, PLASTER); b.rect(44, 11, 4, 25, STONED);
+  roof(b, 3, 11, 23, 25, 0, 49, function (x, y, t, left, right) {
+    b.px(x, y, left || y === 3 ? STONEL : right || y === 11 ? STONED : PLASTERD);
+  });
+  b.rect(0, 11, 50, 2, STONEL); b.rect(2, 13, 46, 1, STONED);
+  for (var x = 5; x <= 33; x += 28) {
+    b.ell(x + 6, 22, 7, 7, STONEL); b.rect(x - 1, 22, 15, 12, STONEL);
+    b.ell(x + 6, 22, 5.5, 5.5, shade); b.rect(x + 1, 22, 11, 10, glass);
+    b.line(x + 2, 20, x + 2, 27, shine, 1);
+    b.rect(x + 6, 17, 1, 14, bars); b.rect(x + 1, 23, 11, 1, bars);
+    b.rect(x + 3, 28, 7, 3, x === 5 ? '#83a058' : '#4b8565');
+    b.rect(x + 2, 31, 9, 2, '#9d664c');
+  }
+  b.rect(19, 14, 12, 23, STONED); b.rect(21, 16, 8, 20, DARK);
+  b.rect(22, 18, 6, 10, shade); b.rect(24, 18, 1, 10, shine);
+  b.rect(22, 29, 6, 6, '#46656b');
+  b.rect(0, 35, 50, 2, STONED); b.rect(1, 35, 48, 1, STONEL);
+}
+
+function measuredField(b) {
+  var earth = '#795244', furrow = '#61433a', straw = '#e8b94f', gold = '#f7d976';
+  var y, r, x, left, right, aisle, bed, h, top;
+  for (y = 5; y < 17; y++) {
+    left = Math.max(0, 6 - (y - 5)); right = 54 - left;
+    b.rect(left, y, right - left, 1, y === 16 || y % 3 === 1 ? furrow : earth);
+    aisle = 30 - Math.floor((y - 5) / 2);
+    b.rect(aisle - 2, y, 5, 1, y % 3 === 0 ? '#859856' : '#69834d');
+  }
+  for (r = 0; r < 3; r++) {
+    y = 9 + r * 3; aisle = 30 - Math.floor((y - 5) / 2);
+    for (bed = 0; bed < 2; bed++) {
+      left = bed ? aisle + 4 : 7 - r * 2;
+      right = bed ? 48 + r : aisle - 3;
+      for (x = left + r % 2; x < right; x += 3) {
+        h = 4 + ((x * 7 + r) % 4); top = y - h;
+        b.rect(x, top + 1, 1, h, r === 2 ? '#c59039' : '#cda044');
+        b.px(x, top, gold); b.px(x - 1, top + 1, straw); b.px(x + 1, top + 2, straw);
+        b.px(x, top + 2, r ? '#eabc54' : '#ffe090');
+        b.px(x - 1, y - 1, (x + r) % 2 ? '#aa8040' : '#9b884e');
+      }
+    }
+  }
+  for (x = 1; x <= 51; x += 50) {
+    b.rect(x, 9, 2, 7, OAKH); b.rect(x, 10, 2, 1, '#f3e5b9');
+    b.rect(x, 12, 2, 1, '#b9c9b2');
+  }
+  b.rect(22, 11, 2, 5, OAKH); b.rect(27, 11, 2, 5, OAKH);
+  b.rect(22, 11, 7, 1, '#f3e5b9');
+}
+
+function measuredCourt(b) {
+  var ledge = '#ece1be', wall = '#c7baa0', shade = '#9b8d7b', pool = '#3e8098';
+  b.ell(12, 12, 10, 10, wall); b.rect(2, 12, 21, 12, wall);
+  b.ell(12, 13, 6, 7, '#525366'); b.rect(6, 13, 13, 11, '#525366');
+  b.rect(2, 13, 2, 10, ledge); b.rect(21, 13, 2, 10, shade);
+  b.rect(11, 2, 3, 4, ledge); b.px(8, 4, ledge); b.px(16, 4, shade);
+  b.rect(5, 7, 2, 1, ledge); b.rect(18, 8, 3, 1, shade);
+  b.rect(2, 14, 4, 1, shade); b.rect(19, 14, 4, 1, shade);
+  b.rect(2, 20, 4, 1, shade); b.rect(19, 20, 4, 1, shade);
+  b.rect(15, 11, 3, 10, '#dfc27e');
+  for (var y = 12; y <= 19; y += 3) b.rect(15, y, 2, 1, '#745a4c');
+  b.rect(10, 10, 3, 4, ledge);
+  b.rect(10, 14, 3, 10, WATERD); b.rect(10, 14, 2, 10, WATERL);
+  b.ell(12, 24, 12, 4, ledge); b.ell(12, 24, 10, 2.6, pool);
+  b.rect(4, 25, 17, 1, '#86c9ce'); b.rect(0, 27, 25, 2, wall);
+  b.rect(2, 27, 21, 1, ledge); b.rect(2, 29, 21, 1, shade);
+}
+
+function reportBoard(b, corrected) {
+  b.rect(0, 1, 16, 11, OAKD);
+  b.rect(1, 2, 6, 8, paper); b.rect(9, 1, 6, 9, '#a7c7ce');
+  b.line(2, 8, 6, 4, ink, 1);
+  b.line(10, 7, 14, corrected ? 3 : 6, corrected ? '#984f3c' : ink, 1);
+  if (corrected) b.rect(10, 8, 4, 1, '#984f3c');
+}
+
+var enlightenment = {
+  instrument_shop: layerOf([obj(42, 36, 117, 66, instrumentShop)]),
+  trial_house: layerOf([obj(50, 37, 173, 66, trialHouse)]),
+  building_field: layerOf([obj(54, 17, 226, 78, measuredField)]),
+  tended_water_court: layerOf([obj(26, 30, 197, 75, measuredCourt)]),
+  report_pair: layerOf([obj(16, 12, 14, 62, function (b) { reportBoard(b, false); })]),
+  correction_sheets: layerOf([obj(16, 12, 14, 62, function (b) { reportBoard(b, true); })]),
+  method_diagram: layerOf([obj(16, 12, 57, 62, function (b) {
+    b.rect(0, 0, 16, 12, OAKD); b.rect(1, 1, 14, 10, paper);
+    for (var x = 2; x < 13; x += 5) b.rect(x, 4, 3, 4, ink);
+    b.rect(5, 6, 2, 1, '#b4744d'); b.rect(10, 6, 2, 1, '#b4744d');
+    b.rect(3, 9, 9, 1, fold);
+  })]),
+  reference_rules: layerOf([obj(16, 10, 57, 62, function (b) {
+    b.rect(0, 0, 16, 10, OAKD);
+    b.rect(1, 1, 14, 3, '#e6b95e'); b.rect(1, 6, 14, 3, paper);
+    for (var x = 3; x < 14; x += 3) { b.px(x, 2, OAKD); b.px(x, 7, OAKD); }
+  })]),
+  trial_trays: layerOf([obj(16, 10, 57, 62, function (b) {
+    for (var x = 0; x < 16; x += 8) {
+      b.rect(x, 6, 7, 4, '#a06b50');
+      b.rect(x + 1, 4, 5, 2, x === 0 ? '#a5b366' : '#639573');
+      b.rect(x + 2, 2, 2, 4, '#7ca15d'); b.rect(x + 4, 3, 2, 3, '#94b270');
+    }
+  })]),
+  pattern_jig: layerOf([obj(16, 10, 57, 62, function (b) {
+    b.rect(0, 1, 7, 8, paper); b.line(1, 6, 5, 3, ink, 1);
+    b.rect(8, 7, 8, 3, OAKH); b.rect(8, 2, 2, 6, '#d6a25f');
+    b.rect(13, 3, 2, 5, '#d6a25f'); b.rect(9, 6, 5, 1, '#f2d89c');
+  })])
+};
+for (name in enlightenment) {
+  IMG.putImageData(enlightenment[name].d);
+  SPR.saveAs(DIR + 'game/assets/world/enlightenment/' + name + '.png');
+}
