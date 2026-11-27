@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_y85sr"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_godx8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_nbswn"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_b3xiw"]
+
+[sub_resource type="Resource" id="Resource_ikqrv"]
+script = ExtResource("2_godx8")
+kind = 1
+key = &"enlightenment_method_in_other_hands_guild_ribbon_1"
+
+[sub_resource type="Resource" id="Resource_hoqq7"]
+script = ExtResource("2_godx8")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_4fhvd"]
+script = ExtResource("2_godx8")
+text = "The learner followed the drawing without once calling for the maker."
+
+[sub_resource type="Resource" id="Resource_ch0me"]
+script = ExtResource("1_y85sr")
+id = &"enlightenment_method_in_other_hands_guild_ribbon_1"
+label = "Draw the tools in ribbon order"
+effects = Array[ExtResource("2_godx8")]([SubResource("Resource_ikqrv"), SubResource("Resource_hoqq7"), SubResource("Resource_4fhvd")])
+
+[sub_resource type="Resource" id="Resource_d517s"]
+script = ExtResource("2_godx8")
+kind = 1
+key = &"enlightenment_method_in_other_hands_guild_ribbon_3"
+
+[sub_resource type="Resource" id="Resource_4564w"]
+script = ExtResource("2_godx8")
+kind = 10
+key = &"method_in_other_hands"
+text = "A Method in Other Hands"
+
+[sub_resource type="Resource" id="Resource_nqtda"]
+script = ExtResource("2_godx8")
+text = "The last ribbon came off the board when the learner finished the lesson."
+
+[sub_resource type="Resource" id="Resource_meeth"]
+script = ExtResource("1_y85sr")
+id = &"enlightenment_method_in_other_hands_guild_ribbon_3"
+label = "Write the steps beside the ribbon colours"
+effects = Array[ExtResource("2_godx8")]([SubResource("Resource_d517s"), SubResource("Resource_4564w"), SubResource("Resource_nqtda")])
+
+[sub_resource type="Resource" id="Resource_oknfu"]
+script = ExtResource("3_nbswn")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_a4sfj"]
+script = ExtResource("3_nbswn")
+kind = 11
+amount = 126
+
+[sub_resource type="Resource" id="Resource_c7uk1"]
+script = ExtResource("3_nbswn")
+kind = 9
+key = &"method_in_other_hands"
+negate = true
+
+[sub_resource type="Resource" id="Resource_dho2y"]
+script = ExtResource("3_nbswn")
+kind = 9
+key = &"rule_that_agrees"
+
+[sub_resource type="Resource" id="Resource_1mfyv"]
+script = ExtResource("3_nbswn")
+key = &"guild_ribbon"
+
+[resource]
+script = ExtResource("4_b3xiw")
+id = &"enlightenment_method_in_other_hands_guild_ribbon"
+title = "A Method in Other Hands"
+body = "Someone who missed the demonstration wants to try it. What should the makers hand on?"
+category = &"settlement"
+requires = Array[ExtResource("3_nbswn")]([SubResource("Resource_oknfu"), SubResource("Resource_a4sfj"), SubResource("Resource_c7uk1"), SubResource("Resource_dho2y"), SubResource("Resource_1mfyv")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_y85sr")]([SubResource("Resource_ch0me"), SubResource("Resource_meeth")])

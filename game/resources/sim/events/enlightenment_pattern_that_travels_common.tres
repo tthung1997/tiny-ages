@@ -1,0 +1,90 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_irdj2"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_1qchr"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_etfal"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_kgs1u"]
+
+[sub_resource type="Resource" id="Resource_0tll1"]
+script = ExtResource("2_1qchr")
+kind = 1
+key = &"enlightenment_pattern_that_travels_common_1"
+
+[sub_resource type="Resource" id="Resource_j4st2"]
+script = ExtResource("2_1qchr")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_lhhd3"]
+script = ExtResource("2_1qchr")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_e0jyw"]
+script = ExtResource("2_1qchr")
+text = "The returned jig matched. The maker wondered which tools could turn without a hand."
+
+[sub_resource type="Resource" id="Resource_iy3dt"]
+script = ExtResource("1_irdj2")
+id = &"enlightenment_pattern_that_travels_common_1"
+label = "Ask a neighbouring maker to try it"
+effects = Array[ExtResource("2_1qchr")]([SubResource("Resource_0tll1"), SubResource("Resource_j4st2"), SubResource("Resource_lhhd3"), SubResource("Resource_e0jyw")])
+
+[sub_resource type="Resource" id="Resource_6jwb1"]
+script = ExtResource("2_1qchr")
+kind = 1
+key = &"enlightenment_pattern_that_travels_common_3"
+
+[sub_resource type="Resource" id="Resource_d1k4m"]
+script = ExtResource("2_1qchr")
+kind = 10
+key = &"pattern_that_travels"
+text = "A Pattern That Travels"
+
+[sub_resource type="Resource" id="Resource_0ffnq"]
+script = ExtResource("2_1qchr")
+kind = 1
+key = &"methods_shared"
+
+[sub_resource type="Resource" id="Resource_3mhbm"]
+script = ExtResource("2_1qchr")
+text = "The visitor made a matching jig from the page. Both now wait by the same drawing."
+
+[sub_resource type="Resource" id="Resource_t7m5n"]
+script = ExtResource("1_irdj2")
+id = &"enlightenment_pattern_that_travels_common_3"
+label = "Invite a visiting maker to try it here"
+effects = Array[ExtResource("2_1qchr")]([SubResource("Resource_6jwb1"), SubResource("Resource_d1k4m"), SubResource("Resource_0ffnq"), SubResource("Resource_3mhbm")])
+
+[sub_resource type="Resource" id="Resource_jno7x"]
+script = ExtResource("3_etfal")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_vkwl6"]
+script = ExtResource("3_etfal")
+kind = 11
+amount = 324
+
+[sub_resource type="Resource" id="Resource_aq57p"]
+script = ExtResource("3_etfal")
+kind = 9
+key = &"pattern_that_travels"
+negate = true
+
+[sub_resource type="Resource" id="Resource_pkixr"]
+script = ExtResource("3_etfal")
+kind = 9
+key = &"correction_in_the_open"
+
+[resource]
+script = ExtResource("4_kgs1u")
+id = &"enlightenment_pattern_that_travels_common"
+title = "A Pattern That Travels"
+body = "A checked pattern shows how to make a jig that holds each piece in the same place. Who should try the pattern without its maker there?"
+category = &"settlement"
+requires = Array[ExtResource("3_etfal")]([SubResource("Resource_jno7x"), SubResource("Resource_vkwl6"), SubResource("Resource_aq57p"), SubResource("Resource_pkixr")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_irdj2")]([SubResource("Resource_iy3dt"), SubResource("Resource_t7m5n")])

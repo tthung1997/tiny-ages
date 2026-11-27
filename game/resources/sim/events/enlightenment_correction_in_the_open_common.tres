@@ -1,0 +1,80 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_tjlwr"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_ytv15"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_5gml4"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_jx0sl"]
+
+[sub_resource type="Resource" id="Resource_kdlgq"]
+script = ExtResource("2_ytv15")
+kind = 1
+key = &"enlightenment_correction_in_the_open_common_1"
+
+[sub_resource type="Resource" id="Resource_hdhxq"]
+script = ExtResource("2_ytv15")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_rg5bb"]
+script = ExtResource("2_ytv15")
+text = "The next bundle carried the correction beside the old sheet, not in its place."
+
+[sub_resource type="Resource" id="Resource_08y0m"]
+script = ExtResource("1_tjlwr")
+id = &"enlightenment_correction_in_the_open_common_1"
+label = "Send a correction sheet west"
+effects = Array[ExtResource("2_ytv15")]([SubResource("Resource_kdlgq"), SubResource("Resource_hdhxq"), SubResource("Resource_rg5bb")])
+
+[sub_resource type="Resource" id="Resource_521uv"]
+script = ExtResource("2_ytv15")
+kind = 1
+key = &"enlightenment_correction_in_the_open_common_3"
+
+[sub_resource type="Resource" id="Resource_esquq"]
+script = ExtResource("2_ytv15")
+kind = 10
+key = &"correction_in_the_open"
+text = "A Correction in the Open"
+
+[sub_resource type="Resource" id="Resource_tlis4"]
+script = ExtResource("2_ytv15")
+text = "Visitors went home able to say what had changed and why."
+
+[sub_resource type="Resource" id="Resource_cay5q"]
+script = ExtResource("1_tjlwr")
+id = &"enlightenment_correction_in_the_open_common_3"
+label = "Explain the change at the home arcade"
+effects = Array[ExtResource("2_ytv15")]([SubResource("Resource_521uv"), SubResource("Resource_esquq"), SubResource("Resource_tlis4")])
+
+[sub_resource type="Resource" id="Resource_m1dux"]
+script = ExtResource("3_5gml4")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_jagg5"]
+script = ExtResource("3_5gml4")
+kind = 11
+amount = 270
+
+[sub_resource type="Resource" id="Resource_yet5c"]
+script = ExtResource("3_5gml4")
+kind = 9
+key = &"correction_in_the_open"
+negate = true
+
+[sub_resource type="Resource" id="Resource_3x0g3"]
+script = ExtResource("3_5gml4")
+kind = 9
+key = &"a_fair_trial"
+
+[resource]
+script = ExtResource("4_jx0sl")
+id = &"enlightenment_correction_in_the_open_common"
+title = "A Correction in the Open"
+body = "An early note left out a condition. How should the towns share the correction?"
+category = &"settlement"
+requires = Array[ExtResource("3_5gml4")]([SubResource("Resource_m1dux"), SubResource("Resource_jagg5"), SubResource("Resource_yet5c"), SubResource("Resource_3x0g3")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_tjlwr")]([SubResource("Resource_08y0m"), SubResource("Resource_cay5q")])

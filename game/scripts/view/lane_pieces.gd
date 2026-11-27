@@ -71,6 +71,8 @@ const TABLE: Dictionary = {
 	&"law_pillar": [BACK, 1, GROUND, 3],
 	&"scriptorium": [BACK, 1, GROUND, 1],
 	&"map_house": [BACK, 1, GROUND, 3],
+	&"instrument_shop": [BACK, 2, GROUND, 3],
+	&"trial_house": [BACK, 2, GROUND, 3],
 	&"cart": [MID, 1, GROUND, 4],
 	&"donkeys": [MID, 1, GROUND, 4],
 	&"coin_tray": [MID, 1, GROUND, 4],
@@ -122,10 +124,14 @@ const BACKDROP: Array[StringName] = [
 	&"paved_street_west", &"paved_street_hall", &"paved_street", &"paved_street_bank",
 	&"stewardship_charter", &"stewardship_pages",
 	&"print_sheets", &"wayfinder_map", &"town_rule", &"observations_board",
+	&"report_pair", &"reference_rules", &"method_diagram", &"trial_trays",
+	&"correction_sheets", &"pattern_jig",
 ]
 
 ## Buildings used on routes that must work on the home side of the river.
-const HOME_BANK_ONLY: Array[StringName] = [&"scriptorium", &"map_house"]
+const HOME_BANK_ONLY: Array[StringName] = [
+	&"scriptorium", &"map_house", &"instrument_shop", &"trial_house",
+]
 const FAR_BANK_ONLY: Array[StringName] = [&"east_theatre"]
 
 ## The pieces a trader's market is: the arcade of the Classical Age once there is one, else the

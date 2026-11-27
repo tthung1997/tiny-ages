@@ -1,0 +1,79 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_unkqx"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_hhkt8"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_esnec"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_w5njq"]
+
+[sub_resource type="Resource" id="Resource_rbre1"]
+script = ExtResource("2_hhkt8")
+kind = 1
+key = &"enlightenment_two_reports_ask_neighbours_1"
+
+[sub_resource type="Resource" id="Resource_c5tdm"]
+script = ExtResource("2_hhkt8")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_w5een"]
+script = ExtResource("2_hhkt8")
+text = "The visitor put a finger on the map. Nobody at home had been standing there."
+
+[sub_resource type="Resource" id="Resource_mocnq"]
+script = ExtResource("1_unkqx")
+id = &"enlightenment_two_reports_ask_neighbours_1"
+label = "Mark where the visiting report was made"
+effects = Array[ExtResource("2_hhkt8")]([SubResource("Resource_rbre1"), SubResource("Resource_c5tdm"), SubResource("Resource_w5een")])
+
+[sub_resource type="Resource" id="Resource_01qv0"]
+script = ExtResource("2_hhkt8")
+kind = 1
+key = &"enlightenment_two_reports_ask_neighbours_3"
+
+[sub_resource type="Resource" id="Resource_x2c47"]
+script = ExtResource("2_hhkt8")
+kind = 10
+key = &"two_reports"
+text = "Two Reports Side by Side"
+
+[sub_resource type="Resource" id="Resource_mwvcy"]
+script = ExtResource("2_hhkt8")
+text = "The return sheet came with a date, and both reports stayed on the board."
+
+[sub_resource type="Resource" id="Resource_ka1ne"]
+script = ExtResource("1_unkqx")
+id = &"enlightenment_two_reports_ask_neighbours_3"
+label = "Ask the neighbours to send the day as well"
+effects = Array[ExtResource("2_hhkt8")]([SubResource("Resource_01qv0"), SubResource("Resource_x2c47"), SubResource("Resource_mwvcy")])
+
+[sub_resource type="Resource" id="Resource_wtlh0"]
+script = ExtResource("3_esnec")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_7lk4n"]
+script = ExtResource("3_esnec")
+kind = 11
+amount = 24
+
+[sub_resource type="Resource" id="Resource_wujtc"]
+script = ExtResource("3_esnec")
+kind = 9
+key = &"two_reports"
+negate = true
+
+[sub_resource type="Resource" id="Resource_6j6xb"]
+script = ExtResource("3_esnec")
+key = &"ask_neighbours"
+
+[resource]
+script = ExtResource("4_w5njq")
+id = &"enlightenment_two_reports_ask_neighbours"
+title = "Two Reports Side by Side"
+body = "Two reports disagree. The towns will keep both on the board. How should they compare?"
+category = &"settlement"
+requires = Array[ExtResource("3_esnec")]([SubResource("Resource_wtlh0"), SubResource("Resource_7lk4n"), SubResource("Resource_wujtc"), SubResource("Resource_6j6xb")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_unkqx")]([SubResource("Resource_mocnq"), SubResource("Resource_ka1ne")])

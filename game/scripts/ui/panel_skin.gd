@@ -52,6 +52,7 @@ static func skins() -> Dictionary:
 	return {
 		&"cave": cave, &"settled": clay, &"bronze": bronze, &"iron": iron,
 		&"classical": classical, &"medieval": medieval, &"renaissance": renaissance,
+		&"enlightenment": enlightenment,
 	}
 
 
@@ -160,6 +161,20 @@ static func renaissance() -> PanelSkin:
 	skin.scroll_track = Color("dfd7bf")
 	skin.scroll_grabber = Color("56778a")
 	skin.tooltip_fill = Color("f4e9cd")
+	skin._place_pieces()
+	return skin
+
+
+static func enlightenment() -> PanelSkin:
+	var skin: PanelSkin = PanelSkin.new()
+	skin.era_id = &"enlightenment"
+	skin.atlas_path = ASSET_DIR + "skin_enlightenment.png"
+	skin.title_color = Color("394b67")
+	skin.muted = Color("554d43")
+	skin.day_color = Color("765129")
+	skin.scroll_track = Color("dfd0ac")
+	skin.scroll_grabber = Color("536581")
+	skin.tooltip_fill = Color("f5e7c9")
 	skin._place_pieces()
 	return skin
 

@@ -322,6 +322,42 @@ function printHall(b) {
   b.rect(20, 53, 29, 1, '#c0a28b');
 }
 
+// Flamsteed House (1676): a faceted upper room with tall windows above a brick base.
+function observatory(b) {
+  var brick = ['#b77860', '#b26a54', '#ca8466'], joint = '#935747';
+  var stone = '#e5caa2', stoneD = '#b29882', dark = '#36313b';
+  var glass = '#f1b86d', glint = '#ffe0a2', bar = '#7b5444';
+  courses(b, 5, 28, 63, 24, brick, joint, 6);
+  b.rect(59, 29, 9, 22, '#9d5a4b');
+  b.rect(4, 27, 65, 2, stone); b.rect(5, 29, 63, 1, stoneD);
+
+  b.rect(13, 9, 44, 18, brick[0]);
+  b.rect(13, 9, 7, 18, brick[2]); b.rect(50, 9, 7, 18, joint);
+  roof(b, 1, 8, 24, 45, 10, 60, function (x, y, t, left, right) {
+    var face = x < 23 ? '#77929b' : x < 45 ? '#526c7c' : '#405367';
+    b.px(x, y, left || t === 0 ? '#a1b5b4' : right || t === 1 ? '#354658' : face);
+  });
+  b.rect(10, 8, 51, 1, '#344657'); b.rect(12, 9, 47, 1, stone);
+  for (var x = 15; x <= 48; x += 11) {
+    b.rect(x, 13, 7, 13, dark); b.rect(x + 1, 12, 5, 2, dark);
+    b.rect(x + 1, 14, 5, 10, glass); b.rect(x + 1, 14, 2, 3, glint);
+    b.rect(x + 3, 14, 1, 10, bar); b.rect(x + 1, 19, 5, 1, bar);
+    b.rect(x - 1, 25, 9, 1, stone);
+  }
+
+  // The door stays between two recessed bays sized for the milestone dressing.
+  for (var bay = 0; bay < 2; bay++) {
+    var bx = bay ? 47 : 5;
+    b.rect(bx, 35, 20, 15, stone); b.rect(bx + 1, 36, 18, 12, '#58434a');
+    b.rect(bx + 2, 39, 16, 8, '#876350'); b.rect(bx, 48, 20, 2, stoneD);
+    b.rect(bx, 48, 20, 1, stone);
+  }
+  b.ell(34, 39, 10, 10, stone); b.rect(24, 39, 21, 13, stone);
+  b.ell(34, 40, 8, 8, dark); b.rect(26, 40, 17, 12, dark);
+  b.rect(27, 40, 1, 11, bar); b.rect(41, 40, 1, 11, '#65483d');
+  b.rect(23, 52, 23, 1, stone); b.rect(21, 53, 27, 1, stoneD);
+}
+
 // ---- Classical onwards: bronze brazier (16x14, foot row 78) -----------------
 function brazier(b, frame, renaissance) {
   var fl = FLAMES[frame || 0], i, BD = renaissance ? '#354956' : '#6e4a1a';
@@ -337,15 +373,15 @@ function pineOnly() { return [obj(16, 26, 204, 65, pine, { sh: 6 })]; }
 
 function flameFn(frame, kind) {
   return function (b) {
-    if (kind == 'classical' || kind == 'medieval' || kind == 'renaissance') {
-      brazier(b, frame, kind == 'renaissance');
+    if (kind == 'classical' || kind == 'medieval' || kind == 'renaissance' || kind == 'enlightenment') {
+      brazier(b, frame, kind == 'renaissance' || kind == 'enlightenment');
     } else firepit(b, frame);
   };
 }
 
 var AGES = [
   ['settled', longhouse], ['bronze', gatehouse], ['iron', hillhall], ['classical', civichall],
-  ['medieval', stewardshipHall], ['renaissance', printHall]
+  ['medieval', stewardshipHall], ['renaissance', printHall], ['enlightenment', observatory]
 ];
 var ai, ap, i, back, count = 0;
 for (ai = 0; ai < AGES.length; ai++) {

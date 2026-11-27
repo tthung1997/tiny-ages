@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_2t2e3"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_tbcih"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_tf4be"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_7htag"]
+
+[sub_resource type="Resource" id="Resource_fvd6o"]
+script = ExtResource("2_tbcih")
+text = "Someone wondered whether the river could turn a workshop's tools."
+
+[sub_resource type="Resource" id="Resource_v5gj8"]
+script = ExtResource("3_tf4be")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_nfen7"]
+script = ExtResource("3_tf4be")
+key = &"methods_shared"
+
+[resource]
+script = ExtResource("4_7htag")
+id = &"enlightenment_remembered_methods_shared"
+title = "A quiet moment"
+category = &"nature"
+requires = Array[ExtResource("3_tf4be")]([SubResource("Resource_v5gj8"), SubResource("Resource_nfen7")])
+chance_per_tick = 0.002
+once = true
+cooldown_ticks = 360
+effects = Array[ExtResource("2_tbcih")]([SubResource("Resource_fvd6o")])

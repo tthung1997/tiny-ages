@@ -141,6 +141,9 @@ PAL.hoodWren = palWith(PAL.clothWren, { shirt: '#af9054', shirtD: '#7f6539', clo
 PAL.doubletMira = palWith(PAL.clothMira, { shirt: '#994e70', shirtD: '#763957', trim: '#dfa56e' });
 PAL.doubletTheo = palWith(PAL.clothTheo, { shirt: '#438b9b', shirtD: '#326372', trim: '#95c9c9' });
 PAL.doubletWren = palWith(PAL.clothWren, { shirt: '#b17736', shirtD: '#855532', trim: '#f1bb6a' });
+PAL.coatMira = palWith(PAL.clothMira, { shirt: '#834e65', shirtD: '#5d3b56', trim: '#c8976d' });
+PAL.coatTheo = palWith(PAL.clothTheo, { shirt: '#4b6986', shirtD: '#354961', trim: '#8eb8bf' });
+PAL.coatWren = palWith(PAL.clothWren, { shirt: '#73854f', shirtD: '#4e643d', trim: '#d9bb78' });
 
 // Keep the same character silhouettes, draw buffer and pose order when an age changes clothes.
 function saveOutfitSheets(sprite, outDir, outfits, palettes, stone) {
@@ -199,6 +202,7 @@ function vil(o) {
     var civ = ofit == 'civic', lin = ofit == 'linen' || civ;
     var guild = ofit == 'guild', hood = ofit == 'hood' || guild;
     var show = ofit == 'show_coat', doublet = ofit == 'doublet' || show;
+    var rolled = ofit == 'work_coat', coat = ofit == 'waistcoat' || rolled;
     var sole = o.fur ? '#5a4636' : '#4a3224';
     if (field) { legc = SKD; sole = '#c98a6a'; }
     if (town) { legc = '#6b4a2f'; sole = '#3a281a'; }
@@ -236,6 +240,10 @@ function vil(o) {
         return;
       }
       b.line(x0, y0, x1, y1, cl.shirt, 2);
+      if (rolled) {
+        var cw = Math.round((x0 + x1) / 2), ch = Math.round((y0 + y1) / 2);
+        b.line(cw, ch, x1, y1, SK, 2); b.rect(cw, ch, 2, 2, cl.trim);
+      }
       if (brz) { var qx = Math.round(x0 + (x1 - x0) * 0.8), qy = Math.round(y0 + (y1 - y0) * 0.8); b.rect(qx, qy, 2, 2, BRONZE); b.px(qx, qy, BRONZE_L); }
     }
     if (o.role == 'explorer') { b.rect(bx - 3, bodyTop, 3, 5, WOOD); b.rect(bx - 3, bodyTop, 3, 1, WOODL); b.px(bx - 2, bodyTop + 2, '#e8c46a'); }
@@ -302,6 +310,14 @@ function vil(o) {
       b.rect(bx + 2, bodyTop + 1, 1, 4, '#f5e1b4');
       b.rect(bx - 1, bodyTop + 3, bw + 2, show ? 2 : 1, show ? cl.shirtD : cl.shirt);
       if (show) b.rect(bx - 1, bodyTop + 4, bw + 2, 1, cl.trim);
+    }
+    if (coat) {
+      b.rect(bx - 1, bodyTop + 1, bw + 2, bh, cl.shirt);
+      b.rect(bx - 1, bodyTop + bh, 3, 2, cl.shirtD);
+      b.rect(bx + bw - 2, bodyTop + bh, 3, 1, cl.shirtD);
+      b.rect(bx + 2, bodyTop, 2, bh, '#e8d5a9');
+      b.px(bx + 2, bodyTop + 2, cl.shirtD); b.px(bx + 2, bodyTop + 4, cl.shirtD);
+      if (rolled) b.rect(bx - 1, bodyTop + ba, 2, 1, cl.trim);
     }
     if (o.role == 'woodcutter') for (var yy = 0; yy < bh - 1; yy++) for (var xx = 0; xx < bw; xx++) if ((xx + yy) % 3 == 0) b.px(bx + xx, bodyTop + yy, cl.shirtD);
     if (o.role == 'builder') { b.rect(bx + 1, bodyTop + 1, bw - 2, bh - 2, '#b57a42'); b.rect(bx + 1, bodyTop + 1, bw - 2, 1, '#d9a566'); }

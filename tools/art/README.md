@@ -57,6 +57,12 @@ The in-place upgrades reuse the Classical drawing functions, including the Fair 
 lighthouse. The scripts also write the Scriptorium, Stewardship Hall and porch details,
 folded-hood and guild-cape sheets, oak-and-parchment skin, and six medals. Run Godot
 `--headless --path game --import` afterward to refresh import sidecars.
+
+**Enlightenment:** `python tools/art/bundle.py --run classical_camp signature_landmarks enlightenment_villagers ui_skin_classical ui_achievements`
+generates the Observatory and its displays, Instrument Shop, Trial House, Field and Water Court
+redraws, two coat styles, the panel skin, and six medals. Period references are in
+[Ages](../../docs/ages.md#enlightenment-age); each sprite is drawn by the scripts,
+not traced or imported. Run the same Godot import command afterward.
 | `weather.js` | Rain and snow as one 384×480 sheet of 80 px rows (no outline, transparent light and shade) → `game/assets/world/weather.png`: rain ×3 and snow ×3, each a falling loop. Rows are mirrored in `scripts/view/weather_layer.gd`; needs `--import` afterwards |
 | `ui_seasons.js` | The strip's season glyphs: 4 cells of 12×12 (spring sprout, summer sun, autumn leaf, winter snowflake) in one 48×12 sheet → `game/assets/ui/season_glyphs.png`; cells are the `Season` order |
 | `settled_villagers.js` | The same three villagers in woven tunics (palettes `clothMira`, `clothTheo`, `clothWren`, `cloth: true` in `vil`) → `game/assets/world/settled/villagers/<id>.png`, 308×30, 11 cells like the Cave sheets; the game swaps to them once `woven_cloth` is earned. Also draws the field clothes (palettes `fieldMira`…, `outfit: 'field'`: hemp tunic, rope belt, rolled sleeves, bare feet) → `settled/villagers/field/<id>.png`, worn from the turn of the age. Needs `--import` afterwards |

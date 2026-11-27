@@ -9,8 +9,8 @@ const MAX_OVERLAP: float = 0.25
 const PAGE_BUDGET: Dictionary = {-1: 14, 0: 9, 1: 8}
 ## An age may hold more on a page when it is that age's character to (docs/ages.md, flexible density per age):
 ## the Classical Age's east shore adds a theatre and a harbour in place of the ship.
-const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}, 5: {1: 9}, 6: {1: 9}}
-const LAST_ERA: int = 6
+const PAGE_BUDGET_BY_ERA: Dictionary = {4: {1: 9}, 5: {1: 9}, 6: {1: 9}, 7: {1: 9}}
+const LAST_ERA: int = 7
 ## The cave's own dressing shown at once (the pennant).
 const MAX_CAVE_DRESSING: int = 1
 
@@ -329,6 +329,28 @@ func test_the_cave_shows_only_because_the_age_turned() -> void:
 		assert_eq(SceneProps.PROPS[id]["kind"], SceneProps.Kind.ALWAYS, "%s waits for nothing" % id)
 
 
+func test_observatory_displays_replace_old_dressing_instead_of_stacking() -> void:
+	var world: WorldState = _empty_world(6)
+	world.achievements.append_array([&"wayfinder_sheet", &"notebook_of_questions"])
+	assert_true(SceneProps.is_shown(&"wayfinder_map", world))
+	assert_true(SceneProps.is_shown(&"observations_board", world))
+	world.era_order = 7
+	assert_false(SceneProps.is_shown(&"wayfinder_map", world))
+	assert_false(SceneProps.is_shown(&"observations_board", world))
+	world.achievements.append_array([&"two_reports", &"rule_that_agrees", &"method_in_other_hands"])
+	assert_true(SceneProps.is_shown(&"report_pair", world))
+	assert_false(SceneProps.is_shown(&"reference_rules", world))
+	assert_true(SceneProps.is_shown(&"method_diagram", world))
+	world.achievements.append_array([
+		&"a_fair_trial", &"correction_in_the_open", &"pattern_that_travels",
+	])
+	assert_false(SceneProps.is_shown(&"report_pair", world))
+	assert_false(SceneProps.is_shown(&"method_diagram", world))
+	assert_false(SceneProps.is_shown(&"trial_trays", world))
+	assert_true(SceneProps.is_shown(&"correction_sheets", world))
+	assert_true(SceneProps.is_shown(&"pattern_jig", world))
+
+
 func test_every_age_after_the_cave_draws_its_own_signature_building() -> void:
 	var cave: Image = _back(0)
 	for era_order: int in range(1, LAST_ERA + 1):
@@ -386,7 +408,7 @@ func test_the_mammoth_is_the_cave_ages_alone() -> void:
 ## The Bloomery stands against the landmark's flank from x 73, so a later age's building ends before it.
 func test_the_signature_leaves_the_flank_to_the_bloomery() -> void:
 	var bloomery_left: int = WorldLayout.BUILDINGS[&"bloomery"]["cx"] - 12
-	for era_order: int in [3, 4, 5, 6]:
+	for era_order: int in range(3, LAST_ERA + 1):
 		var back: Image = _back(era_order)
 		var right: int = 0
 		for y: int in 62:
@@ -406,6 +428,13 @@ func test_each_signature_opens_a_doorway_where_the_group_gathers() -> void:
 			if pixel.a > 0.5 and pixel.v < 0.4:
 				dark += 1
 		assert_gt(dark, 4, "Age %d: a doorway stands open at column %d" % [era_order, DOORWAY_X])
+
+
+func test_observatory_door_can_fit_a_villager() -> void:
+	var back: Image = _back(VillagerOutfit.ENLIGHTENMENT_ERA)
+	for y: int in range(44, 64):
+		var pixel: Color = back.get_pixel(DOORWAY_X, y)
+		assert_true(pixel.a > 0.5 and pixel.v < 0.4, "Open doorway at row %d" % y)
 
 
 func test_the_signature_fire_pit_has_no_firelight_in_the_wall() -> void:

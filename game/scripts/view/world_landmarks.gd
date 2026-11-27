@@ -19,7 +19,7 @@ const WEST_X: float = 318.0
 ## What the camp's big landmark is called in each age, by era order.
 const SIGNATURE_NAMES: Array[String] = [
 	"The cave", "Longhouse", "Gatehouse", "Hill-fort hall", "Civic hall", "Stewardship Hall",
-	"Print Hall",
+	"Print Hall", "Observatory",
 ]
 
 const LANDMARKS: Dictionary = {

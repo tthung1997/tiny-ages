@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EventDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/sim/data/choice_def.gd" id="1_h3kmc"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_effect.gd" id="2_m10rk"]
+[ext_resource type="Script" path="res://scripts/sim/data/sim_condition.gd" id="3_mhm6g"]
+[ext_resource type="Script" path="res://scripts/sim/data/event_def.gd" id="4_4m6xs"]
+
+[sub_resource type="Resource" id="Resource_r5g1b"]
+script = ExtResource("2_m10rk")
+kind = 1
+key = &"enlightenment_rule_that_agrees_path_pages_1"
+
+[sub_resource type="Resource" id="Resource_y7vv8"]
+script = ExtResource("2_m10rk")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_vx3ii"]
+script = ExtResource("2_m10rk")
+text = "A printed sketch showed that one maker had counted from the end of the wood."
+
+[sub_resource type="Resource" id="Resource_vo147"]
+script = ExtResource("1_h3kmc")
+id = &"enlightenment_rule_that_agrees_path_pages_1"
+label = "Print where the reference starts"
+effects = Array[ExtResource("2_m10rk")]([SubResource("Resource_r5g1b"), SubResource("Resource_y7vv8"), SubResource("Resource_vx3ii")])
+
+[sub_resource type="Resource" id="Resource_evtki"]
+script = ExtResource("2_m10rk")
+kind = 1
+key = &"enlightenment_rule_that_agrees_path_pages_3"
+
+[sub_resource type="Resource" id="Resource_tk6us"]
+script = ExtResource("2_m10rk")
+kind = 10
+key = &"rule_that_agrees"
+text = "A Rule That Agrees"
+
+[sub_resource type="Resource" id="Resource_03ahf"]
+script = ExtResource("2_m10rk")
+text = "An apprentice carried a sheet of matching marks out to the Instrument Shop."
+
+[sub_resource type="Resource" id="Resource_rc5qn"]
+script = ExtResource("1_h3kmc")
+id = &"enlightenment_rule_that_agrees_path_pages_3"
+label = "Print the marks that should line up"
+effects = Array[ExtResource("2_m10rk")]([SubResource("Resource_evtki"), SubResource("Resource_tk6us"), SubResource("Resource_03ahf")])
+
+[sub_resource type="Resource" id="Resource_1k5pf"]
+script = ExtResource("3_mhm6g")
+kind = 8
+amount = 7
+
+[sub_resource type="Resource" id="Resource_jr01a"]
+script = ExtResource("3_mhm6g")
+kind = 11
+amount = 72
+
+[sub_resource type="Resource" id="Resource_7o4cf"]
+script = ExtResource("3_mhm6g")
+kind = 9
+key = &"rule_that_agrees"
+negate = true
+
+[sub_resource type="Resource" id="Resource_6q73g"]
+script = ExtResource("3_mhm6g")
+kind = 9
+key = &"two_reports"
+
+[sub_resource type="Resource" id="Resource_silbw"]
+script = ExtResource("3_mhm6g")
+key = &"path_pages"
+
+[resource]
+script = ExtResource("4_4m6xs")
+id = &"enlightenment_rule_that_agrees_path_pages"
+title = "A Rule That Agrees"
+body = "Two rules with the same markings give different readings. How shall they be checked?"
+category = &"settlement"
+requires = Array[ExtResource("3_mhm6g")]([SubResource("Resource_1k5pf"), SubResource("Resource_jr01a"), SubResource("Resource_7o4cf"), SubResource("Resource_6q73g"), SubResource("Resource_silbw")])
+chance_per_tick = 0.03
+cooldown_ticks = 48
+choices = Array[ExtResource("1_h3kmc")]([SubResource("Resource_vo147"), SubResource("Resource_rc5qn")])

@@ -474,20 +474,58 @@ const PROPS: Dictionary = {
 	&"print_sheets": {
 		"name": "Freshly printed pages", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"first_impression", "from_era": 6,
-		"replaced_by": &"wayfinder_map",
+		"until_era": 7, "replaced_by": &"wayfinder_map",
 	},
 	&"wayfinder_map": {
 		"name": "Wayfinder's map", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"wayfinder_sheet", "from_era": 6,
+		"until_era": 7,
 	},
 	&"town_rule": {
 		"name": "The towns' shared rule", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"common_measure", "from_era": 6,
-		"replaced_by": &"observations_board",
+		"until_era": 7, "replaced_by": &"observations_board",
 	},
 	&"observations_board": {
 		"name": "The towns' observations", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
 		"kind": Kind.ACHIEVEMENT, "key": &"notebook_of_questions", "from_era": 6,
+		"until_era": 7,
+	},
+	&"instrument_shop": {
+		"name": "Instrument Shop", "at_x": -384.0, "z": 66, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"rule_that_agrees", "from_era": 7,
+	},
+	&"trial_house": {
+		"name": "Trial House", "at_x": -384.0, "z": 66, "place": &"west_village",
+		"kind": Kind.ACHIEVEMENT, "key": &"a_fair_trial", "from_era": 7,
+	},
+	&"report_pair": {
+		"name": "Two reports", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"two_reports", "from_era": 7,
+		"replaced_by": &"correction_sheets",
+	},
+	&"reference_rules": {
+		"name": "Checked rules", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"rule_that_agrees", "from_era": 7,
+		"replaced_by": [&"method_diagram", &"trial_trays", &"pattern_jig"],
+	},
+	&"method_diagram": {
+		"name": "The method, drawn out", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"method_in_other_hands", "from_era": 7,
+		"replaced_by": [&"trial_trays", &"pattern_jig"],
+	},
+	&"trial_trays": {
+		"name": "Two trial trays", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"a_fair_trial", "from_era": 7,
+		"replaced_by": &"pattern_jig",
+	},
+	&"correction_sheets": {
+		"name": "Old and corrected sheets", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"correction_in_the_open", "from_era": 7,
+	},
+	&"pattern_jig": {
+		"name": "The jig and its pattern", "at_x": 0.0, "z": 65, "place": &"cave_mouth",
+		"kind": Kind.ACHIEVEMENT, "key": &"pattern_that_travels", "from_era": 7,
 	},
 }
 
