@@ -76,8 +76,8 @@ Reference images: [`art/reference/`](../art/reference/) (1× source PNGs) and `p
 3. **Three tones per material** (shade / base / highlight), light from upper-left.
 4. **Warm, saturated palette**; sky in dithered bands; no gradients or anti-aliasing; hard pixels only.
 5. **Integer scaling only** (2×/3×), nearest-neighbour filtering, snap sprites to the pixel grid.
-6. **Read at a glance**: activity must be identifiable from silhouette + colour (tool in hand, hat, apron, backpack) without zooming.
-7. **Props scale to the villager.** Villager 16 px; doors ≈ 14–15 px incl. arch; houses 36×38; trees ≈ 22–26 px tall.
+6. **Read at a glance**: activity must be identifiable from silhouette + colour (tool in hand, hat, apron, backpack) without zooming. Give buildings a structure that shows what people do there, not a generic house with a different sign or colour.
+7. **Buildings scale to the villager.** Against a 16 px villager, give a normal doorway ~14–16 px of clear opening, plus the lintel or arch. Keep low openings for deliberate exceptions such as the Cave hide shelter or a raised granary hatch. Fit the proportions within the existing lane reservation first, keeping the foot row and construction site's position. On compact buildings, redraw the roof and walls around the doorway without losing the details that identify the age at 1×.
 
 ### 3.2 Scene layout (strip)
 

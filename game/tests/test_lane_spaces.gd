@@ -517,6 +517,67 @@ func test_every_pieces_art_fits_the_spaces_it_takes_in_every_age() -> void:
 				)
 
 
+func test_housing_entrances_have_headroom_for_a_villager() -> void:
+	_assert_opening(&"building_hut", 0, Vector2i(268, 70), 12)
+	for era_order: int in [1, 2, 3, 4, 6]:
+		_assert_opening(&"building_hut", era_order, Vector2i(268, 70), 14)
+		if era_order <= 4:
+			_assert_opening(&"west_roof_a", era_order, Vector2i(172, 71), 14)
+			_assert_opening(&"west_roof_b", era_order, Vector2i(147, 70), 14)
+
+
+func test_workshops_gatehouses_and_studies_have_walk_in_openings() -> void:
+	_assert_opening(&"building_smithy", 2, Vector2i(177, 77), 15)
+	_assert_opening(&"building_trading_post", 2, Vector2i(120, 78), 16)
+	for era_order: int in [2, 3]:
+		_assert_opening(&"building_lookout", era_order, Vector2i(299, 67), 16)
+	_assert_opening(&"scriptorium", 5, Vector2i(287, 64), 15)
+	_assert_opening(&"map_house", 6, Vector2i(87, 64), 15)
+
+
+func test_compact_cottages_and_the_iron_granary_are_wider_than_tall() -> void:
+	for era_order: int in range(1, 5):
+		for layer: StringName in [&"west_roof_a", &"west_roof_b"]:
+			var bounds: Rect2i = LanePieces.art_rect(layer, era_order)
+			assert_true(bounds.size.x > bounds.size.y, "%s (age %d): %s" % [
+				layer, era_order, bounds.size,
+			])
+	var granary: Rect2i = LanePieces.art_rect(&"building_granary", 3)
+	assert_true(granary.size.x > granary.size.y, "Iron Granary: %s" % granary.size)
+	_assert_opening(&"building_granary", 3, Vector2i(237, 60), 11)
+
+
+func test_the_renaissance_huts_dormer_does_not_add_a_full_storey() -> void:
+	var classical: Rect2i = LanePieces.art_rect(&"building_hut", 4)
+	var renaissance: Rect2i = LanePieces.art_rect(&"building_hut", 6)
+	assert_true(renaissance.size.y <= classical.size.y + 2, "The Hut remains one storey")
+
+
+func test_the_scriptorium_has_a_tall_copying_bay_and_a_lower_porch() -> void:
+	var texture: Texture2D = preload("res://assets/world/medieval/scriptorium.png")
+	var art: Image = texture.get_image()
+	var bay: Rect2i = art.get_region(Rect2i(272, 0, 10, 80)).get_used_rect()
+	var porch: Rect2i = art.get_region(Rect2i(289, 0, 4, 80)).get_used_rect()
+	assert_true(bay.has_area() and porch.has_area() and porch.position.y >= bay.position.y + 8)
+
+
+## Count the clear vertical run above the entrance's threshold, not the height of its trim.
+func _assert_opening(layer: StringName, era_order: int, threshold: Vector2i, min_px: int) -> void:
+	var path: String = WorldLayout.piece_path(layer, era_order)
+	var texture: Resource = load(path) if not path.is_empty() else null
+	assert_true(texture is Texture2D, "Missing building art: %s (%d)" % [layer, era_order])
+	if texture is not Texture2D:
+		return
+	var image: Image = texture.get_image()
+	var shadow: Color = Color("#2a2433")
+	var height: int = 0
+	for y: int in range(threshold.y, -1, -1):
+		if image.get_pixel(threshold.x, y) != shadow:
+			break
+		height += 1
+	assert_true(height >= min_px, "%s: %d px of clear headroom, need %d" % [path, height, min_px])
+
+
 func test_a_pieces_spaces_match_its_lane() -> void:
 	for key: StringName in LanePieces.TABLE:
 		assert_true(LaneSpaces.LANES.has(LanePieces.lane_of(key)), key)
@@ -685,13 +746,17 @@ func test_the_granary_stands_on_the_racks_ground() -> void:
 
 
 func test_a_site_stands_where_its_building_will() -> void:
-	var world: WorldState = _world(1)
-	_build(world, &"field", false)
-	var layout: LaneLayout = LanePlacer.place(world)
-	assert_true(layout.is_placed(&"field"), "A building site has a space")
-	var start: int = layout.starts[&"field"]
-	_build(world, &"field")
-	assert_eq(LanePlacer.place(world).starts[&"field"], start)
+	var world: WorldState = _full_world(3)
+	var ids: Array[StringName] = [&"field", &"hut", &"smithy", &"granary"]
+	for id: StringName in ids:
+		_build(world, id, false)
+	var sites: LaneLayout = LanePlacer.place(world)
+	for id: StringName in ids:
+		assert_true(sites.is_placed(id), "%s's site has room in a crowded settlement" % id)
+		_build(world, id)
+	var finished: LaneLayout = LanePlacer.place(world)
+	for id: StringName in ids:
+		assert_eq(finished.starts.get(id), sites.starts.get(id), String(id))
 
 
 ## Asserts no prop stands in a prop space that lies inside a building (the same building on both

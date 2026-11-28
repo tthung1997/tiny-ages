@@ -123,46 +123,35 @@ function bloomerysite(b) {
   b.rect(8, 3, 5, 1, OAKL); b.px(8, 3, OAKH);
 }
 
-// ---- the Granary (camp slot, 26x30) -----------------------------------------------------------------
-// A raised timber store on stone staddles (mushroom stones against rats), oak-framed limewashed
-// walls with a brace, a hatch door at the head of a ladder, and a deep thatched roof.
+// ---- the Granary ----------------------------------------------------------------------------------
+// A broad timber store with low staddles, a loading hatch and a shallow thatched roof.
 function granary(b) {
-  var x, r, hw, i, st = [2, 9, 15];
-  // staddles: a stem and a flat cap each
+  var x, i, st = [2, 9, 16];
   for (i = 0; i < st.length; i++) {
     x = st[i];
-    b.rect(x + 1, 25, 3, 5, SL[1]); b.rect(x + 1, 25, 1, 5, SL[2]); b.rect(x + 3, 25, 1, 5, SLD);
-    b.rect(x, 24, 5, 2, SL[2]); b.rect(x, 24, 5, 1, SLL); b.rect(x, 25, 5, 1, SLM);
-    b.px(x + 2, 28, SLD);
+    b.rect(x + 1, 21, 3, 4, SL[1]); b.rect(x + 3, 22, 1, 3, SLD);
+    b.rect(x, 20, 5, 2, SL[2]); b.rect(x, 20, 5, 1, SLL);
+    b.px(x + 1, 22, SLL); b.px(x + 2, 24, SLD);
   }
-  b.rect(1, 29, 20, 1, SLD);
-  // floor beams, walls
-  b.rect(1, 22, 22, 2, OAKL); b.rect(1, 22, 22, 1, OAKH); b.rect(1, 23, 22, 1, OAKD);
-  for (x = 4; x < 22; x += 6) b.px(x, 22, OAKD);
-  b.rect(2, 12, 20, 10, LM); b.rect(2, 12, 20, 1, LMD);
-  b.rect(2, 12, 2, 10, OAK); b.rect(20, 12, 2, 10, OAK); b.rect(2, 12, 1, 10, OAKL);
-  b.rect(10, 12, 2, 10, OAK); b.rect(10, 12, 1, 10, OAKL);
-  b.rect(2, 12, 20, 1, OAK); b.rect(2, 21, 20, 1, OAK);
-  b.line(4, 20, 9, 14, OAK, 1); b.line(12, 20, 12, 14, LMD, 1);
-  for (x = 5; x < 9; x += 2) b.px(x, 18, LMD);
-  b.rect(13, 14, 7, 1, OAKD); b.rect(14, 15, 5, 7, OAKD); b.rect(15, 16, 3, 6, OAKL); b.rect(16, 16, 1, 6, OAKD);
-  b.px(17, 19, IRL); b.line(15, 17, 17, 17, IRD, 1); b.line(15, 20, 17, 20, IRD, 1);
-  // the porch plank and the ladder leaning on it
-  b.rect(13, 22, 9, 1, OAKH);
-  b.line(23, 29, 20, 22, OAK, 1); b.line(25, 29, 22, 22, OAKL, 1);
-  for (i = 0; i < 4; i++) b.line(22 - Math.round(i * 0.8) + 0, 28 - i * 2, 24 - Math.round(i * 0.8), 28 - i * 2, OAKH, 1);
-  b.px(25, 29, OAKD); b.px(23, 29, OAKD);
-  // the deep thatch
-  for (r = 0; r < 12; r++) {
-    hw = Math.min(13, 1.5 + r * 1.1);
-    for (x = Math.ceil(13 - hw); x < 13 + hw; x++) {
-      b.px(x, r, ((r >> 1) % 2) ? THAT[(x + r) % 3] : (x < 13 - hw * 0.4 ? STRAWL : (x > 13 + hw * 0.4 ? THAT[1] : THAT[2])));
-    }
-    if (r % 2 == 1) for (x = Math.ceil(13 - hw) + 1; x < 13 + hw; x += 4) b.px(x, r, THATD);
-  }
-  b.rect(0, 11, 26, 1, THATD); b.rect(2, 12, 22, 1, LMS);
-  b.px(12, 0, OAKL); b.px(14, 0, OAKL); b.px(13, 1, OAKD); b.px(12, 1, OAKL); b.px(14, 1, OAKL);
-  b.px(10, 4, STRAWL); b.px(16, 7, STRAWL); b.px(8, 8, STRAWD);
+  b.rect(1, 6, 24, 13, LM); b.rect(21, 6, 4, 13, LMD);
+  b.rect(1, 6, 2, 13, OAKL); b.rect(23, 6, 2, 13, OAK);
+  b.rect(11, 6, 2, 13, OAK);
+  b.line(3, 17, 10, 10, OAKL);
+  b.rect(4, 8, 6, 1, OAKH); b.rect(5, 9, 4, 3, OAKD);
+  b.rect(6, 9, 1, 3, OAKL); b.rect(8, 9, 1, 3, OAKL);
+  b.rect(4, 12, 6, 1, LMD);
+  b.px(4, 16, OAKH); b.px(9, 11, OAKH);
+  b.rect(14, 7, 8, 12, OAKD); b.rect(15, 8, 6, 11, DARK);
+  b.rect(19, 9, 2, 10, OAKL); b.px(19, 14, IRL);
+  b.px(20, 11, IRD); b.px(20, 16, IRD);
+  b.rect(0, 19, 26, 2, OAKD); b.rect(0, 19, 26, 1, OAKH);
+  b.line(15, 20, 14, 24, OAK); b.line(20, 20, 21, 24, OAKL);
+  b.rect(15, 21, 6, 1, OAKL); b.rect(14, 23, 8, 1, OAKH);
+  thatch(b, 13, 1, 6, 7, 1, 12);
+  b.rect(7, 0, 12, 1, STRAWL);
+  b.line(3, 4, 7, 1, STRAWL);
+  b.rect(0, 6, 26, 1, THATD);
+  for (x = 2; x < 25; x += 3) b.px(x, 6, STRAWD);
 }
 // The site, 24x12: three staddle stones set, two floor beams laid across them, a stack of planks and a bundle of thatch.
 function granarysite(b) {
@@ -183,6 +172,7 @@ function shifted(b, ox, oy) {
   return {
     rect: function (x, y, w, h, c) { b.rect(x - ox, y - oy, w, h, c); },
     px: function (x, y, c) { b.px(x - ox, y - oy, c); },
+    line: function (x, y, ex, ey, c, t) { b.line(x - ox, y - oy, ex - ox, ey - oy, c, t); },
     clear: function (x, y, w, h) {
       var i, j, X, Y;
       for (j = 0; j < h; j++) for (i = 0; i < w; i++) { X = x - ox + i; Y = y - oy + j; if (X >= 0 && Y >= 0 && X < b.w && Y < b.h) b.d[(Y * b.w + X) * 4 + 3] = 0; }
@@ -461,10 +451,7 @@ function beaconglow() {
   return g;
 }
 
-// ---- the timber-and-daub houses (the Hut's camp slot, 34x24; the village roofs, 26x19) -------------------------------
-// The Bronze mud-brick houses redrawn in place (same footprint, same names): an oak frame filled with
-// limewashed daub on a slate plinth, a deep thatched roof with an overhang, a plank door with iron
-// straps, shuttered windows. The camp's house also has a slate chimney.
+// ---- the timber-and-daub houses: a hipped thatch, slate chimney and a limewashed oak frame ---------------------------
 function thatch(b, cx, top, rows, hw0, grow, maxhw) {
   var r, x, hw;
   for (r = 0; r < rows; r++) {
@@ -483,19 +470,35 @@ function daubwall(b, x0, y0, w, h) { // oak frame, limewashed infill, braces bot
   for (x = x0 + 9; x < x0 + w - 9; x += 4) b.px(x, y0 + 2, LMD);
 }
 function ironhouse(b) {
-  var x;
-  thatch(b, 17, 0, 14, 6, 1.0, 17);
-  b.rect(0, 13, 34, 1, THATD); b.rect(2, 14, 30, 1, LMS);
-  daubwall(b, 3, 14, 28, 10);
-  b.rect(3, 23, 28, 1, SLM); b.rect(3, 23, 28, 1, SLD);
-  b.rect(13, 16, 8, 8, OAKD); b.rect(14, 17, 6, 7, OAKL); b.rect(16, 17, 1, 7, OAKD); b.rect(13, 16, 8, 1, OAK);
-  b.rect(14, 19, 6, 1, IRD); b.rect(14, 22, 6, 1, IRD); b.px(15, 19, IRL); b.px(18, 22, IRL); b.px(19, 21, IRM);
-  b.rect(6, 17, 5, 4, DARK); b.rect(5, 17, 1, 4, OAKL); b.rect(11, 17, 1, 4, OAK); b.rect(6, 21, 5, 1, LMD);
-  b.rect(23, 17, 5, 4, DARK); b.rect(22, 17, 1, 4, OAKL); b.rect(28, 17, 1, 4, OAK); b.rect(23, 21, 5, 1, LMD);
-  b.rect(25, 17, 1, 4, OAK);
-  b.rect(24, 1, 4, 8, SLM); b.rect(24, 1, 1, 8, SLL); b.rect(27, 1, 1, 8, SLD); b.rect(23, 0, 6, 2, SLD); b.rect(23, 0, 6, 1, SLL);
-  b.rect(25, 3, 2, 1, SLD); b.ell(26, -0.5, 1.6, 1, SMOKE);
-  b.px(10, 4, STRAWL); b.px(14, 9, STRAWL); b.px(6, 11, STRAWD);
+  var cx = Math.floor(b.w / 2), compact = b.w === 26;
+  var height = compact ? 18 : 20, wall = compact ? 1 : 3, eave = b.h - height;
+  var chimney = compact ? 1 : 0;
+  if (compact) {
+    thatch(b, cx, 2, eave - 1, 7, 1, cx - 1);
+  } else {
+    thatch(b, cx, 3, eave - 2, cx - 8, 1, cx - 1);
+  }
+  b.rect(0, eave, b.w, 1, THATD);
+  daubwall(b, wall, eave + 1, b.w - 2 * wall, height - 1);
+  b.rect(wall, b.h - 1, b.w - 2 * wall, 1, SLD);
+  b.rect(cx - 5, b.h - 16, 10, 16, OAKD);
+  b.rect(cx - 5, b.h - 16, 10, 1, OAKH);
+  b.rect(cx - 3, b.h - 15, 7, 15, DARK);
+  b.rect(cx + 2, b.h - 14, 2, 14, OAKL);
+  b.px(cx + 2, b.h - 10, IRL); b.px(cx + 3, b.h - 5, IRM);
+  b.rect(5, b.h - 13, 3, 5, DARK); b.rect(4, b.h - 8, 5, 1, OAKL);
+  b.rect(b.w - 8, b.h - 13, 3, 5, DARK); b.rect(b.w - 9, b.h - 8, 5, 1, OAKL);
+  b.rect(b.w - 11, chimney + 1, 4, compact ? 3 : 7, SLM);
+  b.rect(b.w - 11, chimney + 1, 1, compact ? 3 : 7, SLL);
+  b.rect(b.w - 12, chimney, 6, 2, SLD); b.rect(b.w - 12, chimney, 6, 1, SLL);
+  if (compact) {
+    b.line(3, 5, 7, 2, STRAWL);
+    b.rect(4, b.h - 14, 5, 1, OAKH);
+    b.rect(b.w - 9, b.h - 14, 5, 1, OAKH);
+    b.px(3, b.h - 4, OAKH); b.px(b.w - 4, b.h - 4, OAKH);
+    b.rect(3, b.h - 1, 4, 1, SLM);
+    b.rect(b.w - 7, b.h - 1, 4, 1, SLM);
+  }
 }
 function ironhousesite(b) {
   b.rect(0, 11, 24, 1, SLD);
@@ -506,44 +509,27 @@ function ironhousesite(b) {
   b.ell(5, 9.5, 3, 1.5, STRAW); b.rect(3, 9, 5, 1, STRAWL);
   b.px(1, 4, OAKH); b.px(21, 3, OAKH);
 }
-function smallironhouse(b) {
-  thatch(b, 13, 0, 10, 4, 0.95, 13);
-  b.rect(0, 9, 26, 1, THATD); b.rect(2, 10, 22, 1, LMS);
-  daubwall(b, 3, 10, 20, 9);
-  b.rect(3, 18, 20, 1, SLD);
-  b.rect(9, 12, 7, 7, OAKD); b.rect(10, 13, 5, 6, OAKL); b.rect(12, 13, 1, 6, OAKD); b.rect(9, 12, 7, 1, OAK);
-  b.rect(10, 15, 5, 1, IRD); b.px(11, 15, IRL); b.px(14, 17, IRM);
-  b.rect(17, 13, 4, 3, DARK); b.rect(16, 13, 1, 3, OAKL); b.rect(21, 13, 1, 3, OAK);
-  b.rect(5, 13, 3, 3, DARK); b.rect(4, 13, 1, 3, OAKL); b.rect(8, 13, 1, 3, OAK);
-  b.px(8, 3, STRAWL); b.px(15, 5, STRAWD);
-}
-
-// ---- the iron-bound gate tower (camp slot of the Lookout, 28x31) ------------------------------------------------------
-// The Bronze mud-brick tower redrawn to match the rampart's gate: a slate base laced with oak and an
-// iron-bound gate, a limewashed stage, a boarded oak gallery with slits and a hipped slate roof with a
-// red pennant.
-function irontower(b) {
+// ---- the iron-bound gate tower: slate footing and a roofed lookout gallery -------------------------------------------
+function irontower(canvas) {
+  var b = shifted(canvas, 0, -10);
   var x;
-  blocks(b, 1, 20, 26, 11, SL, SLD);
-  b.rect(1, 20, 26, 1, LM); b.rect(1, 21, 26, 1, LMD); b.rect(1, 25, 26, 1, OAK); b.rect(1, 26, 26, 1, OAKD);
-  b.rect(1, 21, 2, 9, SLL); b.rect(24, 21, 3, 9, SLD);
+  blocks(b, 1, 12, 26, 19, SL, SLD);
+  b.rect(1, 12, 26, 1, LM); b.rect(1, 13, 26, 1, LMD);
+  b.rect(1, 13, 2, 17, SLL); b.rect(24, 13, 3, 17, SLD);
   b.rect(1, 29, 26, 2, SLD);
   // the iron-bound gate
-  b.rect(8, 22, 12, 9, IRD); b.rect(9, 23, 10, 8, OAKL); b.rect(13, 23, 2, 8, OAKD);
-  b.rect(9, 25, 10, 1, IRD); b.rect(9, 28, 10, 1, IRD); b.px(10, 25, IRL); b.px(17, 28, IRL); b.px(10, 28, IRM); b.px(17, 25, IRM);
-  b.rect(8, 22, 12, 1, IRM); b.px(11, 24, IRL); b.px(16, 24, IRL); b.px(12, 27, IRL); b.px(15, 27, IRL);
-  b.rect(7, 22, 1, 9, SLM); b.rect(20, 22, 1, 9, SLM);
-  // the limewashed stage, with a window each side
-  b.rect(2, 13, 24, 7, LM); b.rect(2, 13, 24, 1, LML); b.rect(2, 19, 24, 1, LMD);
-  for (x = 2; x <= 22; x += 7) { b.rect(x, 13, 2, 7, OAK); b.rect(x, 13, 1, 7, OAKL); }
-  b.rect(24, 13, 2, 7, OAKD); b.rect(5, 15, 3, 3, DARK); b.rect(20, 15, 3, 3, DARK); b.rect(4, 15, 1, 3, OAKL); b.rect(8, 15, 1, 3, OAK);
-  b.rect(13, 15, 2, 4, DARK); b.rect(12, 14, 4, 1, OAKL);
-  // the gallery and its slits
-  b.rect(0, 11, 28, 2, OAKL); b.rect(0, 11, 28, 1, OAKH); b.rect(0, 12, 28, 1, OAKD);
-  for (x = 1; x < 28; x += 3) b.px(x, 12, OAK);
-  b.rect(2, 8, 24, 3, OAK); b.rect(2, 8, 24, 1, OAKL);
-  for (x = 4; x < 25; x += 3) b.px(x, 9, OAKD);
-  b.px(7, 10, DARK); b.px(8, 10, DARK); b.rect(13, 9, 2, 2, DARK); b.px(19, 10, DARK); b.px(20, 10, DARK);
+  b.rect(7, 14, 14, 17, SLM); b.rect(8, 15, 12, 16, DARK);
+  b.rect(15, 16, 4, 15, OAKL); b.rect(17, 16, 1, 15, OAKD);
+  b.rect(15, 20, 4, 1, IRD); b.rect(15, 27, 4, 1, IRD); b.px(16, 20, IRL); b.px(18, 27, IRL);
+  b = canvas;
+  b.rect(2, 8, 24, 14, LM); b.rect(5, 9, 18, 12, DARK);
+  for (x = 2; x <= 24; x += 11) {
+    b.rect(x, 8, 2, 14, OAK); b.rect(x, 8, 1, 14, OAKL);
+    b.line(x + 1, 14, x + 5, 9, OAK);
+  }
+  for (x = 5; x < 25; x += 4) b.rect(x, 16, 1, 5, OAKL);
+  b.rect(3, 16, 22, 1, OAKH);
+  b.rect(0, 20, 28, 2, OAK); b.rect(0, 20, 28, 1, OAKL);
   slateroof(b, 14, 2, 6, 12);
   b.rect(14, 1, 1, 1, IRL); b.rect(15, 0, 6, 1, RED); b.rect(15, 1, 4, 1, RED); b.px(18, 2, REDD);
   b.rect(14, 0, 1, 1, IRM);
@@ -560,15 +546,15 @@ function irontowersite(b) {
 }
 
 var layers = {};
-layers.building_hut = layerOf([obj(34, 24, 268, 71, ironhouse, { sh: 14 })]);
+layers.building_hut = layerOf([obj(38, 35, 268, 71, ironhouse, { sh: 17 })]);
 layers.site_hut = layerOf([obj(24, 12, 268, 71, ironhousesite, { sh: 9 })]);
-layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallironhouse, { sh: 11 })]);
-layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallironhouse, { sh: 11, flip: 1 })]);
-layers.building_lookout = layerOf([obj(28, 31, 300, 68, irontower, { sh: 0, z: 66 })]);
+layers.west_roof_a = layerOf([obj(26, 25, 172, 72, ironhouse, { sh: 11 })]);
+layers.west_roof_b = layerOf([obj(26, 25, 148, 71, ironhouse, { sh: 11, flip: 1 })]);
+layers.building_lookout = layerOf([obj(28, 41, 300, 68, irontower, { sh: 0, z: 66 })]);
 layers.site_lookout = layerOf([obj(20, 11, 300, 68, irontowersite, { sh: 0, z: 66 })]);
 layers.building_bloomery = layerOf([obj(22, 34, 85, 67, bloomery, { sh: 11 })]);
 layers.site_bloomery = layerOf([obj(24, 12, 85, 67, bloomerysite, { sh: 11 })]);
-layers.building_granary = layerOf([obj(26, 30, 234, 67, granary, { sh: 0 })]);
+layers.building_granary = layerOf([obj(26, 25, 234, 67, granary, { sh: 0 })]);
 layers.site_granary = layerOf([obj(24, 12, 234, 67, granarysite, { sh: 0 })]);
 layers.rampart = layerOf([obj(325, 27, 221, 64, rampart, { sh: 0 })]);
 layers.slag_heap = layerOf([obj(17, 9, 195, 77, slagheap, { sh: 0 })]);

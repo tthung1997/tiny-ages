@@ -33,19 +33,43 @@ function layerOf(list) { var b = new Buf(W, H); list.sort(function (p, q) { retu
 var DAUB = '#dcc08f', DAUBL = '#ecd6ac', DAUBD = '#bf9f6f', STRAW = '#d9b858', STRAWL = '#ebd07a', STRAWD = '#b8923f', STRAWX = '#9a7a30';
 var EARTH = '#8a5a36', EARTHD = '#6f4528', WHEAT = '#e8c24a', WHEATL = '#f7e08a', WHEATD = '#c4992a';
 
-// Thatched roundhouse, 34x24: a daub wall with a plank door under a deep straw cone.
+// A daub drum and deep straw cone. The smaller village roofs share the same door height.
 function roundhouse(b) {
-  var x, y;
-  b.rect(4, 13, 26, 11, DAUB); b.rect(4, 13, 26, 1, DAUBL); b.rect(4, 22, 26, 2, DAUBD);
-  for (x = 6; x < 30; x += 5) b.rect(x, 14, 1, 8, DAUBD); // wattle showing through
-  for (x = 4; x < 30; x += 3) b.px(x, 23, '#a8a5ae'); // stone footing
-  b.tri(17, 0, 15, 17, STRAW, STRAWD);
-  for (y = 3; y < 15; y += 3) for (x = 17 - Math.round(17 * (y + 1) / 15); x <= 17 + Math.round(17 * (y + 1) / 15); x += 2) b.px(x, y, x < 17 ? STRAWL : STRAWX);
-  for (x = 0; x < 34; x += 2) b.px(x, 15, STRAWX); // the ragged eave
-  b.px(17, 0, '#6f4528'); b.rect(17, 0, 1, 2, '#6f4528');
-  b.rect(13, 15, 8, 9, EARTHD); b.rect(14, 16, 6, 8, '#2a2433'); b.rect(13, 15, 8, 1, EARTH);
-  b.rect(13, 16, 1, 8, EARTH); b.rect(20, 16, 1, 8, EARTH);
-  b.px(24, 17, '#2a2433'); b.px(24, 18, '#2a2433'); // a small window
+  var x, y, hw, cx = Math.floor(b.w / 2), eave = b.h - 18;
+  var wall = b.w === 26 ? 1 : 3;
+  b.rect(wall, eave, b.w - 2 * wall, 18, DAUB);
+  b.rect(b.w - wall - 4, eave, 4, 18, DAUBD);
+  for (x = 5; x < b.w - wall; x += 4) b.px(x, b.h - 1, '#a8a5ae');
+  for (y = 1; y <= eave; y++) {
+    hw = Math.round((cx - 1) * Math.pow(y / eave, 0.8));
+    b.rect(cx - hw, y, 2 * hw + 1, 1, STRAW);
+    for (x = cx - hw; x <= cx + hw; x += 2) {
+      b.px(x, y, y % 3 === 0 && x < cx ? STRAWL : (x >= cx ? STRAWD : STRAW));
+    }
+  }
+  if (wall === 1) {
+    b.rect(0, eave, b.w, 1, STRAWD);
+    b.line(4, eave - 2, cx - 1, 2, STRAWL);
+    b.rect(1, eave + 1, 24, 1, DAUBD);
+    b.rect(2, b.h - 4, 6, 2, EARTHD);
+    for (x = 2; x < 8; x += 2) {
+      b.px(x, b.h - 4, EARTH);
+      b.px(x + 1, b.h - 3, EARTH);
+    }
+    b.rect(2, b.h - 1, 6, 1, '#a8a5ae');
+    b.rect(18, b.h - 1, 5, 1, '#a8a5ae');
+  }
+  for (x = 1; x < b.w; x += 2) b.px(x, eave, STRAWX);
+  b.rect(cx, 0, 1, 3, EARTHD);
+  b.rect(cx - 5, b.h - 15, 10, 15, EARTHD);
+  b.rect(cx - 5, b.h - 15, 10, 1, EARTH);
+  b.rect(cx - 3, b.h - 14, 6, 14, '#2a2433');
+  b.rect(cx + 6, b.h - 12, 3, 5, EARTHD);
+  b.rect(cx + 6, b.h - 7, 4, 1, DAUBL);
+  if (wall === 1) {
+    b.rect(cx + 5, b.h - 13, 5, 1, DAUBL);
+    b.px(cx + 7, b.h - 12, '#2a2433');
+  }
 }
 
 // Construction site, 24x12: a ring of posts half woven with withies, and a bundle of reed.
@@ -162,17 +186,6 @@ function loom(b) {
   for (x = 4; x < 13; x += 2) b.rect(x, 3, 1, 10, CLOTH);
   b.rect(3, 9, 10, 2, RED); b.rect(3, 11, 10, 1, '#e8c24a'); b.rect(3, 8, 10, 1, REDD);
   for (x = 4; x < 13; x += 2) { b.px(x, 14, '#8a8792'); b.px(x, 15, '#6f6c78'); }
-}
-
-// A small roundhouse for the village's growth, 26x19.
-function smallhut(b) {
-  var x, y;
-  b.rect(3, 10, 20, 9, DAUB); b.rect(3, 10, 20, 1, DAUBL); b.rect(3, 17, 20, 2, DAUBD);
-  for (x = 5; x < 23; x += 5) b.rect(x, 11, 1, 6, DAUBD);
-  b.tri(13, 0, 12, 13, STRAW, STRAWD);
-  for (y = 3; y < 12; y += 3) for (x = 13 - Math.round(13 * (y + 1) / 12); x <= 13 + Math.round(13 * (y + 1) / 12); x += 2) b.px(x, y, x < 13 ? STRAWL : STRAWX);
-  for (x = 0; x < 26; x += 2) b.px(x, 12, STRAWX);
-  b.rect(10, 12, 6, 7, EARTHD); b.rect(11, 13, 4, 6, '#2a2433');
 }
 
 // A well, 16x17: a stone ring, a post each side with a crossbar, and a bucket on a rope.
@@ -371,7 +384,7 @@ function tidebaskets(b) {
 }
 var layers = {};
 // camp slots: [w, h, cx, foot, draw, shadow]
-var HUT = [34, 24, 268, 71, roundhouse, 14], HUTSITE = [24, 12, 268, 71, hutsite, 9];
+var HUT = [38, 33, 268, 71, roundhouse, 17], HUTSITE = [24, 12, 268, 71, hutsite, 9];
 var FIELD = [48, 12, 226, 78, wheatfield, 0], FIELDSITE = [24, 12, 226, 78, fieldsite, 0];
 layers.building_hut = layerOf([obj(HUT[0], HUT[1], HUT[2], HUT[3], HUT[4], { sh: HUT[5] })]);
 layers.site_hut = layerOf([obj(HUTSITE[0], HUTSITE[1], HUTSITE[2], HUTSITE[3], HUTSITE[4], { sh: HUTSITE[5] })]);
@@ -390,8 +403,8 @@ layers.green_stones = layerOf([obj(14, 8, 106, 79, greenstones, { sh: 6 })]);
 layers.hens = layerOf([obj(20, 8, 156, 79, hens, { sh: 0 })]);
 layers.west_kiln = layerOf([obj(26, 26, 234, 78, kiln, { sh: 12 })]);
 layers.west_well = layerOf([obj(16, 17, 196, 78, well, { sh: 8 })]);
-layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhut, { sh: 11 })]);
-layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhut, { sh: 11, flip: 1 })]);
+layers.west_roof_a = layerOf([obj(26, 24, 172, 72, roundhouse, { sh: 11 })]);
+layers.west_roof_b = layerOf([obj(26, 24, 148, 71, roundhouse, { sh: 11, flip: 1 })]);
 // the river (camp page; the weir is on the east page, page-local x)
 layers.clay_pits = layerOf([obj(24, 9, 186, 78, claypits, { sh: 9 })]);
 layers.flax_thread = layerOf([obj(20, 9, 345, 72, flaxsoak, { sh: 0 })]);

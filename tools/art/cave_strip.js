@@ -103,7 +103,7 @@ function firelit(buf) {
 // state-driven building slots: id -> [bufW, bufH, cx, foot, drawFn, shadow]
 var SLOTS = {
   lookout: [26, 34, 300, 66, lookout, 11], drying_rack: [22, 20, 132, 70, dryrack, 9],
-  knapping_spot: [18, 10, 160, 79, knapspot, 7], hut: [28, 22, 268, 71, leanto, 12], field: [44, 10, 228, 78, field, 0]
+  knapping_spot: [18, 10, 160, 79, knapspot, 7], hut: [34, 28, 268, 71, leanto, 15], field: [44, 10, 228, 78, field, 0]
 };
 var FLOWER = [12, 12, 106, 73];
 var SITE = [22, 10];

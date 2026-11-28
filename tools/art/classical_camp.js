@@ -68,34 +68,44 @@ function tiles(b, top, bot, rl, rr, el, er) {
   });
 }
 
-// ---- the Hut's slot (34x24, foot row 23): a plastered stone house with a tiled hip roof and a balcony -----------
+// ---- a single-storey plastered house with a tiled gable and an arched entry ----------------------------------
 function stonehouse(b) {
-  var x, y;
-  courses(b, 2, 18, 30, 6, STONE, STONED, 6); b.rect(2, 18, 30, 1, STONEL);
-  b.rect(3, 10, 28, 8, PLASTER); b.rect(3, 10, 28, 1, STONEL); b.rect(3, 17, 28, 1, PLASTERD);
-  b.rect(3, 10, 2, 14, STONE[2]); b.rect(29, 10, 2, 14, STONE[0]); // quoins at the corners
-  tiles(b, 1, 10, 9, 24, 0, 33);
-  b.rect(8, 0, 2, 3, STONE[1]); b.rect(8, 0, 2, 1, STONEL); // a chimney
-  // a balcony over the door, a shuttered window beside it
-  b.rect(12, 15, 10, 1, OAKL); b.rect(12, 14, 1, 2, OAK); b.rect(21, 14, 1, 2, OAK); b.rect(12, 16, 10, 1, OAKD);
-  b.rect(7, 12, 4, 5, DARK); b.rect(6, 11, 6, 1, STONED); b.rect(6, 17, 6, 1, STONED); b.rect(6, 12, 1, 5, OAK); b.rect(11, 12, 1, 5, OAK);
-  b.rect(23, 12, 4, 5, DARK); b.rect(22, 11, 6, 1, STONED); b.rect(22, 17, 6, 1, STONED); b.rect(22, 12, 1, 5, OAK); b.rect(27, 12, 1, 5, OAK);
-  // the arched door under the balcony, and a flower box of red
-  b.rect(14, 18, 6, 6, DARK); b.rect(15, 17, 4, 1, DARK); b.rect(13, 18, 1, 6, STONED); b.rect(20, 18, 1, 6, STONED); b.rect(14, 16, 6, 1, STONED);
-  b.rect(6, 17, 6, 1, OAKL); for (x = 6; x < 12; x += 2) b.px(x, 16, '#d85a4a');
-}
-
-// ---- the village's two small houses (26x19, foot row 18) ------------------------------------------------------
-function smallstonehouse(b) {
-  var x;
-  courses(b, 2, 14, 22, 5, STONE, STONED, 6); b.rect(2, 14, 22, 1, STONEL);
-  b.rect(3, 8, 20, 6, PLASTER); b.rect(3, 8, 20, 1, STONEL); b.rect(3, 13, 20, 1, PLASTERD);
-  b.rect(3, 8, 2, 11, STONE[2]); b.rect(21, 8, 2, 11, STONE[0]);
-  tiles(b, 1, 8, 8, 17, 0, 25);
-  b.rect(18, 0, 2, 3, STONE[1]); b.rect(18, 0, 2, 1, STONEL);
-  b.rect(6, 10, 4, 4, DARK); b.rect(5, 9, 6, 1, STONED); b.rect(5, 13, 6, 1, STONED);
-  b.rect(12, 14, 5, 5, DARK); b.rect(13, 13, 3, 1, DARK); b.rect(11, 14, 1, 5, STONED); b.rect(17, 14, 1, 5, STONED); b.rect(12, 12, 5, 1, STONED);
-  b.rect(18, 11, 3, 3, DARK); b.rect(17, 10, 5, 1, STONED);
+  var x, cx = Math.floor(b.w / 2), compact = b.w === 26;
+  var height = compact ? 18 : 23, wall = compact ? 1 : 2, eave = b.h - height;
+  b.rect(wall, eave, b.w - 2 * wall, height, PLASTER);
+  b.rect(b.w - wall - 4, eave, 4, height, PLASTERD);
+  courses(b, wall, b.h - 4, b.w - 2 * wall, 4, STONE, STONED, 6);
+  if (compact) {
+    tiles(b, 1, eave, cx - 2, cx + 1, 0, b.w - 1);
+    for (var y = 3; y < eave; y++) {
+      var half = 1 + (y - 3) * 2;
+      b.rect(cx - half, y, 2 * half, 1, PLASTER);
+    }
+    b.rect(cx - 1, eave - 3, 2, 3, TERRD);
+    b.rect(cx - 2, eave - 2, 4, 1, STONED);
+    b.rect(cx - 1, eave - 2, 2, 1, DARK);
+  } else {
+    tiles(b, 1, eave, cx - 1, cx, 0, b.w - 1);
+    b.tri(cx, 4, eave - 3, cx - 4, PLASTER, PLASTERD);
+    b.ell(cx, eave - 3, 2.5, 2.5, STONED); b.px(cx, eave - 3, TERRD);
+  }
+  b.rect(0, eave, b.w, 1, STONEL);
+  b.rect(cx - 5, b.h - 15, 10, 15, STONED);
+  b.rect(cx - 4, b.h - 16, 8, 1, STONEL);
+  b.rect(cx - 3, b.h - 15, 6, 15, DARK);
+  b.rect(cx - 4, b.h - 13, 8, 13, DARK);
+  for (x = 5; x <= b.w - 8; x += b.w - 13) {
+    b.rect(x, b.h - 15, 3, 6, DARK);
+    b.rect(x - 1, b.h - 15, 1, 6, OAK);
+    b.rect(x - 1, b.h - 9, 5, 1, STONED);
+  }
+  if (compact) {
+    b.rect(4, b.h - 16, 5, 1, STONEL);
+    b.rect(b.w - 9, b.h - 16, 5, 1, STONEL);
+    b.rect(4, b.h - 9, 5, 2, OAKL);
+    b.px(5, b.h - 10, TERRL); b.px(7, b.h - 10, TERR[0]);
+    b.px(6, b.h - 9, '#4f7950');
+  }
 }
 
 // ---- the square: an arcade of arches under a tiled roof (54x27, foot row 26) -----------------------------------
@@ -229,9 +239,9 @@ function lighthouseglow() {
   return g;
 }
 var layers = {};
-layers.building_hut = layerOf([obj(34, 24, 268, 71, stonehouse, { sh: 14 })]);
-layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallstonehouse, { sh: 11 })]);
-layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallstonehouse, { sh: 11, flip: 1 })]);
+layers.building_hut = layerOf([obj(38, 35, 268, 71, stonehouse, { sh: 17 })]);
+layers.west_roof_a = layerOf([obj(26, 25, 172, 72, stonehouse, { sh: 11 })]);
+layers.west_roof_b = layerOf([obj(26, 25, 148, 71, stonehouse, { sh: 11, flip: 1 })]);
 layers.market_arcade = layerOf([obj(54, 27, 28, 64, arcade, { sh: 0, z: 67 })]);
 layers.law_pillar = layerOf([obj(10, 20, 6, 66, lawpillar, { sh: 0 })]);
 layers.water_court = layerOf([obj(16, 22, 197, 75, watercourt, { sh: 0 })]);
@@ -328,26 +338,35 @@ function tendedCourt(b) {
 }
 
 function scriptorium(b) {
-  b.rect(2, 12, 22, 16, PLASTER);
-  b.rect(19, 11, 5, 17, PLASTERD);
-  courses(b, 1, 25, 24, 4, STONE, STONED, 6);
-  b.rect(18, 3, 4, 9, STONE[0]); b.rect(18, 3, 5, 1, STONEL);
-  roof(b, 2, 15, 8, 10, 0, 23, function (x, y, t, left, right) {
-    var c = x < 12 ? '#577884' : '#435b6b';
-    if (left) c = '#8eaaab';
-    else if (right || y === 15 || y % 3 === 0) c = '#384856';
-    else if ((x + Math.floor(y / 3) * 2) % 5 === 0) c = '#6c8993';
-    b.px(x, y, c);
-  });
-  b.rect(3, 15, 15, 10, OAKD);
-  b.rect(5, 14, 11, 1, OAKH);
-  b.rect(4, 16, 13, 7, '#e4a559'); b.rect(4, 16, 13, 2, '#ffde99');
-  b.rect(8, 16, 1, 7, OAK); b.rect(12, 16, 1, 7, OAK);
-  b.rect(5, 21, 11, 2, '#8d553b');
-  b.rect(5, 20, 3, 1, '#f8e5b5'); b.rect(13, 20, 3, 1, '#f8e5b5');
-  b.rect(2, 24, 17, 1, OAKH);
-  b.rect(19, 20, 4, 7, DARK); b.rect(19, 19, 3, 1, OAKL);
-  b.rect(19, 27, 6, 1, STONEL);
+  var rubble = ['#b2a488', '#a5977f', '#c4b498'], mortar = '#776b5c';
+  var cut = '#d7c6a6', cutShade = '#897a65';
+  courses(b, 15, 14, 10, 18, rubble, mortar, 4);
+  b.rect(24, 16, 1, 16, cutShade);
+  b.rect(17, 17, 7, 15, cutShade); b.rect(18, 16, 5, 1, cut);
+  b.rect(19, 16, 3, 16, DARK); b.rect(18, 18, 5, 14, DARK);
+  b.rect(16, 32, 10, 1, cut);
+  tiles(b, 12, 15, 17, 22, 15, 25);
+
+  courses(b, 1, 10, 16, 23, rubble, mortar, 4);
+  tiles(b, 0, 12, 8, 11, 0, 18);
+  b.tri(8, 2, 11, 7, rubble[2], rubble[1]);
+  b.line(0, 11, 8, 0, TERRL); b.line(8, 0, 17, 11, TERRD);
+  b.line(1, 11, 8, 2, TERRD); b.line(8, 2, 16, 12, TERR[1]);
+  b.rect(0, 12, 2, 18, cut); b.rect(15, 12, 2, 18, cutShade);
+  for (var y = 16; y < 28; y += 4) {
+    b.px(0, y, mortar); b.px(16, y, mortar);
+  }
+  // Pointed arch and stone mullions above the shared writing bench.
+  b.tri(8, 7, 8, 6, cut, cutShade);
+  b.rect(2, 14, 13, 14, cutShade);
+  b.tri(8, 9, 6, 4, '#a47652', '#7d5946');
+  b.rect(3, 15, 11, 12, '#a47652'); b.rect(11, 15, 3, 12, '#7d5946');
+  b.rect(6, 14, 1, 6, cut); b.rect(10, 14, 1, 6, cutShade);
+  b.px(8, 11, '#dec68e'); b.rect(8, 12, 1, 3, '#ba9366');
+  b.rect(3, 22, 11, 2, OAKH); b.rect(4, 24, 1, 3, OAKD); b.rect(12, 24, 1, 3, OAKD);
+  b.line(4, 21, 6, 19, '#f8e5b5'); b.line(6, 19, 8, 21, '#dec68e');
+  b.rect(10, 20, 3, 2, '#f8e5b5');
+  b.rect(1, 27, 15, 1, cut); b.rect(1, 28, 15, 1, mortar);
 }
 
 function fairWharf(b) {
@@ -369,12 +388,11 @@ function travellersHall(b) {
   b.rect(3, 10, 43, 16, PLASTER); b.rect(35, 10, 11, 16, PLASTERD);
   b.rect(37, 1, 5, 9, STONE[0]); b.rect(36, 1, 7, 2, STONED);
   b.px(37, 1, STONEL);
-  tiles(b, 0, 12, 10, 33, 0, 48);
-  b.rect(3, 12, 43, 2, OAK); b.rect(3, 12, 43, 1, OAKL);
-  b.rect(5, 16, 26, 9, '#504349');
-  b.rect(6, 15, 24, 2, OAK); b.rect(6, 15, 24, 1, OAKH);
-  b.rect(5, 17, 2, 8, OAKL); b.rect(29, 17, 2, 8, OAK);
-  b.line(6, 20, 10, 16, OAKH, 1); b.line(30, 20, 26, 16, OAK, 1);
+  tiles(b, 0, 9, 10, 33, 0, 48);
+  b.rect(3, 10, 43, 1, OAKL);
+  b.rect(5, 11, 26, 14, '#504349');
+  b.rect(5, 11, 2, 14, OAKL); b.rect(29, 11, 2, 14, OAK);
+  b.line(6, 15, 10, 11, OAKH); b.line(30, 15, 26, 11, OAK);
   b.rect(11, 21, 15, 2, '#d9ad69'); b.rect(12, 22, 13, 1, OAKH);
   b.rect(13, 23, 1, 2, OAKL); b.rect(24, 23, 1, 2, OAKL);
   b.rect(16, 20, 5, 1, PLASTER); b.px(23, 20, '#e2a862');
@@ -390,7 +408,7 @@ var medieval = {
   tended_water_court: layerOf([obj(26, 30, 197, 75, tendedCourt)]),
   guild_arcade: layerOf([obj(54, 27, 28, 64, guildArcade(false))]),
   guild_arcade_fair: layerOf([obj(54, 27, 28, 64, guildArcade(true))]),
-  scriptorium: layerOf([obj(26, 29, 280, 66, scriptorium)]),
+  scriptorium: layerOf([obj(26, 33, 280, 66, scriptorium)]),
   east_fair_wharf: layerOf([obj(84, 34, 279, 72, fairWharf), obj(26, 18, 289, 75, ship)]),
   east_travellers_hall: layerOf([obj(49, 28, 138, 69, travellersHall)]),
   stewardship_charter: layerOf([obj(8, 10, 42, 63, function (b) {
@@ -431,8 +449,8 @@ var renaissance = {
     b.rect(1, 2, 6, 8, paper); b.rect(9, 1, 6, 9, '#9bbac6');
     b.line(2, 8, 5, 4, ink, 1); b.line(10, 6, 14, 4, ink, 1);
   })]),
-  map_house: layerOf([obj(26, 29, 82, 66, function (b) {
-    b.rect(2, 12, 22, 16, '#ebceaa'); b.rect(20, 12, 4, 16, '#bb9b80');
+  map_house: layerOf([obj(26, 36, 82, 66, function (b) {
+    b.rect(2, 12, 22, 23, '#ebceaa'); b.rect(20, 12, 4, 23, '#bb9b80');
     b.rect(19, 1, 4, 10, '#9d7466'); b.rect(18, 1, 6, 2, '#c19b86');
     roof(b, 4, 13, 8, 15, 0, 25, function (x, y, t, left, right) {
       var c = x < 17 ? '#bd775b' : '#96584b';
@@ -441,52 +459,64 @@ var renaissance = {
       b.px(x, y, c);
     });
     b.rect(2, 14, 22, 1, '#b7967a');
-    b.rect(4, 16, 12, 10, '#6b5044'); b.rect(5, 17, 10, 8, '#d6a36a');
-    b.rect(6, 18, 8, 6, paper); b.rect(7, 19, 2, 4, '#6b9ea8');
-    b.line(9, 22, 13, 19, '#968358', 1); b.px(12, 22, '#719472');
-    b.rect(3, 17, 2, 7, '#618077'); b.rect(15, 17, 2, 7, '#46685f');
-    b.rect(4, 25, 12, 1, OAKH);
-    b.rect(17, 18, 6, 10, '#d3b18d'); b.rect(18, 19, 4, 9, DARK);
-    b.rect(18, 21, 3, 7, '#775544'); b.px(20, 24, '#ebbc79');
-    b.rect(2, 27, 22, 2, '#a99481'); b.rect(17, 28, 6, 1, '#e3c9ad');
+    b.rect(4, 19, 11, 12, '#6b5044'); b.rect(5, 20, 9, 10, '#d6a36a');
+    b.rect(6, 21, 7, 7, paper); b.rect(7, 22, 2, 5, '#6b9ea8');
+    b.line(8, 26, 12, 22, '#968358'); b.px(11, 26, '#719472');
+    b.rect(3, 20, 2, 9, '#618077'); b.rect(14, 20, 2, 9, '#46685f');
+    b.rect(3, 30, 12, 1, OAKH);
+    b.rect(2, 34, 22, 2, '#a99481');
+    b.rect(16, 18, 8, 17, '#d3b18d'); b.rect(17, 19, 6, 16, DARK);
+    b.rect(21, 20, 2, 15, '#775544'); b.px(21, 28, '#ebbc79');
+    b.rect(16, 35, 9, 1, '#e3c9ad');
   })]),
-  building_hut: layerOf([obj(34, 24, 268, 71, function (b) {
-    stonehouse(b);
-    b.rect(1, 9, 32, 5, '#397580'); b.rect(1, 9, 32, 1, '#83b5b6');
-    b.rect(3, 6, 28, 4, '#4a8b95'); b.rect(7, 3, 20, 4, '#4f96a1');
-    b.rect(12, 1, 11, 3, '#67a7ae'); b.rect(9, 6, 6, 6, '#e4c799');
-    b.rect(10, 7, 4, 4, '#3d5361'); b.rect(11, 7, 1, 4, '#bc9e73');
-    b.rect(23, 17, 8, 3, '#49745e');
-    b.rect(24, 16, 6, 1, '#daa48b'); b.rect(23, 19, 8, 2, OAKL);
-  }, { sh: 14 })]),
-  building_granary: layerOf([obj(26, 30, 234, 67, function (b) {
-    b.rect(2, 10, 22, 13, '#dbb77e'); b.rect(19, 10, 5, 13, '#aa7d57');
-    b.rect(2, 12, 22, 2, '#8d603e');
-    for (var x = 5; x < 23; x += 4) b.rect(x, 14, 1, 8, '#bc925e');
-    roof(b, 2, 11, 9, 15, 0, 25, function (px, y, t, left, right) {
-      var c = px < 14 ? '#538c97' : '#376774';
-      if (left || y === 2) c = '#8fbcb9';
-      else if (right || y === 11 || y % 3 === 1) c = '#324e60';
-      b.px(px, y, c);
-    });
-    b.rect(2, 22, 22, 2, OAKD); b.rect(2, 22, 22, 1, OAKH);
-    b.rect(3, 24, 4, 5, '#9f9181'); b.rect(20, 24, 3, 5, '#948675');
-    b.rect(3, 25, 4, 1, '#d9c4a5'); b.rect(20, 25, 3, 1, '#c4b192');
-    b.rect(2, 28, 6, 2, '#c8bca3'); b.rect(19, 28, 5, 2, '#c8bca3');
-    b.rect(8, 13, 10, 10, OAKD); b.rect(9, 14, 7, 8, '#ae7545');
-    b.line(9, 21, 15, 15, '#724632', 2); b.px(15, 19, '#e8bc67');
-    b.rect(4, 16, 3, 2, OAKD); b.rect(20, 16, 3, 2, OAKD);
-    b.rect(9, 23, 8, 2, '#b28359'); b.rect(8, 25, 10, 2, '#795943');
-    b.rect(7, 27, 12, 2, '#b39a76'); b.rect(7, 28, 12, 1, '#795943');
+  building_hut: layerOf([obj(38, 36, 268, 71, function (b) {
+    var teal = '#376774', tealLight = '#83b5b6';
+    b.rect(3, 12, 32, 24, '#efddbb'); b.rect(30, 12, 5, 24, '#cfb99a');
+    courses(b, 2, 31, 34, 5, STONE, STONED, 6);
+    for (var course = 0; course < 4; course++) {
+      var left = 2 + course * 3, width = 34 - course * 6, y = 11 - course * 3;
+      b.rect(left, y, width, 3, '#4a8b95');
+      b.rect(left, y, width, 1, tealLight);
+      b.rect(left + width - 3, y + 1, 3, 2, teal);
+    }
+    b.rect(0, 13, 38, 2, teal);
+    b.rect(9, 6, 9, 7, '#e1be98');
+    b.tri(13, 3, 4, 5, tealLight, teal);
+    b.rect(11, 7, 5, 5, DARK); b.rect(13, 7, 1, 5, '#ba997a');
+    b.rect(9, 12, 9, 1, '#d6ac82');
+    b.rect(13, 19, 12, 17, STONED); b.rect(15, 20, 8, 16, DARK);
+    b.rect(14, 22, 10, 14, DARK); b.rect(14, 19, 10, 1, STONEL);
+    b.rect(5, 20, 6, 7, teal); b.rect(27, 20, 6, 7, teal);
+    b.rect(6, 21, 4, 5, DARK); b.rect(28, 21, 4, 5, DARK);
+    b.rect(26, 27, 8, 2, OAKL); b.rect(27, 26, 6, 1, '#49745e');
+    b.px(28, 25, '#daa48b'); b.px(31, 25, '#daa48b');
+  }, { sh: 17 })]),
+  building_granary: layerOf([obj(26, 35, 234, 67, function (b) {
+    courses(b, 2, 7, 22, 21, STONE, STONED, 6);
+    for (var x = 0; x < 26; x++) {
+      var top = Math.floor(Math.abs(12.5 - x) / 3) * 2;
+      b.rect(x, top, 1, 10 - top, x < 13 ? '#538c97' : '#376774');
+      b.px(x, top, '#8fbcb9');
+    }
+    b.rect(0, 9, 26, 1, '#324e60');
+    b.rect(3, 26, 4, 9, '#9f9181'); b.rect(20, 26, 3, 9, '#948675');
+    b.rect(3, 29, 4, 1, '#d9c4a5'); b.rect(20, 29, 3, 1, '#c4b192');
+    b.rect(2, 33, 6, 2, '#c8bca3'); b.rect(19, 33, 5, 2, '#c8bca3');
+    b.rect(8, 13, 10, 14, OAKD); b.rect(9, 14, 7, 13, '#ae7545');
+    b.line(9, 25, 15, 15, '#724632'); b.px(15, 21, '#e8bc67');
+    b.rect(4, 17, 3, 2, OAKD); b.rect(20, 17, 3, 2, OAKD);
+    b.rect(9, 27, 8, 2, '#b28359'); b.rect(8, 29, 10, 2, '#795943');
+    b.rect(7, 31, 12, 3, '#b39a76'); b.rect(7, 33, 12, 1, '#795943');
   })]),
-  building_quay: layerOf([obj(40, 24, 338, 72, function (b) {
-    b.rect(0, 17, 40, 4, '#a99880'); b.rect(0, 17, 40, 1, '#eee1c5');
-    for (var x = 2; x < 39; x += 9) b.rect(x, 21, 3, 3, '#777572');
-    b.rect(7, 10, 2, 7, OAKL); b.rect(25, 10, 2, 7, OAK);
-    b.rect(9, 14, 15, 2, OAKH); b.rect(12, 12, 6, 2, '#ebd39c');
-    awning(b, 5, 7, 24, ['#96c0bf', '#4b8794', '#304f5d']);
-    b.rect(6, 5, 22, 2, '#407682'); b.rect(9, 3, 16, 2, '#6fa8af');
-    b.rect(35, 10, 2, 7, OAKD); b.rect(34, 8, 4, 3, '#e9b763');
+  building_quay: layerOf([obj(40, 31, 338, 72, function (b) {
+    b.rect(0, 24, 40, 4, '#a99880'); b.rect(0, 24, 40, 1, '#eee1c5');
+    for (var x = 2; x < 39; x += 9) b.rect(x, 28, 3, 3, '#777572');
+    b.rect(7, 7, 2, 17, OAKL); b.rect(25, 7, 2, 17, OAK);
+    b.line(8, 13, 12, 8, OAKL); b.line(25, 13, 21, 8, OAK);
+    b.rect(9, 21, 7, 2, OAKH); b.rect(10, 19, 5, 2, '#ebd39c');
+    awning(b, 5, 4, 24, ['#96c0bf', '#4b8794', '#304f5d']);
+    b.rect(6, 2, 22, 2, '#407682'); b.rect(9, 0, 16, 2, '#6fa8af');
+    b.rect(35, 17, 2, 7, OAKD); b.rect(34, 15, 4, 3, '#e9b763');
   })])
 };
 for (name in renaissance) {
