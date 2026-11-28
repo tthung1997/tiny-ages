@@ -513,13 +513,16 @@ function mammoth(b) {
   b.px(5, 12, '#5a3e30'); b.px(4, 14, '#5a3e30');
 }
 
-// Hide shelter, 28x22: a stitched hide cone over crossed pole tips, with a dark doorway.
+// Hide shelter: low, but wide enough to duck into.
 function leanto(b) {
-  b.line(11, 0, 15, 5, WOOD, 1); b.line(17, 0, 13, 5, WOOD, 1);
-  b.tri(14, 4, 18, 12, '#d6b47a', '#b08a58');
-  b.line(14, 6, 14, 20, '#8a6a44', 1); b.line(14, 6, 8, 20, '#8a6a44', 1); b.line(14, 6, 20, 20, '#8a6a44', 1);
-  b.rect(19, 13, 3, 3, '#a8845a'); b.px(10, 12, '#a8845a'); b.px(14, 7, '#f4ecd8');
-  b.tri(14, 13, 9, 3, '#2a2433', '#2a2433');
+  b.line(13, 0, 18, 6, WOOD); b.line(21, 0, 15, 6, WOODL);
+  b.rect(15, 3, 5, 2, '#c6a37a');
+  b.tri(17, 4, 24, 16, '#d6b47a', '#b08a58');
+  b.line(16, 8, 5, 26, '#b8996b'); b.line(18, 8, 29, 26, '#8a6a44');
+  for (var y = 11; y < 25; y += 3) b.px(15 - Math.floor((y - 8) * 0.6), y, '#f4ecd8');
+  b.rect(23, 18, 4, 3, '#a8845a');
+  b.tri(17, 14, 14, 7, '#a8845a', '#78583a');
+  b.tri(17, 16, 12, 5, '#2a2433', '#2a2433');
 }
 
 // Meat/hide drying rack, 22x20.

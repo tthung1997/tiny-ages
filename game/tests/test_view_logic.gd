@@ -171,27 +171,34 @@ func test_buildings_stand_on_the_back_lane_with_the_cave() -> void:
 
 
 func test_no_building_covers_another_by_more_than_a_quarter() -> void:
-	var last: int = WorldLayout.ERA_DIRS.size() - 1
-	var rects: Dictionary = {}
-	for building_id: StringName in WorldLayout.BUILDINGS:
-		var path: String = WorldLayout.piece_path(StringName("building_%s" % building_id), last)
-		var used: Rect2i = (load(path) as Texture2D).get_image().get_used_rect()
-		used.position += Vector2i(WorldLayout.building_offset(building_id))
-		rects[building_id] = Rect2(used)
-	var ids: Array = rects.keys()
-	for i: int in ids.size():
-		for j: int in range(i + 1, ids.size()):
-			var a: Rect2 = rects[ids[i]]
-			var b: Rect2 = rects[ids[j]]
-			# A building the view folds into another shares its ground on purpose: only one shows.
-			if WorldLayout.BUILDING_FOLDED_INTO.get(ids[i], &"") == ids[j] \
-					or WorldLayout.BUILDING_FOLDED_INTO.get(ids[j], &"") == ids[i]:
+	for era_order: int in [3, 6]:
+		var world: WorldState = WorldState.new()
+		world.era_order = era_order
+		world.flags[&"stepping_stones"] = true
+		for id: StringName in WorldLayout.BUILDINGS:
+			var building: BuildingState = BuildingState.new()
+			building.def_id = id
+			building.complete = true
+			world.buildings.append(building)
+		var layout: LaneLayout = LanePlacer.place(world)
+		assert_true(layout.is_placed(&"trading_post") and layout.is_placed(&"bloomery"))
+		var rects: Dictionary[StringName, Rect2i] = {}
+		for id: StringName in WorldLayout.BUILDINGS:
+			if not layout.is_placed(id) or not WorldLayout.building_shown(id, world):
 				continue
-			var common: float = a.intersection(b).get_area()
-			var share: float = common / minf(a.get_area(), b.get_area())
-			assert_true(share <= 0.25, "%s and %s cover each other (%d%%)" % [
-				ids[i], ids[j], int(share * 100.0)
-			])
+			var art: Rect2i = LanePieces.art_rect(StringName("building_%s" % id), era_order)
+			var x: int = int(layout.sprite_x(id, art))
+			var y: int = int(WorldLayout.building_offset(id).y)
+			rects[id] = Rect2i(art.position + Vector2i(x, y), art.size)
+		var ids: Array[StringName] = rects.keys()
+		for i: int in ids.size():
+			for j: int in range(i + 1, ids.size()):
+				var a: Rect2i = rects[ids[i]]
+				var b: Rect2i = rects[ids[j]]
+				var share: float = a.intersection(b).get_area() / minf(a.get_area(), b.get_area())
+				assert_true(share <= 0.25, "Age %d: %s and %s cover each other (%d%%)" % [
+					era_order, ids[i], ids[j], int(share * 100.0)
+				])
 
 
 func test_every_prop_that_is_a_building_or_a_yard_is_on_the_back_lane() -> void:

@@ -62,16 +62,17 @@ function bricks(b, x, y, w, h, pal) {
   }
 }
 
-// ---- the Smithy (camp slot, 34x24) ----------------------------------------------------------------
-// A low mud-brick workshop open at the front, a squat clay furnace with a chimney and a glowing
+// ---- the Smithy ----------------------------------------------------------------------------------
+// A mud-brick workshop open at the front, a squat clay furnace with a chimney and a glowing
 // mouth, a stone anvil in front, and ingots stacked under a bronze-red sign.
-function smithy(b) {
+function smithy(canvas) {
+  var b = shifted(canvas, 0, -5);
   var x;
-  bricks(b, 9, 10, 15, 14, MB);
-  b.rect(7, 7, 19, 1, MBL); b.rect(7, 8, 19, 2, MB[0]); b.rect(7, 10, 19, 1, MBM);
-  for (x = 10; x < 24; x += 5) { b.rect(x, 11, 2, 2, TIMD); b.px(x, 11, TIM); }
-  b.rect(11, 13, 11, 10, DARK); b.rect(12, 12, 9, 1, DARK);
-  b.rect(10, 12, 1, 12, TIM); b.rect(22, 12, 1, 12, TIM); b.rect(10, 11, 13, 1, TIM);
+  bricks(b, 7, 4, 17, 20, MB);
+  b.rect(5, 2, 21, 1, MBL); b.rect(5, 3, 21, 2, MB[0]); b.rect(5, 5, 21, 1, MBM);
+  for (x = 7; x < 24; x += 5) { b.rect(x, 6, 2, 2, TIMD); b.px(x, 6, TIM); }
+  b.rect(9, 8, 13, 16, DARK);
+  b.rect(8, 8, 1, 16, TIM); b.rect(22, 8, 1, 16, TIM); b.rect(8, 7, 15, 1, TIM);
   b.px(19, 20, EMBER); b.px(20, 20, GLOW); b.px(20, 21, EMBER); // a spent coal at the back
   b.px(13, 15, ROCKL); b.px(13, 16, ROCK); b.px(14, 17, ROCK); // tongs on a hook
   b.rect(9, 23, 15, 1, MBD);
@@ -79,8 +80,8 @@ function smithy(b) {
   b.rect(24, 15, 10, 9, CLAY);
   b.ell(28.5, 15.5, 5, 3.5, CLAY); b.rect(24, 16, 1, 8, CLAYL); b.rect(33, 16, 1, 8, CLAYD);
   b.rect(24, 23, 10, 1, CLAYD);
-  bricks(b, 27, 4, 4, 9, CB); b.rect(26, 3, 6, 2, CLAYD); b.rect(26, 3, 6, 1, CLAYL);
-  b.ell(29, 1.5, 2.2, 1.4, SMOKE);
+  bricks(b, 27, 0, 4, 13, CB); b.rect(26, -1, 6, 2, CLAYD); b.rect(26, -1, 6, 1, CLAYL);
+  b.ell(29, -3, 2.2, 1.4, SMOKE);
   b.ell(29, 20, 3, 2.6, DARK); b.rect(26, 20, 6, 4, DARK);
   b.rect(27, 21, 4, 3, EMBER); b.rect(28, 22, 2, 2, GLOW); b.px(28, 23, GLOWL); b.px(29, 23, GLOWL);
   // the anvil stone, a lump of bronze on it
@@ -104,17 +105,20 @@ function smithsite(b) {
   bricks(b, 20, 6, 4, 6, MB); b.rect(20, 6, 4, 1, MBL);
 }
 
-// ---- the Trading Post (camp slot, 30x22) -----------------------------------------------------------
+// ---- the Trading Post ----------------------------------------------------------------------------
 // An open timber stall under a striped awning of undyed and red cloth: crates, two pots and a
 // balance hanging over the counter.
 function tradingpost(b) {
   var x, r, x0, x1, c;
-  b.rect(3, 9, 24, 7, '#4a3a30'); b.rect(3, 12, 24, 1, TIM); b.rect(3, 13, 24, 1, TIMD);
+  b.rect(3, 9, 31, 21, '#4a3a30'); b.rect(3, 12, 24, 1, TIM); b.rect(3, 13, 24, 1, TIMD);
   b.px(5, 11, POT); b.px(7, 10, CUL); b.px(10, 10, PAT); b.px(11, 10, PATD); b.px(20, 11, POTL); b.px(23, 10, CLOTH);
-  b.rect(1, 3, 2, 19, TIM); b.rect(27, 3, 2, 19, TIM); b.rect(1, 3, 1, 19, TIML); b.rect(27, 3, 1, 19, TIML);
-  b.rect(3, 16, 24, 2, TIML); b.rect(3, 16, 24, 1, '#a6703f'); b.rect(3, 18, 24, 4, TIM);
-  for (x = 5; x < 27; x += 5) b.rect(x, 18, 1, 4, TIMD);
-  b.rect(3, 21, 24, 1, TIMD);
+  b.rect(26, 9, 8, 21, DARK); // walk-in bay beside the counter
+  b.rect(1, 3, 2, 27, TIM); b.rect(34, 3, 2, 27, TIM); b.rect(1, 3, 1, 27, TIML); b.rect(34, 3, 1, 27, TIML);
+  b.rect(3, 20, 23, 2, TIML); b.rect(3, 20, 23, 1, '#a6703f'); b.rect(3, 22, 23, 8, TIM);
+  for (x = 5; x < 26; x += 5) b.rect(x, 22, 1, 8, TIMD);
+  b.rect(3, 29, 23, 1, TIMD);
+  var display = b;
+  b = shifted(b, 0, -4);
   // crates and pots on the counter
   b.rect(3, 10, 6, 6, TIML); b.rect(3, 10, 6, 1, '#a6703f'); b.line(3, 11, 8, 15, TIMD, 1); b.line(8, 11, 3, 15, TIMD, 1);
   b.rect(3, 15, 6, 1, TIMD);
@@ -125,17 +129,18 @@ function tradingpost(b) {
   b.px(11, 12, CORD); b.px(17, 12, CORD); b.px(11, 13, CORD); b.px(17, 13, CORD);
   b.rect(10, 14, 3, 1, CU); b.rect(16, 14, 3, 1, CU); b.px(10, 14, CUL); b.px(16, 14, CUL);
   b.px(11, 15, CLOTH); b.px(17, 15, CUH);
+  b = display;
   // the awning, striped, wider at the bottom, with a scalloped hem
   for (r = 0; r < 7; r++) {
-    x0 = 3 - Math.round(r * 3 / 6); x1 = 26 + Math.round(r * 3 / 6);
+    x0 = 3 - Math.round(r * 3 / 6); x1 = 34 + Math.round(r * 3 / 6);
     for (x = x0; x <= x1; x++) {
       c = Math.floor(x / 3) % 2 == 0;
       b.px(x, 1 + r, r == 6 ? (c ? CLOTHD : REDD) : (c ? CLOTH : RED));
       if (r == 0) b.px(x, 1, c ? '#ffffff' : '#d9665e');
     }
   }
-  for (x = 0; x < 30; x++) if (x % 3 == 1) b.px(x, 8, Math.floor(x / 3) % 2 == 0 ? CLOTHD : REDD);
-  b.rect(0, 0, 30, 1, TIMD); b.rect(2, 0, 26, 1, TIM);
+  for (x = 0; x < 38; x++) if (x % 3 == 1) b.px(x, 8, Math.floor(x / 3) % 2 == 0 ? CLOTHD : REDD);
+  b.rect(2, 0, 34, 1, TIM);
 }
 // The site, 24x12: posts and a crossbeam, half the awning hung, planks and folded cloth on the ground.
 function tradesite(b) {
@@ -148,23 +153,43 @@ function tradesite(b) {
   b.rect(16, 8, 4, 3, CLOTH); b.rect(16, 9, 4, 1, RED); b.rect(16, 10, 4, 1, CLOTHD);
 }
 
-// ---- the mud-brick house (camp slot of the Hut, 34x24) ---------------------------------------------
-// A brick-and-plaster house with a flat roof, a room on the roof, a plank door and two windows.
+// ---- the mud-brick house: flat parapet and an open rooftop terrace --------------------------------
 function mudhouse(b) {
-  var x;
-  bricks(b, 2, 10, 30, 14, MB);
-  b.rect(1, 6, 32, 1, MBL); b.rect(1, 7, 32, 2, MB[0]); b.rect(1, 9, 32, 1, MBM);
-  bricks(b, 21, 1, 10, 5, MB); b.rect(20, 0, 12, 1, MBL);
-  b.rect(25, 2, 2, 3, DARK); b.rect(25, 2, 2, 1, TIM);
-  for (x = 5; x < 32; x += 6) { b.rect(x, 10, 2, 2, TIMD); b.px(x, 10, TIM); }
-  b.rect(2, 19, 6, 5, PLAS); b.rect(2, 19, 4, 1, MB[0]); b.px(7, 19, MB[1]); b.px(8, 21, MB[1]); b.rect(2, 20, 6, 1, '#d8c394');
-  b.rect(24, 20, 7, 4, PLAS); b.px(24, 20, MB[2]); b.px(30, 20, MB[0]); b.rect(24, 21, 7, 1, '#d8c394');
-  b.rect(13, 14, 8, 1, TIM); b.rect(14, 15, 6, 9, TIMD); b.rect(15, 16, 4, 8, TIML);
-  b.rect(16, 16, 1, 8, TIMD); b.rect(15, 16, 4, 1, '#a6703f'); b.px(18, 20, CUH); b.px(18, 21, CU);
-  b.rect(13, 15, 1, 9, TIM); b.rect(20, 15, 1, 9, TIM); b.rect(13, 23, 8, 1, MBD);
-  b.rect(5, 13, 6, 1, TIML); b.rect(6, 14, 4, 4, DARK); b.rect(5, 14, 1, 4, TIM); b.rect(10, 14, 1, 4, TIM);
-  b.rect(8, 14, 1, 4, TIM); b.rect(5, 18, 6, 1, MBL);
-  b.rect(23, 14, 4, 1, TIML); b.rect(24, 15, 2, 3, DARK); b.rect(23, 18, 4, 1, MBL);
+  var x, cx = Math.floor(b.w / 2), compact = b.w === 26;
+  var height = compact ? 19 : 22, wall = compact ? 1 : 3, eave = b.h - height;
+  bricks(b, wall, eave, b.w - 2 * wall, height, MB);
+  b.rect(wall, eave, 1, height, MBL); b.rect(b.w - wall - 3, eave, 3, height, MBD);
+  if (compact) {
+    b.rect(0, eave - 2, b.w, 3, MB[0]); b.rect(0, eave - 2, b.w, 1, MBL);
+    b.rect(0, eave + 1, b.w, 1, MBM);
+    b.rect(3, eave - 4, 20, 1, TIM);
+    for (x = 3; x <= 22; x += 6) {
+      b.rect(x, eave - 5, 2, 3, TIML);
+      b.px(x, eave - 5, MBL);
+    }
+    b.rect(18, eave - 4, 4, 2, POT); b.rect(19, eave - 5, 2, 1, POTL);
+    b.rect(2, b.h - 5, 6, 4, PLAS);
+    b.rect(3, b.h - 3, 5, 1, MBL);
+  } else {
+    b.rect(1, eave - 2, b.w - 2, 3, MB[0]);
+    b.rect(1, eave + 1, b.w - 2, 1, MBM);
+    b.rect(3, eave - 5, b.w - 6, 1, TIM);
+    for (x = 3; x < b.w - 3; x += 5) b.rect(x, eave - 6, 2, 4, MBL);
+    b.rect(b.w - 10, eave - 8, 4, 6, PLAS);
+    b.rect(b.w - 11, eave - 9, 6, 2, MBL);
+  }
+  for (x = 5; x < b.w - 4; x += 6) b.rect(x, eave + 2, 2, 2, TIMD);
+  b.rect(cx - 5, b.h - 16, 10, 16, TIM);
+  b.rect(cx - 5, b.h - 16, 10, 1, TIML);
+  b.rect(cx - 3, b.h - 15, 7, 15, DARK);
+  b.rect(cx + 2, b.h - 14, 2, 14, TIMD); b.px(cx + 2, b.h - 7, CUH);
+  b.rect(5, b.h - 14, 3, 5, DARK); b.rect(4, b.h - 9, 5, 1, MBL);
+  b.rect(b.w - 8, b.h - 15, 3, 5, DARK); b.rect(b.w - 9, b.h - 10, 5, 1, MBL);
+  if (compact) {
+    b.rect(4, b.h - 15, 5, 1, TIML);
+    b.rect(b.w - 9, b.h - 16, 5, 1, TIML);
+    b.px(cx - 5, b.h - 5, MBD);
+  }
 }
 // The site, 24x12: the low walls of a house half raised round a timber door frame.
 function mudsite(b) {
@@ -210,19 +235,6 @@ function reedship(b) {
 }
 
 // ---- west page: small houses, the potters' yard, the weavers' row, the wall -------------------------
-// A small mud-brick house, 26x19, with a flat roof, a jar on it, a door and a window.
-function smallhouse(b) {
-  var x;
-  b.rect(2, 4, 22, 1, MBL); b.rect(2, 5, 22, 2, MB[0]); b.rect(2, 7, 22, 1, MBM);
-  bricks(b, 3, 8, 20, 11, MB);
-  for (x = 5; x < 22; x += 6) { b.rect(x, 8, 2, 2, TIMD); b.px(x, 8, TIM); }
-  b.rect(9, 11, 7, 1, TIM); b.rect(10, 12, 5, 7, TIMD); b.rect(11, 13, 3, 6, TIML); b.px(13, 16, CUH);
-  b.rect(9, 12, 1, 7, TIM); b.rect(15, 12, 1, 7, TIM);
-  b.rect(17, 12, 3, 1, TIML); b.rect(17, 13, 3, 3, DARK); b.rect(17, 16, 3, 1, MBL);
-  b.rect(4, 15, 4, 4, PLAS); b.px(7, 15, MB[1]); b.rect(4, 16, 4, 1, '#d8c394');
-  b.rect(15, 0, 7, 1, MBL); bricks(b, 15, 1, 7, 3, MB); b.rect(17, 2, 3, 2, DARK);
-}
-
 // The potters' yard, 44x28: a dome kiln with smoke, a row of fired pots on a low shelf, a tray of
 // clay pots drying under it and a heap of wet clay.
 function potteryard(b) {
@@ -293,6 +305,8 @@ function shifted(b, ox, oy) {
   return {
     rect: function (x, y, w, h, c) { b.rect(x - ox, y - oy, w, h, c); },
     px: function (x, y, c) { b.px(x - ox, y - oy, c); },
+    ell: function (x, y, rx, ry, c) { b.ell(x - ox, y - oy, rx, ry, c); },
+    line: function (x, y, ex, ey, c, t) { b.line(x - ox, y - oy, ex - ox, ey - oy, c, t); },
     clear: function (x, y, w, h) {
       var i, j, X, Y;
       for (j = 0; j < h; j++) for (i = 0; i < w; i++) { X = x - ox + i; Y = y - oy + j; if (X >= 0 && Y >= 0 && X < b.w && Y < b.h) b.d[(Y * b.w + X) * 4 + 3] = 0; }
@@ -669,37 +683,24 @@ function plankbridge(pageX) {
   return B;
 }
 
-// ---- the gate tower (camp page, replaces the Lookout in place; 28x31) --------------------------------
-// A squat mud-brick tower in the town wall's brick and timber: merlons, a timber watch platform with a
-// pennant on top, a timber gate arch with a bronze-shod door, and arrow slits.
+// ---- the gate tower: an open watch deck above a full-height bronze-shod gate ----------------------
 function gatetower(b) {
-  var x, i;
-  bricks(b, 2, 14, 24, 17, MB);
-  b.rect(2, 14, 2, 17, MBL); b.rect(24, 14, 2, 17, MBD); b.rect(2, 14, 1, 17, '#f0d9a8');
-  b.rect(1, 11, 26, 1, MBL); b.rect(1, 12, 26, 2, MB[0]); b.rect(1, 14, 26, 1, MBM);
-  for (x = 4; x < 26; x += 6) { b.rect(x, 12, 2, 2, TIMD); b.px(x, 12, TIM); }
-  for (i = 0; i < 4; i++) { x = 2 + i * 6; b.rect(x, 9, 4, 2, MB[i % 2 ? 2 : 0]); b.rect(x, 9, 4, 1, MBL); }
-  b.rect(3, 10, 22, 1, MBM);
-  // a timber watch platform on the merlons: floor, open sides, a gabled roof, flagpole and pennant
-  b.rect(8, 8, 12, 1, '#a6703f'); b.rect(9, 5, 10, 3, DARK); b.px(13, 7, '#4a3a30'); b.px(14, 6, '#4a3a30');
-  b.rect(9, 5, 1, 3, TIM); b.rect(18, 5, 1, 3, TIM); b.rect(9, 7, 10, 1, TIML);
-  b.rect(7, 4, 14, 1, TIML); b.rect(8, 3, 12, 1, TIM); b.rect(7, 4, 14, 1, '#a6703f');
-  b.rect(14, 0, 1, 3, TIML); b.px(14, 0, CUH);
-  b.rect(15, 0, 6, 1, RED); b.rect(15, 1, 4, 1, RED); b.rect(15, 2, 2, 1, REDD); b.px(19, 1, REDD); b.px(20, 0, REDD);
-  // arrow slits and small windows
-  b.rect(13, 16, 2, 4, DARK); b.rect(12, 15, 4, 1, TIML); b.rect(12, 20, 4, 1, MBL);
-  b.rect(5, 18, 2, 3, DARK); b.rect(4, 17, 4, 1, TIML); b.rect(4, 21, 4, 1, MBL);
-  b.rect(21, 18, 2, 3, DARK); b.rect(20, 17, 4, 1, TIML); b.rect(20, 21, 4, 1, MBL);
-  // plinth, timber gate arch and a bronze-shod door
-  b.rect(2, 29, 6, 2, MBD); b.rect(20, 29, 6, 2, MBD); b.rect(2, 30, 24, 1, MBD);
-  b.rect(8, 22, 12, 9, DARK);
-  b.rect(8, 21, 12, 1, TIML); b.rect(9, 20, 10, 1, TIM);
-  b.rect(8, 22, 2, 9, TIM); b.rect(18, 22, 2, 9, TIM); b.rect(8, 22, 1, 9, TIML); b.px(10, 22, TIM); b.px(17, 22, TIM);
-  b.rect(10, 23, 8, 7, TIML); b.rect(10, 23, 8, 1, '#a6703f');
-  for (x = 12; x < 18; x += 2) b.rect(x, 24, 1, 6, TIMD);
-  b.rect(10, 25, 8, 1, CU); b.rect(10, 28, 8, 1, CU);
-  b.px(11, 25, CUH); b.px(16, 25, CUH); b.px(11, 28, CUH); b.px(16, 28, CUH); b.px(13, 26, CUL); b.px(14, 26, CUL); b.px(14, 27, CUD);
-  b.rect(8, 30, 12, 1, MBD);
+  var x;
+  bricks(b, 3, 13, 22, 24, MB);
+  b.rect(3, 13, 1, 24, MBL); b.rect(23, 13, 2, 24, MBD);
+  bricks(b, 0, 10, 28, 5, MB); b.rect(0, 14, 28, 1, MBM);
+  for (x = 0; x < 28; x += 8) {
+    b.rect(x, 7, 4, 4, MB[0]); b.rect(x, 7, 4, 1, MBL);
+  }
+  b.rect(14, 0, 1, 10, TIML); b.px(14, 0, CUH);
+  b.rect(15, 1, 7, 2, RED); b.rect(15, 3, 4, 1, REDD);
+  b.rect(6, 17, 2, 5, DARK); b.rect(20, 17, 2, 5, DARK);
+  b.rect(9, 20, 10, 17, TIM);
+  b.rect(10, 19, 8, 1, TIML);
+  b.rect(10, 21, 8, 16, DARK);
+  b.rect(15, 22, 3, 15, TIMD);
+  b.rect(15, 25, 3, 1, CU); b.rect(15, 32, 3, 1, CU);
+  b.px(15, 28, CUH); b.rect(3, 36, 6, 1, MBD); b.rect(19, 36, 6, 1, MBD);
 }// The site, 20x11: the low ring of the tower half laid, a timber door frame, a scaffold pole and bricks stacked.
 function towersite(b) {
   bricks(b, 3, 6, 14, 5, MB); b.rect(3, 6, 14, 1, MBL);
@@ -713,16 +714,16 @@ function towersite(b) {
 }
 
 var layers = {};
-layers.building_smithy = layerOf([obj(34, 24, 184, 79, smithy, { sh: 14 })]);
+layers.building_smithy = layerOf([obj(34, 29, 184, 79, smithy, { sh: 14 })]);
 layers.site_smithy = layerOf([obj(24, 12, 184, 79, smithsite, { sh: 11 })]);
-layers.building_trading_post = layerOf([obj(30, 22, 108, 79, tradingpost, { sh: 12 })]);
+layers.building_trading_post = layerOf([obj(38, 30, 108, 79, tradingpost, { sh: 16 })]);
 layers.site_trading_post = layerOf([obj(24, 12, 108, 79, tradesite, { sh: 10 })]);
-layers.building_hut = layerOf([obj(34, 24, 268, 71, mudhouse, { sh: 14 })]);
+layers.building_hut = layerOf([obj(38, 33, 268, 71, mudhouse, { sh: 17 })]);
 layers.site_hut = layerOf([obj(24, 12, 268, 71, mudsite, { sh: 9 })]);
 layers.boat_dugout = layerOf([obj(26, 11, 370, 70, plankboat, { sh: 0 })]);
 layers.boat_raft = layerOf([obj(26, 11, 370, 70, reedship, { sh: 0 })]);
-layers.west_roof_a = layerOf([obj(26, 19, 172, 72, smallhouse, { sh: 11 })]);
-layers.west_roof_b = layerOf([obj(26, 19, 148, 71, smallhouse, { sh: 11, flip: 1 })]);
+layers.west_roof_a = layerOf([obj(26, 24, 172, 72, mudhouse, { sh: 11 })]);
+layers.west_roof_b = layerOf([obj(26, 24, 148, 71, mudhouse, { sh: 11, flip: 1 })]);
 layers.potters_yard = layerOf([obj(44, 28, 226, 79, potteryard, { sh: 19 })]);
 layers.weavers_row = layerOf([obj(64, 23, 100, 79, weaversrow, { sh: 0 })]);
 layers.weavers_row_dyed = layerOf([obj(64, 23, 100, 79, weaversdyed, { sh: 0, raw: true, z: 80 })]);
@@ -744,7 +745,7 @@ layers.site_quay = layerOf([obj(26, 12, 338, 72, quaysite, { sh: 0 })]);
 layers.quay_boats = new Buf(W, H); quayboats(layers.quay_boats);
 layers.crossing_planks = plankbridge(0);
 layers.east_crossing_planks = plankbridge(384);
-layers.building_lookout = layerOf([obj(28, 31, 300, 68, gatetower, { sh: 0, z: 66 })]);
+layers.building_lookout = layerOf([obj(28, 37, 300, 68, gatetower, { sh: 0, z: 66 })]);
 layers.site_lookout = layerOf([obj(20, 11, 300, 68, towersite, { sh: 0, z: 66 })]);
 
 // previews: the camp pieces on a plain meadow and river, the west ones and the east one apart
